@@ -1,0 +1,73 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{html,ts}"],
+  theme: {
+    extend: {
+      colors: {
+        "pad-gray": {
+          50: "var(--pad-gray-50)",
+          100: "var(--pad-gray-100)",
+          200: "var(--pad-gray-200)",
+          300: "var(--pad-gray-300)",
+          400: "var(--pad-gray-400)",
+          500: "var(--pad-gray-500)",
+          600: "var(--pad-gray-600)",
+          700: "var(--pad-gray-700)",
+          800: "var(--pad-gray-800)",
+          900: "var(--pad-gray-900)",
+        },
+        "pad-primary": {
+          50: "var(--pad-primary-50)",
+          100: "var(--pad-primary-100)",
+          200: "var(--pad-primary-200)",
+          300: "var(--pad-primary-300)",
+          400: "var(--pad-primary-400)",
+          500: "var(--pad-primary-500)",
+          600: "var(--pad-primary-600)",
+          700: "var(--pad-primary-700)",
+          800: "var(--pad-primary-800)",
+          900: "var(--pad-primary-900)",
+        },
+        "pad-error": {
+          50: "var(--pad-error-50)",
+          100: "var(--pad-error-100)",
+          200: "var(--pad-error-200)",
+          300: "var(--pad-error-300)",
+          400: "var(--pad-error-400)",
+          500: "var(--pad-error-500)",
+          600: "var(--pad-error-600)",
+          700: "var(--pad-error-700)",
+          800: "var(--pad-error-800)",
+          900: "var(--pad-error-900)",
+        },
+
+        "pad-success": {
+          50: "var(--pad-success-50)",
+          100: "var(--pad-success-100)",
+          200: "var(--pad-success-200)",
+          300: "var(--pad-success-300)",
+          400: "var(--pad-success-400)",
+          500: "var(--pad-success-500)",
+          600: "var(--pad-success-600)",
+          700: "var(--pad-success-700)",
+          800: "var(--pad-success-800)",
+          900: "var(--pad-success-900)",
+        },
+
+        "pad-warning": {
+          50: "var(--pad-warning-50)",
+          100: "var(--pad-warning-100)",
+          200: "var(--pad-warning-200)",
+          300: "var(--pad-warning-300)",
+          400: "var(--pad-warning-400)",
+          500: "var(--pad-warning-500)",
+          600: "var(--pad-warning-600)",
+          700: "var(--pad-warning-700)",
+          800: "var(--pad-warning-800)",
+          900: "var(--pad-warning-900)",
+        },
+      },
+    },
+  },
+  plugins: [],
+};
