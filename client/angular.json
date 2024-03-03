@@ -29,6 +29,15 @@
           },
           "configurations": {
             "production": {
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                {
+                  "glob": "config.json",
+                  "input": "src/configurations/production",
+                  "output": "configuration/"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -49,6 +58,15 @@
               "outputHashing": "all"
             },
             "development": {
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                {
+                  "glob": "config.json",
+                  "input": "src/configurations/development",
+                  "output": "configuration"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
