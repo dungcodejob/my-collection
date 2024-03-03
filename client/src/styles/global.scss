@@ -1,0 +1,13 @@
+
+body,
+html {
+  font-family: "Inter", sans-serif;
+}
+
+.pad-dialog-container {
+  @apply rounded-xl;
+}
+
+.pad-dialog-backdrop {
+  @apply bg-black bg-opacity-50;
+}
