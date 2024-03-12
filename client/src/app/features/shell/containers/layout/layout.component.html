@@ -1,0 +1,16 @@
+<div class="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-900">
+  @if (vm$ | async; as vm) {
+    @if (vm.hasHeader) {
+      <app-header
+        class="sticky top-0 inset-x-0 z-[48] w-full bg-white border-b text-sm py-2.5 sm:py-4 lg:ps-64 dark:bg-gray-800 dark:border-gray-700"></app-header>
+    }
+    @if (vm.hasSideBar) {
+      <app-sidebar></app-sidebar>
+      <div class="w-full pt-10 px-4 sm:px-6 md:px-8 lg:ps-72">
+        <router-outlet></router-outlet>
+      </div>
+    } @else {
+      <router-outlet></router-outlet>
+    }
+  }
+</div>

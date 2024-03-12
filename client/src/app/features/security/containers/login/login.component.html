@@ -1,0 +1,50 @@
+@if ($vm(); as vm) {
+  <div class="flex h-full justify-center items-center">
+    <div class="lg:p-8">
+      <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+        <form class="grid gap-2" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <!-- <label for="email">email</label> -->
+          <input
+            formControlName="email"
+            id="email"
+            type="email"
+            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            placeholder="name@example.com"
+            autocapitalize="none"
+            autocomplete="email"
+            autocorrect="off"
+            [attr.disabled]="vm.loading" />
+
+          <input
+            hlmInput
+            class="focus-visible:ring-1 focus-visible:ring-offset-0"
+            size="sm"
+            formControlName="password"
+            id="password"
+            type="password"
+            autocapitalize="none"
+            autocomplete="password"
+            autocorrect="off"
+            [attr.disabled]="vm.loading" />
+          <!-- <label for="password">password</label>
+    <input formControlName="email" id="password" type="password" />
+    <button type="submit">login</button> -->
+
+          <button hlmBtn type="submit" size="sm" [disabled]="vm.loading">
+            @if (vm.loading) {
+              <hlm-icon
+                hlmCmdIcon
+                class="mr-2 animate-spin"
+                name="lucideLoader2"
+                size="sm" />
+            }
+
+            <span>Login with Email</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {{ vm | json }}
+}
