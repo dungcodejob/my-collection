@@ -12,5 +12,5 @@ type ProviderFn = (fn: FactoryFn) => Provider;
 export const provideAppInitWithConfigAsync: ProviderFn = (fn: FactoryFn): Provider => ({
   provide: APP_INIT_WITH_CONFIG_ASYNC,
   multi: true,
-  useFactory: () => fn,
+  useFactory: fn,
 });
