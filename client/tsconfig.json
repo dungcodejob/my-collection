@@ -18,11 +18,17 @@
       "@spartan-ng/ui-button-helm": [
         ".\\libs/ui-button-helm/src/index.ts"
       ],
-      "@spartan-ng/ui-icon-helm": [
-        ".\\libs/ui-icon-helm/src/index.ts"
-      ],
       "@spartan-ng/ui-input-helm": [
         ".\\libs/ui-input-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-label-helm": [
+        ".\\libs/ui-label-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-checkbox-helm": [
+        ".\\libs/ui-checkbox-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-icon-helm": [
+        ".\\libs/ui-icon-helm/src/index.ts"
       ]
     },
     "outDir": "./dist/out-tsc",

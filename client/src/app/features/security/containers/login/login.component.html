@@ -1,50 +1,101 @@
-@if ($vm(); as vm) {
-  <div class="flex h-full justify-center items-center">
-    <div class="lg:p-8">
-      <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-        <form class="grid gap-2" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          <!-- <label for="email">email</label> -->
-          <input
-            formControlName="email"
-            id="email"
-            type="email"
-            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="name@example.com"
-            autocapitalize="none"
-            autocomplete="email"
-            autocorrect="off"
-            [attr.disabled]="vm.loading" />
+<div class="w-screen h-screen bg-[#151521]">
+  <div class="flex w-full h-full justify-center items-center">
+    <div class="rounded-xl shadow-xl bg-white p-6 box-content w-[360px]">
+      @if ($vm(); as vm) {
+        <div class="flex h-full justify-center items-center">
+          <div class="lg:p-6">
+            <div
+              class="mx-auto flex w-full flex-col justify-center space-y-4 sm:w-[350px]">
+              <div>
+                <img class="w-14 h-14" src="assets/images/logo.png" alt="logo" />
+              </div>
 
-          <input
-            hlmInput
-            class="focus-visible:ring-1 focus-visible:ring-offset-0"
-            size="sm"
-            formControlName="password"
-            id="password"
-            type="password"
-            autocapitalize="none"
-            autocomplete="password"
-            autocorrect="off"
-            [attr.disabled]="vm.loading" />
-          <!-- <label for="password">password</label>
+              <div class="flex flex-col gap-1">
+                <div class="flex flex-col space-y-2">
+                  <h1 class="text-2xl font-semibold tracking-tight">Welcome back!</h1>
+                  <p class="text-sm text-muted-foreground">
+                    Enter your email below to login
+                  </p>
+                </div>
+              </div>
+
+              <form
+                class="flex flex-col space-y-6"
+                autocomplete="off"
+                [formGroup]="loginForm"
+                (ngSubmit)="onSubmit()">
+                <!-- <label for="email">email</label> -->
+                <div class="space-y-5">
+                  <div class="space-y-1">
+                    <label hlmLabel for="email">Email</label>
+                    <input
+                      hlmInput
+                      class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+                      size="sm"
+                      formControlName="email"
+                      id="email"
+                      type="email"
+                      placeholder="name@example.com"
+                      autocapitalize="none"
+                      autocomplete="off"
+                      autocorrect="off" />
+                  </div>
+
+                  <div class="space-y-1">
+                    <label hlmLabel for="password">Password</label>
+                    <input
+                      hlmInput
+                      class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+                      size="sm"
+                      formControlName="password"
+                      id="password"
+                      type="password"
+                      autocapitalize="none"
+                      autocomplete="new-password"
+                      autocorrect="off" />
+                  </div>
+                </div>
+                <!-- <label for="password">password</label>
     <input formControlName="email" id="password" type="password" />
     <button type="submit">login</button> -->
 
-          <button hlmBtn type="submit" size="sm" [disabled]="vm.loading">
-            @if (vm.loading) {
-              <hlm-icon
-                hlmCmdIcon
-                class="mr-2 animate-spin"
-                name="lucideLoader2"
-                size="sm" />
-            }
+                <div class="flex justify-between mb-6">
+                  <label hlmLabel for="remember" class="flex items-center">
+                    <hlm-checkbox
+                      id="remember"
+                      formControlName="remember"
+                      class="mr-2"
+                      [disabled]="vm.loading" />
+                    Remember me
+                  </label>
+                  <p class="text-sm text-gray-500 font-medium underline">
+                    Forgot password?
+                  </p>
+                </div>
 
-            <span>Login with Email</span>
-          </button>
-        </form>
+                <button hlmBtn type="submit" size="sm" [disabled]="vm.loading">
+                  @if (vm.loading) {
+                    <hlm-icon
+                      hlmCmdIcon
+                      class="mr-2 animate-spin"
+                      name="lucideLoader2"
+                      size="sm" />
+                  }
+
+                  <span>Login with Email</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="mb-4 flex items-center justify-center gap-1">
+        <p class="text-sm text-gray-500 font-medium">Don’t have an account?</p>
+        <p class="text-sm text-gray-800 font-semibold underline">Sign up</p>
       </div>
     </div>
   </div>
+</div>
 
-  {{ vm | json }}
-}
+{{ loginForm.value | json }}

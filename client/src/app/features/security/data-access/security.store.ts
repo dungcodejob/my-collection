@@ -33,7 +33,7 @@ export class SecurityStore extends ComponentStore<SecurityState> {
   login = this.effect<Credentials>(body$ => {
     return body$.pipe(
       tap(() => this.setIsLoading()),
-      delay(5000),
+      delay(50000),
       exhaustMap(body => this._authService.login(body)),
       tap({
         next: () => {
