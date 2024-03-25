@@ -14,6 +14,8 @@
       "@common/*": ["src/common/*"],
       "@configs/*": ["src/configs/*"],
       "@database/*": ["src/database/*"],
+      "@authentication/*": ["src/authentication/*"],
+      "@modules/*": ["src/modules/*"],
     },
     "incremental": true,
     "skipLibCheck": true,
