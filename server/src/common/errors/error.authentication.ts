@@ -10,6 +10,6 @@ export class Authentication {
   static UsernameOrPasswordNotMatched = new UnauthorizedException(
     'Auth.UsernameOrPasswordNotMatched',
   ); // Username or password not match
-
+  static InvalidHeader = new BadRequestException('Auth.InvalidHeader'); // Invalid Authorization Header
   static AccessDenied = new ForbiddenException('Auth.AccessDenied');
 }

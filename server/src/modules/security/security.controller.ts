@@ -1,9 +1,9 @@
+import { RefreshTokenGuard } from '@authentication/guards';
 import { JwtToken } from '@authentication/models';
 import { BcryptService, JwtUtil } from '@authentication/services';
 import { CurrentUser, ResponseMessage } from '@common/decorators';
 import { UserEntity } from '@common/entities';
 import { Errors } from '@common/errors';
-import { RefreshTokenGuard } from '@common/guards';
 import { Result } from '@common/models';
 import { UserMapper, UserService } from '@modules/user';
 import {
@@ -89,12 +89,15 @@ export class SecurityController {
       email: user.email,
       username: user.username,
     });
+
+    await this._updateRefreshToken(user.id, tokens.refresh);
+
     return Result.toSingle(tokens);
   }
 
   private async _updateRefreshToken(userId: string, refreshToken: string) {
-    const hashedRefreshToken = await this._bcryptService.hash(refreshToken);
-    await this._userService.updateRefreshToken(userId, hashedRefreshToken);
+    const refreshTokenHash = await this._bcryptService.hash(refreshToken);
+    await this._userService.updateRefreshToken(userId, refreshTokenHash);
   }
 
   private _plantToAuthResult(tokens: JwtToken, user: UserEntity) {

@@ -45,8 +45,6 @@ export class TransformInterceptor<T> implements NestInterceptor {
     const status = response.statusCode;
     const message =
       this.reflector.get(ResponseKey.Message, context.getHandler()) || '';
-
-    console.log(this.reflector.get(ResponseKey.Message, context.getHandler()));
     // const message = response["message"] ?? "";
 
     const body: ResponseSuccessDto<T> = {
@@ -69,8 +67,6 @@ export class TransformInterceptor<T> implements NestInterceptor {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-
-        console.log(exception);
     const status = exception.getStatus() ?? HttpStatus.INTERNAL_SERVER_ERROR;
 
     let message = exception.message;
