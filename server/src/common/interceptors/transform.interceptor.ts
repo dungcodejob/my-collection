@@ -1,18 +1,18 @@
 import { ResponseKey } from '@common/constants';
 import {
-    ErrorResponseDto,
-    ListResponseDto,
-    PaginationResponseDto,
-    SingleResponseDto,
-    ValidatorResponseDto,
+  ErrorResponseDto,
+  ListResponseDto,
+  PaginationResponseDto,
+  SingleResponseDto,
+  ValidatorResponseDto,
 } from '@common/models';
 import {
-    CallHandler,
-    ExecutionContext,
-    HttpException,
-    HttpStatus,
-    Injectable,
-    NestInterceptor,
+  CallHandler,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NestInterceptor,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
@@ -70,6 +70,7 @@ export class TransformInterceptor<T> implements NestInterceptor {
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
 
+        console.log(exception);
     const status = exception.getStatus() ?? HttpStatus.INTERNAL_SERVER_ERROR;
 
     let message = exception.message;

@@ -1,7 +1,7 @@
 import { UserEntity } from '@common/entities';
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../commands';
+import { CreateUserCommand, UpdateRefreshTokenCommand } from '../commands';
 import { CreateUserDto } from '../models';
 import { FindUserByUsernameQuery } from '../queries';
 
@@ -25,6 +25,15 @@ export class UserService {
         dto.passwordHash,
         dto.email,
       ),
+    );
+  }
+
+  updateRefreshToken(
+    id: string,
+    refreshTokenHash: string,
+  ): Promise<UserEntity> {
+    return this._commandBus.execute(
+      new UpdateRefreshTokenCommand(id, refreshTokenHash),
     );
   }
 }

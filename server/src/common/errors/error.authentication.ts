@@ -1,9 +1,15 @@
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 export class Authentication {
   static Unauthorized = new UnauthorizedException('Auth.Unauthorized');
-  static UserExists = new BadRequestException('User already exists');
+  static UserExists = new BadRequestException('Auth.UserExists'); // User already exists
   static UsernameOrPasswordNotMatched = new UnauthorizedException(
-    'Username or password not match',
-  );
+    'Auth.UsernameOrPasswordNotMatched',
+  ); // Username or password not match
+
+  static AccessDenied = new ForbiddenException('Auth.AccessDenied');
 }

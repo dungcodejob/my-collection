@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../models/jwt-payload';
 import { JwtToken } from '../models/jwt-token';
 @Injectable()
-export class JwtTokenGenerator {
+export class JwtUtil {
   constructor(
     @InjectAuthConfig()
     private readonly _authConfig: AuthConfig,
@@ -27,9 +27,8 @@ export class JwtTokenGenerator {
       createAccessToken,
       createRefreshToken,
     ]);
-    const refreshTokenHash = refreshToken;
 
-    return new JwtToken(accessToken, refreshTokenHash);
+    return new JwtToken(accessToken, refreshToken);
   }
 
   generatePayload(user: UserEntity): JwtPayload {

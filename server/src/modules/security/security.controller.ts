@@ -1,23 +1,32 @@
 import { JwtToken } from '@authentication/models';
-import { BcryptService, JwtTokenGenerator } from '@authentication/services';
-import { ResponseMessage } from '@common/decorators';
+import { BcryptService, JwtUtil } from '@authentication/services';
+import { CurrentUser, ResponseMessage } from '@common/decorators';
 import { UserEntity } from '@common/entities';
 import { Errors } from '@common/errors';
+import { RefreshTokenGuard } from '@common/guards';
 import { Result } from '@common/models';
 import { UserMapper, UserService } from '@modules/user';
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { LoginBodyDto, RegisterBodyDto } from './models';
 import { AuthResultDto } from './models/auth-result.dto';
 
 @Controller('security')
 export class SecurityController {
   constructor(
-    private readonly _jwtTokenGenerator: JwtTokenGenerator,
+    private readonly _jwtUtil: JwtUtil,
     private readonly _userService: UserService,
     private readonly _bcryptService: BcryptService,
     private readonly _userMapper: UserMapper,
   ) {}
 
+  @HttpCode(HttpStatus.OK)
   @Post('login')
   @ResponseMessage('login successful')
   async login(@Body() body: LoginBodyDto) {
@@ -36,13 +45,17 @@ export class SecurityController {
       throw Errors.Authentication.UsernameOrPasswordNotMatched;
     }
 
-    const payload = this._jwtTokenGenerator.generatePayload(user);
-    const tokens = await this._jwtTokenGenerator.generateToken(payload);
+    const payload = this._jwtUtil.generatePayload(user);
+    const tokens = await this._jwtUtil.generateToken(payload);
+
+    await this._updateRefreshToken(user.id, tokens.refresh);
 
     return this._plantToAuthResult(tokens, user);
   }
 
+  @HttpCode(HttpStatus.CREATED)
   @Post('register')
+  @ResponseMessage('register successful')
   async register(@Body() body: RegisterBodyDto) {
     const userExists = await this._userService.findByUsername(body.username);
     if (userExists) {
@@ -54,15 +67,34 @@ export class SecurityController {
     const newUser = await this._userService.create({
       firstName: body.firstName,
       lastName: body.lastName,
-      passwordHash: passwordHash,
+      passwordHash,
       username: body.username,
       email: body.email,
     });
 
-    const payload = this._jwtTokenGenerator.generatePayload(newUser);
-    const tokens = await this._jwtTokenGenerator.generateToken(payload);
+    const payload = this._jwtUtil.generatePayload(newUser);
+    const tokens = await this._jwtUtil.generateToken(payload);
+
+    await this._updateRefreshToken(newUser.id, tokens.refresh);
 
     return this._plantToAuthResult(tokens, newUser);
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh')
+  async refreshTokens(@CurrentUser() user: UserEntity) {
+    const tokens = await this._jwtUtil.generateToken({
+      sub: user.id,
+      email: user.email,
+      username: user.username,
+    });
+    return Result.toSingle(tokens);
+  }
+
+  private async _updateRefreshToken(userId: string, refreshToken: string) {
+    const hashedRefreshToken = await this._bcryptService.hash(refreshToken);
+    await this._userService.updateRefreshToken(userId, hashedRefreshToken);
   }
 
   private _plantToAuthResult(tokens: JwtToken, user: UserEntity) {
