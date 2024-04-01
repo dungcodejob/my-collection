@@ -1,2 +1,2 @@
-export * from './jwt-payload';
-export * from './jwt-token';
+export * from "./jwt-payload";
+export * from "./jwt-token";

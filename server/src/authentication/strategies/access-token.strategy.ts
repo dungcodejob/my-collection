@@ -1,18 +1,18 @@
-import { UserEntity } from '@common/entities';
-import { Errors } from '@common/errors';
-import { AuthConfig, InjectAuthConfig } from '@configs/index';
-import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { JwtPayload } from '../models';
+import { UserEntity } from "@common/entities";
+import { Errors } from "@common/errors";
+import { AuthConfig, InjectAuthConfig } from "@configs/index";
+import { UserService } from "@modules/user";
+import { Injectable } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { ExtractJwt, Strategy } from "passport-jwt";
+import { JwtPayload } from "../models";
 
 @Injectable()
-export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class AccessTokenStrategy extends PassportStrategy(Strategy, "jwt") {
   constructor(
     @InjectAuthConfig()
     authConfig: AuthConfig,
-    private readonly _userService: UserService,
+    private readonly _userService: UserService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

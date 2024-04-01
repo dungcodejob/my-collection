@@ -1,4 +1,4 @@
-import { PaginationParameterDto } from './pagination-parameter.dto';
+import { PaginationParameterDto } from "./pagination-parameter.dto";
 
 export class PaginationMetaDto {
   readonly currentPage: number;

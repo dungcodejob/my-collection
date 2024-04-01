@@ -1,34 +1,27 @@
-import { RefreshTokenGuard } from '@authentication/guards';
-import { JwtToken } from '@authentication/models';
-import { BcryptService, JwtUtil } from '@authentication/services';
-import { CurrentUser, ResponseMessage } from '@common/decorators';
-import { UserEntity } from '@common/entities';
-import { Errors } from '@common/errors';
-import { Result } from '@common/models';
-import { UserMapper, UserService } from '@modules/user';
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import { LoginBodyDto, RegisterBodyDto } from './models';
-import { AuthResultDto } from './models/auth-result.dto';
+import { RefreshTokenGuard } from "@authentication/guards";
+import { JwtToken } from "@authentication/models";
+import { BcryptService, JwtUtil } from "@authentication/services";
+import { CurrentUser, ResponseMessage } from "@common/decorators";
+import { UserEntity } from "@common/entities";
+import { Errors } from "@common/errors";
+import { Result } from "@common/models";
+import { UserMapper, UserService } from "@modules/user";
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
+import { LoginBodyDto, RegisterBodyDto } from "./models";
+import { AuthResultDto } from "./models/auth-result.dto";
 
-@Controller('security')
+@Controller("security")
 export class SecurityController {
   constructor(
     private readonly _jwtUtil: JwtUtil,
     private readonly _userService: UserService,
     private readonly _bcryptService: BcryptService,
-    private readonly _userMapper: UserMapper,
+    private readonly _userMapper: UserMapper
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post('login')
-  @ResponseMessage('login successful')
+  @Post("login")
+  @ResponseMessage("login successful")
   async login(@Body() body: LoginBodyDto) {
     const user = await this._userService.findByUsername(body.username);
 
@@ -38,7 +31,7 @@ export class SecurityController {
 
     const isPasswordMatched = this._bcryptService.verify(
       body.password,
-      user.passwordHash,
+      user.passwordHash
     );
 
     if (!isPasswordMatched) {
@@ -54,8 +47,8 @@ export class SecurityController {
   }
 
   @HttpCode(HttpStatus.CREATED)
-  @Post('register')
-  @ResponseMessage('register successful')
+  @Post("register")
+  @ResponseMessage("register successful")
   async register(@Body() body: RegisterBodyDto) {
     const userExists = await this._userService.findByUsername(body.username);
     if (userExists) {
@@ -82,7 +75,7 @@ export class SecurityController {
 
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
-  @Post('refresh')
+  @Post("refresh")
   async refreshTokens(@CurrentUser() user: UserEntity) {
     const tokens = await this._jwtUtil.generateToken({
       sub: user.id,

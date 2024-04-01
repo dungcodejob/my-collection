@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { CrawlController } from './crawl.controller';
-import { CrawlService } from './services';
+import { Module } from "@nestjs/common";
+import { CrawlController } from "./crawl.controller";
+import { CrawlService } from "./services";
 
 @Module({
   imports: [],

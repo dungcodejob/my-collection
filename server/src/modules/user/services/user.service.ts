@@ -1,15 +1,15 @@
-import { UserEntity } from '@common/entities';
-import { Injectable } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { CreateUserCommand, UpdateRefreshTokenCommand } from '../commands';
-import { CreateUserDto } from '../models';
-import { FindUserByUsernameQuery } from '../queries';
+import { UserEntity } from "@common/entities";
+import { Injectable } from "@nestjs/common";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { CreateUserCommand, UpdateRefreshTokenCommand } from "../commands";
+import { CreateUserDto } from "../models";
+import { FindUserByUsernameQuery } from "../queries";
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly _commandBus: CommandBus,
-    private readonly _queryBus: QueryBus,
+    private readonly _queryBus: QueryBus
   ) {}
 
   findByUsername(username: string): Promise<UserEntity> {
@@ -23,17 +23,12 @@ export class UserService {
         dto.lastName,
         dto.username,
         dto.passwordHash,
-        dto.email,
-      ),
+        dto.email
+      )
     );
   }
 
-  updateRefreshToken(
-    id: string,
-    refreshTokenHash: string,
-  ): Promise<UserEntity> {
-    return this._commandBus.execute(
-      new UpdateRefreshTokenCommand(id, refreshTokenHash),
-    );
+  updateRefreshToken(id: string, refreshTokenHash: string): Promise<UserEntity> {
+    return this._commandBus.execute(new UpdateRefreshTokenCommand(id, refreshTokenHash));
   }
 }

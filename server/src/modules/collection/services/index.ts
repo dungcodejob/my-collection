@@ -1,2 +1,2 @@
-export * from './collection.mapper';
-export * from './collection.service';
+export * from "./collection.mapper";
+export * from "./collection.service";

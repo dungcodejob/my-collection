@@ -1,17 +1,10 @@
-import { BaseEntity } from '@database/base.entity';
-import {
-  Check,
-  Entity,
-  ManyToOne,
-  OptionalProps,
-  Property,
-  Ref,
-} from '@mikro-orm/core';
-import { UserEntity } from './user.entity';
+import { BaseEntity } from "@database/base.entity";
+import { Check, Entity, ManyToOne, OptionalProps, Property, Ref } from "@mikro-orm/core";
+import { UserEntity } from "./user.entity";
 
-@Entity({ tableName: 'collection' })
+@Entity({ tableName: "collection" })
 @Check<CollectionEntity>({
-  expression: (columns) =>
+  expression: columns =>
     `"${columns.left}" > 0 AND "${columns.right}" > "${columns.left}"`,
 })
 export class CollectionEntity extends BaseEntity {

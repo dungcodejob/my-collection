@@ -1,13 +1,10 @@
-import { Inject, Injectable, Provider } from '@nestjs/common';
+import { Inject, Injectable, Provider } from "@nestjs/common";
 
-import { EntityManager } from '@mikro-orm/postgresql';
-import {
-  CollectionRepository,
-  CollectionRepositoryImpl,
-} from './collection.repository';
-import { UserRepository, UserRepositoryImpl } from './user.repository';
+import { EntityManager } from "@mikro-orm/postgresql";
+import { CollectionRepository, CollectionRepositoryImpl } from "./collection.repository";
+import { UserRepository, UserRepositoryImpl } from "./user.repository";
 
-export const UNIT_OF_WORK = Symbol('UnitOfWork');
+export const UNIT_OF_WORK = Symbol("UnitOfWork");
 
 export interface UnitOfWork {
   user: UserRepository;
@@ -32,7 +29,7 @@ export class UnitOfWorkImpl implements UnitOfWork {
   }
 
   get collection(): CollectionRepository {
-    if (this._collection) {
+    if (!this._collection) {
       this._collection = new CollectionRepositoryImpl(this._em);
     }
 

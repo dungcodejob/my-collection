@@ -1,5 +1,5 @@
-import { UserEntity } from '@common/entities';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { UserEntity } from "@common/entities";
+import { EntityManager } from "@mikro-orm/postgresql";
 
 export interface UserRepository {
   findById(id: string): Promise<UserEntity>;

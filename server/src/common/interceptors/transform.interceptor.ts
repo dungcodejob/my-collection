@@ -1,11 +1,11 @@
-import { ResponseKey } from '@common/constants';
+import { ResponseKey } from "@common/constants";
 import {
   ErrorResponseDto,
   ListResponseDto,
   PaginationResponseDto,
   SingleResponseDto,
   ValidatorResponseDto,
-} from '@common/models';
+} from "@common/models";
 import {
   CallHandler,
   ExecutionContext,
@@ -13,11 +13,11 @@ import {
   HttpStatus,
   Injectable,
   NestInterceptor,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { ValidationError } from 'class-validator';
-import { Request, Response } from 'express';
-import { Observable, catchError, map, throwError } from 'rxjs';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { ValidationError } from "class-validator";
+import { Request, Response } from "express";
+import { Observable, catchError, map, throwError } from "rxjs";
 
 type ResponseSuccessDto<T> =
   | SingleResponseDto<T>
@@ -32,8 +32,8 @@ export class TransformInterceptor<T> implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
-      map((result) => this._handleResponse(result, context)),
-      catchError((err) => throwError(() => this._handleError(err, context))),
+      map(result => this._handleResponse(result, context)),
+      catchError(err => throwError(() => this._handleError(err, context)))
     );
   }
 
@@ -43,8 +43,7 @@ export class TransformInterceptor<T> implements NestInterceptor {
     const request = ctx.getRequest<Request>();
 
     const status = response.statusCode;
-    const message =
-      this.reflector.get(ResponseKey.Message, context.getHandler()) || '';
+    const message = this.reflector.get(ResponseKey.Message, context.getHandler()) || "";
     // const message = response["message"] ?? "";
 
     const body: ResponseSuccessDto<T> = {
@@ -65,13 +64,13 @@ export class TransformInterceptor<T> implements NestInterceptor {
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'internal server error';
+    let message = "internal server error";
     let result = null;
     if (exception instanceof HttpException) {
       status = exception.getStatus();
 
       if (status === HttpStatus.BAD_REQUEST) {
-        const content = exception.getResponse()['message'] as unknown;
+        const content = exception.getResponse()["message"] as unknown;
         if (Array.isArray(content)) {
           result = {
             meta: { validators: content as ValidationError[] },
@@ -80,8 +79,8 @@ export class TransformInterceptor<T> implements NestInterceptor {
       }
 
       if (status === HttpStatus.UNAUTHORIZED) {
-        if (typeof exception.message !== 'string') {
-          message = 'You do not have permission to access this resource.';
+        if (typeof exception.message !== "string") {
+          message = "You do not have permission to access this resource.";
         }
       }
     } else if (exception instanceof Error) {

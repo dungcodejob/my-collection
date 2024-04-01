@@ -1,4 +1,4 @@
-import { PaginationMetaDto } from './pagination-meta.dto';
+import { PaginationMetaDto } from "./pagination-meta.dto";
 
 export interface ResponseDto<T = unknown> {
   statusCode: number;

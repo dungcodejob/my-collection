@@ -1,12 +1,12 @@
-import { AuthConfig, InjectAuthConfig } from '@configs/auth.config';
-import { Injectable } from '@nestjs/common';
-import { compare, genSalt, hash } from 'bcrypt';
+import { AuthConfig, InjectAuthConfig } from "@configs/auth.config";
+import { Injectable } from "@nestjs/common";
+import { compare, genSalt, hash } from "bcrypt";
 
 @Injectable()
 export class BcryptService {
   constructor(
     @InjectAuthConfig()
-    private readonly _authConfig: AuthConfig,
+    private readonly _authConfig: AuthConfig
   ) {}
 
   async hash(value: string): Promise<string> {

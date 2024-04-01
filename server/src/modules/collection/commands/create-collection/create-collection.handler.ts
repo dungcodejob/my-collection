@@ -1,18 +1,16 @@
-import { Inject } from '@nestjs/common';
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+import { Inject } from "@nestjs/common";
+import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
 
-import { CollectionEntity, UserEntity } from '@common/entities';
-import { UNIT_OF_WORK, UnitOfWork } from '@common/repositories';
-import { Reference } from '@mikro-orm/core';
-import { v4 } from 'uuid';
-import { CreateCollectionCommand } from './create-collection.command';
+import { CollectionEntity, UserEntity } from "@common/entities";
+import { UNIT_OF_WORK, UnitOfWork } from "@common/repositories";
+import { Reference } from "@mikro-orm/core";
+import { v4 } from "uuid";
+import { CreateCollectionCommand } from "./create-collection.command";
 @CommandHandler(CreateCollectionCommand)
-export class CreateCollectionHandler
-  implements ICommandHandler<CreateCollectionCommand>
-{
+export class CreateCollectionHandler implements ICommandHandler<CreateCollectionCommand> {
   constructor(
     @Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork,
-    private readonly eventPublisher: EventPublisher,
+    private readonly eventPublisher: EventPublisher
   ) {}
   async execute(command: CreateCollectionCommand): Promise<CollectionEntity> {
     // update all of the right values of the nodes where the right is bigger than the parent’s left  by 2
@@ -28,9 +26,7 @@ export class CreateCollectionHandler
     collection.depth = 0;
     collection.treeId = v4();
     if (command.parentId) {
-      const parent = await this._unitOfWork.collection.findById(
-        command.parentId,
-      );
+      const parent = await this._unitOfWork.collection.findById(command.parentId);
       collection.left = parent.left + 1;
       collection.right = parent.left + 2;
       collection.depth = parent.depth + 1;
@@ -39,10 +35,10 @@ export class CreateCollectionHandler
 
       const leftNodes = await this._unitOfWork.collection.getChangeNodes(
         parent.left,
-        parent.treeId,
+        parent.treeId
       );
 
-      leftNodes.forEach((node) => {
+      leftNodes.forEach(node => {
         if (node.right > parent.left) {
           node.right += 2;
         }

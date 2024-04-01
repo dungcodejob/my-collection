@@ -1,13 +1,9 @@
-import { CollectionEntity } from '@common/entities';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { CollectionEntity } from "@common/entities";
+import { EntityManager } from "@mikro-orm/postgresql";
 
 export interface CollectionRepository {
   getChangeNodes(value: number, treeId: string): Promise<CollectionEntity[]>;
-  getDepthNodes(
-    left: number,
-    right: number,
-    treeId: string,
-  ): Promise<CollectionEntity[]>;
+  getDepthNodes(left: number, right: number, treeId: string): Promise<CollectionEntity[]>;
   findAll(userId: string): Promise<CollectionEntity[]>;
   findById(id: string): Promise<CollectionEntity>;
   add(entity: CollectionEntity): CollectionEntity;
@@ -36,14 +32,10 @@ export class CollectionRepositoryImpl implements CollectionRepository {
   getDepthNodes(
     left: number,
     right: number,
-    treeId: string,
+    treeId: string
   ): Promise<CollectionEntity[]> {
     return this._em.find(CollectionEntity, {
-      $and: [
-        { left: { $gt: left } },
-        { right: { $lt: right } },
-        { treeId: treeId },
-      ],
+      $and: [{ left: { $gt: left } }, { right: { $lt: right } }, { treeId: treeId }],
     });
   }
 
