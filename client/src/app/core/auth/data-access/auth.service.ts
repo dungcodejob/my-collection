@@ -1,19 +1,10 @@
 import { Injectable, inject } from "@angular/core";
+import { Router } from "@angular/router";
 import { SingleResponseDto } from "@core/http";
 import { LocalStorageKeys } from "@shared/enums";
 import { AuthResultDto, Credentials, TokenDto, UserProfileDto } from "@shared/models";
 import { LocalStorageService } from "@shared/services";
-import {
-  Observable,
-  catchError,
-  first,
-  map,
-  of,
-  pipe,
-  switchMap,
-  tap,
-  throwError,
-} from "rxjs";
+import { Observable, catchError, map, of, pipe, switchMap, take, tap } from "rxjs";
 import { AuthApi } from "./auth.api";
 import { AuthStore } from "./auth.store";
 
@@ -22,6 +13,7 @@ export class AuthService {
   private readonly _authApi = inject(AuthApi);
   private readonly _authStore = inject(AuthStore);
   private readonly _storageService = inject(LocalStorageService);
+  private readonly _router = inject(Router);
 
   readonly token$ = this._authStore.select(state => state.token);
   readonly isLoggedIn$ = this._authStore.select(state => !!state.token, {
@@ -42,7 +34,7 @@ export class AuthService {
 
     return this.refresh(tokens.refresh).pipe(
       switchMap(() => this.isLoggedIn$),
-      first()
+      take(1)
     );
   }
 
@@ -52,10 +44,7 @@ export class AuthService {
 
   refresh(token: string): Observable<AuthResultDto> {
     return this._authApi.refresh(token).pipe(
-      catchError(err => {
-        this.logout();
-        return throwError(() => err);
-      }),
+      catchError(err => this.logout()),
       this._afterAuthentication()
     );
   }
@@ -63,7 +52,7 @@ export class AuthService {
   logout(): Observable<never> {
     this._clearLocalAuth();
     this._authStore.clear();
-
+    this._router.navigate(["/security/login"]);
     return of();
   }
 
@@ -73,6 +62,7 @@ export class AuthService {
       tap(result => {
         this._authStore.setAuth(result);
         this._setAuthToLocal(result);
+        this._router.navigate(["/home"]);
       })
     );
   }

@@ -1,4 +1,4 @@
-import { JsonPipe } from "@angular/common";
+import { JsonPipe, NgIf } from "@angular/common";
 import { Component, Injector, OnInit, effect, inject } from "@angular/core";
 import {
   FormControl,
@@ -13,15 +13,24 @@ import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 
 import { HlmCheckboxComponent } from "@spartan-ng/ui-checkbox-helm";
 import { HlmIconComponent } from "@spartan-ng/ui-icon-helm";
-import { HlmInputDirective } from "@spartan-ng/ui-input-helm";
+import { HlmInputDirective, HlmInputErrorDirective } from "@spartan-ng/ui-input-helm";
 import { HlmLabelDirective } from "@spartan-ng/ui-label-helm";
 import { LoginFacade } from "./login.facade.ts";
+
+type LoginForm = FormGroup<{
+  username: FormControl<string>;
+  password: FormControl<string>;
+  remember: FormControl<boolean>;
+}>;
+
 @Component({
   selector: "app-login",
   standalone: true,
   imports: [
+    NgIf,
     ReactiveFormsModule,
     JsonPipe,
+    HlmInputErrorDirective,
     HlmLabelDirective,
     HlmInputDirective,
     HlmButtonDirective,
@@ -42,13 +51,18 @@ export class LoginComponent implements OnInit {
   private readonly _nonNullFB = inject(NonNullableFormBuilder);
   private readonly _loginFacade = inject(LoginFacade);
 
-  $vm = this._loginFacade.$vm;
+  $error = this._loginFacade.$error;
+  $isPending = this._loginFacade.$isPending;
 
-  loginForm!: FormGroup<{
-    email: FormControl<string>;
-    password: FormControl<string>;
-    remember: FormControl<boolean>;
-  }>;
+  loginForm!: LoginForm;
+
+  get username() {
+    return this.loginForm.controls.username;
+  }
+
+  get password() {
+    return this.loginForm.controls.password;
+  }
 
   ngOnInit(): void {
     this._loginFacade.enter();
@@ -56,7 +70,7 @@ export class LoginComponent implements OnInit {
 
     effect(
       () => {
-        const loading = this._loginFacade.$loading();
+        const loading = this._loginFacade.$isPending();
         if (loading) {
           this.loginForm.disable();
         } else {
@@ -68,8 +82,8 @@ export class LoginComponent implements OnInit {
   }
 
   private _initForm() {
-    this.loginForm = this._nonNullFB.group({
-      email: this._nonNullFB.control("", { validators: Validators.required }),
+    this.loginForm = this._nonNullFB.group<LoginForm["controls"]>({
+      username: this._nonNullFB.control("", { validators: Validators.required }),
       password: this._nonNullFB.control("", { validators: Validators.required }),
       remember: this._nonNullFB.control(false),
     });

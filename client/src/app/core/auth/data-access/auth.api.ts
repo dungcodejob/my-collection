@@ -17,7 +17,7 @@ export class AuthApi {
       Authorization: "Bearer " + token,
     });
 
-    return this._httpService.post("/security/refresh", {
+    return this._httpService.post("/security/refresh", null, {
       headers,
     });
   }

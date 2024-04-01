@@ -92,7 +92,7 @@ export class SecurityController {
 
     await this._updateRefreshToken(user.id, tokens.refresh);
 
-    return Result.toSingle(tokens);
+    return this._plantToAuthResult(tokens, user);
   }
 
   private async _updateRefreshToken(userId: string, refreshToken: string) {

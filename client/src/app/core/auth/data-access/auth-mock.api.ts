@@ -17,7 +17,7 @@ export class AuthMockApi {
   }
 
   refresh(token: string): Observable<SingleResponseDto<AuthResultDto>> {
-    const user = this._createFakeUser({ email: "test", password: "test" });
+    const user = this._createFakeUser({ username: "test", password: "test" });
     const tokens = this._createFakeToken();
     tokens.refresh = token;
     const res = this._createFakeSingleResponse({ user, tokens }, "POST");
@@ -47,7 +47,7 @@ export class AuthMockApi {
 
   private _createFakeUser(body: Credentials): UserProfileDto {
     return {
-      email: body.email,
+      email: body.username,
       firstName: "John",
       lastName: "Doe",
       id: "123456789",

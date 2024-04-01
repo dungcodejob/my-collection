@@ -3,6 +3,7 @@ import { Injectable, inject } from "@angular/core";
 import { EnvConfig, OnInitConfig } from "@core/config";
 import { Observable, map, pipe } from "rxjs";
 import { ResponseDto } from "./response.dto";
+import { ServerSideError } from "./server-side.error";
 
 type HttpOptions = {
   headers?:
@@ -92,7 +93,7 @@ export class HttpService implements OnInitConfig {
         if (res.success) {
           return res;
         } else {
-          throw new Error(res.message);
+          throw new ServerSideError(res.message);
         }
       })
     );

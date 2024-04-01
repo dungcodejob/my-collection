@@ -1,32 +1,19 @@
 import { Injectable, inject } from "@angular/core";
 import { Credentials } from "@shared/models";
-import { SecurityStore } from "../../data-access";
+import { LoginStore } from "../../data-access";
 
 @Injectable()
 export class LoginFacade {
-  private readonly _securityStore = inject(SecurityStore);
+  private readonly _loginStore = inject(LoginStore);
 
-  $error = this._securityStore.selectSignal(state =>
-    state.mode === "login" ? state.error : null
-  );
-
-  $loading = this._securityStore.selectSignal(
-    state => state.mode === "login" && state.status === "fetching"
-  );
-
-  $vm = this._securityStore.selectSignal(
-    this.$error,
-    this.$loading,
-    (error, loading) => ({ error, loading })
-  );
+  readonly $error = this._loginStore.$error;
+  readonly $isPending = this._loginStore.$isPending;
 
   constructor() {}
 
-  enter(): void {
-    this._securityStore.setMode("login");
-  }
+  enter(): void {}
 
   login(body: Credentials): void {
-    this._securityStore.login(body);
+    this._loginStore.login(body);
   }
 }
