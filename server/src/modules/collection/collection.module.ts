@@ -1,4 +1,3 @@
-import { AuthModule } from '@authentication/auth.module';
 import { CollectionEntity } from '@common/entities';
 import { provideUnitOfWork } from '@common/repositories';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -10,17 +9,13 @@ import { QueriesHandlers } from './queries';
 import { CollectionMapper, CollectionService } from './services';
 
 @Module({
-  imports: [
-    AuthModule,
-    CqrsModule,
-    MikroOrmModule.forFeature([CollectionEntity]),
-  ],
+  imports: [CqrsModule, MikroOrmModule.forFeature([CollectionEntity])],
   providers: [
     ...CommandHandlers,
     ...QueriesHandlers,
+    provideUnitOfWork(),
     CollectionService,
     CollectionMapper,
-    provideUnitOfWork(),
   ],
   exports: [CollectionService, CollectionMapper],
   controllers: [CollectionController],

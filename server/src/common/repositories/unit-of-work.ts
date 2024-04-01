@@ -19,8 +19,8 @@ export interface UnitOfWork {
 export class UnitOfWorkImpl implements UnitOfWork {
   @Inject()
   private readonly _em: EntityManager;
-  private _user: UserRepository;
-  private _collection: CollectionRepository;
+  private _user?: UserRepository;
+  private _collection?: CollectionRepository;
   constructor() {}
 
   get user(): UserRepository {

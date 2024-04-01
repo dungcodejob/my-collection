@@ -60,30 +60,32 @@ export class TransformInterceptor<T> implements NestInterceptor {
     response.status(HttpStatus.OK).json(body);
   }
 
-  private _handleError(
-    exception: HttpException,
-    context: ExecutionContext,
-  ): void {
+  private _handleError(exception: unknown, context: ExecutionContext): void {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-    const status = exception.getStatus() ?? HttpStatus.INTERNAL_SERVER_ERROR;
-
-    let message = exception.message;
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'internal server error';
     let result = null;
-    if (status === HttpStatus.BAD_REQUEST) {
-      const content = exception.getResponse()['message'] as unknown;
-      if (Array.isArray(content)) {
-        result = {
-          meta: { validators: content as ValidationError[] },
-        };
-      }
-    }
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
 
-    if (status === HttpStatus.UNAUTHORIZED) {
-      if (typeof exception.message !== 'string') {
-        message = 'You do not have permission to access this resource.';
+      if (status === HttpStatus.BAD_REQUEST) {
+        const content = exception.getResponse()['message'] as unknown;
+        if (Array.isArray(content)) {
+          result = {
+            meta: { validators: content as ValidationError[] },
+          };
+        }
       }
+
+      if (status === HttpStatus.UNAUTHORIZED) {
+        if (typeof exception.message !== 'string') {
+          message = 'You do not have permission to access this resource.';
+        }
+      }
+    } else if (exception instanceof Error) {
+      message = exception.message;
     }
 
     const body: ResponseFailureDto = {
