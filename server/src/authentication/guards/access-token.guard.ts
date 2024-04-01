@@ -1,41 +1,5 @@
-import { Errors } from '@common/errors';
-import { UserService } from '@modules/user';
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Request } from 'express';
-import { Observable } from 'rxjs';
-import { JwtUtil } from '..';
-import { JwtGuard } from './jwt.guard';
+import { Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class AccessTokenGuard extends JwtGuard implements CanActivate {
-  constructor(
-    private readonly _jwtUtil: JwtUtil,
-    private readonly _userService: UserService,
-  ) {
-    super();
-  }
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    return this._handle(context);
-  }
-
-  protected async _handle(context: ExecutionContext): Promise<boolean> {
-    try {
-      const request = this._getRequest<Request>(context);
-      const token = this._getToken(request);
-      const payload = await this._jwtUtil.verifyAccessToken(token);
-      const user = await this._userService.findByUsername(payload.username);
-
-      if (!user || user.email !== payload.email) {
-        throw Errors.Authentication.Unauthorized;
-      }
-
-      request['user'] = user;
-
-      return true;
-    } catch (e) {
-      throw Errors.Authentication.Unauthorized;
-    }
-  }
-}
+export class AccessTokenGuard extends AuthGuard('jwt') {}
