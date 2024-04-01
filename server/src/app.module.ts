@@ -1,6 +1,7 @@
 import { TransformInterceptor } from '@common/interceptors';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { defineConfig } from '@mikro-orm/postgresql';
+import { CrawlModule } from '@modules/crawl';
 import { SecurityModule } from '@modules/security';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -38,6 +39,7 @@ import {
         }),
     }),
     SecurityModule,
+    CrawlModule,
   ],
   controllers: [],
   providers: [
