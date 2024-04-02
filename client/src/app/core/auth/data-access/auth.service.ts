@@ -1,9 +1,8 @@
 import { Injectable, inject } from "@angular/core";
-import { Router } from "@angular/router";
 import { SingleResponseDto } from "@core/http";
 import { LocalStorageKeys } from "@shared/enums";
 import { AuthResultDto, Credentials, TokenDto, UserProfileDto } from "@shared/models";
-import { LocalStorageService } from "@shared/services";
+import { LocalStorageService, RedirectService } from "@shared/services";
 import { Observable, catchError, map, of, pipe, switchMap, take, tap } from "rxjs";
 import { AuthApi } from "./auth.api";
 import { AuthStore } from "./auth.store";
@@ -13,7 +12,7 @@ export class AuthService {
   private readonly _authApi = inject(AuthApi);
   private readonly _authStore = inject(AuthStore);
   private readonly _storageService = inject(LocalStorageService);
-  private readonly _router = inject(Router);
+  private readonly _redirectService = inject(RedirectService);
 
   readonly token$ = this._authStore.select(state => state.token);
   readonly isLoggedIn$ = this._authStore.select(state => !!state.token, {
@@ -52,7 +51,7 @@ export class AuthService {
   logout(): Observable<never> {
     this._clearLocalAuth();
     this._authStore.clear();
-    this._router.navigate(["/security/login"]);
+    this._redirectService.redirectToLogin();
     return of();
   }
 
@@ -62,10 +61,7 @@ export class AuthService {
       tap(result => {
         this._authStore.setAuth(result);
         this._setAuthToLocal(result);
-        this._router.navigate([
-          "home",
-          { outlets: { primary: ["test"], sidebar: ["collection"] } },
-        ]);
+        this._redirectService.redirectToHome();
       })
     );
   }
