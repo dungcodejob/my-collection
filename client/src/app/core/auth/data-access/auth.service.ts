@@ -62,7 +62,10 @@ export class AuthService {
       tap(result => {
         this._authStore.setAuth(result);
         this._setAuthToLocal(result);
-        this._router.navigate(["/home"]);
+        this._router.navigate([
+          "home",
+          { outlets: { primary: ["test"], sidebar: ["collection"] } },
+        ]);
       })
     );
   }

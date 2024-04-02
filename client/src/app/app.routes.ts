@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 import { authGuard, noAuthGuard } from "@core/auth";
 import { LayoutComponent } from "@shell/containers/layout/layout.component";
 import { NotAuthorizedComponent } from "@shell/containers/not-authorized/not-authorized.component";
+import { TestComponent } from "@shell/containers/test/test.component";
 
 export const routes: Routes = [
   {
@@ -13,7 +14,20 @@ export const routes: Routes = [
     path: "home",
     canActivate: [authGuard],
     component: LayoutComponent,
+    children: [
+      {
+        path: "test",
+        component: TestComponent,
+      },
+      {
+        path: "collection",
+        loadChildren: () =>
+          import("@collection/collection.routes").then(m => m.collectionRoutes),
+        outlet: "sidebar",
+      },
+    ],
   },
+
   {
     path: "security",
     canActivate: [noAuthGuard],
