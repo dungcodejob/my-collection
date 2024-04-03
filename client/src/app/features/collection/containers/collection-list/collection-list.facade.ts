@@ -14,4 +14,8 @@ export class CollectionFacade {
   create() {
     this._collectionStore.create();
   }
+
+  edit(id: string) {
+    this._collectionStore.edit(id);
+  }
 }

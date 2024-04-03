@@ -7,14 +7,14 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
+import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
-import { BrnDialogRef } from "@spartan-ng/ui-dialog-brain";
+import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/ui-dialog-brain";
 import {
   HlmDialogDescriptionDirective,
   HlmDialogFooterComponent,
   HlmDialogHeaderComponent,
-  HlmDialogTitleDirective
+  HlmDialogTitleDirective,
 } from "@spartan-ng/ui-dialog-helm";
 import { HlmInputDirective, HlmInputErrorDirective } from "@spartan-ng/ui-input-helm";
 import { HlmLabelDirective } from "@spartan-ng/ui-label-helm";
@@ -48,7 +48,9 @@ type CollectionResult = CreateCollectionDto | UpdateCollectionDto;
 export class CollectionDetailComponent implements OnInit {
   private readonly _dialogRef = inject<BrnDialogRef<CollectionResult>>(BrnDialogRef);
   private readonly _nonNullFb = inject(NonNullableFormBuilder);
-  // private readonly _dialogContext = injectBrnDialogContext<{ users: ExampleUser[] }>();
+  private readonly _dialogContext = injectBrnDialogContext<{
+    data: CollectionDto | null;
+  }>();
 
   form!: CollectionDetailForm;
 
@@ -57,6 +59,7 @@ export class CollectionDetailComponent implements OnInit {
   }
   ngOnInit(): void {
     this._initForm();
+    this._setValueForControls();
   }
 
   onClose(): void {
@@ -74,5 +77,14 @@ export class CollectionDetailComponent implements OnInit {
     this.form = this._nonNullFb.group({
       title: this._nonNullFb.control("", { validators: Validators.required }),
     });
+  }
+
+  private _setValueForControls(): void {
+    const data = this._dialogContext.data;
+    if (data) {
+      this.form.setValue({
+        title: data.title,
+      });
+    }
   }
 }
