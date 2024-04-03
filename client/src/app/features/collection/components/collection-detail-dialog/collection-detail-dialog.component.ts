@@ -42,10 +42,10 @@ type CollectionResult = CreateCollectionDto | UpdateCollectionDto;
     HlmButtonDirective,
   ],
 
-  templateUrl: "./collection-detail.component.html",
-  styleUrl: "./collection-detail.component.scss",
+  templateUrl: "./collection-detail-dialog.component.html",
+  styleUrl: "./collection-detail-dialog.component.scss",
 })
-export class CollectionDetailComponent implements OnInit {
+export class CollectionDetailDialogComponent implements OnInit {
   private readonly _dialogRef = inject<BrnDialogRef<CollectionResult>>(BrnDialogRef);
   private readonly _nonNullFb = inject(NonNullableFormBuilder);
   private readonly _dialogContext = injectBrnDialogContext<{

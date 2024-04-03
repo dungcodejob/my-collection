@@ -1,9 +1,11 @@
 import { inject } from "@angular/core";
-import { CollectionDetailComponent } from "@collection/components/collection-detail/collection-detail.component";
+import { CollectionDetailDialogComponent } from "@collection/components/collection-detail-dialog/collection-detail-dialog.component";
+import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
 import { ServerSideError } from "@core/http";
 import { patchState, signalStore, withMethods } from "@ngrx/signals";
 import {
   addEntity,
+  removeEntity,
   setEntities,
   updateEntity,
   withEntities,
@@ -11,7 +13,7 @@ import {
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { setError, setFulfilled, setPending, withStatus } from "@shared/data-access";
 import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
-import { isNotNil } from "@shared/utils";
+import { isNotFalsy, isNotNil } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
 import { CollectionApi } from "./collection.api";
@@ -25,12 +27,20 @@ export const CollectionStore = signalStore(
 
     const openDetailDialog = (data: CollectionDto | null) => {
       return dialogService
-        .open(CollectionDetailComponent, {
+        .open(CollectionDetailDialogComponent, {
           closeOnBackdropClick: false,
           contentClass: "max-w-[30rem]",
           context: { data },
         })
         .closed$.pipe(filter(isNotNil));
+    };
+
+    const openConfirmDialog = () => {
+      return dialogService
+        .open(ConfirmDialogComponent, {
+          closeOnBackdropClick: false,
+        })
+        .closed$.pipe(filter(isNotFalsy));
     };
 
     return {
@@ -94,6 +104,30 @@ export const CollectionStore = signalStore(
                         updateEntity({ id: data.id, changes: data }),
                         setFulfilled()
                       );
+                    },
+                    error: err => {
+                      if (err instanceof ServerSideError) {
+                        patchState(store, setError(err));
+                      }
+                    },
+                  }),
+                  catchError(() => EMPTY)
+                )
+              )
+            )
+          )
+        )
+      ),
+      delete: rxMethod<string>(
+        pipe(
+          switchMap(id =>
+            openConfirmDialog().pipe(
+              tap(() => patchState(store, setPending())),
+              switchMap(() =>
+                collectionApi.delete(id).pipe(
+                  tap({
+                    next: () => {
+                      patchState(store, removeEntity(id), setFulfilled());
                     },
                     error: err => {
                       if (err instanceof ServerSideError) {

@@ -7,15 +7,19 @@ export class CollectionFacade {
 
   $entities = this._collectionStore.entities;
 
-  enter() {
+  enter(): void {
     this._collectionStore.findAll();
   }
 
-  create() {
+  create(): void {
     this._collectionStore.create();
   }
 
-  edit(id: string) {
+  edit(id: string): void {
     this._collectionStore.edit(id);
+  }
+
+  delete(id: string): void {
+    this._collectionStore.delete(id);
   }
 }

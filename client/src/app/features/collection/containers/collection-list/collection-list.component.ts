@@ -72,4 +72,8 @@ export class CollectionComponent implements OnInit {
   onEdit(id: string): void {
     this._facade.edit(id);
   }
+
+  onDelete(id: string): void {
+    this._facade.delete(id);
+  }
 }

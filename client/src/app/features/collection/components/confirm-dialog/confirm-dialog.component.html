@@ -1,0 +1,13 @@
+<hlm-alert-dialog-header>
+  <h3 hlmAlertDialogTitle>Are you absolutely sure?</h3>
+  <p hlmAlertDialogDescription>
+    This action cannot be undone. It will permanently delete your collection, along with
+    any bookmarks and other collections within it, from our servers
+  </p>
+</hlm-alert-dialog-header>
+<hlm-alert-dialog-footer>
+  <button hlmAlertDialogCancel (click)="onClose()">Cancel</button>
+  <button hlmAlertDialogAction class="bg-destructive" (click)="onSave()">
+    Delete collection
+  </button>
+</hlm-alert-dialog-footer>

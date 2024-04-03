@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { CollectionDetailComponent } from "./collection-detail.component";
+import { CollectionDetailDialogComponent } from "./collection-detail-dialog.component";
 
 describe("CollectionDetailComponent", () => {
-  let component: CollectionDetailComponent;
-  let fixture: ComponentFixture<CollectionDetailComponent>;
+  let component: CollectionDetailDialogComponent;
+  let fixture: ComponentFixture<CollectionDetailDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CollectionDetailComponent],
+      imports: [CollectionDetailDialogComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CollectionDetailComponent);
+    fixture = TestBed.createComponent(CollectionDetailDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -35,7 +35,7 @@
                   <!-- <hlm-menu-shortcut>⇧⌘P</hlm-menu-shortcut> -->
                 </button>
 
-                <button hlmMenuItem>
+                <button hlmMenuItem (click)="onDelete(item.id)">
                   <hlm-icon name="lucideTrash2" hlmMenuIcon />
                   <span>Remove</span>
                   <!-- <hlm-menu-shortcut>⌘B</hlm-menu-shortcut> -->

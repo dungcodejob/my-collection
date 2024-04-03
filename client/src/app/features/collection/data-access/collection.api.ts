@@ -21,4 +21,8 @@ export class CollectionApi {
   ): Observable<SingleResponseDto<CollectionDto>> {
     return this._http.post(`/collection/${id}/`, body);
   }
+
+  delete(id: string): Observable<SingleResponseDto<CollectionDto>> {
+    return this._http.delete(`/collection/${id}/`);
+  }
 }
