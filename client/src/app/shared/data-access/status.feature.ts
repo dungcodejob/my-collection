@@ -1,10 +1,6 @@
 import { computed } from "@angular/core";
 import { ServerSideError } from "@core/http";
-import {
-  signalStoreFeature,
-  withComputed,
-  withState
-} from "@ngrx/signals";
+import { signalStoreFeature, withComputed, withState } from "@ngrx/signals";
 
 type Status = "idle" | "pending" | "fulfilled" | { error: ServerSideError };
 

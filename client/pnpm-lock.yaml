@@ -53,9 +53,15 @@ dependencies:
   '@spartan-ng/ui-core':
     specifier: ^0.0.1-alpha.336
     version: 0.0.1-alpha.337(@angular/core@17.3.1)(clsx@1.2.1)(rxjs@7.8.1)(tailwind-merge@2.2.2)(tailwindcss-animate@1.0.7)(tailwindcss@3.4.1)
+  '@spartan-ng/ui-dialog-brain':
+    specifier: 0.0.1-alpha.337
+    version: 0.0.1-alpha.337(@angular/cdk@17.3.1)(@angular/core@17.3.1)(@spartan-ng/ui-core@0.0.1-alpha.337)
   '@spartan-ng/ui-label-brain':
     specifier: 0.0.1-alpha.335
     version: 0.0.1-alpha.335(@angular/common@17.3.1)(@angular/core@17.3.1)
+  '@spartan-ng/ui-menu-brain':
+    specifier: 0.0.1-alpha.337
+    version: 0.0.1-alpha.337(@angular/cdk@17.3.1)(@angular/core@17.3.1)
   class-variance-authority:
     specifier: ^0.6.0
     version: 0.6.1
@@ -4615,6 +4621,19 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /@spartan-ng/ui-dialog-brain@0.0.1-alpha.337(@angular/cdk@17.3.1)(@angular/core@17.3.1)(@spartan-ng/ui-core@0.0.1-alpha.337):
+    resolution: {integrity: sha512-e+rk8uag72ZC/x+TTMKCppBk1tROCXHTszFlQVMGBaFBbOOG1AA3aHaNAfiSp6khDmRKAwm7xXzSxMam8dh58Q==}
+    peerDependencies:
+      '@angular/cdk': ^17.1.0
+      '@angular/core': ^17.1.0
+      '@spartan-ng/ui-core': 0.0.1-alpha.337
+    dependencies:
+      '@angular/cdk': 17.3.1(@angular/common@17.3.1)(@angular/core@17.3.1)(rxjs@7.8.1)
+      '@angular/core': 17.3.1(rxjs@7.8.1)(zone.js@0.14.4)
+      '@spartan-ng/ui-core': 0.0.1-alpha.337(@angular/core@17.3.1)(clsx@1.2.1)(rxjs@7.8.1)(tailwind-merge@2.2.2)(tailwindcss-animate@1.0.7)(tailwindcss@3.4.1)
+      tslib: 2.6.2
+    dev: false
+
   /@spartan-ng/ui-label-brain@0.0.1-alpha.335(@angular/common@17.3.1)(@angular/core@17.3.1):
     resolution: {integrity: sha512-pyqTq/B7bFnEyeoikyRwaTfBxrePAS9W20CZixi9xhqX+Ih0M+Z62mEbPuqD6844/omoo7aicHAUGsmqmtFd1w==}
     peerDependencies:
@@ -4622,6 +4641,17 @@ packages:
       '@angular/core': ^17.0.0
     dependencies:
       '@angular/common': 17.3.1(@angular/core@17.3.1)(rxjs@7.8.1)
+      '@angular/core': 17.3.1(rxjs@7.8.1)(zone.js@0.14.4)
+      tslib: 2.6.2
+    dev: false
+
+  /@spartan-ng/ui-menu-brain@0.0.1-alpha.337(@angular/cdk@17.3.1)(@angular/core@17.3.1):
+    resolution: {integrity: sha512-JH1cTEx0B3BSR/k+T3KFbSFUAfWFh8H60DnUtKKOsCXk5BrRuC50txsBZxDA9EN8Fvz2hWUD0hnxu3zLscO7Og==}
+    peerDependencies:
+      '@angular/cdk': ^17.1.0
+      '@angular/core': ^17.1.0
+    dependencies:
+      '@angular/cdk': 17.3.1(@angular/common@17.3.1)(@angular/core@17.3.1)(rxjs@7.8.1)
       '@angular/core': 17.3.1(rxjs@7.8.1)(zone.js@0.14.4)
       tslib: 2.6.2
     dev: false

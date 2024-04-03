@@ -17,7 +17,7 @@ import {
 } from "./models";
 
 import { AccessTokenGuard } from "@authentication/guards";
-import { Result } from "@common/models";
+import { Result, SingleResultDto } from "@common/models";
 import { CollectionMapper, CollectionService } from "./services";
 
 @UseGuards(AccessTokenGuard)
@@ -41,15 +41,22 @@ export class CollectionController {
   async create(
     @CurrentUser() user: UserEntity,
     @Body() dto: CreateCollectionBodyDto
-  ): Promise<CollectionItemDto> {
+  ): Promise<SingleResultDto<CollectionItemDto>> {
     const collectionEntity = await this._collectionService.create(user.id, dto);
-    return this._collectionMapper.toItemDto(collectionEntity);
+    const collectionDto = this._collectionMapper.toItemDto(collectionEntity);
+
+    return Result.toSingle(collectionDto);
   }
 
   @Post(":id")
-  async update(@Param("id") id: string, @Body() dto: UpdateCollectionBodyDto) {
+  async update(
+    @Param("id") id: string,
+    @Body() dto: UpdateCollectionBodyDto
+  ): Promise<SingleResultDto<CollectionItemDto>> {
     const collectionEntity = await this._collectionService.update(id, dto);
-    return this._collectionMapper.toItemDto(collectionEntity);
+    const collectionDto = this._collectionMapper.toItemDto(collectionEntity);
+
+    return Result.toSingle(collectionDto);
   }
 
   @Delete(":id")

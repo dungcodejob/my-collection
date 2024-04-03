@@ -10,4 +10,8 @@ export class CollectionFacade {
   enter() {
     this._collectionStore.findAll();
   }
+
+  create() {
+    this._collectionStore.create();
+  }
 }
