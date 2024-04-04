@@ -1,3 +1,3 @@
 export enum ResponseKey {
-  Message = 'message',
+  Message = "message",
 }

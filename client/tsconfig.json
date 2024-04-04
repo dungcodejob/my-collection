@@ -12,6 +12,9 @@
       "@security/*": [
         "src/app/features/security/*"
       ],
+      "@collection/*": [
+        "src/app/features/collection/*"
+      ],
       "@shell/*": [
         "src/app/features/shell/*"
       ],
@@ -29,6 +32,18 @@
       ],
       "@spartan-ng/ui-icon-helm": [
         ".\\libs/ui-icon-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-menu-helm": [
+        ".\\libs/ui-menu-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-sonner-helm": [
+        ".\\libs/ui-sonner-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-dialog-helm": [
+        ".\\libs/ui-dialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-alertdialog-helm": [
+        ".\\libs/ui-alertdialog-helm/src/index.ts"
       ]
     },
     "outDir": "./dist/out-tsc",

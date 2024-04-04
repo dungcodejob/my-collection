@@ -1,5 +1,4 @@
 import { inject } from "@angular/core";
-import { Router } from "@angular/router";
 import { AuthService } from "@core/auth";
 import { ServerSideError } from "@core/http";
 import { patchState, signalStore, withMethods } from "@ngrx/signals";
@@ -12,7 +11,6 @@ export const LoginStore = signalStore(
   withStatus(),
   withMethods(store => {
     const authService = inject(AuthService);
-    const router = inject(Router);
     return {
       login: rxMethod<Credentials>(
         pipe(
@@ -20,10 +18,6 @@ export const LoginStore = signalStore(
           switchMap(body =>
             authService.login(body).pipe(
               tap({
-                next: () => {
-                  router.navigate(["/"]);
-                  patchState(store, {});
-                },
                 error: err => {
                   if (err instanceof ServerSideError) {
                     patchState(store, setError(err));

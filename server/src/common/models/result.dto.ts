@@ -1,4 +1,4 @@
-import { PaginationMetaDto } from './pagination-meta.dto';
+import { PaginationMetaDto } from "./pagination-meta.dto";
 
 export class SingleResultDto<T> {
   readonly data: T;
@@ -36,10 +36,7 @@ export class Result {
     return new ListResultDto(items, count);
   }
 
-  static toPagination<T>(
-    items: T[],
-    meta: PaginationMetaDto,
-  ): PaginationResultDto<T> {
+  static toPagination<T>(items: T[], meta: PaginationMetaDto): PaginationResultDto<T> {
     return new PaginationResultDto(items, meta);
   }
 }

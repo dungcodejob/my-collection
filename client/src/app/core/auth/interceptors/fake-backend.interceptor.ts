@@ -32,7 +32,7 @@ export const fakeBackendInterceptor: HttpInterceptorFn = (
     return of(new HttpResponse({ status: 200, body })).pipe(delay(500)); // delay observable to simulate server api call
   }
 
-  function error() {
-    return of(new HttpResponse({ status: 401 })).pipe(delay(500)); // delay observable to simulate server api call
-  }
+  // function error() {
+  //   return of(new HttpResponse({ status: 401 })).pipe(delay(500)); // delay observable to simulate server api call
+  // }
 };

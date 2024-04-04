@@ -1,1 +1,1 @@
-export * from './metadata.dto';
+export * from "./metadata.dto";

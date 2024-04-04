@@ -1,11 +1,11 @@
-import { ResponseKey } from '@common/constants';
+import { ResponseKey } from "@common/constants";
 import {
   ErrorResponseDto,
   ListResponseDto,
   PaginationResponseDto,
   SingleResponseDto,
   ValidatorResponseDto,
-} from '@common/models';
+} from "@common/models";
 import {
   CallHandler,
   ExecutionContext,
@@ -13,11 +13,11 @@ import {
   HttpStatus,
   Injectable,
   NestInterceptor,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { ValidationError } from 'class-validator';
-import { Request, Response } from 'express';
-import { Observable, catchError, map, throwError } from 'rxjs';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { ValidationError } from "class-validator";
+import { Request, Response } from "express";
+import { Observable, catchError, map, throwError } from "rxjs";
 
 type ResponseSuccessDto<T> =
   | SingleResponseDto<T>
@@ -32,8 +32,8 @@ export class TransformInterceptor<T> implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
-      map((result) => this._handleResponse(result, context)),
-      catchError((err) => throwError(() => this._handleError(err, context))),
+      map(result => this._handleResponse(result, context)),
+      catchError(err => throwError(() => this._handleError(err, context)))
     );
   }
 
@@ -43,8 +43,7 @@ export class TransformInterceptor<T> implements NestInterceptor {
     const request = ctx.getRequest<Request>();
 
     const status = response.statusCode;
-    const message =
-      this.reflector.get(ResponseKey.Message, context.getHandler()) || '';
+    const message = this.reflector.get(ResponseKey.Message, context.getHandler()) || "";
     // const message = response["message"] ?? "";
 
     const body: ResponseSuccessDto<T> = {
@@ -60,30 +59,33 @@ export class TransformInterceptor<T> implements NestInterceptor {
     response.status(HttpStatus.OK).json(body);
   }
 
-  private _handleError(
-    exception: HttpException,
-    context: ExecutionContext,
-  ): void {
+  private _handleError(exception: unknown, context: ExecutionContext): void {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-    const status = exception.getStatus() ?? HttpStatus.INTERNAL_SERVER_ERROR;
-
-    let message = exception.message;
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = "Internal Server Error";
     let result = null;
-    if (status === HttpStatus.BAD_REQUEST) {
-      const content = exception.getResponse()['message'] as unknown;
-      if (Array.isArray(content)) {
-        result = {
-          meta: { validators: content as ValidationError[] },
-        };
-      }
-    }
 
-    if (status === HttpStatus.UNAUTHORIZED) {
-      if (typeof exception.message !== 'string') {
-        message = 'You do not have permission to access this resource.';
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      message = exception.message;
+      if (status === HttpStatus.BAD_REQUEST) {
+        const content = exception.getResponse()["message"] as unknown;
+        if (Array.isArray(content)) {
+          result = {
+            meta: { validators: content as ValidationError[] },
+          };
+        }
       }
+
+      if (status === HttpStatus.UNAUTHORIZED) {
+        if (typeof exception.message !== "string") {
+          message = "You do not have permission to access this resource.";
+        }
+      }
+    } else if (exception instanceof Error) {
+      message = exception.message;
     }
 
     const body: ResponseFailureDto = {

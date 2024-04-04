@@ -1,17 +1,17 @@
-import { UserEntity } from '@common/entities';
-import { AuthConfig, InjectAuthConfig } from '@configs/index';
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from '../models/jwt-payload';
-import { JwtToken } from '../models/jwt-token';
-import { BcryptService } from './bcrypt.service';
+import { UserEntity } from "@common/entities";
+import { AuthConfig, InjectAuthConfig } from "@configs/index";
+import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { JwtPayload } from "../models/jwt-payload";
+import { JwtToken } from "../models/jwt-token";
+import { BcryptService } from "./bcrypt.service";
 @Injectable()
 export class JwtUtil {
   constructor(
     @InjectAuthConfig()
     private readonly _authConfig: AuthConfig,
     private readonly _jwtService: JwtService,
-    private readonly _bcryptService: BcryptService,
+    private readonly _bcryptService: BcryptService
   ) {}
 
   async generateToken(payload: JwtPayload): Promise<JwtToken> {

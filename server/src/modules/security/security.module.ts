@@ -1,8 +1,8 @@
-import { AuthModule } from '@authentication/index';
-import { UserModule } from '@modules/user';
-import { Module } from '@nestjs/common';
-import { SecurityController } from './security.controller';
-import { SecurityService } from './security.service';
+import { AuthModule } from "@authentication/index";
+import { UserModule } from "@modules/user";
+import { Module } from "@nestjs/common";
+import { SecurityController } from "./security.controller";
+import { SecurityService } from "./security.service";
 
 @Module({
   imports: [AuthModule, UserModule],
