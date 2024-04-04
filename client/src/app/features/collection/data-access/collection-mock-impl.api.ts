@@ -56,7 +56,7 @@ export class CollectionMockImplApi implements CollectionApi {
     const index = this.collections.findIndex(collection => collection.id === id);
 
     this.collections[index] = { ...this.collections[index], ...body };
-    this.collections[index].updateAt = new Date();
+    // this.collections[index].updateAt = new Date();
     const response = this._createSingleResponse(this.collections[index]);
     return of(response).pipe(delay(500)); // Simulate delay to mimic network latency
   }

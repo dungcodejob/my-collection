@@ -14,10 +14,14 @@ export class CollectionRepositoryImpl implements CollectionRepository {
   constructor(private readonly _em: EntityManager) {}
 
   findAll(userId: string): Promise<CollectionEntity[]> {
-    return this._em.find(CollectionEntity, {
-      user: { id: userId },
-      depth: 0,
-    });
+    return this._em.find(
+      CollectionEntity,
+      {
+        user: { id: userId },
+        depth: 0,
+      },
+      { orderBy: { createAt: "DESC" } }
+    );
   }
 
   getChangeNodes(value: number, treeId: string): Promise<CollectionEntity[]> {

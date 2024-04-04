@@ -1,8 +1,8 @@
-import { inject } from "@angular/core";
+import { computed, inject } from "@angular/core";
 import { CollectionDetailDialogComponent } from "@collection/components/collection-detail-dialog/collection-detail-dialog.component";
 import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
 import { ServerSideError } from "@core/http";
-import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withMethods } from "@ngrx/signals";
 import {
   addEntity,
   removeEntity,
@@ -23,6 +23,16 @@ import { injectCollectionApi } from ".";
 export const CollectionStore = signalStore(
   withStatus(),
   withEntities<CollectionDto>(),
+  withComputed(store => ({
+    $entities: computed(() =>
+      store
+        .entities()
+        .sort(
+          (entityOne, entityTwo) =>
+            entityTwo.createAt.getTime() - entityOne.createAt.getTime()
+        )
+    ),
+  })),
   withMethods(store => {
     const collectionApi = injectCollectionApi();
     const dialogService = inject(HlmDialogService);
@@ -54,7 +64,11 @@ export const CollectionStore = signalStore(
             collectionApi.findAll().pipe(
               tap({
                 next: res => {
-                  patchState(store, setEntities(res.result.items), setFulfilled());
+                  patchState(
+                    store,
+                    setEntities(CollectionDto.from(res.result.items)),
+                    setFulfilled()
+                  );
                 },
                 error: err => {
                   if (err instanceof ServerSideError) {
@@ -77,7 +91,11 @@ export const CollectionStore = signalStore(
                   tap({
                     next: res => {
                       const data = res.result.data;
-                      patchState(store, addEntity(res.result.data), setFulfilled());
+                      patchState(
+                        store,
+                        addEntity(CollectionDto.from(data)),
+                        setFulfilled()
+                      );
                       toastService.success(`Collection “${data.title}“ was created`);
                     },
                     error: err => {
@@ -109,7 +127,7 @@ export const CollectionStore = signalStore(
                       const data = res.result.data;
                       patchState(
                         store,
-                        updateEntity({ id: data.id, changes: data }),
+                        updateEntity({ id: data.id, changes: CollectionDto.from(data) }),
                         setFulfilled()
                       );
                       toastService.success(`Collection “${data.title}“ was saved`);

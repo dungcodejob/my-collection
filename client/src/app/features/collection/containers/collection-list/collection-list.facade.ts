@@ -5,7 +5,7 @@ import { CollectionStore } from "@collection/data-access";
 export class CollectionFacade {
   private readonly _collectionStore = inject(CollectionStore);
 
-  $entities = this._collectionStore.entities;
+  $entities = this._collectionStore.$entities;
 
   enter(): void {
     this._collectionStore.findAll();
