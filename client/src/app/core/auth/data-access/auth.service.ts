@@ -43,7 +43,7 @@ export class AuthService {
 
   refresh(token: string): Observable<AuthResultDto> {
     return this._authApi.refresh(token).pipe(
-      catchError(err => this.logout()),
+      catchError(() => this.logout()),
       this._afterAuthentication()
     );
   }

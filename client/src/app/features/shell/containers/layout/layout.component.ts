@@ -3,6 +3,7 @@ import { Component, inject } from "@angular/core";
 import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
 import { HeaderComponent } from "@shell/components/header/header.component";
 import { SidebarComponent } from "@shell/components/sidebar/sidebar.component";
+import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
 import { Observable, defer, filter, map, merge, of, switchMap } from "rxjs";
 type ViewModel = {
   hasHeader: boolean;
@@ -12,7 +13,13 @@ type ViewModel = {
 @Component({
   selector: "app-layout",
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe, HeaderComponent, SidebarComponent],
+  imports: [
+    RouterOutlet,
+    AsyncPipe,
+    HeaderComponent,
+    SidebarComponent,
+    HlmToasterComponent,
+  ],
   templateUrl: "./layout.component.html",
   styleUrl: "./layout.component.scss",
 })
