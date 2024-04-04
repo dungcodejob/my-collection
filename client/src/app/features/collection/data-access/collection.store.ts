@@ -16,13 +16,13 @@ import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared
 import { isNotFalsy, isNotNil } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
-import { CollectionApi } from "./collection.api";
+import { injectCollectionApi } from ".";
 
 export const CollectionStore = signalStore(
   withStatus(),
   withEntities<CollectionDto>(),
   withMethods(store => {
-    const collectionApi = inject(CollectionApi);
+    const collectionApi = injectCollectionApi();
     const dialogService = inject(HlmDialogService);
 
     const openDetailDialog = (data: CollectionDto | null) => {
