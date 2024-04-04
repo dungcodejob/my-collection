@@ -37,6 +37,6 @@ export class ConfirmDialogComponent {
   }
 
   onSave(): void {
-     this._dialogRef.close(true);
+    this._dialogRef.close(true);
   }
 }

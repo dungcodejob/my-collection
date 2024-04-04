@@ -2,6 +2,7 @@ import { Inject } from "@nestjs/common";
 import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
 
 import { CollectionEntity } from "@common/entities";
+import { Errors } from "@common/errors";
 import { UNIT_OF_WORK, UnitOfWork } from "@common/repositories";
 import { UpdateCollectionCommand } from "./update-collection.command";
 @CommandHandler(UpdateCollectionCommand)
@@ -12,6 +13,11 @@ export class UpdateCollectionHandler implements ICommandHandler<UpdateCollection
   ) {}
   async execute(command: UpdateCollectionCommand): Promise<CollectionEntity> {
     const collection = await this._unitOfWork.collection.findById(command.collectionId);
+
+    if (!collection) {
+      throw Errors.Collection.NotExist;
+    }
+
     collection.title = command.title;
     await this._unitOfWork.save();
 

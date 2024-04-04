@@ -1,5 +1,5 @@
 import { Routes } from "@angular/router";
-import { provideCollectionMockApi } from "./data-access";
+import { provideCollectionApi } from "./data-access";
 
 export const collectionRoutes: Routes = [
   {
@@ -9,6 +9,6 @@ export const collectionRoutes: Routes = [
         m => m.CollectionComponent
       ),
 
-    providers: [provideCollectionMockApi()],
+    providers: [provideCollectionApi()],
   },
 ];

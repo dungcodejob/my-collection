@@ -64,11 +64,12 @@ export class TransformInterceptor<T> implements NestInterceptor {
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = "internal server error";
+    let message = "Internal Server Error";
     let result = null;
+
     if (exception instanceof HttpException) {
       status = exception.getStatus();
-
+      message = exception.message;
       if (status === HttpStatus.BAD_REQUEST) {
         const content = exception.getResponse()["message"] as unknown;
         if (Array.isArray(content)) {

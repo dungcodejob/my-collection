@@ -29,7 +29,7 @@ const lucideEllipsis = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24
   standalone: true,
   imports: [
     HlmButtonDirective,
-    HlmButtonDirective,
+
     HlmIconComponent,
     HlmSubMenuComponent,
     HlmMenuSeparatorComponent,
@@ -40,6 +40,7 @@ const lucideEllipsis = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24
     HlmMenuLabelComponent,
     HlmMenuComponent,
     HlmMenuGroupComponent,
+
   ],
   templateUrl: "./collection-list.component.html",
   styleUrls: ["./collection-list.component.scss"],

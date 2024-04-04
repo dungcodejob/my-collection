@@ -12,7 +12,9 @@ import {
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { setError, setFulfilled, setPending, withStatus } from "@shared/data-access";
+import { CollectionMessage } from "@shared/enums";
 import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
+import { ToastService } from "@shared/services";
 import { isNotFalsy, isNotNil } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
@@ -24,6 +26,7 @@ export const CollectionStore = signalStore(
   withMethods(store => {
     const collectionApi = injectCollectionApi();
     const dialogService = inject(HlmDialogService);
+    const toastService = inject(ToastService);
 
     const openDetailDialog = (data: CollectionDto | null) => {
       return dialogService
@@ -73,12 +76,17 @@ export const CollectionStore = signalStore(
                 collectionApi.create(result).pipe(
                   tap({
                     next: res => {
+                      const data = res.result.data;
                       patchState(store, addEntity(res.result.data), setFulfilled());
+                      toastService.success(`Collection “${data.title}“ was created`);
                     },
                     error: err => {
+                      const message = "Collection could not be created";
                       if (err instanceof ServerSideError) {
-                        patchState(store, setError(err));
                       }
+
+                      patchState(store, setError(err));
+                      toastService.error(message);
                     },
                   }),
                   catchError(() => EMPTY)
@@ -104,11 +112,22 @@ export const CollectionStore = signalStore(
                         updateEntity({ id: data.id, changes: data }),
                         setFulfilled()
                       );
+                      toastService.success(`Collection “${data.title}“ was saved`);
                     },
                     error: err => {
+                      let message = `Collection “${data.title}” could not be saved`;
                       if (err instanceof ServerSideError) {
-                        patchState(store, setError(err));
+                        switch (err.message) {
+                          case CollectionMessage.NotExist:
+                            message = `Collection “${data.title}” to be updated does not exist`;
+                            break;
+
+                          default:
+                            break;
+                        }
                       }
+                      toastService.error(message);
+                      patchState(store, setError(err));
                     },
                   }),
                   catchError(() => EMPTY)
@@ -120,19 +139,31 @@ export const CollectionStore = signalStore(
       ),
       delete: rxMethod<string>(
         pipe(
-          switchMap(id =>
+          map(id => store.entityMap()[id]),
+          switchMap(data =>
             openConfirmDialog().pipe(
               tap(() => patchState(store, setPending())),
               switchMap(() =>
-                collectionApi.delete(id).pipe(
+                collectionApi.delete(data.id).pipe(
                   tap({
                     next: () => {
-                      patchState(store, removeEntity(id), setFulfilled());
+                      patchState(store, removeEntity(data.id), setFulfilled());
+                      toastService.success(`Collection “${data.title}“ was deleted`);
                     },
                     error: err => {
+                      let message = `Collection “${data.title}” could not be deleted`;
                       if (err instanceof ServerSideError) {
-                        patchState(store, setError(err));
+                        switch (err.message) {
+                          case CollectionMessage.NotExist:
+                            message = `Collection “${data.title}” to be deleted does not exist`;
+                            break;
+
+                          default:
+                            break;
+                        }
                       }
+                      patchState(store, setError(err));
+                      toastService.error(message);
                     },
                   }),
                   catchError(() => EMPTY)
