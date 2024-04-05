@@ -1,7 +1,13 @@
 import { Injectable, inject } from "@angular/core";
-import { HttpService, ListResponseDto, SingleResponseDto } from "@core/http";
+import {
+  HttpService,
+  ListResponseDto,
+  ListResult,
+  SingleResponseDto,
+  SingleResult,
+} from "@core/http";
 import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
-import { Observable } from "rxjs";
+import { Observable, delay } from "rxjs";
 import { CollectionApi } from "./collection.api";
 
 @Injectable()
@@ -9,18 +15,20 @@ export class CollectionImplApi implements CollectionApi {
   private readonly _http = inject(HttpService);
 
   findAll(): Observable<ListResponseDto<CollectionDto>> {
-    return this._http.get("/collection");
+    return this._http.get<ListResult<CollectionDto>>("/collection");
   }
 
   create(body: CreateCollectionDto): Observable<SingleResponseDto<CollectionDto>> {
-    return this._http.put("/collection", body);
+    return this._http
+      .put<SingleResult<CollectionDto>>("/collection", body)
+      .pipe(delay(5000));
   }
 
   update(
     id: string,
     body: UpdateCollectionDto
   ): Observable<SingleResponseDto<CollectionDto>> {
-    return this._http.post(`/collection/${id}/`, body);
+    return this._http.post<SingleResult<CollectionDto>>(`/collection/${id}/`, body);
   }
 
   delete(id: string): Observable<SingleResponseDto<void>> {

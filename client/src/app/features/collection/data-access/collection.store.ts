@@ -1,8 +1,8 @@
-import { inject } from "@angular/core";
+import { computed, inject } from "@angular/core";
 import { CollectionDetailDialogComponent } from "@collection/components/collection-detail-dialog/collection-detail-dialog.component";
 import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
 import { ServerSideError } from "@core/http";
-import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withMethods } from "@ngrx/signals";
 import {
   addEntity,
   removeEntity,
@@ -15,7 +15,7 @@ import { setError, setFulfilled, setPending, withStatus } from "@shared/data-acc
 import { CollectionMessage } from "@shared/enums";
 import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { ToastService } from "@shared/services";
-import { isNotFalsy, isNotNil } from "@shared/utils";
+import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectCollectionApi } from ".";
@@ -23,6 +23,16 @@ import { injectCollectionApi } from ".";
 export const CollectionStore = signalStore(
   withStatus(),
   withEntities<CollectionDto>(),
+  withComputed(store => ({
+    $entities: computed(() =>
+      store
+        .entities()
+        .sort(
+          (entityOne, entityTwo) =>
+            entityTwo.createAt.getTime() - entityOne.createAt.getTime()
+        )
+    ),
+  })),
   withMethods(store => {
     const collectionApi = injectCollectionApi();
     const dialogService = inject(HlmDialogService);
@@ -49,12 +59,18 @@ export const CollectionStore = signalStore(
     return {
       findAll: rxMethod<void>(
         pipe(
-          tap(() => patchState(store, setPending())),
+          tap(() => {
+            patchState(store, setPending());
+          }),
           switchMap(() =>
             collectionApi.findAll().pipe(
               tap({
                 next: res => {
-                  patchState(store, setEntities(res.result.items), setFulfilled());
+                  patchState(
+                    store,
+                    setEntities(CollectionDto.from(res.result.items)),
+                    setFulfilled()
+                  );
                 },
                 error: err => {
                   if (err instanceof ServerSideError) {
@@ -74,10 +90,15 @@ export const CollectionStore = signalStore(
               tap(() => patchState(store, setPending())),
               switchMap((result: CreateCollectionDto) =>
                 collectionApi.create(result).pipe(
+                  prefix(() => patchState(store, setPending())),
                   tap({
                     next: res => {
                       const data = res.result.data;
-                      patchState(store, addEntity(res.result.data), setFulfilled());
+                      patchState(
+                        store,
+                        addEntity(CollectionDto.from(data)),
+                        setFulfilled()
+                      );
                       toastService.success(`Collection “${data.title}“ was created`);
                     },
                     error: err => {
@@ -101,15 +122,15 @@ export const CollectionStore = signalStore(
           map(id => store.entityMap()[id]),
           switchMap(data =>
             openDetailDialog(data).pipe(
-              tap(() => patchState(store, setPending())),
               switchMap((result: UpdateCollectionDto) =>
                 collectionApi.update(data.id, result).pipe(
+                  prefix(() => patchState(store, setPending())),
                   tap({
                     next: res => {
                       const data = res.result.data;
                       patchState(
                         store,
-                        updateEntity({ id: data.id, changes: data }),
+                        updateEntity({ id: data.id, changes: CollectionDto.from(data) }),
                         setFulfilled()
                       );
                       toastService.success(`Collection “${data.title}“ was saved`);
@@ -142,9 +163,9 @@ export const CollectionStore = signalStore(
           map(id => store.entityMap()[id]),
           switchMap(data =>
             openConfirmDialog().pipe(
-              tap(() => patchState(store, setPending())),
               switchMap(() =>
                 collectionApi.delete(data.id).pipe(
+                  prefix(() => patchState(store, setPending())),
                   tap({
                     next: () => {
                       patchState(store, removeEntity(data.id), setFulfilled());

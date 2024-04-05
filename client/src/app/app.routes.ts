@@ -3,6 +3,7 @@ import { authGuard, noAuthGuard } from "@core/auth";
 import { LayoutComponent } from "@shell/containers/layout/layout.component";
 import { NotAuthorizedComponent } from "@shell/containers/not-authorized/not-authorized.component";
 import { TestComponent } from "@shell/containers/test/test.component";
+import { ShellStore } from "@shell/data-access";
 
 export const routes: Routes = [
   {
@@ -14,6 +15,7 @@ export const routes: Routes = [
     path: "home",
     canActivate: [authGuard],
     component: LayoutComponent,
+    providers: [ShellStore],
     children: [
       {
         path: "test",
