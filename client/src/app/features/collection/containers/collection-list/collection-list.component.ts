@@ -1,5 +1,4 @@
 import { Component, OnInit, inject } from "@angular/core";
-import { CollectionStore } from "@collection/data-access";
 import { provideIcons } from "@ng-icons/core";
 import {
   lucideFilePenLine,
@@ -40,12 +39,10 @@ const lucideEllipsis = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24
     HlmMenuLabelComponent,
     HlmMenuComponent,
     HlmMenuGroupComponent,
-
   ],
   templateUrl: "./collection-list.component.html",
   styleUrls: ["./collection-list.component.scss"],
   providers: [
-    CollectionStore,
     CollectionFacade,
     provideIcons({
       lucideFolder,

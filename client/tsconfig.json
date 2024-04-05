@@ -44,6 +44,9 @@
       ],
       "@spartan-ng/ui-alertdialog-helm": [
         ".\\libs/ui-alertdialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-spinner-helm": [
+        ".\\libs/ui-spinner-helm/src/index.ts"
       ]
     },
     "outDir": "./dist/out-tsc",

@@ -1,5 +1,5 @@
 import { Routes } from "@angular/router";
-import { provideCollectionApi } from "./data-access";
+import { CollectionStore, provideCollectionApi } from "./data-access";
 
 export const collectionRoutes: Routes = [
   {
@@ -9,6 +9,6 @@ export const collectionRoutes: Routes = [
         m => m.CollectionComponent
       ),
 
-    providers: [provideCollectionApi()],
+    providers: [provideCollectionApi(), CollectionStore],
   },
 ];

@@ -7,7 +7,7 @@ import {
   SingleResult,
 } from "@core/http";
 import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
-import { Observable } from "rxjs";
+import { Observable, delay } from "rxjs";
 import { CollectionApi } from "./collection.api";
 
 @Injectable()
@@ -19,7 +19,9 @@ export class CollectionImplApi implements CollectionApi {
   }
 
   create(body: CreateCollectionDto): Observable<SingleResponseDto<CollectionDto>> {
-    return this._http.put<SingleResult<CollectionDto>>("/collection", body);
+    return this._http
+      .put<SingleResult<CollectionDto>>("/collection", body)
+      .pipe(delay(5000));
   }
 
   update(

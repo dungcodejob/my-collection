@@ -15,7 +15,7 @@ import { setError, setFulfilled, setPending, withStatus } from "@shared/data-acc
 import { CollectionMessage } from "@shared/enums";
 import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { ToastService } from "@shared/services";
-import { isNotFalsy, isNotNil } from "@shared/utils";
+import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectCollectionApi } from ".";
@@ -59,7 +59,9 @@ export const CollectionStore = signalStore(
     return {
       findAll: rxMethod<void>(
         pipe(
-          tap(() => patchState(store, setPending())),
+          tap(() => {
+            patchState(store, setPending());
+          }),
           switchMap(() =>
             collectionApi.findAll().pipe(
               tap({
@@ -88,6 +90,7 @@ export const CollectionStore = signalStore(
               tap(() => patchState(store, setPending())),
               switchMap((result: CreateCollectionDto) =>
                 collectionApi.create(result).pipe(
+                  prefix(() => patchState(store, setPending())),
                   tap({
                     next: res => {
                       const data = res.result.data;
@@ -119,9 +122,9 @@ export const CollectionStore = signalStore(
           map(id => store.entityMap()[id]),
           switchMap(data =>
             openDetailDialog(data).pipe(
-              tap(() => patchState(store, setPending())),
               switchMap((result: UpdateCollectionDto) =>
                 collectionApi.update(data.id, result).pipe(
+                  prefix(() => patchState(store, setPending())),
                   tap({
                     next: res => {
                       const data = res.result.data;
@@ -160,9 +163,9 @@ export const CollectionStore = signalStore(
           map(id => store.entityMap()[id]),
           switchMap(data =>
             openConfirmDialog().pipe(
-              tap(() => patchState(store, setPending())),
               switchMap(() =>
                 collectionApi.delete(data.id).pipe(
+                  prefix(() => patchState(store, setPending())),
                   tap({
                     next: () => {
                       patchState(store, removeEntity(data.id), setFulfilled());
