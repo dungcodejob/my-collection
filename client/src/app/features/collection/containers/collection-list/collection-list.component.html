@@ -1,4 +1,4 @@
-<div class="flex flex-col justify-between">
+<div class="collection flex flex-col justify-between">
   <div class="flex flex-col py-2">
     <div class="mt-4 mb-2 px-5 flex justify-between items-center">
       <h2 class="text-lg font-semibold tracking-tight">Collection</h2>
@@ -6,9 +6,17 @@
         <hlm-icon name="lucidePlus" size="base"></hlm-icon>
       </button>
     </div>
-    <nav class="grid gap-1 px-2 items-center">
+    <nav
+      cdkDropList
+      class="collection__drop-list grid gap-1 px-2 items-center"
+      (cdkDropListDropped)="onDrop($event)">
       @for (item of $entities(); track $index) {
-        <button hlmBtn variant="ghost" size="sm" class="group w-full relative">
+        <button
+          cdkDrag
+          hlmBtn
+          variant="ghost"
+          size="sm"
+          class="collection__drop-item group w-full relative">
           <a href="#" class="w-full h-full flex items-center justify-between">
             <div class="flex gap-2 items-center">
               <hlm-icon name="lucideFolder" size="sm"></hlm-icon>

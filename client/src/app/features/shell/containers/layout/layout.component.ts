@@ -6,7 +6,7 @@ import { SidebarComponent } from "@shell/components/sidebar/sidebar.component";
 import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
 import { HlmSpinnerComponent } from "@spartan-ng/ui-spinner-helm";
 import { Observable, defer, filter, map, merge, of, switchMap } from "rxjs";
-import { ShellFacade } from "../../data-access/shell.facade";
+import { ShellFacade } from "../../data-access";
 type ViewModel = {
   hasHeader: boolean;
   hasSideBar: boolean;
