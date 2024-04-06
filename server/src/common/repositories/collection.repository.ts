@@ -8,6 +8,7 @@ export interface CollectionRepository {
   findById(id: string): Promise<CollectionEntity>;
   add(entity: CollectionEntity): CollectionEntity;
   remove(entity: CollectionEntity | CollectionEntity[]): void;
+  getPositionHighestInLevel(level: number): Promise<CollectionEntity>;
 }
 
 export class CollectionRepositoryImpl implements CollectionRepository {
@@ -24,6 +25,17 @@ export class CollectionRepositoryImpl implements CollectionRepository {
     );
   }
 
+  getPositionHighestInLevel(level = 0): Promise<CollectionEntity> {
+    return this._em.findOne(
+      CollectionEntity,
+      {
+        depth: level,
+      },
+      {
+        orderBy: { position: "ASC" },
+      }
+    );
+  }
   getChangeNodes(value: number, treeId: string): Promise<CollectionEntity[]> {
     return this._em.find(CollectionEntity, {
       $or: [

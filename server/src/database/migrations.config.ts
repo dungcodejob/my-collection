@@ -1,5 +1,6 @@
+import { EntityGenerator } from "@mikro-orm/entity-generator";
+import { Migrator } from "@mikro-orm/migrations";
 import { defineConfig } from "@mikro-orm/postgresql";
-
 export default defineConfig({
   entities: ["dist/modules/**/entities/*.entity.js", "dist/common/entities/*.entity.ts"],
   entitiesTs: ["src/modules/**/entities/*.entity.ts", "src/common/entities/*.entity.ts"],
@@ -9,7 +10,7 @@ export default defineConfig({
   user: process.env.PG_USERNAME || "postgres",
   password: process.env.PG_PASSWORD || "dungcool102608",
   dbName: process.env.PG_NAME || "my_collection_app",
-
+  extensions: [EntityGenerator, Migrator],
   migrations: {
     tableName: "migrations_history", // name of database table with log of executed transactions
     path: "./src/database/migrations", // path to the folder with migrations

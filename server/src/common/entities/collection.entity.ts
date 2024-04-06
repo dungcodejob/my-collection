@@ -1,5 +1,12 @@
 import { BaseEntity } from "@database/base.entity";
-import { Check, Entity, ManyToOne, OptionalProps, Property, Ref } from "@mikro-orm/core";
+import {
+  Check,
+  Entity,
+  ManyToOne,
+  OptionalProps,
+  Property,
+  Ref,
+} from "@mikro-orm/postgresql";
 import { UserEntity } from "./user.entity";
 
 @Entity({ tableName: "collection" })
@@ -21,6 +28,9 @@ export class CollectionEntity extends BaseEntity {
 
   @Property()
   depth: number;
+
+  @Property()
+  position: string;
 
   @Property()
   treeId: string;

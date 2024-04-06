@@ -6,7 +6,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { CollectionController } from "./collection.controller";
 import { CommandHandlers } from "./commands";
 import { QueriesHandlers } from "./queries";
-import { CollectionMapper, CollectionService } from "./services";
+import { CollectionMapper, CollectionPositionService, CollectionService, } from "./services";
 
 @Module({
   imports: [CqrsModule, MikroOrmModule.forFeature([CollectionEntity])],
@@ -16,6 +16,7 @@ import { CollectionMapper, CollectionService } from "./services";
     provideUnitOfWork(),
     CollectionService,
     CollectionMapper,
+    CollectionPositionService,
   ],
   exports: [CollectionService, CollectionMapper],
   controllers: [CollectionController],
