@@ -1,6 +1,16 @@
 import { Injectable } from "@angular/core";
-import { ListResponseDto, ResponseDto, SingleResponseDto } from "@core/http";
-import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
+import {
+  ListResponseDto,
+  ResponseDto,
+  SingleResponseDto,
+  SingleResult,
+} from "@core/http";
+import {
+  CollectionDto,
+  CreateCollectionDto,
+  MoveCollectionDto,
+  UpdateCollectionDto,
+} from "@shared/models";
 import { Observable, delay, of } from "rxjs";
 import { CollectionApi } from "./collection.api";
 
@@ -23,10 +33,28 @@ export class CollectionMockImplApi implements CollectionApi {
         id: i.toString(),
         title: `Collection ${i}`,
         icon: `icon-${i}`,
+        position: `position-${i}`,
         updateAt: new Date(),
         createAt: new Date(),
       });
     }
+  }
+  move(
+    id: string,
+    body: MoveCollectionDto
+  ): Observable<
+    Readonly<{
+      statusCode: number;
+      success: boolean;
+      message: string;
+      description?: string | undefined;
+      result: Readonly<SingleResult<CollectionDto>>;
+      timestamp: string;
+      url: string;
+      method: string;
+    }>
+  > {
+    throw new Error("Method not implemented.");
   }
 
   findAll(): Observable<ListResponseDto<CollectionDto>> {
@@ -39,6 +67,7 @@ export class CollectionMockImplApi implements CollectionApi {
       id: (this.collections.length + 1).toString(),
       title: body.title,
       icon: body.icon,
+      position: `position`,
       updateAt: new Date(),
       createAt: new Date(),
     };

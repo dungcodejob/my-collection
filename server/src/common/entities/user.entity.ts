@@ -1,4 +1,4 @@
-import { Entity, OptionalProps, Property, Unique } from "@mikro-orm/core";
+import { Entity, OptionalProps, Property, Unique } from "@mikro-orm/postgresql";
 import { Exclude } from "class-transformer";
 import { BaseEntity } from "../../database/base.entity";
 

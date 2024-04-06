@@ -11,6 +11,9 @@ dependencies:
   '@mikro-orm/core':
     specifier: ^6.1.11
     version: 6.1.11
+  '@mikro-orm/entity-generator':
+    specifier: 6.1.11
+    version: 6.1.11(@mikro-orm/core@6.1.11)(pg@8.11.3)
   '@mikro-orm/migrations':
     specifier: ^6.1.11
     version: 6.1.11(@mikro-orm/core@6.1.11)(@types/node@20.11.30)(pg@8.11.3)
@@ -961,6 +964,26 @@ packages:
       globby: 11.1.0
       mikro-orm: 6.1.11
       reflect-metadata: 0.2.1
+    dev: false
+
+  /@mikro-orm/entity-generator@6.1.11(@mikro-orm/core@6.1.11)(pg@8.11.3):
+    resolution: {integrity: sha512-YwHzr/6q1mQIQwgNGZweYP7hCXXgoDm6X/EtIM6k0hBwsVGb90wHfmH6TNYxJLnHXBbPOq7viN9a5pLLnnqFdg==}
+    engines: {node: '>= 18.12.0'}
+    peerDependencies:
+      '@mikro-orm/core': ^6.0.0
+    dependencies:
+      '@mikro-orm/core': 6.1.11
+      '@mikro-orm/knex': 6.1.11(@mikro-orm/core@6.1.11)(pg@8.11.3)
+      fs-extra: 11.2.0
+    transitivePeerDependencies:
+      - better-sqlite3
+      - mysql
+      - mysql2
+      - pg
+      - pg-native
+      - sqlite3
+      - supports-color
+      - tedious
     dev: false
 
   /@mikro-orm/knex@6.1.11(@mikro-orm/core@6.1.11)(pg@8.11.3):

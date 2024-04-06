@@ -1,3 +1,4 @@
+import { CdkDrag, CdkDragDrop, CdkDropList } from "@angular/cdk/drag-drop";
 import { Component, OnInit, inject } from "@angular/core";
 import { provideIcons } from "@ng-icons/core";
 import {
@@ -7,6 +8,7 @@ import {
   lucidePlusCircle,
   lucideTrash2,
 } from "@ng-icons/lucide";
+import { CollectionDto } from "@shared/models";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent } from "@spartan-ng/ui-icon-helm";
 import { BrnMenuTriggerDirective } from "@spartan-ng/ui-menu-brain";
@@ -39,6 +41,9 @@ const lucideEllipsis = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24
     HlmMenuLabelComponent,
     HlmMenuComponent,
     HlmMenuGroupComponent,
+
+    CdkDropList,
+    CdkDrag,
   ],
   templateUrl: "./collection-list.component.html",
   styleUrls: ["./collection-list.component.scss"],
@@ -73,5 +78,9 @@ export class CollectionComponent implements OnInit {
 
   onDelete(id: string): void {
     this._facade.delete(id);
+  }
+
+  onDrop(event: CdkDragDrop<CollectionDto[]>) {
+    this._facade.move(event.previousIndex, event.currentIndex);
   }
 }

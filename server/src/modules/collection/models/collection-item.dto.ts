@@ -3,4 +3,5 @@ export interface CollectionItemDto {
   readonly title: string;
   readonly createAt: Date;
   readonly updateAt: Date;
+  readonly position: string;
 }

@@ -4,13 +4,16 @@ import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
 import { CollectionEntity, UserEntity } from "@common/entities";
 import { UNIT_OF_WORK, UnitOfWork } from "@common/repositories";
 import { Reference } from "@mikro-orm/core";
+import { CollectionPositionService } from "@modules/collection/services";
 import { v4 } from "uuid";
 import { CreateCollectionCommand } from "./create-collection.command";
 @CommandHandler(CreateCollectionCommand)
 export class CreateCollectionHandler implements ICommandHandler<CreateCollectionCommand> {
   constructor(
-    @Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork,
-    private readonly eventPublisher: EventPublisher
+    @Inject(UNIT_OF_WORK)
+    private readonly _unitOfWork: UnitOfWork,
+    private readonly _eventPublisher: EventPublisher,
+    private readonly _positionService: CollectionPositionService
   ) {}
   async execute(command: CreateCollectionCommand): Promise<CollectionEntity> {
     // update all of the right values of the nodes where the right is bigger than the parent’s left  by 2
@@ -25,6 +28,10 @@ export class CreateCollectionHandler implements ICommandHandler<CreateCollection
     collection.right = 2;
     collection.depth = 0;
     collection.treeId = v4();
+
+    const hightestCollection =
+      await this._unitOfWork.collection.getPositionLowestInLevel(0);
+
     if (command.parentId) {
       const parent = await this._unitOfWork.collection.findById(command.parentId);
       collection.left = parent.left + 1;
@@ -48,6 +55,9 @@ export class CreateCollectionHandler implements ICommandHandler<CreateCollection
         }
       });
     }
+
+    const nextPosition = hightestCollection ? hightestCollection.position : "";
+    collection.position = this._positionService.generateBetweenPosition("", nextPosition);
 
     this._unitOfWork.collection.add(collection);
     await this._unitOfWork.save();

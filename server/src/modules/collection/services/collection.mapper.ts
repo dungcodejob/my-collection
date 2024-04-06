@@ -17,6 +17,7 @@ export class CollectionMapper {
       title: domain.title,
       createAt: domain.createAt,
       updateAt: domain.updateAt,
+      position: domain.position,
     };
   }
 

@@ -18,6 +18,7 @@ export class UnitOfWorkImpl implements UnitOfWork {
   private readonly _em: EntityManager;
   private _user?: UserRepository;
   private _collection?: CollectionRepository;
+
   constructor() {}
 
   get user(): UserRepository {
