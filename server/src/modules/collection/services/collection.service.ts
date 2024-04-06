@@ -6,7 +6,12 @@ import {
   DeleteCollectionCommand,
   UpdateCollectionCommand,
 } from "../commands";
-import { CreateCollectionBodyDto, UpdateCollectionBodyDto } from "../models";
+import { MoveCollectionCommand } from "../commands/move-collection/move-collection.command";
+import {
+  CreateCollectionBodyDto,
+  MoveCollectionBodyDto,
+  UpdateCollectionBodyDto,
+} from "../models";
 import { GetAllCollectionQuery } from "../queries";
 
 @Injectable()
@@ -18,6 +23,18 @@ export class CollectionService {
 
   async findAll(userId: string): Promise<CollectionEntity[]> {
     return this._queryBus.execute(new GetAllCollectionQuery(userId));
+  }
+
+  async move(
+    collectionId: string,
+    dto: MoveCollectionBodyDto
+  ): Promise<CollectionEntity> {
+    const command = new MoveCollectionCommand(
+      collectionId,
+      dto.prevPosition,
+      dto.nextPosition
+    );
+    return this._commandBus.execute(command);
   }
 
   async create(userId: string, dto: CreateCollectionBodyDto): Promise<CollectionEntity> {

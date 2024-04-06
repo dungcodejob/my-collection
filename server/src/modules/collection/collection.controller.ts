@@ -13,6 +13,7 @@ import {
 import {
   CollectionItemDto,
   CreateCollectionBodyDto,
+  MoveCollectionBodyDto,
   UpdateCollectionBodyDto,
 } from "./models";
 
@@ -35,6 +36,17 @@ export class CollectionController {
     const items = this._collectionMapper.toItemDto(collectionEntities);
 
     return Result.toList(items);
+  }
+
+  @Post(":id/move")
+  async move(
+    @Param("id") id: string,
+    @Body() dto: MoveCollectionBodyDto
+  ): Promise<SingleResultDto<CollectionItemDto>> {
+    const collectionEntity = await this._collectionService.move(id, dto);
+    const collectionDto = this._collectionMapper.toItemDto(collectionEntity);
+
+    return Result.toSingle(collectionDto);
   }
 
   @Put()

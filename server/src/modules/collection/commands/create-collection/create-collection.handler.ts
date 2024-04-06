@@ -30,7 +30,7 @@ export class CreateCollectionHandler implements ICommandHandler<CreateCollection
     collection.treeId = v4();
 
     const hightestCollection =
-      await this._unitOfWork.collection.getPositionHighestInLevel(0);
+      await this._unitOfWork.collection.getPositionLowestInLevel(0);
 
     if (command.parentId) {
       const parent = await this._unitOfWork.collection.findById(command.parentId);

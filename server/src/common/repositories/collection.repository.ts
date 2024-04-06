@@ -8,7 +8,7 @@ export interface CollectionRepository {
   findById(id: string): Promise<CollectionEntity>;
   add(entity: CollectionEntity): CollectionEntity;
   remove(entity: CollectionEntity | CollectionEntity[]): void;
-  getPositionHighestInLevel(level: number): Promise<CollectionEntity>;
+  getPositionLowestInLevel(level: number): Promise<CollectionEntity>;
 }
 
 export class CollectionRepositoryImpl implements CollectionRepository {
@@ -21,11 +21,11 @@ export class CollectionRepositoryImpl implements CollectionRepository {
         user: { id: userId },
         depth: 0,
       },
-      { orderBy: { createAt: "DESC" } }
+      { orderBy: { position: "ASC" } }
     );
   }
 
-  getPositionHighestInLevel(level = 0): Promise<CollectionEntity> {
+  getPositionLowestInLevel(level = 0): Promise<CollectionEntity> {
     return this._em.findOne(
       CollectionEntity,
       {
