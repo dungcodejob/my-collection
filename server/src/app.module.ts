@@ -1,6 +1,7 @@
 import { TransformInterceptor } from "@common/interceptors";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { defineConfig } from "@mikro-orm/postgresql";
+import { BookmarkModule } from "@modules/bookmark";
 import { CollectionModule } from "@modules/collection";
 import { CrawlModule } from "@modules/crawl";
 import { SecurityModule } from "@modules/security";
@@ -37,6 +38,7 @@ import { DatabaseConfig, appConfig, authConfig, databaseConfig } from "./configs
     SecurityModule,
     CrawlModule,
     CollectionModule,
+    BookmarkModule,
   ],
   controllers: [],
   providers: [
