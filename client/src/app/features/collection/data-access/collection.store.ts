@@ -1,4 +1,11 @@
 import { inject } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  NavigationEnd,
+  Router,
+} from "@angular/router";
 import { CollectionDetailDialogComponent } from "@collection/components/collection-detail-dialog/collection-detail-dialog.component";
 import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
 import { ServerSideError } from "@core/http";
@@ -6,23 +13,43 @@ import {
   PartialStateUpdater,
   patchState,
   signalStore,
+  withComputed,
   withMethods,
   withState,
 } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { setError, setFulfilled, setPending, withStatus } from "@shared/data-access";
+import {
+  getDeepestChildSnapshot,
+  setError,
+  setFulfilled,
+  setPending,
+  withStatus,
+} from "@shared/data-access";
 import { CollectionMessage } from "@shared/enums";
 import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
-import { EMPTY, catchError, filter, map, of, pipe, switchMap, tap } from "rxjs";
+import {
+  EMPTY,
+  catchError,
+  filter,
+  map,
+  of,
+  pipe,
+  startWith,
+  switchMap,
+  tap,
+} from "rxjs";
 import { injectCollectionApi } from ".";
 
 type CollectionState = {
   entities: CollectionDto[];
 };
 
+const initialState: CollectionState = {
+  entities: [],
+};
 const addCollection = (entity: CollectionDto): PartialStateUpdater<CollectionState> => {
   return state => {
     const entities = structuredClone(state.entities);
@@ -90,13 +117,29 @@ const moveCollection = (
   };
 };
 
-const initialState: CollectionState = {
-  entities: [],
-};
-
 export const CollectionStore = signalStore(
   withStatus(),
   withState<CollectionState>(initialState),
+  withComputed(() => {
+    const router = inject(Router);
+    const route = inject(ActivatedRoute);
+
+    const getCollectionIdFromSnapshot = (
+      snapshot: ActivatedRouteSnapshot
+    ): string | undefined => {
+      return getDeepestChildSnapshot(snapshot).params["collectionId"];
+    };
+
+    const collectionId$ = router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(() => getCollectionIdFromSnapshot(route.snapshot)),
+      startWith(getCollectionIdFromSnapshot(route.snapshot))
+    );
+
+    return {
+      $selectedId: toSignal(collectionId$),
+    };
+  }),
   withMethods(store => {
     const collectionApi = injectCollectionApi();
     const dialogService = inject(HlmDialogService);
@@ -137,9 +180,9 @@ export const CollectionStore = signalStore(
                   );
                 },
                 error: err => {
-                  if (err instanceof ServerSideError) {
-                    patchState(store, setError(err));
-                  }
+                  // TODO: using logger service
+                  console.log(err);
+                  patchState(store, setError(err));
                 },
               }),
               catchError(() => EMPTY)
@@ -167,9 +210,8 @@ export const CollectionStore = signalStore(
                     },
                     error: err => {
                       const message = "Collection could not be created";
-                      if (err instanceof ServerSideError) {
-                      }
-
+                      // TODO: using logger service
+                      console.log(err);
                       patchState(store, setError(err));
                       toastService.error(message);
                     },
@@ -213,6 +255,8 @@ export const CollectionStore = signalStore(
                             break;
                         }
                       }
+                      // TODO: using logger service
+                      console.log(err);
                       toastService.error(message);
                       patchState(store, setError(err));
                     },
@@ -250,6 +294,8 @@ export const CollectionStore = signalStore(
                             break;
                         }
                       }
+                      // TODO: using logger service
+                      console.log(err);
                       patchState(store, setError(err));
                       toastService.error(message);
                     },
@@ -289,9 +335,9 @@ export const CollectionStore = signalStore(
                     updateCollection(entity.id, CollectionDto.from(res.result.data))
                   ),
                 error: err => {
+                  // TODO: using logger service
+                  console.log(err);
                   patchState(store, moveCollection(toIndex, fromIndex));
-                  if (err instanceof ServerSideError) {
-                  }
                 },
               }),
               catchError(() => EMPTY)

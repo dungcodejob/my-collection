@@ -1,11 +1,19 @@
+import { Location } from "@angular/common";
 import { Injectable, inject } from "@angular/core";
 import { Router, UrlTree } from "@angular/router";
 
 @Injectable({ providedIn: "root" })
 export class RedirectService {
   private readonly _router = inject(Router);
+  private readonly _location = inject(Location);
+
+  private _previousUrl = this._location.path();
 
   constructor() {}
+
+  redirectToPreviousUrl() {
+    this._router.navigateByUrl(this._previousUrl);
+  }
 
   redirectToHome(): void {
     const urlTree = this.createHomeTree();
@@ -17,11 +25,11 @@ export class RedirectService {
   }
 
   redirectToBookmark(collectionId: string): void {
-    this._router.navigate([{ outlets: { primary: ["home", collectionId] } }]);
+    this._router.navigate(["home", `${collectionId}`]);
   }
 
   createHomeTree(): UrlTree {
-    return this._router.createUrlTree(["home", { outlets: { sidebar: ["collection"] } }]);
+    return this._router.createUrlTree(["home"]);
   }
 
   createLoginTree(): UrlTree {

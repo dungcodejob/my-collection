@@ -1,6 +1,7 @@
 import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
+import { CollectionListComponent } from "@collection/containers/collection-list/collection-list.component";
 import { HeaderComponent } from "@shell/components/header/header.component";
 import { SidebarComponent } from "@shell/components/sidebar/sidebar.component";
 import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
@@ -22,6 +23,7 @@ type ViewModel = {
     SidebarComponent,
     HlmToasterComponent,
     HlmSpinnerComponent,
+    CollectionListComponent,
   ],
   providers: [ShellFacade],
   templateUrl: "./layout.component.html",

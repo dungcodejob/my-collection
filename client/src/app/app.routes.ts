@@ -21,12 +21,6 @@ export const routes: Routes = [
         loadChildren: () =>
           import("@bookmark/bookmark.routes").then(m => m.bookmarkRoutes),
       },
-      {
-        path: "collection",
-        loadChildren: () =>
-          import("@collection/collection.routes").then(m => m.collectionRoutes),
-        outlet: "sidebar",
-      },
     ],
   },
 

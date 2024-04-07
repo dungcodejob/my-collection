@@ -61,7 +61,7 @@ export class AuthService {
       tap(result => {
         this._authStore.setAuth(result);
         this._setAuthToLocal(result);
-        this._redirectService.redirectToHome();
+        this._redirectService.redirectToPreviousUrl();
       })
     );
   }

@@ -1,4 +1,4 @@
-import { Injectable, Injector, effect, inject, untracked } from "@angular/core";
+import { Injectable, Injector, effect, inject, input, untracked } from "@angular/core";
 import { CollectionStore } from "@collection/data-access";
 import { ShellFacade } from "@shell/data-access";
 
@@ -8,10 +8,25 @@ export class CollectionFacade {
   private readonly _collectionStore = inject(CollectionStore);
   private readonly _shellFacade = inject(ShellFacade);
 
+  $collectionId = input();
+
   $entities = this._collectionStore.entities;
+  $selectedId = this._collectionStore.$selectedId;
 
   enter(): void {
     this._collectionStore.findAll();
+
+    effect(
+      () => {
+        const collectionId = this.$collectionId();
+        if (collectionId) {
+          untracked(() => {
+            this._collectionStore.findAll();
+          });
+        }
+      },
+      { injector: this._injector }
+    );
 
     effect(
       () => {
