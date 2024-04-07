@@ -49,7 +49,7 @@ export class CollectionController {
     return Result.toSingle(collectionDto);
   }
 
-  @Put()
+  @Post()
   async create(
     @CurrentUser() user: UserEntity,
     @Body() dto: CreateCollectionBodyDto
@@ -60,7 +60,7 @@ export class CollectionController {
     return Result.toSingle(collectionDto);
   }
 
-  @Post(":id")
+  @Put(":id")
   async update(
     @Param("id") id: string,
     @Body() dto: UpdateCollectionBodyDto
