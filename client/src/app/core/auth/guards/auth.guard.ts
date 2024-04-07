@@ -8,7 +8,6 @@ export const authGuard: CanActivateFn = () => {
   const redirectService = inject(RedirectService);
   const authService = inject(AuthService);
 
-  // TODO: create Redirect Service
   return authService.isLoggedIn$.pipe(
     map(isLoggedIn => (isLoggedIn ? true : redirectService.createLoginTree()))
   );

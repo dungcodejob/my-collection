@@ -31,14 +31,14 @@ export class CollectionImplApi implements CollectionApi {
   }
 
   create(body: CreateCollectionDto): Observable<SingleResponseDto<CollectionDto>> {
-    return this._http.put<SingleResult<CollectionDto>>("/collection", body);
+    return this._http.post<SingleResult<CollectionDto>>("/collection", body);
   }
 
   update(
     id: string,
     body: UpdateCollectionDto
   ): Observable<SingleResponseDto<CollectionDto>> {
-    return this._http.post<SingleResult<CollectionDto>>(`/collection/${id}/`, body);
+    return this._http.put<SingleResult<CollectionDto>>(`/collection/${id}/`, body);
   }
 
   delete(id: string): Observable<SingleResponseDto<void>> {

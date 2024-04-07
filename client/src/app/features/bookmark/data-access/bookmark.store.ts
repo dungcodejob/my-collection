@@ -1,0 +1,107 @@
+import { inject } from "@angular/core";
+import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
+import { ServerSideError } from "@core/http";
+import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import { addEntities, removeEntity, withEntities } from "@ngrx/signals/entities";
+import { rxMethod } from "@ngrx/signals/rxjs-interop";
+import {
+  setError,
+  setFulfilled,
+  setPending,
+  withPagination,
+  withStatus,
+} from "@shared/data-access";
+import { BookmarkMessage } from "@shared/enums";
+import { BookmarkDto } from "@shared/models";
+import { ToastService } from "@shared/services";
+import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
+import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
+import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
+import { injectBookmarkApi } from ".";
+
+export const BookmarkStore = signalStore(
+  withStatus(),
+  withEntities<BookmarkDto>(),
+  withPagination(),
+  withMethods(store => {
+    const collectionApi = injectBookmarkApi();
+    const dialogService = inject(HlmDialogService);
+    const toastService = inject(ToastService);
+
+    const openConfirmDialog = () => {
+      return dialogService
+        .open(ConfirmDialogComponent, {
+          closeOnBackdropClick: false,
+        })
+        .closed$.pipe(filter(isNotFalsy));
+    };
+
+    return {
+      findAll: rxMethod<string>(
+        pipe(
+          tap(() => {
+            patchState(store, setPending());
+          }),
+          switchMap(collectionId =>
+            collectionApi
+              .findAll({
+                collectionId: collectionId,
+                currentPage: store.currentPage(),
+                pageSize: store.pageSize(),
+                keyword: "",
+              })
+              .pipe(
+                tap({
+                  next: res => {
+                    patchState(store, addEntities(res.result.items), setFulfilled());
+                  },
+                  error: err => {
+                    // TODO: using logger service
+                    patchState(store, setError(err));
+                  },
+                }),
+                catchError(() => EMPTY)
+              )
+          )
+        )
+      ),
+      delete: rxMethod<string>(
+        pipe(
+          map(id => store.entities().find(item => item.id === id)),
+          filter(isNotNil),
+          switchMap(data =>
+            openConfirmDialog().pipe(
+              switchMap(() =>
+                collectionApi.delete(data.id).pipe(
+                  prefix(() => patchState(store, setPending())),
+                  tap({
+                    next: () => {
+                      patchState(store, removeEntity(data.id), setFulfilled());
+                      toastService.success(`Bookmark “${data.title}“ was deleted`);
+                    },
+                    error: err => {
+                      let message = `Bookmark “${data.title}” could not be deleted`;
+                      if (err instanceof ServerSideError) {
+                        switch (err.message) {
+                          case BookmarkMessage.NotExist:
+                            message = `Bookmark “${data.title}” to be deleted does not exist`;
+                            break;
+
+                          default:
+                            break;
+                        }
+                      }
+                      patchState(store, setError(err));
+                      toastService.error(message);
+                    },
+                  }),
+                  catchError(() => EMPTY)
+                )
+              )
+            )
+          )
+        )
+      ),
+    };
+  })
+);

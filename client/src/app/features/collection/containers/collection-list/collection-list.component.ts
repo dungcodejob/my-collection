@@ -1,5 +1,7 @@
 import { CdkDrag, CdkDragDrop, CdkDropList } from "@angular/cdk/drag-drop";
 import { Component, OnInit, inject } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { CollectionStore, provideCollectionApi } from "@collection/data-access";
 import { provideIcons } from "@ng-icons/core";
 import {
   lucideFilePenLine,
@@ -9,6 +11,7 @@ import {
   lucideTrash2,
 } from "@ng-icons/lucide";
 import { CollectionDto } from "@shared/models";
+import { RedirectService } from "@shared/services";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent } from "@spartan-ng/ui-icon-helm";
 import { BrnMenuTriggerDirective } from "@spartan-ng/ui-menu-brain";
@@ -44,10 +47,13 @@ const lucideEllipsis = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24
 
     CdkDropList,
     CdkDrag,
+    RouterLink,
   ],
   templateUrl: "./collection-list.component.html",
   styleUrls: ["./collection-list.component.scss"],
   providers: [
+    provideCollectionApi(),
+    CollectionStore,
     CollectionFacade,
     provideIcons({
       lucideFolder,
@@ -59,11 +65,12 @@ const lucideEllipsis = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24
     }),
   ],
 })
-export class CollectionComponent implements OnInit {
+export class CollectionListComponent implements OnInit {
+  private readonly _redirectService = inject(RedirectService);
   private readonly _facade = inject(CollectionFacade);
 
   $entities = this._facade.$entities;
-
+  $selectedId = this._facade.$selectedId;
   ngOnInit(): void {
     this._facade.enter();
   }
@@ -78,6 +85,10 @@ export class CollectionComponent implements OnInit {
 
   onDelete(id: string): void {
     this._facade.delete(id);
+  }
+
+  onRedirectToBookmark(collectionId: string): void {
+    this._redirectService.redirectToBookmark(collectionId);
   }
 
   onDrop(event: CdkDragDrop<CollectionDto[]>) {

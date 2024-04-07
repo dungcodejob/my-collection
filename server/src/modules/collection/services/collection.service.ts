@@ -4,9 +4,9 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   CreateCollectionCommand,
   DeleteCollectionCommand,
+  MoveCollectionCommand,
   UpdateCollectionCommand,
 } from "../commands";
-import { MoveCollectionCommand } from "../commands/move-collection/move-collection.command";
 import {
   CreateCollectionBodyDto,
   MoveCollectionBodyDto,

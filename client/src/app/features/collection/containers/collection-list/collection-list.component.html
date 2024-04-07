@@ -14,13 +14,14 @@
         <button
           cdkDrag
           hlmBtn
-          variant="ghost"
+          [variant]="item.id === $selectedId() ? 'default' : 'ghost'"
           size="sm"
           class="collection__drop-item group w-full relative">
-          <a href="#" class="w-full h-full flex items-center justify-between">
+          <a
+            class="w-full h-full flex items-center justify-between"
+            (click)="onRedirectToBookmark(item.id)">
             <div class="flex gap-2 items-center">
               <hlm-icon name="lucideFolder" size="sm"></hlm-icon>
-
               <div class="flex">{{ item.title }}</div>
             </div>
           </a>

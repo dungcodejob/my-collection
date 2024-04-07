@@ -2,7 +2,6 @@ import { Routes } from "@angular/router";
 import { authGuard, noAuthGuard } from "@core/auth";
 import { LayoutComponent } from "@shell/containers/layout/layout.component";
 import { NotAuthorizedComponent } from "@shell/containers/not-authorized/not-authorized.component";
-import { TestComponent } from "@shell/containers/test/test.component";
 import { ShellStore } from "@shell/data-access";
 
 export const routes: Routes = [
@@ -18,14 +17,9 @@ export const routes: Routes = [
     providers: [ShellStore],
     children: [
       {
-        path: "test",
-        component: TestComponent,
-      },
-      {
-        path: "collection",
+        path: ":collectionId",
         loadChildren: () =>
-          import("@collection/collection.routes").then(m => m.collectionRoutes),
-        outlet: "sidebar",
+          import("@bookmark/bookmark.routes").then(m => m.bookmarkRoutes),
       },
     ],
   },
