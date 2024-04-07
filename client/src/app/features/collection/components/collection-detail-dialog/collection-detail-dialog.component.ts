@@ -53,7 +53,9 @@ export class CollectionDetailDialogComponent implements OnInit {
   }>();
 
   form!: CollectionDetailForm;
-
+  get data() {
+    return this._dialogContext.data;
+  }
   get title() {
     return this.form.controls.title;
   }
