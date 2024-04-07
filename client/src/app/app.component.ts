@@ -1,6 +1,5 @@
-import { Component, inject } from "@angular/core";
+import { Component } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
-import { AuthService } from "@core/auth";
 
 @Component({
   selector: "app-root",
@@ -9,6 +8,5 @@ import { AuthService } from "@core/auth";
   templateUrl: "./app.component.html",
 })
 export class AppComponent {
-  private readonly _authService = inject(AuthService);
-  title = "my-collection";
+
 }

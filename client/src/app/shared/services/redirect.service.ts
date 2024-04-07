@@ -11,6 +11,14 @@ export class RedirectService {
     const urlTree = this.createHomeTree();
     this._router.navigateByUrl(urlTree);
   }
+  redirectToLogin(): void {
+    const urlTree = this.createLoginTree();
+    this._router.navigateByUrl(urlTree);
+  }
+
+  redirectToBookmark(collectionId: string): void {
+    this._router.navigate([{ outlets: { primary: ["home", collectionId] } }]);
+  }
 
   createHomeTree(): UrlTree {
     return this._router.createUrlTree(["home", { outlets: { sidebar: ["collection"] } }]);
@@ -18,10 +26,5 @@ export class RedirectService {
 
   createLoginTree(): UrlTree {
     return this._router.createUrlTree(["/security/login"]);
-  }
-
-  redirectToLogin(): void {
-    const urlTree = this.createLoginTree();
-    this._router.navigateByUrl(urlTree);
   }
 }
