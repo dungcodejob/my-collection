@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
+import { CollectionVM, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/ui-dialog-brain";
 import {
@@ -49,7 +49,7 @@ export class CollectionDetailDialogComponent implements OnInit {
   private readonly _dialogRef = inject<BrnDialogRef<CollectionResult>>(BrnDialogRef);
   private readonly _nonNullFb = inject(NonNullableFormBuilder);
   private readonly _dialogContext = injectBrnDialogContext<{
-    data: CollectionDto | null;
+    data: CollectionVM | null;
   }>();
 
   form!: CollectionDetailForm;

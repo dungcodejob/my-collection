@@ -26,7 +26,7 @@ import {
   withStatus,
 } from "@shared/data-access";
 import { CollectionMessage } from "@shared/enums";
-import { CollectionDto, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
+import { CollectionVM, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
@@ -44,13 +44,13 @@ import {
 import { injectCollectionApi } from ".";
 
 type CollectionState = {
-  entities: CollectionDto[];
+  entities: CollectionVM[];
 };
 
 const initialState: CollectionState = {
   entities: [],
 };
-const addCollection = (entity: CollectionDto): PartialStateUpdater<CollectionState> => {
+const addCollection = (entity: CollectionVM): PartialStateUpdater<CollectionState> => {
   return state => {
     const entities = structuredClone(state.entities);
 
@@ -62,7 +62,7 @@ const addCollection = (entity: CollectionDto): PartialStateUpdater<CollectionSta
 
 const updateCollection = (
   id: string,
-  updater: Partial<CollectionDto>
+  updater: Partial<CollectionVM>
 ): PartialStateUpdater<CollectionState> => {
   return state => {
     const entities = structuredClone(state.entities);
@@ -145,7 +145,7 @@ export const CollectionStore = signalStore(
     const dialogService = inject(HlmDialogService);
     const toastService = inject(ToastService);
 
-    const openDetailDialog = (data: CollectionDto | null) => {
+    const openDetailDialog = (data: CollectionVM | null) => {
       return dialogService
         .open(CollectionDetailDialogComponent, {
           closeOnBackdropClick: false,
@@ -173,11 +173,7 @@ export const CollectionStore = signalStore(
             collectionApi.findAll().pipe(
               tap({
                 next: res => {
-                  patchState(
-                    store,
-                    { entities: CollectionDto.from(res.result.items) },
-                    setFulfilled()
-                  );
+                  patchState(store, { entities: res.result.items }, setFulfilled());
                 },
                 error: err => {
                   // TODO: using logger service
@@ -201,11 +197,7 @@ export const CollectionStore = signalStore(
                   tap({
                     next: res => {
                       const data = res.result.data;
-                      patchState(
-                        store,
-                        addCollection(CollectionDto.from(data)),
-                        setFulfilled()
-                      );
+                      patchState(store, addCollection(data), setFulfilled());
                       toastService.success(`Collection “${data.title}“ was created`);
                     },
                     error: err => {
@@ -236,11 +228,7 @@ export const CollectionStore = signalStore(
                     next: res => {
                       const data = res.result.data;
                       patchState(store, state => ({ entities: state.entities }));
-                      patchState(
-                        store,
-                        updateCollection(data.id, CollectionDto.from(data)),
-                        setFulfilled()
-                      );
+                      patchState(store, updateCollection(data.id, data), setFulfilled());
                       toastService.success(`Collection “${data.title}“ was saved`);
                     },
                     error: err => {
@@ -330,10 +318,7 @@ export const CollectionStore = signalStore(
               prefix(() => patchState(store, moveCollection(fromIndex, toIndex))),
               tap({
                 next: res =>
-                  patchState(
-                    store,
-                    updateCollection(entity.id, CollectionDto.from(res.result.data))
-                  ),
+                  patchState(store, updateCollection(entity.id, res.result.data)),
                 error: err => {
                   // TODO: using logger service
                   console.log(err);

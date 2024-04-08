@@ -1,6 +1,5 @@
 import { ClassProvider, InjectionToken, inject } from "@angular/core";
 import { CollectionImplApi } from "./collection-impl.api";
-import { CollectionMockImplApi } from "./collection-mock-impl.api";
 import { CollectionApi } from "./collection.api";
 
 export * from "./collection.store";
@@ -12,11 +11,6 @@ type ProvideFn = () => ClassProvider;
 export const provideCollectionApi: ProvideFn = () => ({
   provide: COLLECTION_API,
   useClass: CollectionImplApi,
-});
-
-export const provideCollectionMockApi: ProvideFn = () => ({
-  provide: COLLECTION_API,
-  useClass: CollectionMockImplApi,
 });
 
 export const injectCollectionApi = () => inject<CollectionApi>(COLLECTION_API);

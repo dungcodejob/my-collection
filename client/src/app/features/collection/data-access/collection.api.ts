@@ -1,6 +1,6 @@
 import { ListResponseDto, SingleResponseDto } from "@core/http";
 import {
-  CollectionDto,
+  CollectionVM,
   CreateCollectionDto,
   MoveCollectionDto,
   UpdateCollectionDto,
@@ -8,12 +8,12 @@ import {
 import { Observable } from "rxjs";
 
 export interface CollectionApi {
-  findAll(): Observable<ListResponseDto<CollectionDto>>;
-  move(id: string, body: MoveCollectionDto): Observable<SingleResponseDto<CollectionDto>>;
-  create(body: CreateCollectionDto): Observable<SingleResponseDto<CollectionDto>>;
+  findAll(): Observable<ListResponseDto<CollectionVM>>;
+  move(id: string, body: MoveCollectionDto): Observable<SingleResponseDto<CollectionVM>>;
+  create(body: CreateCollectionDto): Observable<SingleResponseDto<CollectionVM>>;
   update(
     id: string,
     body: UpdateCollectionDto
-  ): Observable<SingleResponseDto<CollectionDto>>;
+  ): Observable<SingleResponseDto<CollectionVM>>;
   delete(id: string): Observable<SingleResponseDto<void>>;
 }
