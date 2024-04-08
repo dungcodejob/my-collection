@@ -1,4 +1,12 @@
-import { Injectable, Injector, effect, inject, input, untracked } from "@angular/core";
+import {
+  Injectable,
+  Injector,
+  computed,
+  effect,
+  inject,
+  input,
+  untracked,
+} from "@angular/core";
 import { CollectionStore } from "@collection/data-access";
 import { ShellFacade } from "@shell/data-access";
 
@@ -12,6 +20,12 @@ export class CollectionFacade {
 
   $entities = this._collectionStore.entities;
   $selectedId = this._collectionStore.$selectedId;
+  $selectedEntity = computed(() => {
+    const entities = this.$entities();
+    const selectedId = this.$selectedId();
+
+    return entities.find(entity => entity.id === selectedId);
+  });
 
   enter(): void {
     this._collectionStore.findAll();

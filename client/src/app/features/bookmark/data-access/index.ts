@@ -14,5 +14,4 @@ export const provideBookmarkApi: ProvideFn = () => ({
   useClass: BookmarkImplApi,
 });
 
-
 export const injectBookmarkApi = () => inject<BookmarkApi>(BOOKMARK_API);

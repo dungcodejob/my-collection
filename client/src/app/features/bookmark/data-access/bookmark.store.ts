@@ -1,7 +1,7 @@
 import { inject } from "@angular/core";
 import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
 import { ServerSideError } from "@core/http";
-import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { addEntities, removeEntity, withEntities } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import {
@@ -19,7 +19,16 @@ import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi } from ".";
 
+type BookmarkState = {
+  collectionTitle: string | null;
+};
+
+const initialState: BookmarkState = {
+  collectionTitle: null,
+};
+
 export const BookmarkStore = signalStore(
+  withState<BookmarkState>(initialState),
   withStatus(),
   withEntities<BookmarkVM>(),
   withPagination(),
