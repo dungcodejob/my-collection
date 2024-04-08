@@ -12,7 +12,7 @@ import {
   withStatus,
 } from "@shared/data-access";
 import { BookmarkMessage } from "@shared/enums";
-import { BookmarkDto } from "@shared/models";
+import { BookmarkVM } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
@@ -21,7 +21,7 @@ import { injectBookmarkApi } from ".";
 
 export const BookmarkStore = signalStore(
   withStatus(),
-  withEntities<BookmarkDto>(),
+  withEntities<BookmarkVM>(),
   withPagination(),
   withMethods(store => {
     const collectionApi = injectBookmarkApi();
