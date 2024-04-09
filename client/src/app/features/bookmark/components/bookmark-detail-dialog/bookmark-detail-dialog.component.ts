@@ -80,12 +80,16 @@ export class BookmarkDetailDialogComponent implements OnInit {
     });
   }
 
-  private _setValueForControls(): void {
+  private async _setValueForControls(): Promise<void> {
     const data = this._dialogContext.data;
     if (data) {
       this.form.setValue({
         url: data.url,
       });
+    } else {
+      const copied = await navigator.clipboard.readText();
+
+      this.form.setValue({ url: copied });
     }
   }
 }
