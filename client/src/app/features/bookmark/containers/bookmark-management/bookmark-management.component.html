@@ -3,8 +3,8 @@
   <div class="h-[3.25rem] flex flex-wrap sm:justify-start sm:flex-nowrap">
     <nav class="flex basis-full items-center w-full mx-auto px-4 py-2">
       <div class="flex justify-between items-center w-full">
-        <h1 class="text-xl font-bold">{{ $collectionTitle() }}</h1>
-        <button hlmBtn size="sm" class="text-nowrap gap-2">
+        <h1 class="text-xl font-bold">{{ $collection()?.title }}</h1>
+        <button hlmBtn size="sm" class="text-nowrap gap-2" (click)="onAdd()">
           <hlm-icon size="sm" name="lucideCirclePlus"></hlm-icon>
           <span>Add Bookmark</span>
         </button>

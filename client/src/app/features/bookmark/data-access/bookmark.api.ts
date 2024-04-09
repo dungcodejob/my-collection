@@ -3,7 +3,6 @@ import {
   BookmarkQueryDto,
   BookmarkVM,
   CreateBookmarkDto,
-  MoveCollectionDto,
   UpdateBookmarkDto,
 } from "@shared/models";
 import { Observable } from "rxjs";
@@ -13,5 +12,4 @@ export interface BookmarkApi {
   create(body: CreateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>>;
   update(id: string, body: UpdateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>>;
   delete(id: string): Observable<SingleResponseDto<void>>;
-  move(id: string, body: MoveCollectionDto): Observable<SingleResponseDto<BookmarkVM>>;
 }

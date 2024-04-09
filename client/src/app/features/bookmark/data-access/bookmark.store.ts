@@ -1,8 +1,14 @@
 import { inject } from "@angular/core";
+import { BookmarkDetailDialogComponent } from "@bookmark/components/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
 import { ServerSideError } from "@core/http";
-import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
-import { addEntities, removeEntity, withEntities } from "@ngrx/signals/entities";
+import { patchState, signalStore, withMethods } from "@ngrx/signals";
+import {
+  addEntities,
+  addEntity,
+  removeEntity,
+  withEntities,
+} from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import {
   setError,
@@ -12,28 +18,20 @@ import {
   withStatus,
 } from "@shared/data-access";
 import { BookmarkMessage } from "@shared/enums";
-import { BookmarkVM } from "@shared/models";
+import { BookmarkVM, MetadataDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
-import { injectBookmarkApi } from ".";
-
-type BookmarkState = {
-  collectionTitle: string | null;
-};
-
-const initialState: BookmarkState = {
-  collectionTitle: null,
-};
+import { injectBookmarkApi, injectCrawlApi } from ".";
 
 export const BookmarkStore = signalStore(
-  withState<BookmarkState>(initialState),
   withStatus(),
   withEntities<BookmarkVM>(),
   withPagination(),
   withMethods(store => {
-    const collectionApi = injectBookmarkApi();
+    const bookmarkApi = injectBookmarkApi();
+    const crawlApi = injectCrawlApi();
     const dialogService = inject(HlmDialogService);
     const toastService = inject(ToastService);
 
@@ -45,6 +43,16 @@ export const BookmarkStore = signalStore(
         .closed$.pipe(filter(isNotFalsy));
     };
 
+    const openDetailDialog = (data: BookmarkVM | null) => {
+      return dialogService
+        .open(BookmarkDetailDialogComponent, {
+          closeOnBackdropClick: false,
+          contentClass: "max-w-[30rem]",
+          context: { data },
+        })
+        .closed$.pipe(filter(isNotNil));
+    };
+
     return {
       findAll: rxMethod<string>(
         pipe(
@@ -52,7 +60,7 @@ export const BookmarkStore = signalStore(
             patchState(store, setPending());
           }),
           switchMap(collectionId =>
-            collectionApi
+            bookmarkApi
               .findAll({
                 collectionId: collectionId,
                 currentPage: store.currentPage(),
@@ -74,6 +82,38 @@ export const BookmarkStore = signalStore(
           )
         )
       ),
+      create: rxMethod<string>(
+        pipe(
+          switchMap(collectionId =>
+            openDetailDialog(null).pipe(
+              switchMap(({ url }) =>
+                crawlApi.getMetadata(url).pipe(
+                  map(res => res.result.data),
+                  switchMap((result: MetadataDto) =>
+                    bookmarkApi.create({ ...result, collectionId, note: "" })
+                  ),
+                  prefix(() => patchState(store, setPending())),
+                  tap({
+                    next: res => {
+                      const data = res.result.data;
+                      patchState(store, addEntity(data), setFulfilled());
+                      toastService.success(`Bookmark “${data.title}“ was created`);
+                    },
+                    error: err => {
+                      const message = "Bookmark could not be created";
+                      // TODO: using logger service
+                      console.log(err);
+                      patchState(store, setError(err));
+                      toastService.error(message);
+                    },
+                  }),
+                  catchError(() => EMPTY)
+                )
+              )
+            )
+          )
+        )
+      ),
       delete: rxMethod<string>(
         pipe(
           map(id => store.entities().find(item => item.id === id)),
@@ -81,7 +121,7 @@ export const BookmarkStore = signalStore(
           switchMap(data =>
             openConfirmDialog().pipe(
               switchMap(() =>
-                collectionApi.delete(data.id).pipe(
+                bookmarkApi.delete(data.id).pipe(
                   prefix(() => patchState(store, setPending())),
                   tap({
                     next: () => {

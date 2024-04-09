@@ -7,6 +7,7 @@ export * from "./bookmark.vm";
 export * from "./collection.dto";
 export * from "./collection.vm";
 export * from "./credentials";
+export * from "./metadata.dto";
 export * from "./pagination.dto";
 export * from "./token.dto";
 export * from "./user-profile.dto";

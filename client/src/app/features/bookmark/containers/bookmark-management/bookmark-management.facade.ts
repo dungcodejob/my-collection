@@ -1,4 +1,4 @@
-import { Injectable, Injector, computed, inject } from "@angular/core";
+import { Injectable, Injector, computed, effect, inject, untracked } from "@angular/core";
 import { BookmarkStore } from "@bookmark/data-access";
 import { CollectionFacade } from "@collection/data-access";
 import { ShellFacade } from "@shell/data-access";
@@ -11,13 +11,29 @@ export class BookmarkFacade {
   private readonly _collectionFacade = inject(CollectionFacade);
 
   $entities = this._bookmarkStore.entities;
-  $collectionTitle = computed(() => this._collectionFacade.$selectedEntity()?.title);
+  $collection = computed(() => this._collectionFacade.$selectedEntity());
 
   enter() {
+    effect(
+      () => {
+        const collectionId = this.$collection()?.id;
 
+        untracked(() => {
+          if (collectionId) {
+            this._load(collectionId);
+          }
+        });
+      },
+      { injector: this._injector }
+    );
   }
 
-  load(collectionId: string) {
+  add() {
+    const collectionId = this.$collection()?.id as string;
+    this._bookmarkStore.create(collectionId);
+  }
+
+  private _load(collectionId: string) {
     this._bookmarkStore.paginationReset();
     this._bookmarkStore.findAll(collectionId);
   }

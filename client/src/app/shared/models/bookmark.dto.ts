@@ -1,12 +1,7 @@
 import { BaseDto } from "./base.dto";
+import { MetadataDto } from "./metadata.dto";
 
-export interface BookmarkDto extends BaseDto {
-  url: string;
-  domain: string;
-  title: string;
-  image: string;
-  description: string | null;
-  favicon: string;
+export interface BookmarkDto extends BaseDto, MetadataDto {
   note: string;
   collectionId: string;
 }

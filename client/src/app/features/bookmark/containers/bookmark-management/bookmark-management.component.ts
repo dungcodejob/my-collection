@@ -4,10 +4,7 @@ import {
   Component,
   Injector,
   OnInit,
-  effect,
   inject,
-  input,
-  untracked,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
@@ -40,8 +37,7 @@ export class BookmarkManagementComponent implements OnInit {
   private readonly _injector = inject(Injector);
   private readonly _facade = inject(BookmarkFacade);
   private readonly _route = inject(ActivatedRoute);
-  $collectionId = input.required<string>({ alias: "collectionId" });
-  $collectionTitle = this._facade.$collectionTitle;
+  $collection = this._facade.$collection;
   // items = input.required({
   //   transform: coerceArray<BookmarkDto>,
   // });
@@ -54,15 +50,10 @@ export class BookmarkManagementComponent implements OnInit {
   // @Output() prev = new EventEmitter<void>();
 
   ngOnInit(): void {
-    effect(
-      () => {
-        const collectionId = this.$collectionId();
+    this._facade.enter();
+  }
 
-        untracked(() => {
-          this._facade.load(collectionId);
-        });
-      },
-      { injector: this._injector }
-    );
+  onAdd() {
+    this._facade.add();
   }
 }
