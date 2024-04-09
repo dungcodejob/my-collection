@@ -2,6 +2,7 @@ import { ClassProvider, InjectionToken, inject } from "@angular/core";
 import { CollectionImplApi } from "./collection-impl.api";
 import { CollectionApi } from "./collection.api";
 
+export * from "./collection.facade";
 export * from "./collection.store";
 
 const COLLECTION_API = new InjectionToken("collection-api-token");

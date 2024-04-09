@@ -1,11 +1,11 @@
 import { Routes } from "@angular/router";
-import { BookmarkListComponent } from "./containers/bookmark-list/bookmark-list.component";
-import { BookmarkStore, provideBookmarkApi } from "./data-access";
+import { BookmarkManagementComponent } from "./containers/bookmark-management/bookmark-management.component";
+import { BookmarkStore, provideBookmarkApi, provideCrawlApi } from "./data-access";
 
 export const bookmarkRoutes: Routes = [
   {
     path: "",
-    providers: [provideBookmarkApi(), BookmarkStore],
-    component: BookmarkListComponent,
+    providers: [provideBookmarkApi(), provideCrawlApi(), BookmarkStore],
+    component: BookmarkManagementComponent,
   },
 ];

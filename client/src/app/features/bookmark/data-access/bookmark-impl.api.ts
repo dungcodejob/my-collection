@@ -13,7 +13,6 @@ import {
   BookmarkQueryDto,
   BookmarkVM,
   CreateBookmarkDto,
-  MoveCollectionDto,
   UpdateBookmarkDto,
 } from "@shared/models";
 import { Observable, map } from "rxjs";
@@ -39,25 +38,19 @@ export class BookmarkImplApi implements BookmarkApi {
       );
   }
 
-  move(id: string, body: MoveCollectionDto): Observable<SingleResponseDto<BookmarkVM>> {
-    return this._http
-      .post<SingleResult<BookmarkDto>>(`/collection/${id}/move`, body)
-      .pipe(map(res => this._responseAdapter.fromSingleDto(res, this._bookmarkAdapter)));
-  }
-
   create(body: CreateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>> {
     return this._http
-      .post<SingleResult<BookmarkDto>>("/collection", body)
+      .post<SingleResult<BookmarkDto>>("/bookmark", body)
       .pipe(map(res => this._responseAdapter.fromSingleDto(res, this._bookmarkAdapter)));
   }
 
   update(id: string, body: UpdateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>> {
     return this._http
-      .put<SingleResult<BookmarkDto>>(`/collection/${id}/`, body)
+      .put<SingleResult<BookmarkDto>>(`/bookmark/${id}/`, body)
       .pipe(map(res => this._responseAdapter.fromSingleDto(res, this._bookmarkAdapter)));
   }
 
   delete(id: string): Observable<SingleResponseDto<void>> {
-    return this._http.delete(`/collection/${id}/`);
+    return this._http.delete(`/bookmark/${id}/`);
   }
 }

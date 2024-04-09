@@ -1,26 +1,26 @@
 <form [formGroup]="form" (ngSubmit)="onSave()" class="flex flex-col gap-4">
   <hlm-dialog-header>
-    <h3 hlmDialogTitle>{{ data ? "Update" : "Create" }} Collection</h3>
+    <h3 hlmDialogTitle>{{ data ? "Update" : "Add" }} Bookmark</h3>
     <p hlmDialogDescription>
-      Make create or update to your collection here. Click save when you're done.
+      Please fill in the url to get metadata and add your bookmarks.
     </p>
   </hlm-dialog-header>
   <div class="grid gap-4 py-4">
     <div class="space-y-1">
-      <label hlmLabel for="title">Title</label>
+      <label hlmLabel for="url">Url</label>
       <input
         hlmInput
         class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
         size="sm"
-        formControlName="title"
-        id="title"
+        formControlName="url"
+        id="url"
         type="text"
-        placeholder="Example: Work"
+        placeholder="Https://example.com"
         autocapitalize="none"
         autocomplete="off"
         autocorrect="off" />
-      <div *ngIf="title.invalid && (title.dirty || title.touched)">
-        <div *ngIf="title.errors?.['required']" hlmInputError>Title is required.</div>
+      <div *ngIf="url.invalid && (url.dirty || url.touched)">
+        <div *ngIf="url.errors?.['required']" hlmInputError>Title is required.</div>
       </div>
     </div>
   </div>
