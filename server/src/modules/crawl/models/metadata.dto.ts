@@ -1,7 +1,8 @@
 export class MetadataDto {
+  url: string;
+  domain: string;
   title: string;
   description: string;
-  url: string;
   image: string;
   favicon: string;
 }
