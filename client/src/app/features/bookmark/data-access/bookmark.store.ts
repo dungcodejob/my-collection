@@ -1,12 +1,11 @@
 import { inject } from "@angular/core";
 import { BookmarkDetailDialogComponent } from "@bookmark/components/bookmark-detail-dialog/bookmark-detail-dialog.component";
-import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
 import { ServerSideError } from "@core/http";
 import { patchState, signalStore, withMethods } from "@ngrx/signals";
 import {
-  addEntities,
   addEntity,
   removeEntity,
+  setAllEntities,
   withEntities,
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
@@ -20,8 +19,9 @@ import {
 import { BookmarkMessage } from "@shared/enums";
 import { BookmarkVM, MetadataDto } from "@shared/models";
 import { ToastService } from "@shared/services";
+import { PadDialogService } from "@shared/ui";
+import { ConfirmDialogComponent } from "@shared/ui/confirm-dialog/confirm-dialog.component";
 import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
-import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi, injectCrawlApi } from ".";
 
@@ -32,7 +32,7 @@ export const BookmarkStore = signalStore(
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();
     const crawlApi = injectCrawlApi();
-    const dialogService = inject(HlmDialogService);
+    const dialogService = inject(PadDialogService);
     const toastService = inject(ToastService);
 
     const openConfirmDialog = () => {
@@ -70,7 +70,7 @@ export const BookmarkStore = signalStore(
               .pipe(
                 tap({
                   next: res => {
-                    patchState(store, addEntities(res.result.items), setFulfilled());
+                    patchState(store, setAllEntities(res.result.items), setFulfilled());
                   },
                   error: err => {
                     // TODO: using logger service
@@ -119,35 +119,40 @@ export const BookmarkStore = signalStore(
           map(id => store.entities().find(item => item.id === id)),
           filter(isNotNil),
           switchMap(data =>
-            openConfirmDialog().pipe(
-              switchMap(() =>
-                bookmarkApi.delete(data.id).pipe(
-                  prefix(() => patchState(store, setPending())),
-                  tap({
-                    next: () => {
-                      patchState(store, removeEntity(data.id), setFulfilled());
-                      toastService.success(`Bookmark “${data.title}“ was deleted`);
-                    },
-                    error: err => {
-                      let message = `Bookmark “${data.title}” could not be deleted`;
-                      if (err instanceof ServerSideError) {
-                        switch (err.message) {
-                          case BookmarkMessage.NotExist:
-                            message = `Bookmark “${data.title}” to be deleted does not exist`;
-                            break;
+            dialogService
+              .openConfirmDialog({
+                description: `This action cannot be undone. It will permanently delete your bookmark, from our servers`,
+                confirmText: `Delete bookmark`,
+              })
+              .pipe(
+                switchMap(() =>
+                  bookmarkApi.delete(data.id).pipe(
+                    prefix(() => patchState(store, setPending())),
+                    tap({
+                      next: () => {
+                        patchState(store, removeEntity(data.id), setFulfilled());
+                        toastService.success(`Bookmark “${data.title}“ was deleted`);
+                      },
+                      error: err => {
+                        let message = `Bookmark “${data.title}” could not be deleted`;
+                        if (err instanceof ServerSideError) {
+                          switch (err.message) {
+                            case BookmarkMessage.NotExist:
+                              message = `Bookmark “${data.title}” to be deleted does not exist`;
+                              break;
 
-                          default:
-                            break;
+                            default:
+                              break;
+                          }
                         }
-                      }
-                      patchState(store, setError(err));
-                      toastService.error(message);
-                    },
-                  }),
-                  catchError(() => EMPTY)
+                        patchState(store, setError(err));
+                        toastService.error(message);
+                      },
+                    }),
+                    catchError(() => EMPTY)
+                  )
                 )
               )
-            )
           )
         )
       ),

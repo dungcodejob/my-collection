@@ -33,7 +33,7 @@ export class CrawlService {
 
         const metadata = new MetadataDto();
         metadata.url = link;
-        metadata.domain = url.origin;
+        metadata.domain = url.hostname;
         metadata.image = image;
         metadata.title = title;
         metadata.description = description;
