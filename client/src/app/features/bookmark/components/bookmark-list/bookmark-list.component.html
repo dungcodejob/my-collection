@@ -1,25 +1,7 @@
 <div class="flex flex-col gap-2 p-4 pt-0">
   @for (item of $items(); track item.id) {
-    <button
-      hlmCard
-      hlmBtn
-      variant="ghost"
-      class="justify-start h-auto p-3 group relative">
-      <div class="flex flex-col gap-2 justify-start w-full text-start">
-        <div class="flex items-center gap-2">
-          @if (item.favicon) {
-            <img class="w-5 h-5 object-cover" [src]="item.favicon" alt="favicon" />
-          }
-          <p hlmSmall class="font-semibold">{{ item.title }}</p>
-        </div>
-        <p class="text-xs font-normal text-muted-foreground line-clamp-2">
-          {{ item.description }}
-        </p>
-        <div class="text-xs font-normal text-muted-foreground">
-          {{ item.domain }} - Update at {{ item.updateAt | date }}
-        </div>
-      </div>
-
+    <button hlmBtn variant="ghost" class="justify-start h-auto p-3 group relative">
+      <app-bookmark-item [data]="item"></app-bookmark-item>
       <button
         hlmBtn
         class="invisible group-hover:visible absolute top-3 right-3 w-6 h-6 z-10 flex justify-center items-center hover:bg-gray-200"
