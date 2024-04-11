@@ -1,7 +1,7 @@
-
 body,
 html {
   font-family: "Inter", sans-serif;
+  @apply text-foreground;
 }
 
 .pad-dialog-container {

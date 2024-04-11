@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import {
   HlmAlertDialogActionButtonDirective,
   HlmAlertDialogCancelButtonDirective,
@@ -10,13 +10,15 @@ import {
   HlmAlertDialogOverlayDirective,
   HlmAlertDialogTitleDirective,
 } from "@spartan-ng/ui-alertdialog-helm";
-import { BrnDialogRef } from "@spartan-ng/ui-dialog-brain";
+import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/ui-dialog-brain";
+import { ConfirmDialogData, defaultConfirmDialogData } from "./confirm-dialog-data";
 
 @Component({
   selector: "app-confirm-dialog",
   standalone: true,
   imports: [
     HlmAlertDialogComponent,
+
     HlmAlertDialogOverlayDirective,
     HlmAlertDialogHeaderComponent,
     HlmAlertDialogFooterComponent,
@@ -29,8 +31,22 @@ import { BrnDialogRef } from "@spartan-ng/ui-dialog-brain";
   templateUrl: "./confirm-dialog.component.html",
   styleUrl: "./confirm-dialog.component.scss",
 })
-export class ConfirmDialogComponent {
+export class ConfirmDialogComponent implements OnInit {
   private readonly _dialogRef = inject<BrnDialogRef<boolean>>(BrnDialogRef);
+  private readonly _dialogContext = injectBrnDialogContext<{
+    data: ConfirmDialogData | null;
+  }>();
+
+  data = defaultConfirmDialogData;
+
+  ngOnInit(): void {
+    if (this._dialogContext.data) {
+      this.data = {
+        ...defaultConfirmDialogData,
+        ...this._dialogContext.data,
+      };
+    }
+  }
 
   onClose(): void {
     this._dialogRef.close(false);

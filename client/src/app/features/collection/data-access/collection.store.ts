@@ -7,7 +7,6 @@ import {
   Router,
 } from "@angular/router";
 import { CollectionDetailDialogComponent } from "@collection/components/collection-detail-dialog/collection-detail-dialog.component";
-import { ConfirmDialogComponent } from "@collection/components/confirm-dialog/confirm-dialog.component";
 import { ServerSideError } from "@core/http";
 import {
   PartialStateUpdater,
@@ -28,8 +27,9 @@ import {
 import { CollectionMessage } from "@shared/enums";
 import { CollectionVM, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { ToastService } from "@shared/services";
-import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
-import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
+
+import { PadDialogService } from "@shared/ui";
+import { isNotNil, prefix } from "@shared/utils";
 import {
   EMPTY,
   catchError,
@@ -142,7 +142,7 @@ export const CollectionStore = signalStore(
   }),
   withMethods(store => {
     const collectionApi = injectCollectionApi();
-    const dialogService = inject(HlmDialogService);
+    const dialogService = inject(PadDialogService);
     const toastService = inject(ToastService);
 
     const openDetailDialog = (data: CollectionVM | null) => {
@@ -153,14 +153,6 @@ export const CollectionStore = signalStore(
           context: { data },
         })
         .closed$.pipe(filter(isNotNil));
-    };
-
-    const openConfirmDialog = () => {
-      return dialogService
-        .open(ConfirmDialogComponent, {
-          closeOnBackdropClick: false,
-        })
-        .closed$.pipe(filter(isNotFalsy));
     };
 
     return {
@@ -261,37 +253,42 @@ export const CollectionStore = signalStore(
           map(id => store.entities().find(item => item.id === id)),
           filter(isNotNil),
           switchMap(data =>
-            openConfirmDialog().pipe(
-              switchMap(() =>
-                collectionApi.delete(data.id).pipe(
-                  prefix(() => patchState(store, setPending())),
-                  tap({
-                    next: () => {
-                      patchState(store, deleteCollection(data.id), setFulfilled());
-                      toastService.success(`Collection “${data.title}“ was deleted`);
-                    },
-                    error: err => {
-                      let message = `Collection “${data.title}” could not be deleted`;
-                      if (err instanceof ServerSideError) {
-                        switch (err.message) {
-                          case CollectionMessage.NotExist:
-                            message = `Collection “${data.title}” to be deleted does not exist`;
-                            break;
+            dialogService
+              .openConfirmDialog({
+                description: `This action cannot be undone. It will permanently delete your collection, along with any bookmarks and other collections within it, from our servers`,
+                confirmText: `Delete collection`,
+              })
+              .pipe(
+                switchMap(() =>
+                  collectionApi.delete(data.id).pipe(
+                    prefix(() => patchState(store, setPending())),
+                    tap({
+                      next: () => {
+                        patchState(store, deleteCollection(data.id), setFulfilled());
+                        toastService.success(`Collection “${data.title}“ was deleted`);
+                      },
+                      error: err => {
+                        let message = `Collection “${data.title}” could not be deleted`;
+                        if (err instanceof ServerSideError) {
+                          switch (err.message) {
+                            case CollectionMessage.NotExist:
+                              message = `Collection “${data.title}” to be deleted does not exist`;
+                              break;
 
-                          default:
-                            break;
+                            default:
+                              break;
+                          }
                         }
-                      }
-                      // TODO: using logger service
-                      console.log(err);
-                      patchState(store, setError(err));
-                      toastService.error(message);
-                    },
-                  }),
-                  catchError(() => EMPTY)
+                        // TODO: using logger service
+                        console.log(err);
+                        patchState(store, setError(err));
+                        toastService.error(message);
+                      },
+                    }),
+                    catchError(() => EMPTY)
+                  )
                 )
               )
-            )
           )
         )
       ),

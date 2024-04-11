@@ -6,11 +6,12 @@ import { MetadataDto } from "../models/metadata.dto";
 export class CrawlService {
   constructor() {}
 
-  getMetadata(url: string): Promise<MetadataDto> {
-    return fetch(url)
+  getMetadata(link: string): Promise<MetadataDto> {
+    return fetch(link)
       .then(res => res.text())
       .then(html => {
         const $ = cheerio.load(html);
+        const url = new URL(link);
         const title =
           $('meta[property="og:title"]').attr("content") ||
           $("title").text() ||
@@ -31,11 +32,12 @@ export class CrawlService {
         //   $('meta[name="keywords"]').attr('content');
 
         const metadata = new MetadataDto();
+        metadata.url = link;
+        metadata.domain = url.hostname;
+        metadata.image = image;
         metadata.title = title;
         metadata.description = description;
-        metadata.url = url;
-        metadata.image = image;
-        metadata.favicon = icon;
+        metadata.favicon = icon.includes("http") ? icon : url.origin + icon;
 
         return metadata;
       });

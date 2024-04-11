@@ -31,6 +31,7 @@ type CollectionResult = CreateCollectionDto | UpdateCollectionDto;
   imports: [
     NgIf,
     ReactiveFormsModule,
+
     HlmDialogHeaderComponent,
     HlmDialogFooterComponent,
     HlmDialogTitleDirective,

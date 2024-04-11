@@ -7,8 +7,10 @@ import {
   inject,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
+import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
 import { BookmarkFacade } from "./bookmark-management.facade";
 
 // Generics
@@ -25,7 +27,15 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
   styleUrls: ["./bookmark-management.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [NgIf, NgFor, NgTemplateOutlet, HlmIconComponent, HlmButtonDirective],
+  imports: [
+    NgIf,
+    NgFor,
+    NgTemplateOutlet,
+    HlmH4Directive,
+    HlmIconComponent,
+    HlmButtonDirective,
+    BookmarkListComponent,
+  ],
   providers: [
     BookmarkFacade,
     provideIcons({
@@ -38,6 +48,7 @@ export class BookmarkManagementComponent implements OnInit {
   private readonly _facade = inject(BookmarkFacade);
   private readonly _route = inject(ActivatedRoute);
   $collection = this._facade.$collection;
+  $entities = this._facade.$entities;
   // items = input.required({
   //   transform: coerceArray<BookmarkDto>,
   // });
@@ -53,7 +64,11 @@ export class BookmarkManagementComponent implements OnInit {
     this._facade.enter();
   }
 
-  onAdd() {
+  onAdd(): void {
     this._facade.add();
+  }
+
+  onDelete(id: string): void {
+    this._facade.delete(id);
   }
 }

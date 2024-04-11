@@ -33,6 +33,10 @@ export class BookmarkFacade {
     this._bookmarkStore.create(collectionId);
   }
 
+  delete(id: string): void {
+    this._bookmarkStore.delete(id);
+  }
+
   private _load(collectionId: string) {
     this._bookmarkStore.paginationReset();
     this._bookmarkStore.findAll(collectionId);
