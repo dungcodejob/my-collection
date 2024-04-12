@@ -51,8 +51,8 @@ export class AuthMockApi {
       firstName: "John",
       lastName: "Doe",
       id: "123456789",
-      updateAt: new Date(),
-      createAt: new Date(),
+      updateAt: new Date().toISOString(),
+      createAt: new Date().toISOString(),
     };
   }
 
