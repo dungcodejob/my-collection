@@ -20,8 +20,7 @@ import { BookmarkMessage } from "@shared/enums";
 import { BookmarkVM, MetadataDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { PadDialogService } from "@shared/ui";
-import { ConfirmDialogComponent } from "@shared/ui/confirm-dialog/confirm-dialog.component";
-import { isNotFalsy, isNotNil, prefix } from "@shared/utils";
+import { isNotNil, prefix } from "@shared/utils";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi, injectCrawlApi } from ".";
 
@@ -34,14 +33,6 @@ export const BookmarkStore = signalStore(
     const crawlApi = injectCrawlApi();
     const dialogService = inject(PadDialogService);
     const toastService = inject(ToastService);
-
-    const openConfirmDialog = () => {
-      return dialogService
-        .open(ConfirmDialogComponent, {
-          closeOnBackdropClick: false,
-        })
-        .closed$.pipe(filter(isNotFalsy));
-    };
 
     const openDetailDialog = (data: BookmarkVM | null) => {
       return dialogService
