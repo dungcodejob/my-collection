@@ -2,7 +2,7 @@ import { Routes } from "@angular/router";
 import {
   CollectionFacade,
   CollectionStore,
-  provideCollectionApi,
+  provideCollectionMockApi,
 } from "@collection/data-access";
 import { authGuard, noAuthGuard } from "@core/auth";
 import { LayoutComponent } from "@shell/containers/layout/layout.component";
@@ -22,7 +22,8 @@ export const routes: Routes = [
     providers: [
       ShellStore,
       ShellFacade,
-      provideCollectionApi(),
+      // provideCollectionApi(),
+      provideCollectionMockApi(),
       CollectionStore,
       CollectionFacade,
     ],

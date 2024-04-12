@@ -56,6 +56,9 @@
       ],
       "@spartan-ng/ui-typography-helm": [
         ".\\libs/ui-typography-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-skeleton-helm": [
+        ".\\libs/ui-skeleton-helm/src/index.ts"
       ]
     },
     "outDir": "./dist/out-tsc",
