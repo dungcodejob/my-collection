@@ -4,14 +4,16 @@ import {
   SignalStoreFeature,
   signalStoreFeature,
   withComputed,
-  withState,
+  withState
 } from "@ngrx/signals";
 import { SignalStoreFeatureResult } from "@ngrx/signals/src/signal-store-models";
 import { capitalize } from "@shared/utils";
 import {
+  NamedStatusMethods,
   NamedStatusSignals,
   NamedStatusState,
   Status,
+  StatusMethods,
   StatusSignals,
   StatusState,
 } from "./status-name.type";
@@ -31,7 +33,7 @@ export function withStatus<Input extends SignalStoreFeatureResult>(): SignalStor
   {
     state: StatusState;
     signals: StatusSignals;
-    methods: {};
+    methods: StatusMethods;
   }
 >;
 export function withStatus<
@@ -44,7 +46,7 @@ export function withStatus<
   {
     state: NamedStatusState<Name>;
     signals: NamedStatusSignals<Name>;
-    methods: {};
+    methods: NamedStatusMethods;
   }
 >;
 export function withStatus<Name extends string>(config?: {
