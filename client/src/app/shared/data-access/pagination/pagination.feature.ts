@@ -1,7 +1,10 @@
+import { Signal, computed } from "@angular/core";
 import {
   SignalStoreFeature,
+  StateSignal,
   patchState,
   signalStoreFeature,
+  withComputed,
   withMethods,
   withState,
 } from "@ngrx/signals";
@@ -26,6 +29,7 @@ function capitalize(str: string): string {
 function getPaginationStateKeys(config?: { name: string }) {
   const name = config?.name;
   return {
+    paginationKey: name ? `$${name}Pagination` : "$pagination",
     currentPageKey: name ? `${name}CurrentPage` : "currentPage",
     pageSizeKey: name ? `${name}PageSize` : "pageSize",
     setCurrentPageKey: name ? `set${capitalize(name)}CurrentPage` : "setCurrentPage",
@@ -61,10 +65,12 @@ export function withPagination<
     methods: NamedPaginationMethods<Name>;
   }
 >;
+
 export function withPagination<Name extends string>(config?: {
   name: Name;
 }): SignalStoreFeature {
   const {
+    paginationKey,
     currentPageKey,
     pageSizeKey,
     setCurrentPageKey,
@@ -79,8 +85,20 @@ export function withPagination<Name extends string>(config?: {
       [currentPageKey]: initialState.currentPage,
       [pageSizeKey]: initialState.pageSize,
     }),
-    withMethods(store => {
+    withComputed((store: Record<string, Signal<unknown>>) => {
+      const $currentPage = store[currentPageKey] as Signal<number>;
+      const $pageSize = store[pageSizeKey] as Signal<number>;
       return {
+        ...store,
+        [paginationKey]: computed(() => ({
+          currentPage: $currentPage(),
+          pageSize: $pageSize(),
+        })),
+      };
+    }),
+    withMethods((store: StateSignal<any>) => {
+      return {
+        ...store,
         [resetKey]: () =>
           patchState(store, {
             [currentPageKey]: initialState.currentPage,

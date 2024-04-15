@@ -1,4 +1,5 @@
 import { Signal } from "@angular/core";
+import { PaginationDto } from "@shared/models";
 
 export type PaginationState = {
   pageSize: number;
@@ -6,8 +7,7 @@ export type PaginationState = {
 };
 
 export type PaginationSignals = {
-  pageSize: Signal<number>;
-  currentPage: Signal<number>;
+  $pagination: Signal<PaginationDto>;
 };
 
 export type PaginationMethods = {
@@ -23,9 +23,7 @@ export type NamedPaginationState<Name extends string> = {
 } & { [K in Name as `${K}CurrentPage`]: number };
 
 export type NamedPaginationSignals<Name extends string> = {
-  [K in Name as `${Capitalize<K>}PageSize`]: Signal<number>;
-} & {
-  [K in Name as `is${Capitalize<K>}CurrentPage`]: Signal<number>;
+  [K in Name as `$${Capitalize<K>}Pagination`]: Signal<number>;
 };
 
 export type NamedPaginationMethods<ActionName extends string> = {

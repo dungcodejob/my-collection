@@ -49,6 +49,7 @@ export class BookmarkManagementComponent implements OnInit {
   private readonly _route = inject(ActivatedRoute);
   $collection = this._facade.$collection;
   $entities = this._facade.$entities;
+  $pagination = this._facade.$pagination;
   // items = input.required({
   //   transform: coerceArray<BookmarkDto>,
   // });
