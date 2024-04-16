@@ -31,14 +31,9 @@ export class BookmarkFacade {
     );
   }
 
-  add() {
-    const collectionId = this.$collection()?.id as string;
-    this._bookmarkStore.create(collectionId);
-  }
+  add = this._bookmarkStore.create;
 
-  delete(id: string): void {
-    this._bookmarkStore.delete(id);
-  }
+  delete = this._bookmarkStore.delete;
 
   private _load(collectionId: string) {
     this._bookmarkStore.paginationReset();

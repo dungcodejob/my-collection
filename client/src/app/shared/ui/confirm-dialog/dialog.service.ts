@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
-import { isNotFalsy } from "@shared/utils";
 import { HlmDialogService } from "@spartan-ng/ui-dialog-helm";
-import { Observable, filter } from "rxjs";
+import { Observable } from "rxjs";
 import { ConfirmDialogData } from "./confirm-dialog-data";
 import { ConfirmDialogComponent } from "./confirm-dialog.component";
 
@@ -11,6 +10,6 @@ export class PadDialogService extends HlmDialogService {
     return this.open(ConfirmDialogComponent, {
       closeOnBackdropClick: false,
       context: { data },
-    }).closed$.pipe(filter(isNotFalsy));
+    }).closed$;
   };
 }
