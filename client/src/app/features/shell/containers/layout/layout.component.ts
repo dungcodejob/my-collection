@@ -33,6 +33,7 @@ export class LayoutComponent {
   private readonly _facade = inject(ShellFacade);
 
   $loading = this._facade.$loading;
+
   public vm$: Observable<ViewModel> = merge(
     this._router.events,
     this._activatedRoute.url
