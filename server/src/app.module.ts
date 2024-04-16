@@ -5,6 +5,7 @@ import { BookmarkModule } from "@modules/bookmark";
 import { CollectionModule } from "@modules/collection";
 import { CrawlModule } from "@modules/crawl";
 import { SecurityModule } from "@modules/security";
+import { TagModule } from "@modules/tag";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_INTERCEPTOR } from "@nestjs/core";
@@ -39,6 +40,7 @@ import { DatabaseConfig, appConfig, authConfig, databaseConfig } from "./configs
     CrawlModule,
     CollectionModule,
     BookmarkModule,
+    TagModule,
   ],
   controllers: [],
   providers: [

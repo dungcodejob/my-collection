@@ -3,6 +3,7 @@ import { Inject, Injectable, Provider } from "@nestjs/common";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { BookmarkRepository, BookmarkRepositoryImpl } from "./bookmark.repository";
 import { CollectionRepository, CollectionRepositoryImpl } from "./collection.repository";
+import { TagRepository, TagRepositoryImpl } from "./tag.repository";
 import { UserRepository, UserRepositoryImpl } from "./user.repository";
 
 export const UNIT_OF_WORK = Symbol("UnitOfWork");
@@ -11,6 +12,7 @@ export interface UnitOfWork {
   user: UserRepository;
   collection: CollectionRepository;
   bookmark: BookmarkRepository;
+  tag: TagRepository;
   save(): Promise<void>;
 }
 
@@ -21,6 +23,7 @@ export class UnitOfWorkImpl implements UnitOfWork {
   private _user?: UserRepository;
   private _collection?: CollectionRepository;
   private _bookmark?: BookmarkRepository;
+  private _tag?: TagRepository;
 
   constructor() {}
 
@@ -46,6 +49,14 @@ export class UnitOfWorkImpl implements UnitOfWork {
     }
 
     return this._bookmark;
+  }
+
+  get tag(): TagRepository {
+    if (!this._tag) {
+      this._tag = new TagRepositoryImpl(this._em);
+    }
+
+    return this._tag;
   }
 
   save(): Promise<void> {

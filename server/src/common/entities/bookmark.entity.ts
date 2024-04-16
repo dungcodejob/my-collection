@@ -1,6 +1,8 @@
 import { BaseEntity } from "@database/base.entity";
 import {
+  Collection,
   Entity,
+  ManyToMany,
   ManyToOne,
   OptionalProps,
   Property,
@@ -8,6 +10,7 @@ import {
   TextType,
 } from "@mikro-orm/postgresql";
 import { CollectionEntity } from "./collection.entity";
+import { TagEntity } from "./tag.entity";
 
 @Entity({ tableName: "bookmarks" })
 export class BookmarkEntity extends BaseEntity {
@@ -37,6 +40,6 @@ export class BookmarkEntity extends BaseEntity {
   @ManyToOne(() => CollectionEntity, { ref: true })
   collection!: Ref<CollectionEntity>;
 
-  // @ManyToMany(() => TagEntity)
-  // tags: Collection<TagEntity> = new Collection<TagEntity>(this);
+  @ManyToMany(() => TagEntity)
+  tags: Collection<TagEntity> = new Collection<TagEntity>(this);
 }
