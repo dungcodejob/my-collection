@@ -1,5 +1,5 @@
 import { NgIf } from "@angular/common";
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, Injector, OnInit, effect, inject, untracked } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -18,6 +18,7 @@ import {
 } from "@spartan-ng/ui-dialog-helm";
 import { HlmInputDirective, HlmInputErrorDirective } from "@spartan-ng/ui-input-helm";
 import { HlmLabelDirective } from "@spartan-ng/ui-label-helm";
+import { BookmarkDetailFacade } from "./bookmark-detail.facade";
 
 type BookmarkDetailForm = FormGroup<{
   url: FormControl<string>;
@@ -43,11 +44,13 @@ type BookmarkDetailForm = FormGroup<{
   styleUrl: "./bookmark-detail-dialog.component.scss",
 })
 export class BookmarkDetailDialogComponent implements OnInit {
+  private readonly _injector = inject(Injector);
   private readonly _dialogRef = inject<BrnDialogRef>(BrnDialogRef);
   private readonly _nonNullFb = inject(NonNullableFormBuilder);
   private readonly _dialogContext = injectBrnDialogContext<{
     data: BookmarkVM | null;
   }>();
+  private readonly _facade = inject(BookmarkDetailFacade);
 
   form!: BookmarkDetailForm;
 
@@ -59,8 +62,22 @@ export class BookmarkDetailDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this._facade.enter();
     this._initForm();
     this._setValueForControls();
+
+    effect(
+      () => {
+        const result = this._facade.$result();
+
+        untracked(() => {
+          if (result) {
+            this._dialogRef.close(result);
+          }
+        });
+      },
+      { injector: this._injector }
+    );
   }
 
   onClose(): void {
@@ -70,7 +87,8 @@ export class BookmarkDetailDialogComponent implements OnInit {
   onSave(): void {
     if (this.form.valid) {
       const raw = this.form.getRawValue();
-      this._dialogRef.close({ ...raw });
+      // this._dialogRef.close({ ...raw });
+      this._facade.add(raw.url);
     }
   }
 

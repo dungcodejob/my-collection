@@ -1,11 +1,13 @@
 import { TransformInterceptor } from "@common/interceptors";
+import { CrawlModule } from "@modules/crawl";
+
+import { SecurityModule } from "@modules/security";
+import { TagModule } from "@modules/tag";
+
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { defineConfig } from "@mikro-orm/postgresql";
 import { BookmarkModule } from "@modules/bookmark";
 import { CollectionModule } from "@modules/collection";
-import { CrawlModule } from "@modules/crawl";
-import { SecurityModule } from "@modules/security";
-import { TagModule } from "@modules/tag";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_INTERCEPTOR } from "@nestjs/core";

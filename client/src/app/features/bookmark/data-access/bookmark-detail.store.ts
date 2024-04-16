@@ -1,7 +1,9 @@
+import { inject } from "@angular/core";
 import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { setError, setFulfilled, setPending, withStatus } from "@shared/data-access";
 import { BookmarkVM, MetadataDto } from "@shared/models";
+import { ToastService } from "@shared/services";
 import { prefix } from "@shared/utils";
 import { EMPTY, catchError, map, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi, injectCrawlApi } from ".";
@@ -20,9 +22,10 @@ export const BookmarkDetailStore = signalStore(
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();
     const crawlApi = injectCrawlApi();
+    const toastService = inject(ToastService);
 
     return {
-      enter: () => patchState(store, { status: "idle" }),
+      enter: () => patchState(store, initialState, { status: "idle" }),
       create: rxMethod<{ url: string; collectionId: string }>(
         pipe(
           switchMap(({ url, collectionId }) =>
@@ -36,12 +39,14 @@ export const BookmarkDetailStore = signalStore(
                 next: res => {
                   const data = res.result.data;
                   patchState(store, { result: data }, setFulfilled());
+                  toastService.success(`Bookmark “${data.title}“ was created`);
                 },
                 error: err => {
                   const message = "Bookmark could not be created";
                   // TODO: using logger service
                   console.log(err);
                   patchState(store, setError(err));
+                  toastService.error(message);
                 },
               }),
               catchError(() => EMPTY)

@@ -4,7 +4,7 @@ import {
   SignalStoreFeature,
   signalStoreFeature,
   withComputed,
-  withState
+  withState,
 } from "@ngrx/signals";
 import { SignalStoreFeatureResult } from "@ngrx/signals/src/signal-store-models";
 import { capitalize } from "@shared/utils";
