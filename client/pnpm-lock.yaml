@@ -53,6 +53,9 @@ dependencies:
   '@spartan-ng/ui-checkbox-brain':
     specifier: 0.0.1-alpha.336
     version: 0.0.1-alpha.336(@angular/cdk@17.3.1)(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/forms@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)
+  '@spartan-ng/ui-command-brain':
+    specifier: 0.0.1-alpha.344
+    version: 0.0.1-alpha.344(@angular/common@17.3.3)(@angular/core@17.3.3)(@ngneat/overview@5.1.1)(@ngneat/until-destroy@10.0.0)(@ngxpert/cmdk@1.0.0)
   '@spartan-ng/ui-core':
     specifier: 0.0.1-alpha.344
     version: 0.0.1-alpha.344(@angular/core@17.3.3)(clsx@1.2.1)(rxjs@7.8.1)(tailwind-merge@2.2.2)(tailwindcss-animate@1.0.7)(tailwindcss@3.4.1)
@@ -65,6 +68,9 @@ dependencies:
   '@spartan-ng/ui-menu-brain':
     specifier: 0.0.1-alpha.337
     version: 0.0.1-alpha.337(@angular/cdk@17.3.1)(@angular/core@17.3.3)
+  '@spartan-ng/ui-popover-brain':
+    specifier: 0.0.1-alpha.344
+    version: 0.0.1-alpha.344(@angular/core@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)(@spartan-ng/ui-dialog-brain@0.0.1-alpha.344)
   class-variance-authority:
     specifier: ^0.6.0
     version: 0.6.1
@@ -3561,6 +3567,15 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /@ngneat/overview@5.1.1(@angular/core@17.3.3):
+    resolution: {integrity: sha512-Dz7yylhS08Mo+A8SXo7KyJBJMxD18Oq/G5v/ndvd5C8Gi3uOrAiXUjxvqRCPMxrg03FlkvEsD5/4TvMKtrUfAQ==}
+    peerDependencies:
+      '@angular/core': '>=16'
+    dependencies:
+      '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      tslib: 2.6.2
+    dev: false
+
   /@ngneat/transloco-utils@5.0.0(typescript@5.3.3):
     resolution: {integrity: sha512-e0S+GWyBTmLix9KfYWW/rScYdqQz3z3znNSb+foaA5T3jWs4CPLVo+PV0No7kGjqom8Wy8H3lLvztfhHxYSLyA==}
     engines: {node: '>=16'}
@@ -3587,6 +3602,17 @@ packages:
       tslib: 2.6.2
     transitivePeerDependencies:
       - typescript
+    dev: false
+
+  /@ngneat/until-destroy@10.0.0(@angular/core@17.3.3)(rxjs@7.8.1):
+    resolution: {integrity: sha512-xXFAabQ4YVJ82LYxdgUlaKZyR3dSbxqG3woSyaclzxfCgWMEDweCcM/GGYbNiHJa0WwklI98RXHvca+UyCxpeg==}
+    peerDependencies:
+      '@angular/core': '>=13'
+      rxjs: ^6.4.0 || ^7.0.0
+    dependencies:
+      '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      rxjs: 7.8.1
+      tslib: 2.6.2
     dev: false
 
   /@ngrx/component-store@17.1.1(@angular/core@17.3.3)(rxjs@7.8.1):
@@ -3636,6 +3662,22 @@ packages:
       typescript: 5.3.3
       webpack: 5.90.3(esbuild@0.20.1)
     dev: true
+
+  /@ngxpert/cmdk@1.0.0(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1):
+    resolution: {integrity: sha512-PmZEKINJxWbGEE4GJ+iyB881z2YWETL1s8l2snqnmmVKCzTZjQruCY0JA8rLIAmLz6m9jlXUVj3Ox05i216tCQ==}
+    peerDependencies:
+      '@angular/common': '>=16.0.0'
+      '@angular/core': '>16.0.0'
+    dependencies:
+      '@angular/cdk': 17.3.1(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1)
+      '@angular/common': 17.3.3(@angular/core@17.3.3)(rxjs@7.8.1)
+      '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      '@ngneat/overview': 5.1.1(@angular/core@17.3.3)
+      '@ngneat/until-destroy': 10.0.0(@angular/core@17.3.3)(rxjs@7.8.1)
+      tslib: 2.6.2
+    transitivePeerDependencies:
+      - rxjs
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -4646,6 +4688,23 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /@spartan-ng/ui-command-brain@0.0.1-alpha.344(@angular/common@17.3.3)(@angular/core@17.3.3)(@ngneat/overview@5.1.1)(@ngneat/until-destroy@10.0.0)(@ngxpert/cmdk@1.0.0):
+    resolution: {integrity: sha512-ppxEl0H4yxUN12kX1O9j09o2Y9Lc1hqhkhrAe5xPT3e/Y7GRBSRsim1M3X6izD0SPlKM46pLesAtlLAySZ1iBg==}
+    peerDependencies:
+      '@angular/common': ^17.3.0
+      '@angular/core': ^17.3.0
+      '@ngneat/overview': ^5.0.0
+      '@ngneat/until-destroy': ^10.0.0
+      '@ngxpert/cmdk': ^1.0.0
+    dependencies:
+      '@angular/common': 17.3.3(@angular/core@17.3.3)(rxjs@7.8.1)
+      '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      '@ngneat/overview': 5.1.1(@angular/core@17.3.3)
+      '@ngneat/until-destroy': 10.0.0(@angular/core@17.3.3)(rxjs@7.8.1)
+      '@ngxpert/cmdk': 1.0.0(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1)
+      tslib: 2.6.2
+    dev: false
+
   /@spartan-ng/ui-core@0.0.1-alpha.344(@angular/core@17.3.3)(clsx@1.2.1)(rxjs@7.8.1)(tailwind-merge@2.2.2)(tailwindcss-animate@1.0.7)(tailwindcss@3.4.1):
     resolution: {integrity: sha512-1HMtDo9aCXSeBhbsgPB4mcOIhzG2DBSTA5GWLn5dKB6bM6ilKGO6XyyypAGlH36zReki3EHdLXjIBGuCuXdzIw==}
     peerDependencies:
@@ -4697,6 +4756,19 @@ packages:
     dependencies:
       '@angular/cdk': 17.3.1(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1)
       '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      tslib: 2.6.2
+    dev: false
+
+  /@spartan-ng/ui-popover-brain@0.0.1-alpha.344(@angular/core@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)(@spartan-ng/ui-dialog-brain@0.0.1-alpha.344):
+    resolution: {integrity: sha512-CINj7BFn7dM9NG0A7FkKVYT7V7bfGWJq0u5DMHXcZ8j5JKBRGihC6oV7fbDTKZj720Ldj6lzhBBnSY8+NMzTtA==}
+    peerDependencies:
+      '@angular/core': ^17.3.0
+      '@spartan-ng/ui-core': 0.0.1-alpha.343
+      '@spartan-ng/ui-dialog-brain': 0.0.1-alpha.343
+    dependencies:
+      '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      '@spartan-ng/ui-core': 0.0.1-alpha.344(@angular/core@17.3.3)(clsx@1.2.1)(rxjs@7.8.1)(tailwind-merge@2.2.2)(tailwindcss-animate@1.0.7)(tailwindcss@3.4.1)
+      '@spartan-ng/ui-dialog-brain': 0.0.1-alpha.344(@angular/cdk@17.3.1)(@angular/core@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)
       tslib: 2.6.2
     dev: false
 

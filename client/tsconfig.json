@@ -59,6 +59,15 @@
       ],
       "@spartan-ng/ui-skeleton-helm": [
         ".\\libs/ui-skeleton-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-badge-helm": [
+        ".\\libs/ui-badge-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-popover-helm": [
+        ".\\libs/ui-popover-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-command-helm": [
+        ".\\libs/ui-command-helm/src/index.ts"
       ]
     },
     "outDir": "./dist/out-tsc",
