@@ -6,6 +6,7 @@ import {
   ResponseDto,
   SingleResponseDto,
 } from "@core/http";
+import { BaseDto } from "@shared/models";
 import { LocalStorageService } from "@shared/services";
 
 @Injectable({ providedIn: "root" })
@@ -14,6 +15,13 @@ export class BaseMockApi {
 
   constructor() {}
 
+  protected _createBaseDto(): BaseDto {
+    return {
+      id: `${new Date().getTime()}`,
+      createAt: new Date().toString(),
+      updateAt: new Date().toString(),
+    };
+  }
   protected _createSingleResponse<T>(data: T): SingleResponseDto<T> {
     const res = this._createBaseResponse();
     return {

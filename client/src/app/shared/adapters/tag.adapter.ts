@@ -15,6 +15,7 @@ export class TagAdapter implements ViewModelAdapter<TagDto, TagVM> {
     return {
       ...baseVM,
       title: dto.title,
+      collectionId: dto.collectionId,
     };
   }
   toDto(vm: TagVM): TagDto;
@@ -27,6 +28,7 @@ export class TagAdapter implements ViewModelAdapter<TagDto, TagVM> {
     return {
       ...baseDto,
       title: vm.title,
+      collectionId: vm.collectionId,
     };
   }
 }

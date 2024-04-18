@@ -46,11 +46,10 @@ export class TagMockApi extends BaseMockApi implements TagApi {
   }
 
   create(body: CreateTagDto): Observable<SingleResponseDto<TagVM>> {
+    const base = this._createBaseDto();
     const entity: TagEntity = {
       ...body,
-      id: `${this._entities.length + 1}`,
-      createAt: new Date().toString(),
-      updateAt: new Date().toString(),
+      ...base,
     };
 
     this._entities.push(entity);

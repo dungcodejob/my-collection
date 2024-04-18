@@ -10,8 +10,6 @@ import {
 import { BookmarkVM } from "@shared/models";
 
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
-import { BrnCommandImports } from "@spartan-ng/ui-command-brain";
-import { HlmCommandImports } from "@spartan-ng/ui-command-helm";
 import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/ui-dialog-brain";
 import {
   HlmDialogDescriptionDirective,
@@ -50,10 +48,7 @@ type BookmarkDetailForm = FormGroup<{
     HlmInputErrorDirective,
     HlmButtonDirective,
 
-    BrnCommandImports,
-    HlmCommandImports,
     HlmIconComponent,
-
     BrnPopoverComponent,
     BrnPopoverTriggerDirective,
     HlmPopoverContentDirective,
