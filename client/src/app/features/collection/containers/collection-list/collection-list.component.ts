@@ -68,8 +68,8 @@ export class CollectionListComponent implements OnInit {
   private readonly _redirectService = inject(RedirectService);
   private readonly _facade = inject(CollectionFacade);
 
-  $entities = this._facade.$entities;
-  $selectedId = this._facade.$selectedId;
+  $entities = this._facade.$collections;
+  $selectedId = this._facade.$selectedCollectionId;
   ngOnInit(): void {
     this._facade.enter();
   }

@@ -3,5 +3,6 @@ export enum LocalStorageKeys {
   User = "user",
   Lang = "lang",
   Bookmark = "bookmark",
+  Tag = "tag",
   Collection = "collection",
 }

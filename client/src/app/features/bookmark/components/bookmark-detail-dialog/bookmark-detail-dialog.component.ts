@@ -8,7 +8,10 @@ import {
   Validators,
 } from "@angular/forms";
 import { BookmarkVM } from "@shared/models";
+
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
+import { BrnCommandImports } from "@spartan-ng/ui-command-brain";
+import { HlmCommandImports } from "@spartan-ng/ui-command-helm";
 import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/ui-dialog-brain";
 import {
   HlmDialogDescriptionDirective,
@@ -16,10 +19,17 @@ import {
   HlmDialogHeaderComponent,
   HlmDialogTitleDirective,
 } from "@spartan-ng/ui-dialog-helm";
+import { HlmIconComponent } from "@spartan-ng/ui-icon-helm";
 import { HlmInputDirective, HlmInputErrorDirective } from "@spartan-ng/ui-input-helm";
 import { HlmLabelDirective } from "@spartan-ng/ui-label-helm";
+import { HlmPopoverContentDirective } from "@spartan-ng/ui-popover-helm";
 import { BookmarkDetailFacade } from "./bookmark-detail.facade";
 
+import {
+  BrnPopoverComponent,
+  BrnPopoverContentDirective,
+  BrnPopoverTriggerDirective,
+} from "@spartan-ng/ui-popover-brain";
 type BookmarkDetailForm = FormGroup<{
   url: FormControl<string>;
 }>;
@@ -39,6 +49,15 @@ type BookmarkDetailForm = FormGroup<{
     HlmLabelDirective,
     HlmInputErrorDirective,
     HlmButtonDirective,
+
+    BrnCommandImports,
+    HlmCommandImports,
+    HlmIconComponent,
+
+    BrnPopoverComponent,
+    BrnPopoverTriggerDirective,
+    HlmPopoverContentDirective,
+    BrnPopoverContentDirective,
   ],
   templateUrl: "./bookmark-detail-dialog.component.html",
   styleUrl: "./bookmark-detail-dialog.component.scss",

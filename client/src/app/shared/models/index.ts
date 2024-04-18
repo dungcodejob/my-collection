@@ -9,5 +9,8 @@ export * from "./collection.vm";
 export * from "./credentials";
 export * from "./metadata.dto";
 export * from "./pagination.dto";
+export * from "./tag-query.dto";
+export * from "./tag.dto";
+export * from "./tag.vm";
 export * from "./token.dto";
 export * from "./user-profile.dto";
