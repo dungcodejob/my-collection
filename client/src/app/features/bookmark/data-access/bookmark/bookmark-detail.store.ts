@@ -6,7 +6,7 @@ import { BookmarkVM, MetadataDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { prefix } from "@shared/utils";
 import { EMPTY, catchError, map, pipe, switchMap, tap } from "rxjs";
-import { injectBookmarkApi, injectCrawlApi } from ".";
+import { injectBookmarkApi, injectCrawlApi } from "..";
 
 type BookmarkDetailState = {
   result: BookmarkVM | null;

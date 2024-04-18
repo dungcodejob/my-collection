@@ -20,7 +20,7 @@ import { BookmarkVM } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
-import { injectBookmarkApi } from ".";
+import { injectBookmarkApi } from "..";
 
 export const BookmarkStore = signalStore(
   withStatus(),

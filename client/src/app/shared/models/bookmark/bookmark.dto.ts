@@ -1,4 +1,4 @@
-import { BaseDto } from "./base.dto";
+import { BaseDto } from "../base.dto";
 import { MetadataDto } from "./metadata.dto";
 
 export interface BookmarkDto extends BaseDto, MetadataDto {

@@ -24,44 +24,20 @@
       </div>
     </div>
     <div class="space-y-1">
-      <!-- <brn-popover
-        [state]="state()"
-        (stateChanged)="stateChanged($event)"
-        sideOffset="5"
-        closeDelay="100">
-        <button
-          class="w-[200px] justify-between"
-          id="edit-profile"
-          variant="outline"
-          brnPopoverTrigger
-          hlmBtn>
-          {{ currentFramework() ? currentFramework().label : "Select framework..." }}
-          <hlm-icon size="sm" name="lucideChevronsUpDown" />
-        </button>
-        <brn-cmd *brnPopoverContent="let ctx" hlmPopoverContent hlm class="p-0 w-[200px]">
-          <hlm-cmd-input-wrapper>
-            <hlm-icon name="lucideSearch" />
-            <input placeholder="Search framework..." brnCmdInput hlm />
-          </hlm-cmd-input-wrapper>
-          <div *brnCmdEmpty hlmCmdEmpty>No results found.</div>
-          <brn-cmd-list hlm>
-            <brn-cmd-group hlm>
-              <button
-                *ngFor="let framework of frameworks"
-                brnCmdItem
-                [value]="framework.value"
-                (selected)="commandSelected(framework)"
-                hlm>
-                <hlm-icon
-                  [class.opacity-0]="currentFramework()?.value !== framework.value"
-                  name="lucideCheck"
-                  hlmCmdIcon />
-                {{ framework.label }}
-              </button>
-            </brn-cmd-group>
-          </brn-cmd-list>
-        </brn-cmd>
-      </brn-popover> -->
+      <label hlmLabel for="url">Tags</label>
+      <input #input hlmInput type="text" (focus)="select.open()" />
+      <brn-select #select class="inline-block w-full" placeholder="Select an option">
+        <hlm-select-content>
+          @for (tag of $tags(); track $index) {
+            <hlm-option [value]="tag.id">{{ tag.title }}</hlm-option>
+          } @empty {
+            <hlm-option class="hidden"></hlm-option>
+            <div class="w-full h-full flex justify-center items-center" hlmCmdEmpty>
+              No results found.
+            </div>
+          }
+        </hlm-select-content>
+      </brn-select>
     </div>
   </div>
   <hlm-dialog-footer>

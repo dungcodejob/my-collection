@@ -47,12 +47,15 @@ dependencies:
   '@ngrx/signals':
     specifier: ^17.1.1
     version: 17.1.1(@angular/core@17.3.3)(rxjs@7.8.1)
+  '@ngxpert/cmdk':
+    specifier: ^1.0.0
+    version: 1.0.0(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1)
   '@spartan-ng/ui-alertdialog-brain':
     specifier: 0.0.1-alpha.344
     version: 0.0.1-alpha.344(@angular/core@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)(@spartan-ng/ui-dialog-brain@0.0.1-alpha.344)
   '@spartan-ng/ui-checkbox-brain':
-    specifier: 0.0.1-alpha.336
-    version: 0.0.1-alpha.336(@angular/cdk@17.3.1)(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/forms@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)
+    specifier: 0.0.1-alpha.344
+    version: 0.0.1-alpha.344(@angular/cdk@17.3.1)(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/forms@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)
   '@spartan-ng/ui-command-brain':
     specifier: 0.0.1-alpha.344
     version: 0.0.1-alpha.344(@angular/common@17.3.3)(@angular/core@17.3.3)(@ngneat/overview@5.1.1)(@ngneat/until-destroy@10.0.0)(@ngxpert/cmdk@1.0.0)
@@ -71,6 +74,9 @@ dependencies:
   '@spartan-ng/ui-popover-brain':
     specifier: 0.0.1-alpha.344
     version: 0.0.1-alpha.344(@angular/core@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)(@spartan-ng/ui-dialog-brain@0.0.1-alpha.344)
+  '@spartan-ng/ui-select-brain':
+    specifier: 0.0.1-alpha.344
+    version: 0.0.1-alpha.344(@angular/cdk@17.3.1)(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/forms@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)(@spartan-ng/ui-label-brain@0.0.1-alpha.335)
   class-variance-authority:
     specifier: ^0.6.0
     version: 0.6.1
@@ -4671,14 +4677,14 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@spartan-ng/ui-checkbox-brain@0.0.1-alpha.336(@angular/cdk@17.3.1)(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/forms@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344):
-    resolution: {integrity: sha512-gn4TCh56GGqeE2P73WGAUOEHnsXmI0dK3Bb91uGxXuMg+te5akPxNVuL73Cr/uCM3k6Fz/7BX7nnV0LmKFql5Q==}
+  /@spartan-ng/ui-checkbox-brain@0.0.1-alpha.344(@angular/cdk@17.3.1)(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/forms@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344):
+    resolution: {integrity: sha512-x0XFFRLsZyQ9Xo68MWGxdzZ62K5HBO/Oew6YrpShTeNtNrGTujPscvx2Y8RosQiTXXebLIYv2hePtM0KIi9HEg==}
     peerDependencies:
-      '@angular/cdk': ^17.1.0
-      '@angular/common': ^17.1.0
-      '@angular/core': ^17.1.0
-      '@angular/forms': ^17.1.0
-      '@spartan-ng/ui-core': 0.0.1-alpha.336
+      '@angular/cdk': ^17.3.0
+      '@angular/common': ^17.3.0
+      '@angular/core': ^17.3.0
+      '@angular/forms': ^17.3.0
+      '@spartan-ng/ui-core': 0.0.1-alpha.343
     dependencies:
       '@angular/cdk': 17.3.1(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1)
       '@angular/common': 17.3.3(@angular/core@17.3.3)(rxjs@7.8.1)
@@ -4769,6 +4775,25 @@ packages:
       '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
       '@spartan-ng/ui-core': 0.0.1-alpha.344(@angular/core@17.3.3)(clsx@1.2.1)(rxjs@7.8.1)(tailwind-merge@2.2.2)(tailwindcss-animate@1.0.7)(tailwindcss@3.4.1)
       '@spartan-ng/ui-dialog-brain': 0.0.1-alpha.344(@angular/cdk@17.3.1)(@angular/core@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)
+      tslib: 2.6.2
+    dev: false
+
+  /@spartan-ng/ui-select-brain@0.0.1-alpha.344(@angular/cdk@17.3.1)(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/forms@17.3.3)(@spartan-ng/ui-core@0.0.1-alpha.344)(@spartan-ng/ui-label-brain@0.0.1-alpha.335):
+    resolution: {integrity: sha512-QwCEcY5qJdF2ychjmsnCVXUA/o9n+WVj/4NYMsywzTTv9mgwY54UYLnoJY5kN/dq9915XhSSizeThQEj2Fl4Zw==}
+    peerDependencies:
+      '@angular/cdk': ^17.3.0
+      '@angular/common': ^17.3.0
+      '@angular/core': ^17.3.0
+      '@angular/forms': ^17.3.0
+      '@spartan-ng/ui-core': 0.0.1-alpha.343
+      '@spartan-ng/ui-label-brain': 0.0.1-alpha.343
+    dependencies:
+      '@angular/cdk': 17.3.1(@angular/common@17.3.3)(@angular/core@17.3.3)(rxjs@7.8.1)
+      '@angular/common': 17.3.3(@angular/core@17.3.3)(rxjs@7.8.1)
+      '@angular/core': 17.3.3(rxjs@7.8.1)(zone.js@0.14.4)
+      '@angular/forms': 17.3.3(@angular/common@17.3.3)(@angular/core@17.3.3)(@angular/platform-browser@17.3.3)(rxjs@7.8.1)
+      '@spartan-ng/ui-core': 0.0.1-alpha.344(@angular/core@17.3.3)(clsx@1.2.1)(rxjs@7.8.1)(tailwind-merge@2.2.2)(tailwindcss-animate@1.0.7)(tailwindcss@3.4.1)
+      '@spartan-ng/ui-label-brain': 0.0.1-alpha.335(@angular/common@17.3.3)(@angular/core@17.3.3)
       tslib: 2.6.2
     dev: false
 

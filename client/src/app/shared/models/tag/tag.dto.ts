@@ -1,4 +1,4 @@
-import { BaseDto } from "./base.dto";
+import { BaseDto } from "../base.dto";
 
 export interface TagDto extends BaseDto {
   readonly title: string;

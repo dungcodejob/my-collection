@@ -1,4 +1,4 @@
-import { BaseVM } from "./base.vm";
+import { BaseVM } from "../base.vm";
 
 export interface CollectionVM extends BaseVM {
   readonly title: string;
