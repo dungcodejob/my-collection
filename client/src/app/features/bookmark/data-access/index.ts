@@ -1,4 +1,7 @@
-export * from "./bookmark-detail.store";
-export * from "./bookmark-management.store";
-export * from "./bookmark.provider";
-export * from "./crawl.provider";
+export * from "./bookmark/bookmark-detail.store";
+export * from "./bookmark/bookmark-management.store";
+export * from "./bookmark/bookmark.provider";
+export * from "./crawl/crawl.provider";
+export * from "./tag/tag.provider";
+export * from "./tag/tag.store";
+

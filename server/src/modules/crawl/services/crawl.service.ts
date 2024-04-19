@@ -37,9 +37,41 @@ export class CrawlService {
         metadata.image = image;
         metadata.title = title;
         metadata.description = description;
-        metadata.favicon = icon.includes("http") ? icon : url.origin + icon;
+
+        metadata.favicon = this.validURL(icon) ? icon : url.origin + icon;
 
         return metadata;
       });
+  }
+  /*
+   * Per RFC 3886, URL must begin with a scheme (not limited to http/https), e. g.:
+   * - www.example.com is not valid URL (missing scheme)
+   * - javascript:void(0) is valid URL, although not an HTTP one
+   * - http://.. is valid URL with the host being .. (whether it resolves depends on your DNS)
+   * - https://example..com is valid URL, same as above
+   */
+  isValidHttpUrl(value: string) {
+    let url;
+
+    try {
+      url = new URL(value);
+    } catch (_) {
+      return false;
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:";
+  }
+
+  validURL(str: string) {
+    const pattern = new RegExp(
+      "^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$",
+      "i"
+    ); // fragment locator
+    return !!pattern.test(str);
   }
 }

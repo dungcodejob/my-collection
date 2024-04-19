@@ -34,18 +34,25 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
       totalCount: this._entities.length,
       totalPages: this._entities.length / query.pageSize,
     };
-    const res = this._createPaginationResponse(this._entities, pagination);
+    let result = this._entities;
+    if (query.collectionId) {
+      result = result.filter(item => item.collectionId === query.collectionId);
+    }
+
+    const offset = query.pageSize * (query.currentPage - 1);
+    const limit = query.pageSize;
+    result = result.splice(offset, offset + limit);
+    const res = this._createPaginationResponse(result, pagination);
     return of(res).pipe(
       map(res => this._responseAdapter.fromPaginationDto(res, this._bookmarkAdapter))
     );
   }
 
   create(body: CreateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>> {
+    const base = this._createBaseDto();
     const entity: BookmarkDto = {
       ...body,
-      id: `${this._entities.length + 1}`,
-      createAt: new Date().toString(),
-      updateAt: new Date().toString(),
+      ...base,
     };
 
     this._entities.push(entity);

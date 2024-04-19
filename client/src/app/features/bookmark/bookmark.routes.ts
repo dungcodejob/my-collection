@@ -3,8 +3,10 @@ import { BookmarkManagementComponent } from "./containers/bookmark-management/bo
 import {
   BookmarkDetailStore,
   BookmarkStore,
+  TagStore,
   provideBookmarkMockApi,
   provideCrawlApi,
+  provideTagMockApi,
 } from "./data-access";
 
 export const bookmarkRoutes: Routes = [
@@ -14,8 +16,10 @@ export const bookmarkRoutes: Routes = [
       // provideBookmarkApi(),
       provideBookmarkMockApi(),
       provideCrawlApi(),
+      provideTagMockApi(),
       BookmarkStore,
       BookmarkDetailStore,
+      TagStore,
     ],
     component: BookmarkManagementComponent,
   },

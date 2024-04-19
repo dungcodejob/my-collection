@@ -35,12 +35,11 @@ export class CollectionMockApi extends BaseMockApi implements CollectionApi {
   }
 
   create(body: CreateCollectionDto): Observable<SingleResponseDto<CollectionVM>> {
+    const base = this._createBaseDto();
     const entity: CollectionDto = {
       ...body,
-      id: `${this._entities.length + 1}`,
-      position: `${this._entities.length}`,
-      createAt: new Date().toString(),
-      updateAt: new Date().toString(),
+      ...base,
+      position: `${new Date().getTime()}`,
     };
 
     this._entities.push(entity);

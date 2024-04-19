@@ -44,19 +44,19 @@ import {
 import { injectCollectionApi } from ".";
 
 type CollectionState = {
-  entities: CollectionVM[];
+  collections: CollectionVM[];
 };
 
 const initialState: CollectionState = {
-  entities: [],
+  collections: [],
 };
 const addCollection = (entity: CollectionVM): PartialStateUpdater<CollectionState> => {
   return state => {
-    const entities = structuredClone(state.entities);
+    const entities = structuredClone(state.collections);
 
     entities.unshift(entity);
 
-    return { ...state, entities };
+    return { ...state, collections: entities };
   };
 };
 
@@ -65,24 +65,24 @@ const updateCollection = (
   updater: Partial<CollectionVM>
 ): PartialStateUpdater<CollectionState> => {
   return state => {
-    const entities = structuredClone(state.entities);
+    const entities = structuredClone(state.collections);
 
     const indexOfUpdate = entities.findIndex(collection => collection.id === id);
     if (indexOfUpdate !== -1) {
       entities[indexOfUpdate] = { ...entities[indexOfUpdate], ...updater };
     }
 
-    return { ...state, entities };
+    return { ...state, collections: entities };
   };
 };
 
 const deleteCollection = (id: string): PartialStateUpdater<CollectionState> => {
   return state => {
-    let entities = structuredClone(state.entities);
+    let entities = structuredClone(state.collections);
 
     entities = entities.filter(collection => collection.id !== id);
 
-    return { ...state, entities };
+    return { ...state, collections: entities };
   };
 };
 
@@ -95,7 +95,7 @@ const moveCollection = (
   toIndex: number
 ): PartialStateUpdater<CollectionState> => {
   return state => {
-    const entities = structuredClone(state.entities);
+    const entities = structuredClone(state.collections);
 
     const from = clamp(fromIndex, entities.length - 1);
     const to = clamp(toIndex, entities.length - 1);
@@ -113,7 +113,7 @@ const moveCollection = (
 
     entities[to] = target;
 
-    return { ...state, entities };
+    return { ...state, collections: entities };
   };
 };
 
@@ -137,7 +137,7 @@ export const CollectionStore = signalStore(
     );
 
     return {
-      $selectedId: toSignal(collectionId$),
+      $selectedCollectionId: toSignal(collectionId$),
     };
   }),
   withMethods(store => {
@@ -165,7 +165,7 @@ export const CollectionStore = signalStore(
             collectionApi.findAll().pipe(
               tap({
                 next: res => {
-                  patchState(store, { entities: res.result.items }, setFulfilled());
+                  patchState(store, { collections: res.result.items }, setFulfilled());
                 },
                 error: err => {
                   // TODO: using logger service
@@ -209,7 +209,7 @@ export const CollectionStore = signalStore(
       ),
       edit: rxMethod<string>(
         pipe(
-          map(id => store.entities().find(item => item.id === id)),
+          map(id => store.collections().find(item => item.id === id)),
           filter(isNotNil),
           switchMap(data =>
             openDetailDialog(data).pipe(
@@ -219,7 +219,7 @@ export const CollectionStore = signalStore(
                   tap({
                     next: res => {
                       const data = res.result.data;
-                      patchState(store, state => ({ entities: state.entities }));
+                      patchState(store, state => ({ collections: state.collections }));
                       patchState(store, updateCollection(data.id, data), setFulfilled());
                       toastService.success(`Collection “${data.title}“ was saved`);
                     },
@@ -250,7 +250,7 @@ export const CollectionStore = signalStore(
       ),
       delete: rxMethod<string>(
         pipe(
-          map(id => store.entities().find(item => item.id === id)),
+          map(id => store.collections().find(item => item.id === id)),
           filter(isNotNil),
           switchMap(data =>
             dialogService
@@ -295,7 +295,7 @@ export const CollectionStore = signalStore(
       move: rxMethod<{ fromIndex: number; toIndex: number }>(
         pipe(
           switchMap(({ fromIndex, toIndex }) => {
-            const entity = store.entities()[fromIndex];
+            const entity = store.collections()[fromIndex];
 
             if (!entity) {
               return of();
@@ -304,11 +304,11 @@ export const CollectionStore = signalStore(
             let prevPosition = "";
             let nextPosition = "";
             if (fromIndex < toIndex) {
-              prevPosition = store.entities()[toIndex]?.position ?? "";
-              nextPosition = store.entities()[toIndex + 1]?.position ?? "";
+              prevPosition = store.collections()[toIndex]?.position ?? "";
+              nextPosition = store.collections()[toIndex + 1]?.position ?? "";
             } else {
-              prevPosition = store.entities()[toIndex - 1]?.position ?? "";
-              nextPosition = store.entities()[toIndex]?.position ?? "";
+              prevPosition = store.collections()[toIndex - 1]?.position ?? "";
+              nextPosition = store.collections()[toIndex]?.position ?? "";
             }
 
             return collectionApi.move(entity.id, { prevPosition, nextPosition }).pipe(

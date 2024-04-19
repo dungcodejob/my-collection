@@ -1,4 +1,4 @@
-import { BaseVM } from "./base.vm";
+import { BaseVM } from "../base.vm";
 
 export interface BookmarkVM extends BaseVM {
   url: string;

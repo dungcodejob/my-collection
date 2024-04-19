@@ -1,5 +1,5 @@
+import { UserProfileDto } from "../user/user-profile.dto";
 import { TokenDto } from "./token.dto";
-import { UserProfileDto } from "./user-profile.dto";
 
 export interface AuthResultDto {
   user: UserProfileDto;

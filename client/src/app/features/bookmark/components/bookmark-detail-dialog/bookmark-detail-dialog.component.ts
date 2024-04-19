@@ -1,5 +1,13 @@
 import { NgIf } from "@angular/common";
-import { Component, Injector, OnInit, effect, inject, untracked } from "@angular/core";
+import {
+  Component,
+  Injector,
+  OnInit,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -7,7 +15,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { BookmarkVM } from "@shared/models";
+import { BookmarkVM, TagVM } from "@shared/models";
+
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/ui-dialog-brain";
 import {
@@ -20,6 +29,8 @@ import { HlmInputDirective, HlmInputErrorDirective } from "@spartan-ng/ui-input-
 import { HlmLabelDirective } from "@spartan-ng/ui-label-helm";
 import { BookmarkDetailFacade } from "./bookmark-detail.facade";
 
+import { BrnSelectImports } from "@spartan-ng/ui-select-brain";
+import { HlmSelectImports } from "@spartan-ng/ui-select-helm";
 type BookmarkDetailForm = FormGroup<{
   url: FormControl<string>;
 }>;
@@ -39,6 +50,9 @@ type BookmarkDetailForm = FormGroup<{
     HlmLabelDirective,
     HlmInputErrorDirective,
     HlmButtonDirective,
+
+    BrnSelectImports,
+    HlmSelectImports,
   ],
   templateUrl: "./bookmark-detail-dialog.component.html",
   styleUrl: "./bookmark-detail-dialog.component.scss",
@@ -51,7 +65,9 @@ export class BookmarkDetailDialogComponent implements OnInit {
     data: BookmarkVM | null;
   }>();
   private readonly _facade = inject(BookmarkDetailFacade);
-
+  $state = signal<"closed" | "open">("closed");
+  $currentTag = signal<TagVM | null>(null);
+  $tags = this._facade.$tags;
   form!: BookmarkDetailForm;
 
   get data() {
@@ -78,6 +94,14 @@ export class BookmarkDetailDialogComponent implements OnInit {
       },
       { injector: this._injector }
     );
+  }
+
+  onStateChanged(state: "open" | "closed") {
+    this.$state.set(state);
+  }
+
+  onTagSelected(tag: TagVM): void {
+    console.log(tag);
   }
 
   onClose(): void {

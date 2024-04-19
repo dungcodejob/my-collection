@@ -8,11 +8,11 @@ export class CollectionFacade {
   private readonly _collectionStore = inject(CollectionStore);
   private readonly _shellFacade = inject(ShellFacade);
 
-  $entities = this._collectionStore.entities;
-  $selectedId = this._collectionStore.$selectedId;
+  $collections = this._collectionStore.collections;
+  $selectedCollectionId = this._collectionStore.$selectedCollectionId;
   $selectedEntity = computed(() => {
-    const entities = this.$entities();
-    const selectedId = this.$selectedId();
+    const entities = this.$collections();
+    const selectedId = this.$selectedCollectionId();
 
     return entities.find(entity => entity.id === selectedId);
   });
