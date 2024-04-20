@@ -1,4 +1,5 @@
 import { BaseVM } from "../base.vm";
+import { TagVM } from "../tag/tag.vm";
 
 export interface BookmarkVM extends BaseVM {
   url: string;
@@ -9,4 +10,5 @@ export interface BookmarkVM extends BaseVM {
   favicon: string;
   note: string;
   collectionId: string;
+  tags: TagVM[];
 }

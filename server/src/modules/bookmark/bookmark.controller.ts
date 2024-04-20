@@ -28,7 +28,7 @@ export class BookmarkController {
 
   @Get()
   async getAll(@CurrentUser() user: UserEntity, @Query() dto: BookmarkFilterDto) {
-    console.log(dto);
+
     if (dto.collectionId) {
       const bookmarkEntities = await this._bookmarkService.findByCollectionId(
         dto.collectionId,

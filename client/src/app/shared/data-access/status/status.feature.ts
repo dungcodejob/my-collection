@@ -9,7 +9,6 @@ import {
 import { SignalStoreFeatureResult } from "@ngrx/signals/src/signal-store-models";
 import { capitalize } from "@shared/utils";
 import {
-  NamedStatusMethods,
   NamedStatusSignals,
   NamedStatusState,
   Status,
@@ -46,7 +45,8 @@ export function withStatus<
   {
     state: NamedStatusState<Name>;
     signals: NamedStatusSignals<Name>;
-    methods: NamedStatusMethods;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    methods: {};
   }
 >;
 export function withStatus<Name extends string>(config?: {
@@ -71,6 +71,8 @@ export function withStatus<Name extends string>(config?: {
   );
 }
 
+export function setPending(): StatusState;
+export function setPending<Prop extends string>(prop: Prop): NamedStatusState<Prop>;
 export function setPending<Prop extends string>(
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
@@ -81,6 +83,8 @@ export function setPending<Prop extends string>(
   return { status: "pending" };
 }
 
+export function setFulfilled(): StatusState;
+export function setFulfilled<Prop extends string>(prop: Prop): NamedStatusState<Prop>;
 export function setFulfilled<Prop extends string>(
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
@@ -90,6 +94,11 @@ export function setFulfilled<Prop extends string>(
   return { status: "fulfilled" };
 }
 
+export function setError(error: ServerSideError): StatusState;
+export function setError<Prop extends string>(
+  error: ServerSideError,
+  prop: Prop
+): NamedStatusState<Prop>;
 export function setError<Prop extends string>(
   error: ServerSideError,
   prop?: Prop

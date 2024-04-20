@@ -1,11 +1,11 @@
 import { NgIf } from "@angular/common";
 import {
   Component,
+  DestroyRef,
   Injector,
   OnInit,
   effect,
   inject,
-  signal,
   untracked,
 } from "@angular/core";
 import {
@@ -31,8 +31,10 @@ import { BookmarkDetailFacade } from "./bookmark-detail.facade";
 
 import { BrnSelectImports } from "@spartan-ng/ui-select-brain";
 import { HlmSelectImports } from "@spartan-ng/ui-select-helm";
+import { BookmarkTagSelectComponent } from "../bookmark-tag-select/bookmark-tag-select.component";
 type BookmarkDetailForm = FormGroup<{
   url: FormControl<string>;
+  tags: FormControl<TagVM[]>;
 }>;
 
 @Component({
@@ -51,6 +53,8 @@ type BookmarkDetailForm = FormGroup<{
     HlmInputErrorDirective,
     HlmButtonDirective,
 
+    BookmarkTagSelectComponent,
+
     BrnSelectImports,
     HlmSelectImports,
   ],
@@ -59,14 +63,14 @@ type BookmarkDetailForm = FormGroup<{
 })
 export class BookmarkDetailDialogComponent implements OnInit {
   private readonly _injector = inject(Injector);
+  private readonly _destroyRef = inject(DestroyRef);
   private readonly _dialogRef = inject<BrnDialogRef>(BrnDialogRef);
   private readonly _nonNullFb = inject(NonNullableFormBuilder);
   private readonly _dialogContext = injectBrnDialogContext<{
     data: BookmarkVM | null;
   }>();
   private readonly _facade = inject(BookmarkDetailFacade);
-  $state = signal<"closed" | "open">("closed");
-  $currentTag = signal<TagVM | null>(null);
+
   $tags = this._facade.$tags;
   form!: BookmarkDetailForm;
 
@@ -84,11 +88,25 @@ export class BookmarkDetailDialogComponent implements OnInit {
 
     effect(
       () => {
-        const result = this._facade.$result();
+        const isDialogOpened = this._facade.$isDialogOpened();
 
         untracked(() => {
-          if (result) {
-            this._dialogRef.close(result);
+          if (!isDialogOpened) {
+            this._dialogRef.close();
+          }
+        });
+      },
+      { injector: this._injector }
+    );
+
+    effect(
+      () => {
+        const tagResult = this._facade.$tagResult();
+
+        untracked(() => {
+          if (tagResult) {
+            const tagControl = this.form.controls.tags;
+            tagControl.setValue([...tagControl.value, tagResult]);
           }
         });
       },
@@ -96,12 +114,12 @@ export class BookmarkDetailDialogComponent implements OnInit {
     );
   }
 
-  onStateChanged(state: "open" | "closed") {
-    this.$state.set(state);
+  onTagSearch(keyword: string): void {
+    this._facade.searchTag(keyword);
   }
 
-  onTagSelected(tag: TagVM): void {
-    console.log(tag);
+  onTagCreate(title: string): void {
+    this._facade.createTag(title);
   }
 
   onClose(): void {
@@ -112,13 +130,17 @@ export class BookmarkDetailDialogComponent implements OnInit {
     if (this.form.valid) {
       const raw = this.form.getRawValue();
       // this._dialogRef.close({ ...raw });
-      this._facade.add(raw.url);
+      this._facade.add({
+        url: raw.url,
+        tagIds: raw.tags.map(item => item.id),
+      });
     }
   }
 
   private _initForm(): void {
-    this.form = this._nonNullFb.group({
+    this.form = this._nonNullFb.group<BookmarkDetailForm["controls"]>({
       url: this._nonNullFb.control("", { validators: Validators.required }),
+      tags: this._nonNullFb.control([]),
     });
   }
 
@@ -127,11 +149,12 @@ export class BookmarkDetailDialogComponent implements OnInit {
     if (data) {
       this.form.setValue({
         url: data.url,
+        tags: [],
       });
     } else {
       const copied = await navigator.clipboard.readText();
 
-      this.form.setValue({ url: copied });
+      this.form.patchValue({ url: copied });
     }
   }
 }

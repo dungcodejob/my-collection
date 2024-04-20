@@ -27,5 +27,3 @@ export type NamedStatusSignals<Name extends string> = {
 } & {
   [K in Name as `$${K}Error`]: Signal<ServerSideError | null>;
 };
-
-export type NamedStatusMethods = MethodsDictionary;

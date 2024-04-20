@@ -2,21 +2,19 @@ import { NgFor, NgIf, NgTemplateOutlet } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
-  Injector,
   OnInit,
   ViewContainerRef,
-  inject,
+  inject
 } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
 import { BookmarkDetailDialogComponent } from "@bookmark/components/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import { BookmarkDetailFacade } from "@bookmark/components/bookmark-detail-dialog/bookmark-detail.facade";
 import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
 import { PadDialogService } from "@shared/ui";
-import { isNotFalsy, isNotNil } from "@shared/utils";
+import { isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
-import { filter, map } from "rxjs";
+import { filter, map, take, tap } from "rxjs";
 import { BookmarkFacade } from "./bookmark-management.facade";
 
 // Generics
@@ -51,15 +49,15 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
   ],
 })
 export class BookmarkManagementComponent implements OnInit {
-  private readonly _injector = inject(Injector);
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
   private readonly _facade = inject(BookmarkFacade);
-  private readonly _route = inject(ActivatedRoute);
 
   $collection = this._facade.$collection;
-  $entities = this._facade.$entities;
+  $loading = this._facade.$fetchLoading;
+  $bookmarks = this._facade.$bookmarks;
   $pagination = this._facade.$pagination;
+
   // items = input.required({
   //   transform: coerceArray<BookmarkDto>,
   // });
@@ -76,15 +74,17 @@ export class BookmarkManagementComponent implements OnInit {
   }
 
   onAdd(): void {
-    const data$ = this._dialogService
+    this._facade.setDialogOpened(true);
+    this._dialogService
       .open(BookmarkDetailDialogComponent, {
         closeOnBackdropClick: false,
         contentClass: "max-w-[30rem]",
         vcr: this._vcr,
       })
-      .closed$.pipe(filter(isNotNil));
-
-    this._facade.add(data$);
+      .closed$.pipe(
+        take(1),
+        tap(() => this._facade.setDialogOpened(false))
+      );
   }
 
   onDelete(id: string): void {

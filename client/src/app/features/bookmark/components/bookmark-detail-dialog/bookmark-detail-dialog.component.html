@@ -25,19 +25,12 @@
     </div>
     <div class="space-y-1">
       <label hlmLabel for="url">Tags</label>
-      <input #input hlmInput type="text" (focus)="select.open()" />
-      <brn-select #select class="inline-block w-full" placeholder="Select an option">
-        <hlm-select-content>
-          @for (tag of $tags(); track $index) {
-            <hlm-option [value]="tag.id">{{ tag.title }}</hlm-option>
-          } @empty {
-            <hlm-option class="hidden"></hlm-option>
-            <div class="w-full h-full flex justify-center items-center" hlmCmdEmpty>
-              No results found.
-            </div>
-          }
-        </hlm-select-content>
-      </brn-select>
+
+      <app-bookmark-tag-select
+        formControlName="tags"
+        [options]="$tags()"
+        (onSearch)="onTagSearch($event)"
+        (onCreate)="onTagCreate($event)"></app-bookmark-tag-select>
     </div>
   </div>
   <hlm-dialog-footer>

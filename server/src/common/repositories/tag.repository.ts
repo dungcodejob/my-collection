@@ -5,7 +5,7 @@ import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
 export interface TagRepository {
   create(entity: TagEntity): TagEntity;
   findByIds(ids: IdentityType[]): Promise<TagEntity[]>;
-  findAll(userId: string, collectionId?: string): Promise<TagEntity[]>;
+  findAll(userId: string, collectionId?: string, keyword?: string): Promise<TagEntity[]>;
   findByCollectionId(collectionId: string): Promise<TagEntity[]>;
 }
 
@@ -14,13 +14,17 @@ export class TagRepositoryImpl implements TagRepository {
   findByCollectionId(collectionId: string): Promise<TagEntity[]> {
     return this._em.find(TagEntity, { collection: { id: collectionId } });
   }
-  findAll(userId: string, collectionId?: string): Promise<TagEntity[]> {
+  findAll(userId: string, collectionId?: string, keyword?: string): Promise<TagEntity[]> {
     const sqlQuery: FilterQuery<TagEntity> = {
       $and: [{ collection: { user: { id: userId } } }],
     };
 
     if (collectionId) {
       sqlQuery.$and.push({ collection: { id: collectionId } });
+    }
+
+    if (keyword) {
+      sqlQuery.$and.push({ title: { $ilike: `%${keyword}%` } });
     }
 
     return this._em.find(TagEntity, sqlQuery);
