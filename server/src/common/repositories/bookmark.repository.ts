@@ -17,16 +17,18 @@ export class BookmarkRepositoryImpl implements BookmarkRepository {
   }
 
   findByCollectionId(collectionId: string, tagIds: string[]): Promise<BookmarkEntity[]> {
-    const filter: FilterQuery<BookmarkEntity> = {
-      collection: { id: collectionId },
-    };
+    const filter: FilterQuery<BookmarkEntity> = {};
 
-    // if (tagIds.length > 0) {
-    //   filter.tags = tagIds;
-    // }
+    if (collectionId) {
+      filter.collection = { id: collectionId };
+    }
+
+    if (tagIds && tagIds.length > 0) {
+      filter.tags = tagIds;
+    }
 
     return this._em.find(BookmarkEntity, filter, {
-      // populate: ["tags"],
+      populate: ["tags"],
     });
   }
 

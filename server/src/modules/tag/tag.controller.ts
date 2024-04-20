@@ -1,8 +1,9 @@
 import { AccessTokenGuard } from "@authentication/guards";
 import { CurrentUser } from "@common/decorators";
 import { UserEntity } from "@common/entities";
+import { PaginationMetaDto, Result } from "@common/models";
 import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
-import { CreateTagBodyDto } from "./models";
+import { CreateTagBodyDto, TagQueryDto } from "./models";
 import { TagMapper, TagService } from "./services";
 
 @UseGuards(AccessTokenGuard)
@@ -16,15 +17,18 @@ export class TagController {
   @Post()
   async create(@Body() body: CreateTagBodyDto) {
     const tagEntity = await this._tagService.create(body);
-    return this._tagMapper.toDto(tagEntity);
+    const dto = this._tagMapper.toDto(tagEntity);
+    return Result.toSingle(dto);
   }
 
   @Get()
-  async GetAll(
-    @CurrentUser() user: UserEntity,
-    @Query("collectionId") collectionId: string
-  ) {
-    const tagEntities = await this._tagService.findAll(user.id, collectionId);
-    return this._tagMapper.toDto(tagEntities);
+  async GetAll(@CurrentUser() user: UserEntity, @Query() query: TagQueryDto) {
+    const tagEntities = await this._tagService.findAll(user.id, query);
+    const meta = new PaginationMetaDto({
+      parameter: { currentPage: 1, pageSize: 10 },
+      total: tagEntities.length,
+    });
+    const dto = this._tagMapper.toDto(tagEntities);
+    return Result.toPagination(dto, meta);
   }
 }

@@ -1,9 +1,11 @@
 import { BookmarkDto, BookmarkVM } from "@shared/models";
 import { BaseAdapter } from "./base.adapter";
+import { TagAdapter } from "./tag.adapter";
 import { ViewModelAdapter } from "./view-model.adapter";
 
 export class BookmarkAdapter implements ViewModelAdapter<BookmarkDto, BookmarkVM> {
   private readonly _baseAdapter = new BaseAdapter();
+  private readonly _tagAdapter = new TagAdapter();
 
   fromDto(dto: BookmarkDto): BookmarkVM;
   fromDto(dto: BookmarkDto[]): BookmarkVM[];
@@ -12,6 +14,7 @@ export class BookmarkAdapter implements ViewModelAdapter<BookmarkDto, BookmarkVM
       return dto.map(item => this.fromDto(item));
     }
     const base = this._baseAdapter.fromDto(dto);
+
     return {
       ...base,
       url: dto.url,
@@ -22,6 +25,7 @@ export class BookmarkAdapter implements ViewModelAdapter<BookmarkDto, BookmarkVM
       favicon: dto.favicon,
       note: dto.note,
       collectionId: dto.collectionId,
+      tags: this._tagAdapter.fromDto(dto.tags),
     };
   }
   toDto(vm: BookmarkVM): BookmarkDto;
@@ -41,6 +45,7 @@ export class BookmarkAdapter implements ViewModelAdapter<BookmarkDto, BookmarkVM
       favicon: vm.favicon,
       note: vm.note,
       collectionId: vm.collectionId,
+      tags: this._tagAdapter.toDto(vm.tags),
     };
   }
 }

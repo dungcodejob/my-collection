@@ -1,0 +1,57 @@
+<div class="flex flex-col gap-2 mt-2 w-full">
+  @if ($selected().length > 0) {
+    <div class="flex gap-2 w-full">
+      @for (item of $selected(); track $index) {
+        <div hlmBadge class="rounded-md" variant="outline">{{ item.title }}</div>
+      }
+    </div>
+  }
+  <div class="relative w-full">
+    <input
+      #tagSearchInput
+      hlmInput
+      [formControl]="keywordControl"
+      class="absolute top-0 left-0 w-full"
+      size="sm"
+      placeholder="Add tags..."
+      type="text"
+      (focus)="select.open()" />
+    <brn-select
+      (openedChange)="onOpenChange($event)"
+      #select
+      class="inline-block w-full"
+      placeholder="Select an option">
+      <hlm-select-trigger class="w-full relative opacity-0"> </hlm-select-trigger>
+      <hlm-select-content>
+        @for (tag of $displayOptions(); track tag.id) {
+          <hlm-option class="relative p-0" [value]="tag.id">
+            <button
+              hlmBtn
+              variant="ghost"
+              class="top-0 left-0 w-full justify-start"
+              (click)="onOptionSelected(tag)">
+              {{ tag.title }}
+            </button>
+          </hlm-option>
+        } @empty {
+          @if (keywordControl.value) {
+            <hlm-option class="hidden"> </hlm-option>
+            <button
+              hlmBtn
+              variant="ghost"
+              class="top-0 left-0 w-full justify-between"
+              (click)="onTagCreate()">
+              <p>{{ keywordControl.value }}</p>
+              <span hlmMuted>New tag</span>
+            </button>
+          } @else {
+            <hlm-option class="hidden"> </hlm-option>
+            <div class="w-full min-h-16 flex justify-center items-center">
+              no result found
+            </div>
+          }
+        }
+      </hlm-select-content>
+    </brn-select>
+  </div>
+</div>

@@ -9,7 +9,7 @@ import {
   withPagination,
   withStatus,
 } from "@shared/data-access";
-import { TagFilterDto, TagQueryDto, TagVM } from "@shared/models";
+import { CreateTagDto, TagFilterDto, TagVM } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { prefix } from "@shared/utils";
 import { EMPTY, catchError, pipe, switchMap, tap } from "rxjs";
@@ -18,10 +18,12 @@ import { injectTagApi } from "./tag.provider";
 
 type TagState = {
   filter: TagFilterDto | null;
+  result: TagVM | null;
 };
 
 const initialState: TagState = {
   filter: null,
+  result: null,
 };
 
 export const TagStore = signalStore(
@@ -35,17 +37,18 @@ export const TagStore = signalStore(
 
     return {
       ...store,
-      setFilter: (filter: TagFilterDto | null) =>
-        patchState(store, state => ({
-          ...state,
-          filter: { ...state.filter, ...filter },
-        })),
-      findAll: rxMethod<TagQueryDto>(
+      enter: () => patchState(store, { result: null }),
+      setFilter: (value: TagFilterDto | null) =>
+        patchState(store, state => {
+          return { filter: { ...state.filter, ...value } };
+        }),
+      load: rxMethod<void>(
         pipe(
-          switchMap(query => {
+          switchMap(() => {
             const filter = store.filter();
+            const pagination = store.$pagination();
             if (filter) {
-              return tagApi.findAll(query).pipe(
+              return tagApi.findAll({ ...filter, ...pagination }).pipe(
                 prefix(() => patchState(store, setPending())),
                 tap({
                   next: res =>
@@ -58,6 +61,30 @@ export const TagStore = signalStore(
 
             return EMPTY;
           })
+        )
+      ),
+      create: rxMethod<CreateTagDto>(
+        pipe(
+          switchMap(body =>
+            tagApi.create(body).pipe(
+              prefix(() => patchState(store, setPending())),
+              tap({
+                next: res => {
+                  const data = res.result.data;
+                  patchState(store, { result: data }, setFulfilled());
+                  toastService.success(`Tag “${data.title}“ was created`);
+                },
+                error: err => {
+                  const message = "Tag could not be created";
+                  // TODO: using logger service
+                  console.log(err);
+                  patchState(store, setError(err));
+                  toastService.error(message);
+                },
+              }),
+              catchError(() => EMPTY)
+            )
+          )
         )
       ),
     };

@@ -13,6 +13,6 @@ export class GetAllTagHandler implements IQueryHandler<GetAllTagQuery> {
     @Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork
   ) {}
   async execute(query: GetAllTagQuery): Promise<TagEntity[]> {
-    return this._unitOfWork.tag.findAll(query.userId, query.collectionId);
+    return this._unitOfWork.tag.findAll(query.userId, query.collectionId, query.keyword);
   }
 }

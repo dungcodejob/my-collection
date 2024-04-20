@@ -1,24 +1,23 @@
 import { Routes } from "@angular/router";
 import { BookmarkManagementComponent } from "./containers/bookmark-management/bookmark-management.component";
 import {
-  BookmarkDetailStore,
   BookmarkStore,
   TagStore,
-  provideBookmarkMockApi,
+  provideBookmarkApi,
   provideCrawlApi,
-  provideTagMockApi,
+  provideTagApi,
 } from "./data-access";
 
 export const bookmarkRoutes: Routes = [
   {
     path: "",
     providers: [
-      // provideBookmarkApi(),
-      provideBookmarkMockApi(),
+      provideBookmarkApi(),
+      // provideBookmarkMockApi(),
       provideCrawlApi(),
-      provideTagMockApi(),
+      provideTagApi(),
+      // provideTagMockApi(),
       BookmarkStore,
-      BookmarkDetailStore,
       TagStore,
     ],
     component: BookmarkManagementComponent,

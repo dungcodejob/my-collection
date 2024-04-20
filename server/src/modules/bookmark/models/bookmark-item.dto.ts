@@ -1,11 +1,11 @@
 import { IdentityType } from "@database/identifiable.entity";
 
-// export interface BookmarkItemTagDto {
-//   readonly id: IdentityType;
-//   readonly title: string;
-//   readonly createAt: Date;
-//   readonly updateAt: Date;
-// }
+export interface BookmarkItemTagDto {
+  readonly id: IdentityType;
+  readonly title: string;
+  readonly createAt: Date;
+  readonly updateAt: Date;
+}
 
 export interface BookmarkItemDto {
   readonly id: IdentityType;
@@ -16,7 +16,7 @@ export interface BookmarkItemDto {
   readonly description: string;
   readonly favicon: string;
   readonly note: string;
-  // readonly tags: BookmarkItemTagDto[];
+  readonly tags: BookmarkItemTagDto[];
   readonly createAt: Date;
   readonly updateAt: Date;
 }

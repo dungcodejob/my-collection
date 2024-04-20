@@ -23,6 +23,9 @@ export class TagImplApi implements TagApi {
     if (query.collectionId) {
       params = params.set("collectionId", query.collectionId);
     }
+    if (query.keyword) {
+      params = params.set("keyword", query.keyword);
+    }
     params = params.set("currentPage", query.currentPage);
     params = params.set("pageSize", query.pageSize);
 

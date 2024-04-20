@@ -8,6 +8,7 @@ import {
   BookmarkQueryDto,
   BookmarkVM,
   CreateBookmarkDto,
+  TagDto,
   UpdateBookmarkDto,
 } from "@shared/models";
 import { Observable, map, of } from "rxjs";
@@ -15,14 +16,18 @@ import { BookmarkApi } from "./bookmark.api";
 
 @Injectable()
 export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
-  private _entities: BookmarkDto[] = [];
+  private _bookmarkEntities: BookmarkDto[] = [];
+  private _tagEntities: TagDto[] = [];
   private readonly _responseAdapter = new ResponseAdapter();
   private readonly _bookmarkAdapter = new BookmarkAdapter();
 
   constructor() {
     super();
 
-    this._entities = this._loadFromLocal<BookmarkDto[]>(LocalStorageKeys.Bookmark) ?? [];
+    this._bookmarkEntities =
+      this._loadFromLocal<BookmarkDto[]>(LocalStorageKeys.Bookmark) ?? [];
+
+    this._tagEntities = this._loadFromLocal<BookmarkDto[]>(LocalStorageKeys.Tag) ?? [];
   }
 
   findAll(query: BookmarkQueryDto): Observable<PaginationResponseDto<BookmarkVM>> {
@@ -31,10 +36,10 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
       pageSize: query.pageSize,
       hasNext: true,
       hasPrevious: true,
-      totalCount: this._entities.length,
-      totalPages: this._entities.length / query.pageSize,
+      totalCount: this._bookmarkEntities.length,
+      totalPages: this._bookmarkEntities.length / query.pageSize,
     };
-    let result = this._entities;
+    let result = this._bookmarkEntities;
     if (query.collectionId) {
       result = result.filter(item => item.collectionId === query.collectionId);
     }
@@ -50,12 +55,15 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
 
   create(body: CreateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>> {
     const base = this._createBaseDto();
+
+    const tags = this._tagEntities.filter(item => body.tagIds.includes(item.id));
     const entity: BookmarkDto = {
       ...body,
       ...base,
+      tags,
     };
 
-    this._entities.push(entity);
+    this._bookmarkEntities.push(entity);
     this._syncBookmark();
 
     const res = this._createSingleResponse(entity);
@@ -66,13 +74,13 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
   }
 
   update(id: string, body: UpdateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>> {
-    const indexToUpdate = this._entities.findIndex(item => item.id === id);
+    const indexToUpdate = this._bookmarkEntities.findIndex(item => item.id === id);
     if (indexToUpdate === -1) {
       throw Error("entity not found");
     }
-    const entityToUpdate = { ...this._entities[indexToUpdate], ...body };
+    const entityToUpdate = { ...this._bookmarkEntities[indexToUpdate], ...body };
     entityToUpdate.updateAt = new Date().toISOString();
-    this._entities[indexToUpdate] = entityToUpdate;
+    this._bookmarkEntities[indexToUpdate] = entityToUpdate;
     this._syncBookmark();
 
     const res = this._createSingleResponse(entityToUpdate);
@@ -82,13 +90,13 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
   }
 
   delete(id: string): Observable<SingleResponseDto<void>> {
-    this._entities = this._entities.filter(entity => entity.id === id);
+    this._bookmarkEntities = this._bookmarkEntities.filter(entity => entity.id === id);
     this._syncBookmark();
     const res = this._createSingleResponse<void>(undefined);
     return of(res);
   }
 
   private _syncBookmark() {
-    this._saveToLocal(this._entities, LocalStorageKeys.Bookmark);
+    this._saveToLocal(this._bookmarkEntities, LocalStorageKeys.Bookmark);
   }
 }

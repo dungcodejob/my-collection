@@ -1,11 +1,17 @@
 import { BaseDto } from "../base.dto";
+import { TagDto } from "../tag/tag.dto";
 import { MetadataDto } from "./metadata.dto";
 
 export interface BookmarkDto extends BaseDto, MetadataDto {
   note: string;
   collectionId: string;
+  tags: TagDto[];
 }
 
-export type BookmarkRequiredProps = Omit<BookmarkDto, keyof BaseDto>;
-export type CreateBookmarkDto = BookmarkRequiredProps;
-export type UpdateBookmarkDto = Omit<BookmarkRequiredProps, "url" | "domain">;
+export type BookmarkRequiredProps = Omit<BookmarkDto, keyof BaseDto | "tags">;
+export type CreateBookmarkDto = BookmarkRequiredProps & {
+  tagIds: string[];
+};
+export type UpdateBookmarkDto = Omit<BookmarkRequiredProps, "url" | "domain"> & {
+  tagIds: string[];
+};

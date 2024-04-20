@@ -3,7 +3,7 @@ import { PaginationMetaDto, PaginationResponseDto, SingleResponseDto } from "@co
 import { ResponseAdapter, TagAdapter } from "@shared/adapters";
 import { BaseMockApi } from "@shared/data-access";
 import { LocalStorageKeys } from "@shared/enums";
-import { BookmarkDto, CreateTagDto, TagDto, TagQueryDto, TagVM } from "@shared/models";
+import { CreateTagDto, TagDto, TagQueryDto, TagVM } from "@shared/models";
 import { Observable, map, of } from "rxjs";
 import { TagApi } from "./tag.api";
 
@@ -11,14 +11,50 @@ type TagEntity = TagDto & { collectionId: string };
 
 @Injectable()
 export class TagMockApi extends BaseMockApi implements TagApi {
-  private _entities: TagEntity[] = [];
+  private _entities: TagEntity[] = [
+    {
+      id: "m7cjcvr3",
+      updateAt: "2024-04-19T12:30:00.000Z",
+      createAt: "2024-04-19T12:30:00.000Z",
+      title: "Art",
+      collectionId: "1713425712492",
+    },
+    {
+      id: "f0qhhp26",
+      updateAt: "2024-04-19T12:30:00.000Z",
+      createAt: "2024-04-19T12:30:00.000Z",
+      title: "Science",
+      collectionId: "1713425712492",
+    },
+    {
+      id: "wct2jioe",
+      updateAt: "2024-04-19T12:30:00.000Z",
+      createAt: "2024-04-19T12:30:00.000Z",
+      title: "History",
+      collectionId: "1713425712492",
+    },
+    {
+      id: "2t05bzur",
+      updateAt: "2024-04-19T12:30:00.000Z",
+      createAt: "2024-04-19T12:30:00.000Z",
+      title: "Nature",
+      collectionId: "1713425712492",
+    },
+    {
+      id: "ng1hzrgh",
+      updateAt: "2024-04-19T12:30:00.000Z",
+      createAt: "2024-04-19T12:30:00.000Z",
+      title: "Art",
+      collectionId: "1713425712492",
+    },
+  ];
   private readonly _responseAdapter = new ResponseAdapter();
   private readonly _tagAdapter = new TagAdapter();
 
   constructor() {
     super();
 
-    this._entities = this._loadFromLocal<BookmarkDto[]>(LocalStorageKeys.Bookmark) ?? [];
+    this._entities = this._loadFromLocal<TagDto[]>(LocalStorageKeys.Tag) ?? [];
   }
 
   findAll(query: TagQueryDto): Observable<PaginationResponseDto<TagVM>> {
@@ -30,9 +66,14 @@ export class TagMockApi extends BaseMockApi implements TagApi {
       totalCount: this._entities.length,
       totalPages: this._entities.length / query.pageSize,
     };
-    let result = this._entities;
+    let result = structuredClone(this._entities);
     if (query.collectionId) {
       result = result.filter(item => item.collectionId === query.collectionId);
+    }
+    if (query.keyword) {
+      result = result.filter(item =>
+        item.title.toLocaleLowerCase().includes(query.keyword?.toLocaleLowerCase() ?? "")
+      );
     }
 
     const offset = query.pageSize * (query.currentPage - 1);
@@ -63,6 +104,6 @@ export class TagMockApi extends BaseMockApi implements TagApi {
   }
 
   private _syncBookmark() {
-    this._saveToLocal(this._entities, LocalStorageKeys.Bookmark);
+    this._saveToLocal(this._entities, LocalStorageKeys.Tag);
   }
 }
