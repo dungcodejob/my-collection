@@ -4,18 +4,24 @@ import {
   Component,
   OnInit,
   ViewContainerRef,
-  inject
+  inject,
 } from "@angular/core";
-import { BookmarkDetailDialogComponent } from "@bookmark/components/bookmark-detail-dialog/bookmark-detail-dialog.component";
-import { BookmarkDetailFacade } from "@bookmark/components/bookmark-detail-dialog/bookmark-detail.facade";
 import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
+import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
+import {
+  TagStore,
+  provideBookmarkApi,
+  provideCrawlApi,
+  provideTagApi,
+} from "@bookmark/data-access";
 import { PadDialogService } from "@shared/ui";
 import { isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
 import { filter, map, take, tap } from "rxjs";
-import { BookmarkFacade } from "./bookmark-management.facade";
+import { BookmarkManagementFacade } from "./bookmark-management.facade";
+import { BookmarkManagementStore } from "./bookmark-management.store";
 
 // Generics
 export function coerceArray<T>(value: T | T[]): T[];
@@ -41,8 +47,15 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     BookmarkListComponent,
   ],
   providers: [
-    BookmarkDetailFacade,
-    BookmarkFacade,
+    provideBookmarkApi(),
+    // provideBookmarkMockApi(),
+    provideCrawlApi(),
+    provideTagApi(),
+    // provideTagMockApi(),
+    TagStore,
+    BookmarkManagementFacade,
+    BookmarkManagementStore,
+
     provideIcons({
       lucideCirclePlus,
     }),
@@ -51,7 +64,7 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
 export class BookmarkManagementComponent implements OnInit {
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
-  private readonly _facade = inject(BookmarkFacade);
+  private readonly _facade = inject(BookmarkManagementFacade);
 
   $collection = this._facade.$collection;
   $loading = this._facade.$fetchLoading;

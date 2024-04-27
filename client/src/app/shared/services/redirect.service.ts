@@ -12,7 +12,11 @@ export class RedirectService {
   constructor() {}
 
   redirectToPreviousUrl() {
-    this._router.navigateByUrl(this._previousUrl);
+    if (!this._previousUrl.includes("security")) {
+      this._router.navigateByUrl(this._previousUrl);
+    } else {
+      this.redirectToHome();
+    }
   }
 
   redirectToHome(): void {

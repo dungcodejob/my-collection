@@ -27,11 +27,11 @@ import {
 } from "@spartan-ng/ui-dialog-helm";
 import { HlmInputDirective, HlmInputErrorDirective } from "@spartan-ng/ui-input-helm";
 import { HlmLabelDirective } from "@spartan-ng/ui-label-helm";
-import { BookmarkDetailFacade } from "./bookmark-detail.facade";
+import { BookmarkDetailDialogFacade } from "./bookmark-detail-dialog.facade";
 
 import { BrnSelectImports } from "@spartan-ng/ui-select-brain";
 import { HlmSelectImports } from "@spartan-ng/ui-select-helm";
-import { BookmarkTagSelectComponent } from "../bookmark-tag-select/bookmark-tag-select.component";
+import { BookmarkTagSelectComponent } from "../../components/bookmark-tag-select/bookmark-tag-select.component";
 type BookmarkDetailForm = FormGroup<{
   url: FormControl<string>;
   tags: FormControl<TagVM[]>;
@@ -58,6 +58,7 @@ type BookmarkDetailForm = FormGroup<{
     BrnSelectImports,
     HlmSelectImports,
   ],
+  providers: [BookmarkDetailDialogFacade],
   templateUrl: "./bookmark-detail-dialog.component.html",
   styleUrl: "./bookmark-detail-dialog.component.scss",
 })
@@ -69,7 +70,7 @@ export class BookmarkDetailDialogComponent implements OnInit {
   private readonly _dialogContext = injectBrnDialogContext<{
     data: BookmarkVM | null;
   }>();
-  private readonly _facade = inject(BookmarkDetailFacade);
+  private readonly _facade = inject(BookmarkDetailDialogFacade);
 
   $tags = this._facade.$tags;
   form!: BookmarkDetailForm;

@@ -2,11 +2,16 @@ import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
 import { CollectionListComponent } from "@collection/containers/collection-list/collection-list.component";
+import {
+  CollectionFacade,
+  CollectionStore,
+  provideCollectionApi,
+} from "@collection/data-access";
 import { SidebarComponent } from "@shell/components/sidebar/sidebar.component";
 import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
 import { HlmSpinnerComponent } from "@spartan-ng/ui-spinner-helm";
 import { Observable, defer, filter, map, merge, of, switchMap } from "rxjs";
-import { ShellFacade } from "../../data-access";
+import { ShellFacade, ShellStore } from "../../data-access";
 type ViewModel = {
   hasHeader: boolean;
   hasSideBar: boolean;
@@ -23,6 +28,14 @@ type ViewModel = {
     HlmToasterComponent,
     HlmSpinnerComponent,
     CollectionListComponent,
+  ],
+  providers: [
+    ShellStore,
+    ShellFacade,
+    provideCollectionApi(),
+    // provideCollectionMockApi(),
+    CollectionStore,
+    CollectionFacade,
   ],
   templateUrl: "./layout.component.html",
   styleUrl: "./layout.component.scss",
