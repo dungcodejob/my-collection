@@ -20,7 +20,7 @@ import { BookmarkFilterDto, BookmarkVM, MetadataDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
-import { injectBookmarkApi, injectCrawlApi } from "..";
+import { injectBookmarkApi, injectCrawlApi } from "../../data-access";
 
 type BookmarkState = {
   filter: BookmarkFilterDto | null;
@@ -34,7 +34,7 @@ const initialState: BookmarkState = {
   isDialogOpened: false,
 };
 
-export const BookmarkStore = signalStore(
+export const BookmarkManagementStore = signalStore(
   withStatus({ name: "fetch" }),
   withStatus({ name: "layout" }),
   withEntities<BookmarkVM>(),

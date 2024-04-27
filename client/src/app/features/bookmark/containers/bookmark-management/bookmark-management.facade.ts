@@ -1,15 +1,16 @@
 import { Injectable, Injector, computed, effect, inject, untracked } from "@angular/core";
-import { BookmarkStore, TagStore } from "@bookmark/data-access";
+import { TagStore } from "@bookmark/data-access";
 import { CollectionFacade } from "@collection/data-access";
 import { debouncedSignal } from "@shared/utils";
 import { ShellFacade } from "@shell/data-access";
+import { BookmarkManagementStore } from "./bookmark-management.store";
 
 @Injectable()
-export class BookmarkFacade {
+export class BookmarkManagementFacade {
   private readonly _injector = inject(Injector);
   private readonly _collectionFacade = inject(CollectionFacade);
   private readonly _shellFacade = inject(ShellFacade);
-  private readonly _bookmarkStore = inject(BookmarkStore);
+  private readonly _bookmarkStore = inject(BookmarkManagementStore);
   private readonly _tagStore = inject(TagStore);
 
   private readonly _$layoutLoading = debouncedSignal(
@@ -57,6 +58,7 @@ export class BookmarkFacade {
 
   setDialogOpened = this._bookmarkStore.setDialogOpened;
 
+  create = this._bookmarkStore.create;
   delete = this._bookmarkStore.delete;
 
   private _load() {

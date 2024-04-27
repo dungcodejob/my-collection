@@ -1,17 +1,17 @@
-import { Injectable, Injector, effect, inject } from "@angular/core";
-import { BookmarkStore, TagStore } from "@bookmark/data-access";
+import { Injectable, effect, inject } from "@angular/core";
+import { TagStore } from "@bookmark/data-access";
 import { CollectionFacade } from "@collection/data-access";
+import { BookmarkManagementFacade } from "../bookmark-management/bookmark-management.facade";
 
 @Injectable()
-export class BookmarkDetailFacade {
-  private readonly _injector = inject(Injector);
+export class BookmarkDetailDialogFacade {
   private readonly _collectionFacade = inject(CollectionFacade);
-  private readonly _bookmarkStore = inject(BookmarkStore);
+  private readonly _bookmarkManagementFacade = inject(BookmarkManagementFacade);
   private readonly _tagStore = inject(TagStore);
 
   $tags = this._tagStore.entities;
   $tagResult = this._tagStore.result;
-  $isDialogOpened = this._bookmarkStore.isDialogOpened;
+  $isDialogOpened = this._bookmarkManagementFacade.$isDialogOpened;
 
   constructor() {
     effect(() => {
@@ -26,7 +26,7 @@ export class BookmarkDetailFacade {
 
   add(data: { url: string; tagIds: string[] }) {
     const collectionId = this._collectionFacade.$selectedCollectionId() as string;
-    this._bookmarkStore.create({ ...data, collectionId });
+    this._bookmarkManagementFacade.create({ ...data, collectionId });
   }
 
   searchTag(keyword: string) {
