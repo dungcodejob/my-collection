@@ -1,12 +1,12 @@
 import {
   Component,
   ElementRef,
-  ViewChild,
   computed,
   forwardRef,
   input,
   output,
   signal,
+  viewChild,
 } from "@angular/core";
 import { outputFromObservable } from "@angular/core/rxjs-interop";
 import {
@@ -56,8 +56,9 @@ type TouchedFn = () => void;
   styleUrl: "./bookmark-tag-select.component.scss",
 })
 export class BookmarkTagSelectComponent implements ControlValueAccessor {
-  @ViewChild("tagSearchInput") input!: ElementRef<HTMLInputElement>;
-  @ViewChild("select") select!: BrnSelectComponent;
+  $input = viewChild("tagSearchInput", { read: ElementRef });
+  $select = viewChild(BrnSelectComponent);
+
   $selected = signal<TagVM[]>([]);
 
   keywordControl = new FormControl<string>("", { nonNullable: true });
@@ -101,12 +102,12 @@ export class BookmarkTagSelectComponent implements ControlValueAccessor {
   onTagCreate(): void {
     this.onCreate.emit(this.keywordControl.value);
     this.keywordControl.setValue("");
-    this.select.close();
+    this.$select()?.close();
   }
 
   onOpenChange(open: boolean) {
     if (open) {
-      asapScheduler.schedule(() => this.input.nativeElement.focus(), 100);
+      asapScheduler.schedule(() => this.$input()?.nativeElement.focus(), 100);
     }
   }
 }

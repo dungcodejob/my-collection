@@ -1,8 +1,8 @@
 export interface MetadataDto {
+  url: string;
   domain: string;
   title: string;
   description: string | null;
-  url: string;
-  image: string;
-  favicon: string;
+  image: string | null;
+  favicon: string | null;
 }

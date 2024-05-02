@@ -9,9 +9,9 @@ import {
   untracked,
 } from "@angular/core";
 import {
+  FormBuilder,
   FormControl,
   FormGroup,
-  NonNullableFormBuilder,
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
@@ -29,12 +29,20 @@ import { HlmInputDirective, HlmInputErrorDirective } from "@spartan-ng/ui-input-
 import { HlmLabelDirective } from "@spartan-ng/ui-label-helm";
 import { BookmarkDetailDialogFacade } from "./bookmark-detail-dialog.facade";
 
+import { HlmIconComponent } from "@spartan-ng/ui-icon-helm";
 import { BrnSelectImports } from "@spartan-ng/ui-select-brain";
 import { HlmSelectImports } from "@spartan-ng/ui-select-helm";
 import { BookmarkTagSelectComponent } from "../../components/bookmark-tag-select/bookmark-tag-select.component";
+import { BookmarkDetailDialogStore } from "./bookmark-detail-dialog.store";
 type BookmarkDetailForm = FormGroup<{
   url: FormControl<string>;
+  title: FormControl<string>;
+  domain: FormControl<string>;
+  description: FormControl<string | null>;
+  image: FormControl<string | null>;
+  favicon: FormControl<string | null>;
   tags: FormControl<TagVM[]>;
+  note: FormControl<string | null>;
 }>;
 
 @Component({
@@ -53,12 +61,13 @@ type BookmarkDetailForm = FormGroup<{
     HlmInputErrorDirective,
     HlmButtonDirective,
 
+    HlmIconComponent,
     BookmarkTagSelectComponent,
 
     BrnSelectImports,
     HlmSelectImports,
   ],
-  providers: [BookmarkDetailDialogFacade],
+  providers: [BookmarkDetailDialogStore, BookmarkDetailDialogFacade],
   templateUrl: "./bookmark-detail-dialog.component.html",
   styleUrl: "./bookmark-detail-dialog.component.scss",
 })
@@ -66,13 +75,14 @@ export class BookmarkDetailDialogComponent implements OnInit {
   private readonly _injector = inject(Injector);
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _dialogRef = inject<BrnDialogRef>(BrnDialogRef);
-  private readonly _nonNullFb = inject(NonNullableFormBuilder);
+  private readonly _fb = inject(FormBuilder);
   private readonly _dialogContext = injectBrnDialogContext<{
     data: BookmarkVM | null;
   }>();
-  private readonly _facade = inject(BookmarkDetailDialogFacade);
+  protected readonly facade = inject(BookmarkDetailDialogFacade);
 
-  $tags = this._facade.$tags;
+  $tags = this.facade.$tags;
+  $metadata = this.facade.$metadata;
   form!: BookmarkDetailForm;
 
   get data() {
@@ -82,18 +92,22 @@ export class BookmarkDetailDialogComponent implements OnInit {
     return this.form.controls.url;
   }
 
+  get title() {
+    return this.form.controls.title;
+  }
+
   ngOnInit(): void {
-    this._facade.enter();
+    this.facade.enter();
     this._initForm();
     this._setValueForControls();
 
     effect(
       () => {
-        const isDialogOpened = this._facade.$isDialogOpened();
+        const metadata = this.facade.$metadata();
 
         untracked(() => {
-          if (!isDialogOpened) {
-            this._dialogRef.close();
+          if (metadata) {
+            this.form.patchValue(metadata);
           }
         });
       },
@@ -102,7 +116,7 @@ export class BookmarkDetailDialogComponent implements OnInit {
 
     effect(
       () => {
-        const tagResult = this._facade.$tagResult();
+        const tagResult = this.facade.$tagResult();
 
         untracked(() => {
           if (tagResult) {
@@ -116,11 +130,16 @@ export class BookmarkDetailDialogComponent implements OnInit {
   }
 
   onTagSearch(keyword: string): void {
-    this._facade.searchTag(keyword);
+    this.facade.searchTag(keyword);
   }
 
   onTagCreate(title: string): void {
-    this._facade.createTag(title);
+    this.facade.createTag(title);
+  }
+
+  onGetMetadata(): void {
+    const url = this.form.controls.url.value;
+    this.facade.getMetadata(url);
   }
 
   onClose(): void {
@@ -131,7 +150,7 @@ export class BookmarkDetailDialogComponent implements OnInit {
     if (this.form.valid) {
       const raw = this.form.getRawValue();
       // this._dialogRef.close({ ...raw });
-      this._facade.add({
+      this.facade.add({
         url: raw.url,
         tagIds: raw.tags.map(item => item.id),
       });
@@ -139,16 +158,28 @@ export class BookmarkDetailDialogComponent implements OnInit {
   }
 
   private _initForm(): void {
-    this.form = this._nonNullFb.group<BookmarkDetailForm["controls"]>({
-      url: this._nonNullFb.control("", { validators: Validators.required }),
-      tags: this._nonNullFb.control([]),
+    this.form = this._fb.group<BookmarkDetailForm["controls"]>({
+      url: this._fb.control("", { nonNullable: true, validators: Validators.required }),
+      title: this._fb.control("", {
+        nonNullable: true,
+        validators: Validators.required,
+      }),
+      domain: this._fb.control("", {
+        nonNullable: true,
+        validators: Validators.required,
+      }),
+      description: this._fb.control(null),
+      image: this._fb.control(null),
+      favicon: this._fb.control(null),
+      tags: this._fb.control([], { nonNullable: true, validators: Validators.required }),
+      note: this._fb.control(null),
     });
   }
 
   private async _setValueForControls(): Promise<void> {
     const data = this._dialogContext.data;
     if (data) {
-      this.form.setValue({
+      this.form.patchValue({
         url: data.url,
         tags: [],
       });

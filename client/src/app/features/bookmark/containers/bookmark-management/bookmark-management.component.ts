@@ -14,6 +14,7 @@ import {
   provideCrawlApi,
   provideTagApi,
 } from "@bookmark/data-access";
+import { lucideRotateCw } from "@ng-icons/lucide";
 import { PadDialogService } from "@shared/ui";
 import { isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
@@ -57,6 +58,7 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     BookmarkManagementStore,
 
     provideIcons({
+      lucideRotateCw,
       lucideCirclePlus,
     }),
   ],

@@ -5,10 +5,10 @@ export interface BookmarkVM extends BaseVM {
   url: string;
   domain: string;
   title: string;
-  image: string;
+  image: string | null;
   description: string | null;
-  favicon: string;
-  note: string;
+  favicon: string | null;
+  note: string | null;
   collectionId: string;
   tags: TagVM[];
 }

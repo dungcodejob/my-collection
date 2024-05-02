@@ -3,7 +3,7 @@ import { TagDto } from "../tag/tag.dto";
 import { MetadataDto } from "./metadata.dto";
 
 export interface BookmarkDto extends BaseDto, MetadataDto {
-  note: string;
+  note: string | null;
   collectionId: string;
   tags: TagDto[];
 }
