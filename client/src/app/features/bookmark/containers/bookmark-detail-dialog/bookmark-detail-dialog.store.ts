@@ -4,11 +4,11 @@ import { tapResponse } from "@ngrx/component-store";
 import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import {
-    setError,
-    setFulfilled,
-    setPending,
-    withPagination,
-    withStatus,
+  setError,
+  setFulfilled,
+  setPending,
+  withPagination,
+  withStatus,
 } from "@shared/data-access";
 import { BookmarkVM, MetadataDto } from "@shared/models";
 import { ToastService } from "@shared/services";
