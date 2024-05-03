@@ -35,10 +35,10 @@ const initialState: BookmarkState = {
 };
 
 export const BookmarkManagementStore = signalStore(
+  withState<BookmarkState>(initialState),
   withStatus({ name: "fetch" }),
   withStatus({ name: "layout" }),
   withEntities<BookmarkVM>(),
-  withState<BookmarkState>(initialState),
   withPagination(),
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();

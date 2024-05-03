@@ -12,7 +12,6 @@ import {
   NamedStatusSignals,
   NamedStatusState,
   Status,
-  StatusMethods,
   StatusSignals,
   StatusState,
 } from "./status-name.type";
@@ -32,7 +31,7 @@ export function withStatus<Input extends SignalStoreFeatureResult>(): SignalStor
   {
     state: StatusState;
     signals: StatusSignals;
-    methods: StatusMethods;
+    methods: {};
   }
 >;
 export function withStatus<
