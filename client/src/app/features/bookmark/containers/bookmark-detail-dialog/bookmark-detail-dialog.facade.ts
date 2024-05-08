@@ -3,13 +3,11 @@ import { TagStore } from "@bookmark/data-access";
 import { CollectionFacade } from "@collection/data-access";
 import { ToastService } from "@shared/services";
 import { ShellFacade } from "@shell/data-access";
-import { BookmarkManagementFacade } from "../bookmark-management/bookmark-management.facade";
 import { BookmarkDetailDialogStore } from "./bookmark-detail-dialog.store";
 
 @Injectable()
 export class BookmarkDetailDialogFacade {
   private readonly _collectionFacade = inject(CollectionFacade);
-  private readonly _bookmarkManagementFacade = inject(BookmarkManagementFacade);
   private readonly _toastService = inject(ToastService);
   private readonly _shellFacade = inject(ShellFacade);
   private readonly _bookmarkDetailDialogStore = inject(BookmarkDetailDialogStore);
@@ -18,7 +16,6 @@ export class BookmarkDetailDialogFacade {
   $tags = this._tagStore.entities;
   $tagResult = this._tagStore.result;
   $metadata = this._bookmarkDetailDialogStore.metadata;
-  $result = this._bookmarkDetailDialogStore.result;
   $loading = this._bookmarkDetailDialogStore.$isPending;
 
   constructor() {
@@ -30,11 +27,6 @@ export class BookmarkDetailDialogFacade {
   }
   enter() {
     this._tagStore.enter();
-  }
-
-  add(data: { url: string; tagIds: string[] }) {
-    const collectionId = this._collectionFacade.$selectedCollectionId() as string;
-    this._bookmarkManagementFacade.create({ ...data, collectionId });
   }
 
   searchTag(keyword: string) {

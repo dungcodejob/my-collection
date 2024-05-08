@@ -18,9 +18,7 @@ export class BookmarkManagementFacade {
   );
 
   $collection = this._collectionFacade.$selectedEntity;
-  $isDialogOpened = this._bookmarkStore.isDialogOpened;
-  $fetchLoading = this._bookmarkStore.$isFetchPending;
-
+  $loading = this._bookmarkStore.$isFetchPending;
   $bookmarks = this._bookmarkStore.entities;
   $bookmarkSelected = computed(() => {
     const bookmarks = this.$bookmarks();
@@ -55,8 +53,6 @@ export class BookmarkManagementFacade {
       { injector: this._injector }
     );
   }
-
-  setDialogOpened = this._bookmarkStore.setDialogOpened;
 
   create = this._bookmarkStore.create;
   delete = this._bookmarkStore.delete;
