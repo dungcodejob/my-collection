@@ -5,7 +5,7 @@ import { CollectionListComponent } from "@collection/containers/collection-list/
 import {
   CollectionFacade,
   CollectionStore,
-  provideCollectionApi,
+  provideCollectionMockApi,
 } from "@collection/data-access";
 import { SidebarComponent } from "@shell/components/sidebar/sidebar.component";
 import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
@@ -32,8 +32,8 @@ type ViewModel = {
   providers: [
     ShellStore,
     ShellFacade,
-    provideCollectionApi(),
-    // provideCollectionMockApi(),
+    // provideCollectionApi(),
+    provideCollectionMockApi(),
     CollectionStore,
     CollectionFacade,
   ],

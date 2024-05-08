@@ -16,22 +16,20 @@ import {
   withStatus,
 } from "@shared/data-access";
 import { BookmarkMessage } from "@shared/enums";
-import { BookmarkFilterDto, BookmarkVM, MetadataDto } from "@shared/models";
+import { BookmarkFilterDto, BookmarkVM, CreateBookmarkDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
-import { injectBookmarkApi, injectCrawlApi } from "../../data-access";
+import { injectBookmarkApi } from "../../data-access";
 
 type BookmarkState = {
   filter: BookmarkFilterDto | null;
   selectedId: string | null;
-  isDialogOpened: boolean;
 };
 
 const initialState: BookmarkState = {
   filter: null,
   selectedId: null,
-  isDialogOpened: false,
 };
 
 export const BookmarkManagementStore = signalStore(
@@ -42,13 +40,10 @@ export const BookmarkManagementStore = signalStore(
   withPagination(),
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();
-    const crawlApi = injectCrawlApi();
     const toastService = inject(ToastService);
 
     return {
       ...store,
-      setDialogOpened: (opened: boolean) => patchState(store, { isDialogOpened: opened }),
-
       select: (id: string | null) => patchState(store, { selectedId: id }),
       setFilter: (filter: BookmarkFilterDto | null) =>
         patchState(store, state => ({
@@ -82,21 +77,15 @@ export const BookmarkManagementStore = signalStore(
           })
         )
       ),
-      create: rxMethod<{ url: string; collectionId: string; tagIds: string[] }>(
+      create: rxMethod<CreateBookmarkDto>(
         pipe(
-          switchMap(({ url, collectionId }) =>
-            crawlApi.getMetadata(url).pipe(
+          switchMap(bookmarkToAdd =>
+            bookmarkApi.create(bookmarkToAdd).pipe(
               prefix(() => patchState(store, setPending("layout"))),
-              map(res => res.result.data),
-              switchMap((result: MetadataDto) =>
-                bookmarkApi.create({ ...result, collectionId, tagIds: [], note: "" })
-              ),
               tap({
                 next: res => {
                   const data = res.result.data;
-                  patchState(store, addEntity(data), setFulfilled("layout"), {
-                    isDialogOpened: false,
-                  });
+                  patchState(store, addEntity(data), setFulfilled("layout"));
 
                   toastService.success(`Bookmark “${data.title}“ was created`);
                 },
@@ -113,34 +102,30 @@ export const BookmarkManagementStore = signalStore(
           )
         )
       ),
-      // create: rxMethod<BookmarkVM>(
-      //   pipe(
-      //     prefix(() => patchState(store, setPending())),
-      //     tap({
-      //       next: data => patchState(store, addEntity(data)),
-      //       error: err => toastService.error(err.message),
-      //     }),
-      //     catchError(() => EMPTY)
-      //   )
-      // ),
       delete: rxMethod<string>(
         pipe(
           map(id => store.entities().find(item => item.id === id)),
           filter(isNotNil),
-          switchMap(data =>
-            bookmarkApi.delete(data.id).pipe(
+          switchMap(bookmarkToDelete =>
+            bookmarkApi.delete(bookmarkToDelete.id).pipe(
               prefix(() => patchState(store, setPending("layout"))),
               tap({
                 next: () => {
-                  patchState(store, removeEntity(data.id), setFulfilled("layout"));
-                  toastService.success(`Bookmark “${data.title}“ was deleted`);
+                  patchState(
+                    store,
+                    removeEntity(bookmarkToDelete.id),
+                    setFulfilled("layout")
+                  );
+                  toastService.success(
+                    `Bookmark “${bookmarkToDelete.title}“ was deleted`
+                  );
                 },
                 error: err => {
-                  let message = `Bookmark “${data.title}” could not be deleted`;
+                  let message = `Bookmark “${bookmarkToDelete.title}” could not be deleted`;
                   if (err instanceof ServerSideError) {
                     switch (err.message) {
                       case BookmarkMessage.NotExist:
-                        message = `Bookmark “${data.title}” to be deleted does not exist`;
+                        message = `Bookmark “${bookmarkToDelete.title}” to be deleted does not exist`;
                         break;
 
                       default:

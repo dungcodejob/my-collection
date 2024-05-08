@@ -32,6 +32,7 @@ import { BookmarkDetailDialogFacade } from "./bookmark-detail-dialog.facade";
 import { HlmIconComponent } from "@spartan-ng/ui-icon-helm";
 import { BrnSelectImports } from "@spartan-ng/ui-select-brain";
 import { HlmSelectImports } from "@spartan-ng/ui-select-helm";
+import { HlmSpinnerComponent } from "@spartan-ng/ui-spinner-helm";
 import { BookmarkTagSelectComponent } from "../../components/bookmark-tag-select/bookmark-tag-select.component";
 import { BookmarkDetailDialogStore } from "./bookmark-detail-dialog.store";
 type BookmarkDetailForm = FormGroup<{
@@ -63,6 +64,8 @@ type BookmarkDetailForm = FormGroup<{
 
     HlmIconComponent,
     BookmarkTagSelectComponent,
+
+    HlmSpinnerComponent,
 
     BrnSelectImports,
     HlmSelectImports,
@@ -149,11 +152,7 @@ export class BookmarkDetailDialogComponent implements OnInit {
   onSave(): void {
     if (this.form.valid) {
       const raw = this.form.getRawValue();
-      // this._dialogRef.close({ ...raw });
-      this.facade.add({
-        url: raw.url,
-        tagIds: raw.tags.map(item => item.id),
-      });
+      this._dialogRef.close({ ...raw });
     }
   }
 
@@ -171,7 +170,7 @@ export class BookmarkDetailDialogComponent implements OnInit {
       description: this._fb.control(null),
       image: this._fb.control(null),
       favicon: this._fb.control(null),
-      tags: this._fb.control([], { nonNullable: true, validators: Validators.required }),
+      tags: this._fb.control([], { nonNullable: true }),
       note: this._fb.control(null),
     });
   }

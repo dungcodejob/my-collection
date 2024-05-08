@@ -10,9 +10,9 @@ import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookma
 import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import {
   TagStore,
-  provideBookmarkApi,
+  provideBookmarkMockApi,
   provideCrawlApi,
-  provideTagApi,
+  provideTagMockApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
 import { PadDialogService } from "@shared/ui";
@@ -20,7 +20,7 @@ import { isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
-import { filter, map, take, tap } from "rxjs";
+import { filter, map, take } from "rxjs";
 import { BookmarkManagementFacade } from "./bookmark-management.facade";
 import { BookmarkManagementStore } from "./bookmark-management.store";
 
@@ -48,11 +48,11 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     BookmarkListComponent,
   ],
   providers: [
-    provideBookmarkApi(),
-    // provideBookmarkMockApi(),
+    // provideBookmarkApi(),
+    provideBookmarkMockApi(),
     provideCrawlApi(),
-    provideTagApi(),
-    // provideTagMockApi(),
+    // provideTagApi(),
+    provideTagMockApi(),
     TagStore,
     BookmarkManagementFacade,
     BookmarkManagementStore,
@@ -66,12 +66,7 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
 export class BookmarkManagementComponent implements OnInit {
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
-  private readonly _facade = inject(BookmarkManagementFacade);
-
-  $collection = this._facade.$collection;
-  $loading = this._facade.$fetchLoading;
-  $bookmarks = this._facade.$bookmarks;
-  $pagination = this._facade.$pagination;
+  protected readonly facade = inject(BookmarkManagementFacade);
 
   // items = input.required({
   //   transform: coerceArray<BookmarkDto>,
@@ -85,21 +80,24 @@ export class BookmarkManagementComponent implements OnInit {
   // @Output() prev = new EventEmitter<void>();
 
   ngOnInit(): void {
-    this._facade.enter();
+    this.facade.enter();
   }
 
   onAdd(): void {
-    this._facade.setDialogOpened(true);
-    this._dialogService
+    const collectionId = this.facade.$collection()?.id as string;
+    const data$ = this._dialogService
       .open(BookmarkDetailDialogComponent, {
         closeOnBackdropClick: false,
-        contentClass: "max-w-[30rem]",
+        contentClass: "max-w-[40rem]",
         vcr: this._vcr,
       })
       .closed$.pipe(
         take(1),
-        tap(() => this._facade.setDialogOpened(false))
+        filter(isNotFalsy),
+        map(data => ({ ...data, collectionId }))
       );
+
+    this.facade.create(data$);
   }
 
   onDelete(id: string): void {
@@ -112,6 +110,6 @@ export class BookmarkManagementComponent implements OnInit {
         filter(isNotFalsy),
         map(() => id)
       );
-    this._facade.delete(id$);
+    this.facade.delete(id$);
   }
 }
