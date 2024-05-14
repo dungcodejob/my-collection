@@ -13,5 +13,6 @@ export type CreateBookmarkDto = BookmarkRequiredProps & {
   tagIds: string[];
 };
 export type UpdateBookmarkDto = Omit<BookmarkRequiredProps, "url" | "domain"> & {
+  id: BaseDto["id"];
   tagIds: string[];
 };

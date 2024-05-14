@@ -15,12 +15,13 @@ import {
   provideTagMockApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
+import { CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
 import { PadDialogService } from "@shared/ui";
 import { isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
-import { filter, map, take } from "rxjs";
+import { Observable, filter, map, take } from "rxjs";
 import { BookmarkManagementFacade } from "./bookmark-management.facade";
 import { BookmarkManagementStore } from "./bookmark-management.store";
 
@@ -85,7 +86,7 @@ export class BookmarkManagementComponent implements OnInit {
 
   onAdd(): void {
     const collectionId = this.facade.$collection()?.id as string;
-    const data$ = this._dialogService
+    const result$: Observable<CreateBookmarkDto> = this._dialogService
       .open(BookmarkDetailDialogComponent, {
         closeOnBackdropClick: false,
         contentClass: "max-w-[40rem]",
@@ -97,7 +98,28 @@ export class BookmarkManagementComponent implements OnInit {
         map(data => ({ ...data, collectionId }))
       );
 
-    this.facade.create(data$);
+    this.facade.create(result$);
+  }
+
+  onEdit(id: string): void {
+    const data = this.facade.$bookmarks().find(b => b.id === id);
+
+    if (data) {
+      const result$: Observable<UpdateBookmarkDto> = this._dialogService
+        .open(BookmarkDetailDialogComponent, {
+          closeOnBackdropClick: false,
+          contentClass: "max-w-[40rem]",
+          vcr: this._vcr,
+          context: { data },
+        })
+        .closed$.pipe(
+          take(1),
+          filter(isNotFalsy),
+          map(result => ({ ...result, id }))
+        );
+
+      this.facade.edit(result$);
+    }
   }
 
   onDelete(id: string): void {

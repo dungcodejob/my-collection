@@ -2,14 +2,24 @@
   @for (item of $items(); track item.id) {
     <div class="justify-start h-auto group relative">
       <app-bookmark-item [data]="item"></app-bookmark-item>
-      <button
-        hlmBtn
-        class="invisible group-hover:visible absolute top-3 right-3 w-6 h-6 z-10 flex justify-center items-center hover:bg-gray-200"
-        size="icon"
-        variant="ghost"
-        (click)="delete.emit(item.id)">
-        <hlm-icon name="lucideTrash2" size="sm"></hlm-icon>
-      </button>
+      <div class="invisible group-hover:visible absolute top-3 right-3 flex gap-2">
+        <button
+          hlmBtn
+          class="w-6 h-6 z-10 flex justify-center items-center hover:bg-gray-200"
+          size="icon"
+          variant="ghost"
+          (click)="onEdit.emit(item.id)">
+          <hlm-icon name="lucideEdit" size="sm"></hlm-icon>
+        </button>
+        <button
+          hlmBtn
+          class="w-6 h-6 z-10 flex justify-center items-center hover:bg-gray-200"
+          size="icon"
+          variant="ghost"
+          (click)="onDelete.emit(item.id)">
+          <hlm-icon name="lucideTrash2" size="sm"></hlm-icon>
+        </button>
+      </div>
     </div>
   }
 </div>
