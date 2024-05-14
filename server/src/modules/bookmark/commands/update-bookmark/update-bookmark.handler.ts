@@ -14,7 +14,7 @@ export class UpdateBookmarkHandler implements ICommandHandler<UpdateBookmarkComm
     private readonly eventPublisher: EventPublisher
   ) {}
   async execute(command: UpdateBookmarkCommand): Promise<BookmarkEntity> {
-    // const tags = await this._unitOfWork.tag.findByIds(command.tagIds);
+    const tags = await this._unitOfWork.tag.findByIds(command.tagIds);
     const bookmark = await this._unitOfWork.bookmark.findById(command.id);
 
     if (!bookmark) {
@@ -26,7 +26,7 @@ export class UpdateBookmarkHandler implements ICommandHandler<UpdateBookmarkComm
     bookmark.image = command.image;
     bookmark.favicon = command.favicon;
     bookmark.note = command.note;
-    // bookmark.tags.set(tags);
+    bookmark.tags.set(tags);
     bookmark.collection = Reference.createFromPK(CollectionEntity, command.collectionId);
     await this._unitOfWork.save();
 

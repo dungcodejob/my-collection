@@ -1,3 +1,5 @@
+import { IdentityType } from "@database/identifiable.entity";
+
 export class CreateBookmarkCommand {
   constructor(
     public readonly url: string,
@@ -7,7 +9,7 @@ export class CreateBookmarkCommand {
     public readonly description: string,
     public readonly favicon: string,
     public readonly note: string,
-    public readonly collectionId: string
-    // public readonly tagIds: IdentityType[]
+    public readonly collectionId: string,
+    public readonly tagIds: IdentityType[]
   ) {}
 }

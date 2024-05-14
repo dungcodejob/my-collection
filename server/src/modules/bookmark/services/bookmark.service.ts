@@ -38,8 +38,8 @@ export class BookmarkService {
       dto.description,
       dto.favicon,
       dto.note,
-      dto.collectionId
-      // dto.tagIds
+      dto.collectionId,
+      dto.tagIds
     );
 
     return this._commandBus.execute(command);
@@ -53,8 +53,8 @@ export class BookmarkService {
       dto.description,
       dto.favicon,
       dto.note,
-      dto.collectionId
-      // dto.tagIds
+      dto.collectionId,
+      dto.tagIds
     );
 
     return this._commandBus.execute(command);
