@@ -5,7 +5,8 @@ import {
   addEntity,
   removeEntity,
   setAllEntities,
-  withEntities,
+  updateEntity,
+  withEntities
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import {
@@ -16,7 +17,12 @@ import {
   withStatus,
 } from "@shared/data-access";
 import { BookmarkMessage } from "@shared/enums";
-import { BookmarkFilterDto, BookmarkVM, CreateBookmarkDto } from "@shared/models";
+import {
+  BookmarkFilterDto,
+  BookmarkVM,
+  CreateBookmarkDto,
+  UpdateBookmarkDto,
+} from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
 import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
@@ -24,12 +30,10 @@ import { injectBookmarkApi } from "../../data-access";
 
 type BookmarkState = {
   filter: BookmarkFilterDto | null;
-  selectedId: string | null;
 };
 
 const initialState: BookmarkState = {
   filter: null,
-  selectedId: null,
 };
 
 export const BookmarkManagementStore = signalStore(
@@ -44,7 +48,6 @@ export const BookmarkManagementStore = signalStore(
 
     return {
       ...store,
-      select: (id: string | null) => patchState(store, { selectedId: id }),
       setFilter: (filter: BookmarkFilterDto | null) =>
         patchState(store, state => ({
           ...state,
@@ -79,8 +82,8 @@ export const BookmarkManagementStore = signalStore(
       ),
       create: rxMethod<CreateBookmarkDto>(
         pipe(
-          switchMap(bookmarkToAdd =>
-            bookmarkApi.create(bookmarkToAdd).pipe(
+          switchMap(bookmarkToCreate =>
+            bookmarkApi.create(bookmarkToCreate).pipe(
               prefix(() => patchState(store, setPending("layout"))),
               tap({
                 next: res => {
@@ -91,6 +94,35 @@ export const BookmarkManagementStore = signalStore(
                 },
                 error: err => {
                   const message = "Bookmark could not be created";
+                  // TODO: using logger service
+                  console.log(err);
+                  patchState(store, setError(err, "layout"));
+                  toastService.error(message);
+                },
+              }),
+              catchError(() => EMPTY)
+            )
+          )
+        )
+      ),
+      update: rxMethod<UpdateBookmarkDto>(
+        pipe(
+          switchMap(bookmarkToUpdate =>
+            bookmarkApi.update(bookmarkToUpdate.id, bookmarkToUpdate).pipe(
+              prefix(() => patchState(store, setPending("layout"))),
+              tap({
+                next: res => {
+                  const data = res.result.data;
+                  patchState(
+                    store,
+                    updateEntity({ id: data.id, changes: data }),
+                    setFulfilled("layout")
+                  );
+
+                  toastService.success(`Bookmark “${data.title}“ was updated`);
+                },
+                error: err => {
+                  const message = "Bookmark could not be updated";
                   // TODO: using logger service
                   console.log(err);
                   patchState(store, setError(err, "layout"));

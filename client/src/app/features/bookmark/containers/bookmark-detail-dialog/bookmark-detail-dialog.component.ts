@@ -180,6 +180,12 @@ export class BookmarkDetailDialogComponent implements OnInit {
     if (data) {
       this.form.patchValue({
         url: data.url,
+        title: data.title,
+        image: data.image,
+        domain: data.domain,
+        favicon: data.favicon,
+        description: data.description,
+        note: data.note,
         tags: [],
       });
     } else {

@@ -1,4 +1,4 @@
-import { Injectable, Injector, computed, effect, inject, untracked } from "@angular/core";
+import { Injectable, Injector, effect, inject, untracked } from "@angular/core";
 import { TagStore } from "@bookmark/data-access";
 import { CollectionFacade } from "@collection/data-access";
 import { debouncedSignal } from "@shared/utils";
@@ -20,11 +20,6 @@ export class BookmarkManagementFacade {
   $collection = this._collectionFacade.$selectedEntity;
   $loading = this._bookmarkStore.$isFetchPending;
   $bookmarks = this._bookmarkStore.entities;
-  $bookmarkSelected = computed(() => {
-    const bookmarks = this.$bookmarks();
-    const selectedId = this._bookmarkStore.selectedId();
-    return bookmarks.find(item => item.id === selectedId);
-  });
   $pagination = this._bookmarkStore.$pagination;
 
   enter() {
@@ -55,6 +50,7 @@ export class BookmarkManagementFacade {
   }
 
   create = this._bookmarkStore.create;
+  edit = this._bookmarkStore.update;
   delete = this._bookmarkStore.delete;
 
   private _load() {

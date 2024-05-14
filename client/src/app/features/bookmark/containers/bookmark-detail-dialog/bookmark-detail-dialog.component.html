@@ -1,7 +1,4 @@
-<form
-  [formGroup]="form"
-  (ngSubmit)="onSave()"
-  class="flex flex-col gap-4 sm:w-full w-[36rem]">
+<form [formGroup]="form" (ngSubmit)="onSave()" class="flex flex-col gap-4">
   <hlm-dialog-header>
     <h3 hlmDialogTitle>{{ data ? "Update" : "Add" }} Bookmark</h3>
     <p hlmDialogDescription>
@@ -26,6 +23,7 @@
 
         <button
           hlmBtn
+          type="button"
           variant="outline"
           class="flex-none h-9 w-9 p-0"
           (click)="onGetMetadata()">
@@ -44,7 +42,7 @@
     <div class="relative grid gap-4">
       @if (facade.$loading()) {
         <div
-          class="absolute top-0 left-0 w-full h-full bg-white bg-opacity-60 flex justify-center items-center">
+          class="absolute z-20 top-0 left-0 w-full h-full bg-white bg-opacity-60 flex justify-center items-center">
           <hlm-spinner />
         </div>
       }
