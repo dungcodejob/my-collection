@@ -12,7 +12,7 @@ export class CreateBookmarkHandler implements ICommandHandler<CreateBookmarkComm
     private readonly eventPublisher: EventPublisher
   ) {}
   async execute(command: CreateBookmarkCommand): Promise<BookmarkEntity> {
-    // const tags = await this._unitOfWork.tag.findByIds(command.tagIds);
+    const tags = await this._unitOfWork.tag.findByIds(command.tagIds);
     const bookmark = new BookmarkEntity();
     bookmark.url = command.url;
     bookmark.title = command.title;
@@ -21,7 +21,7 @@ export class CreateBookmarkHandler implements ICommandHandler<CreateBookmarkComm
     bookmark.domain = command.domain;
     bookmark.favicon = command.favicon;
     bookmark.note = command.note;
-    // bookmark.tags.set(tags);
+    bookmark.tags.set(tags);
     bookmark.collection = Reference.createFromPK(CollectionEntity, command.collectionId);
 
     this._unitOfWork.bookmark.add(bookmark);

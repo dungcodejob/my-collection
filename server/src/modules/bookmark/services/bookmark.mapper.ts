@@ -16,7 +16,7 @@ export class BookmarkMapper {
       return domain.map(item => this.toItemDto(item));
     }
 
-    const tags = domain.tags.map(tag => this.tagMapper.toDto(tag));
+    const tags = this.tagMapper.toDto(domain.tags.getSnapshot());
     return {
       id: domain.id,
       url: domain.url,
@@ -31,13 +31,4 @@ export class BookmarkMapper {
       updateAt: domain.updateAt,
     };
   }
-
-  // private _mapToTagDto(domain: TagEntity): BookmarkItemTagDto {
-  //   return {
-  //     id: domain.id,
-  //     title: domain.title,
-  //     createAt: domain.createAt,
-  //     updateAt: domain.updateAt,
-  //   };
-  // }
 }

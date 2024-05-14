@@ -1,3 +1,5 @@
+import { IdentityType } from "@database/identifiable.entity";
+
 export interface CreateBookmarkBodyDto {
   readonly url: string;
   readonly domain: string;
@@ -7,5 +9,5 @@ export interface CreateBookmarkBodyDto {
   readonly favicon: string;
   readonly note: string;
   readonly collectionId: string;
-  // readonly tagIds: IdentityType[];
+  readonly tagIds: IdentityType[];
 }
