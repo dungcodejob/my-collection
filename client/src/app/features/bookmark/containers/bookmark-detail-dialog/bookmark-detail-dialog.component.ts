@@ -186,7 +186,7 @@ export class BookmarkDetailDialogComponent implements OnInit {
         favicon: data.favicon,
         description: data.description,
         note: data.note,
-        tags: [],
+        tags: data.tags,
       });
     } else {
       const copied = await navigator.clipboard.readText();

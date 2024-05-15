@@ -13,6 +13,12 @@
     <p class="text-xs font-normal text-muted-foreground line-clamp-2">
       {{ $data().description }}
     </p>
+    <div class="flex gap-2 w-full">
+      @for (item of $data().tags; track $index) {
+        <div hlmBadge class="rounded-md" variant="outline">{{ item.title }}</div>
+      }
+    </div>
+
     <div class="text-xs font-normal text-muted-foreground">
       {{ $data().domain }} - Update at {{ $data().updateAt | date }}
     </div>
