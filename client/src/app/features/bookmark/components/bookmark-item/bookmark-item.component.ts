@@ -1,13 +1,14 @@
 import { DatePipe } from "@angular/common";
 import { Component, input } from "@angular/core";
 import { BookmarkVM } from "@shared/models";
+import { HlmBadgeDirective } from "@spartan-ng/ui-badge-helm";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmCardDirective } from "@spartan-ng/ui-card-helm";
 
 @Component({
   selector: "app-bookmark-item",
   standalone: true,
-  imports: [DatePipe, HlmCardDirective, HlmButtonDirective],
+  imports: [DatePipe, HlmCardDirective, HlmButtonDirective, HlmBadgeDirective],
   templateUrl: "./bookmark-item.component.html",
   styleUrl: "./bookmark-item.component.scss",
 })
