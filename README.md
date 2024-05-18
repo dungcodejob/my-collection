@@ -2,7 +2,7 @@
   <img style="width: 250px" src="assets/logo.png" alt="booking-microservices-nestjs" />
   <h2 style="font-weight:700">My Collection</h2>
     <div align="center">
-                       <a href="https://github.com/dungcodejob/my-collection/blob/production/LICENSE.md"><img src="https://img.shields.io/github/license/dungcodejob/my-collection?color=%234275f5&style=flat-square"/></a>
+                       <a href="https://github.com/dungcodejob/my-collection/blob/production/LICENSE"><img src="https://img.shields.io/github/license/dungcodejob/my-collection?color=%234275f5&style=flat-square"/></a>
     </div>
 </div>
            
@@ -50,10 +50,10 @@ High-level plan is represented in the table
 | **Responsive Design**: Ensure the application works well on both desktop and mobile devices   |    |
 | **Drag-and-Drop:** Enable drag-and-drop functionality for organizing bookmarks   | Completed ✔️   |
 | **Customization:** Allow users to customize the look and feel of their bookmark lists   |    |
-| **Import/Export:** Allow users to import bookmarks from other services (e.g., browser bookmarks, Pocket)   |    |
-| **Sharing Options:** Enable users to share bookmarks or folders with others via email or social media   |    |
+| **Import/Export:** Allow users to import bookmarks from other services   |    |
+| **Sharing Options:** Enable users to share bookmarks or folders with others   |    |
 | **Collaborative Lists:** Allow multiple users to collaborate on a shared list of bookmarks   |    |
-| **Usage Statistics:** Provide insights into bookmark usage, such as most visited bookmarks, popular tags, etc   |    |
+| **Usage Statistics:** Insights into bookmark usage, such as most visited, popular tags, etc   |    |
 | **Broken Link Checker:** Automatically check for and notify users about broken or outdated links   |    |
 | **Cloud Sync:** Allow bookmarks to sync across multiple devices using cloud storage   |    |
 | **Browser Extensions:** Develop extensions for popular browsers (Chrome, Firefox, etc.)   |    |
