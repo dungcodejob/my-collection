@@ -1,0 +1,59 @@
+<div class="collection flex flex-col justify-between">
+  <div class="flex flex-col py-2">
+    <div class="mt-4 mb-2 px-5 flex justify-between items-center">
+      <h4 hlmLarge class="tracking-tight">Collection</h4>
+      <button hlmBtn class="w-9 h-9" size="icon" variant="ghost" (click)="onCreate()">
+        <hlm-icon name="lucidePlus" size="base"></hlm-icon>
+      </button>
+    </div>
+    <nav
+      cdkDropList
+      class="collection__drop-list grid gap-1 px-2 items-center"
+      (cdkDropListDropped)="onDrop($event)">
+      @for (item of $entities(); track item.id) {
+        <button
+          cdkDrag
+          hlmBtn
+          [variant]="item.id === $selectedId() ? 'default' : 'ghost'"
+          size="sm"
+          class="collection__drop-item group w-full relative">
+          <a
+            class="w-full h-full flex items-center justify-between"
+            (click)="onRedirectToBookmark(item.id)">
+            <div class="flex gap-2 items-center">
+              <hlm-icon name="lucideFolder" size="sm"></hlm-icon>
+              <p hlmSmall class="flex">{{ item.title }}</p>
+            </div>
+          </a>
+
+          <button
+            hlmBtn
+            [brnMenuTriggerFor]="menu"
+            class="invisible group-hover:visible absolute right-0 -translate-x-1/4 top-1/2 -translate-y-1/2 w-6 h-6 z-10 hover:bg-gray-200"
+            size="icon"
+            variant="ghost">
+            <hlm-icon name="lucideEllipsis" size="sm"></hlm-icon>
+          </button>
+
+          <ng-template #menu>
+            <hlm-menu class="w-56">
+              <hlm-menu-group>
+                <button hlmMenuItem (click)="onEdit(item.id)">
+                  <hlm-icon name="lucideFilePenLine" hlmMenuIcon />
+                  <span>Edit</span>
+                  <!-- <hlm-menu-shortcut>⇧⌘P</hlm-menu-shortcut> -->
+                </button>
+
+                <button hlmMenuItem (click)="onDelete(item.id)">
+                  <hlm-icon name="lucideTrash2" hlmMenuIcon />
+                  <span>Remove</span>
+                  <!-- <hlm-menu-shortcut>⌘B</hlm-menu-shortcut> -->
+                </button>
+              </hlm-menu-group>
+            </hlm-menu>
+          </ng-template>
+        </button>
+      }
+    </nav>
+  </div>
+</div>

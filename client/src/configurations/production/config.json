@@ -1,0 +1,4 @@
+{
+  "baseUrl": "https://localhost:44368/api",
+  "state": "prod"
+}

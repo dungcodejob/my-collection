@@ -1,0 +1,51 @@
+<!-- Sidebar -->
+<div
+  id="application-sidebar"
+  class="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 start-0 bottom-0 z-[60] w-64 bg-white border-e border-border overflow-y-auto lg:block lg:translate-x-0 lg:end-auto lg:bottom-0 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300">
+  <div class="h-full">
+    <div class="flex h-[3.25rem] items-center justify-center px-2"></div>
+    <div
+      data-orientation="horizontal"
+      role="none"
+      class="shrink-0 bg-border h-[1px] w-full"></div>
+    <div class="flex flex-col gap-4 py-2">
+      <nav class="grid gap-1 px-2 items-center">
+        <a href="#" hlmBtn variant="ghost" size="sm">
+          <div class="w-full flex items-center justify-between">
+            <div class="flex gap-2 items-center">
+              <hlm-icon name="lucideInbox" size="sm"></hlm-icon>
+
+              <p hlmSmall class="flex">Inbox</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" hlmBtn variant="ghost" size="sm">
+          <div class="w-full flex items-center justify-between">
+            <div class="flex gap-2 items-center">
+              <hlm-icon name="lucideBell" size="sm"></hlm-icon>
+
+              <p hlmSmall class="flex">Activity</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="#" hlmBtn variant="ghost" size="sm">
+          <div class="w-full flex items-center justify-between">
+            <div class="flex gap-2 items-center">
+              <hlm-icon name="lucideSettings" size="sm"></hlm-icon>
+
+              <p hlmSmall class="flex">Settings</p>
+            </div>
+          </div>
+        </a>
+      </nav>
+    </div>
+    <!-- <div
+      data-orientation="horizontal"
+      role="none"
+      class="shrink-0 bg-border h-[1px] w-full"></div> -->
+    <ng-content></ng-content>
+  </div>
+</div>
+<!-- End Sidebar -->
