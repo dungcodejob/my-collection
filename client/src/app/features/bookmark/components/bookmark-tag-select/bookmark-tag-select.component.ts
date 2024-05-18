@@ -15,7 +15,12 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from "@angular/forms";
-import { lucideCheck, lucideChevronsUpDown, lucideSearch } from "@ng-icons/lucide";
+import {
+  lucideCheck,
+  lucideChevronsUpDown,
+  lucideSearch,
+  lucideX,
+} from "@ng-icons/lucide";
 import { TagVM } from "@shared/models";
 import { HlmBadgeDirective } from "@spartan-ng/ui-badge-helm";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
@@ -42,7 +47,7 @@ type TouchedFn = () => void;
     HlmSelectImports,
   ],
   providers: [
-    provideIcons({ lucideChevronsUpDown, lucideSearch, lucideCheck }),
+    provideIcons({ lucideChevronsUpDown, lucideX, lucideSearch, lucideCheck }),
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => BookmarkTagSelectComponent),
@@ -103,6 +108,14 @@ export class BookmarkTagSelectComponent implements ControlValueAccessor {
     this.onCreate.emit(this.keywordControl.value);
     this.keywordControl.setValue("");
     this.$select()?.close();
+  }
+
+  onRemove(id: string): void {
+    const temp = new Map(this.$selected().map(item => [item.id, item]));
+    temp.delete(id);
+    this.$selected.set([...temp.values()]);
+    this._onChange([...temp.values()]);
+    this._onTouched();
   }
 
   onOpenChange(open: boolean) {
