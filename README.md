@@ -46,7 +46,7 @@ High-level plan is represented in the table
 | **OAuth Integration:** Support for logging in via Google, Facebook, etc    |   |
 | **Add/Edit/Delete Bookmarks:** Users should be able to easily add, edit, and delete bookmarks | Completed ✔️   |
 | **Categorization/Tags:** Allow users to categorize bookmarks with folders or tags   | Completed ✔️   |
-| **Search and Filter:** Feature to find bookmarks and filters to sort them based on date, tags, popularity, etc   |    |
+| **Search and Filter:** Find bookmarks and filters to sort them based on date, tags,  etc   |    |
 | **Responsive Design**: Ensure the application works well on both desktop and mobile devices   |    |
 | **Drag-and-Drop:** Enable drag-and-drop functionality for organizing bookmarks   | Completed ✔️   |
 | **Customization:** Allow users to customize the look and feel of their bookmark lists   |    |
@@ -58,7 +58,7 @@ High-level plan is represented in the table
 | **Cloud Sync:** Allow bookmarks to sync across multiple devices using cloud storage   |    |
 | **Browser Extensions:** Develop extensions for popular browsers (Chrome, Firefox, etc.)   |    |
 | **Mobile App:** Create a mobile application for on-the-go bookmarking and access   |    |
-| **Integration with Other Services:** Integrate with other productivity tools (e.g., Trello, Evernote)   |    |
+| **Integration with Other Services:** Integrate with productivity tools (e.g., Trello, Evernote)   |    |
 
 
 
