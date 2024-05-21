@@ -21,7 +21,7 @@ export class AuthMockApi {
     const tokens = this._createFakeToken();
     tokens.refresh = token;
     const res = this._createFakeSingleResponse({ user, tokens }, "POST");
-    return of(res).pipe(delay(300));
+    return of(res).pipe();
   }
 
   logout(): Observable<never> {

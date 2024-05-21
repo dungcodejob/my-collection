@@ -7,15 +7,8 @@ import {
   HttpStatusCode,
 } from "@angular/common/http";
 import { inject } from "@angular/core";
-import {
-  Observable,
-  catchError,
-  filter,
-  finalize,
-  switchMap,
-  take,
-  throwError,
-} from "rxjs";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { Observable, catchError, filter, switchMap, take, throwError } from "rxjs";
 import { AuthService } from "../data-access/auth.service";
 
 export const authInterceptor: HttpInterceptorFn = (
@@ -23,10 +16,8 @@ export const authInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn
 ) => {
   const authService = inject(AuthService);
-  const refreshToken$ = authService.token$;
   const token = authService.$token();
   const exceptions = ["/login", "/refresh-token", "assets"];
-  let refreshing = false;
 
   const addTokenToRequest = (
     request: HttpRequest<unknown>,
@@ -45,26 +36,38 @@ export const authInterceptor: HttpInterceptorFn = (
     refreshToken: string,
     error: HttpErrorResponse
   ) => {
-    if (!refreshing) {
-      refreshing = true;
+    const refreshing = authService.$isRefreshLoading();
 
-      return authService.refresh(refreshToken).pipe(
-        catchError(() => {
-          authService.logout();
-          return throwError(() => error);
-        }),
-        finalize(() => (refreshing = false)),
-        switchMap(results => {
-          return addTokenToRequest(request, next, results.tokens.access);
-        })
-      );
-    } else {
-      return refreshToken$.pipe(
-        filter(Boolean),
-        take(1),
-        switchMap(value => addTokenToRequest(request, next, value.access))
-      );
+    if (refreshing) {
+      authService.refresh(refreshToken);
     }
+
+    return toObservable(authService.$token).pipe(
+      filter(Boolean),
+      filter(() => !refreshing),
+      take(1),
+      switchMap(value => addTokenToRequest(request, next, value.access)),
+      catchError(() => throwError(() => error))
+    );
+
+    // if (!refreshing) {
+    //   return authService.refresh(refreshToken).pipe(
+    //     catchError(() => {
+    //       authService.logout();
+    //       return throwError(() => error);
+    //     }),
+    //     finalize(() => (refreshing = false)),
+    //     switchMap(results => {
+    //       return addTokenToRequest(request, next, results.tokens.access);
+    //     })
+    //   );
+    // } else {
+    //   return refreshToken$.pipe(
+    //     filter(Boolean),
+    //     take(1),
+    //     switchMap(value => addTokenToRequest(request, next, value.access))
+    //   );
+    // }
   };
 
   if (!token) {

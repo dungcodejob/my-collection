@@ -6,7 +6,7 @@ import {
   removeEntity,
   setAllEntities,
   updateEntity,
-  withEntities
+  withEntities,
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import {

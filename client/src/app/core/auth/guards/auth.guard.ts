@@ -1,14 +1,15 @@
 import { inject } from "@angular/core";
 import { CanActivateFn } from "@angular/router";
 import { RedirectService } from "@shared/services";
-import { map } from "rxjs";
 import { AuthService } from "./../data-access/auth.service";
 
 export const authGuard: CanActivateFn = () => {
   const redirectService = inject(RedirectService);
   const authService = inject(AuthService);
 
-  return authService.isLoggedIn$.pipe(
-    map(isLoggedIn => (isLoggedIn ? true : redirectService.createLoginTree()))
-  );
+  if (!authService.$isLoggedIn()) {
+    return redirectService.createLoginTree();
+  }
+
+  return true;
 };

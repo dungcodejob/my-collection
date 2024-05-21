@@ -1,25 +1,26 @@
-import { Injectable, inject } from "@angular/core";
-import { SingleResponseDto } from "@core/http";
+import { Injectable, Injector, computed, effect, inject } from "@angular/core";
+import { toObservable } from "@angular/core/rxjs-interop";
 import { LocalStorageKeys } from "@shared/enums";
-import { AuthResultDto, Credentials, TokenDto, UserProfileDto } from "@shared/models";
+import { TokenDto, UserProfileDto } from "@shared/models";
 import { LocalStorageService, RedirectService } from "@shared/services";
-import { Observable, catchError, map, of, pipe, switchMap, take, tap } from "rxjs";
-import { AuthApi } from "./auth.api";
+import { filter, take } from "rxjs";
 import { AuthStore } from "./auth.store";
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
-  private readonly _authApi = inject(AuthApi);
-  private readonly _authStore = inject(AuthStore);
+  private readonly _injector = inject(Injector);
   private readonly _storageService = inject(LocalStorageService);
   private readonly _redirectService = inject(RedirectService);
+  private readonly _authStore = inject(AuthStore);
 
-  readonly token$ = this._authStore.select(state => state.token);
-  readonly isLoggedIn$ = this._authStore.select(state => !!state.token, {
-    debounce: false,
-  });
+  readonly $user = this._authStore.user;
+  readonly $token = this._authStore.token;
+  readonly $isLoggedIn = computed(() => !!this._authStore.token());
 
-  readonly $token = this._authStore.selectSignal(state => state.token);
+  readonly $isLoginLoading = this._authStore.$isLoginPending;
+  readonly $loginError = this._authStore.$loginError;
+  readonly $isRefreshLoading = this._authStore.$isRefreshPending;
+  readonly $refreshError = this._authStore.$refreshError;
 
   constructor() {}
 
@@ -28,50 +29,62 @@ export class AuthService {
     const user = this._storageService.getObject<UserProfileDto>(LocalStorageKeys.User);
 
     if (!tokens || !user) {
-      return this.logout();
+      this.logout();
+    } else {
+      this.refresh(tokens.refresh);
     }
 
-    return this.refresh(tokens.refresh).pipe(
-      switchMap(() => this.isLoggedIn$),
-      take(1)
+    this.listen();
+
+    return toObservable(this._authStore.authenticationHandled, {
+      injector: this._injector,
+    }).pipe(filter(Boolean), take(1));
+  }
+
+  listen() {
+    effect(
+      () => {
+        const user = this._authStore.user();
+        const tokens = this._authStore.token();
+        this._saveAuthToLocal({ user, tokens });
+      },
+      { injector: this._injector }
+    );
+
+    effect(
+      () => {
+        const isLoginFailed = this._authStore.$loginError() !== null;
+        const isRefreshFailed = this._authStore.$refreshError() !== null;
+        if (isLoginFailed || isRefreshFailed) {
+          this.logout();
+        }
+      },
+      { injector: this._injector }
+    );
+
+    effect(
+      () => {
+        if (this.$isLoggedIn()) {
+          this._redirectService.redirectToPreviousUrl();
+        }
+      },
+      { injector: this._injector }
     );
   }
 
-  login(body: Credentials): Observable<AuthResultDto> {
-    return this._authApi.login(body).pipe(this._afterAuthentication());
-  }
+  login = this._authStore.login;
+  refresh = this._authStore.refresh;
 
-  refresh(token: string): Observable<AuthResultDto> {
-    return this._authApi.refresh(token).pipe(
-      catchError(() => this.logout()),
-      this._afterAuthentication()
-    );
-  }
-
-  logout(): Observable<never> {
-    this._clearLocalAuth();
+  logout() {
     this._authStore.clear();
     this._redirectService.redirectToLogin();
-    return of();
   }
 
-  private _afterAuthentication() {
-    return pipe(
-      map((res: SingleResponseDto<AuthResultDto>) => res.result.data),
-      tap(result => {
-        this._authStore.setAuth(result);
-        this._setAuthToLocal(result);
-        this._redirectService.redirectToPreviousUrl();
-      })
-    );
-  }
-
-  private _setAuthToLocal({ user, tokens }: AuthResultDto) {
-    this._storageService.setObject(LocalStorageKeys.User, user);
-    this._storageService.setObject(LocalStorageKeys.Token, tokens);
-  }
-  private _clearLocalAuth() {
-    this._storageService.remove(LocalStorageKeys.Token);
-    this._storageService.remove(LocalStorageKeys.User);
+  private _saveAuthToLocal(data: {
+    user: UserProfileDto | null;
+    tokens: TokenDto | null;
+  }) {
+    this._storageService.setObject(LocalStorageKeys.User, data.user);
+    this._storageService.setObject(LocalStorageKeys.Token, data.tokens);
   }
 }
