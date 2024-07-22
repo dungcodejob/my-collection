@@ -1,15 +1,15 @@
 import { Injectable, Injector, effect, inject, untracked } from "@angular/core";
 import { TagStore } from "@bookmark/data-access";
 import { CollectionFacade } from "@collection/data-access";
+import { RootFacade } from "@shared/data-access";
 import { debouncedSignal } from "@shared/utils";
-import { ShellFacade } from "@shell/data-access";
 import { BookmarkManagementStore } from "./bookmark-management.store";
 
 @Injectable()
 export class BookmarkManagementFacade {
   private readonly _injector = inject(Injector);
   private readonly _collectionFacade = inject(CollectionFacade);
-  private readonly _shellFacade = inject(ShellFacade);
+  private readonly _rootFacade = inject(RootFacade);
   private readonly _bookmarkStore = inject(BookmarkManagementStore);
   private readonly _tagStore = inject(TagStore);
 
@@ -42,7 +42,7 @@ export class BookmarkManagementFacade {
       () => {
         const pending = this._$layoutLoading();
         untracked(() => {
-          this._shellFacade.setLoading(pending);
+          this._rootFacade.setLoading(pending);
         });
       },
       { injector: this._injector }

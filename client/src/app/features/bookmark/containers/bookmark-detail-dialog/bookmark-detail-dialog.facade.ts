@@ -2,14 +2,15 @@ import { Injectable, effect, inject } from "@angular/core";
 import { TagStore } from "@bookmark/data-access";
 import { CollectionFacade } from "@collection/data-access";
 import { ToastService } from "@shared/services";
-import { ShellFacade } from "@shell/data-access";
+
+import { RootFacade } from "@shared/data-access";
 import { BookmarkDetailDialogStore } from "./bookmark-detail-dialog.store";
 
 @Injectable()
 export class BookmarkDetailDialogFacade {
   private readonly _collectionFacade = inject(CollectionFacade);
   private readonly _toastService = inject(ToastService);
-  private readonly _shellFacade = inject(ShellFacade);
+  private readonly _rootFacade = inject(RootFacade);
   private readonly _bookmarkDetailDialogStore = inject(BookmarkDetailDialogStore);
   private readonly _tagStore = inject(TagStore);
 

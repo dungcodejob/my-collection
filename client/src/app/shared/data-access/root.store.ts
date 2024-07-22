@@ -1,11 +1,11 @@
 import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 
-type ShellState = { loading: boolean };
+type RootState = { loading: boolean };
 
-const initialState: ShellState = { loading: false };
+const initialState: RootState = { loading: false };
 
-export const ShellStore = signalStore(
-  withState<ShellState>(initialState),
+export const RootStore = signalStore(
+  withState<RootState>(initialState),
   withMethods(store => {
     return {
       showLoading: () => patchState(store, { loading: true }),

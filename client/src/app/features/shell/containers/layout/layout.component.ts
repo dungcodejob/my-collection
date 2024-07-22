@@ -7,11 +7,12 @@ import {
   CollectionStore,
   provideCollectionMockApi,
 } from "@collection/data-access";
+import { RootFacade } from "@shared/data-access";
 import { SidebarComponent } from "@shell/components/sidebar/sidebar.component";
 import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
 import { HlmSpinnerComponent } from "@spartan-ng/ui-spinner-helm";
 import { Observable, defer, filter, map, merge, of, switchMap } from "rxjs";
-import { ShellFacade, ShellStore } from "../../data-access";
+
 type ViewModel = {
   hasHeader: boolean;
   hasSideBar: boolean;
@@ -30,8 +31,6 @@ type ViewModel = {
     CollectionListComponent,
   ],
   providers: [
-    ShellStore,
-    ShellFacade,
     // provideCollectionApi(),
     provideCollectionMockApi(),
     CollectionStore,
@@ -43,7 +42,7 @@ type ViewModel = {
 export class LayoutComponent {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _router = inject(Router);
-  private readonly _facade = inject(ShellFacade);
+  private readonly _facade = inject(RootFacade);
 
   $loading = this._facade.$loading;
 

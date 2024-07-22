@@ -1,12 +1,12 @@
 import { Injectable, Injector, computed, effect, inject, untracked } from "@angular/core";
 import { CollectionStore } from "@collection/data-access";
-import { ShellFacade } from "@shell/data-access";
+import { RootFacade } from "@shared/data-access";
 
 @Injectable()
 export class CollectionFacade {
   private readonly _injector = inject(Injector);
   private readonly _collectionStore = inject(CollectionStore);
-  private readonly _shellFacade = inject(ShellFacade);
+  private readonly _rootFacade = inject(RootFacade);
 
   $collections = this._collectionStore.collections;
   $selectedCollectionId = this._collectionStore.$selectedCollectionId;
@@ -24,7 +24,7 @@ export class CollectionFacade {
       () => {
         const pending = this._collectionStore.$isPending();
         untracked(() => {
-          this._shellFacade.setLoading(pending);
+          this._rootFacade.setLoading(pending);
         });
       },
       { injector: this._injector }

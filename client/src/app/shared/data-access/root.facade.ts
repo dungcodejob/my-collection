@@ -1,10 +1,10 @@
 import { Injectable, inject } from "@angular/core";
 import { debouncedSignal } from "@shared/utils";
-import { ShellStore } from "@shell/data-access";
+import { RootStore } from "./root.store";
 
 @Injectable()
-export class ShellFacade {
-  private readonly _layoutStore = inject(ShellStore);
+export class RootFacade {
+  private readonly _layoutStore = inject(RootStore);
 
   $loading = debouncedSignal(this._layoutStore.loading, 200);
 
