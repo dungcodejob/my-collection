@@ -3,7 +3,7 @@ import { AuthService } from "@core/auth";
 import { Credentials } from "@shared/models";
 
 @Injectable()
-export class LoginFacade {
+export class SecurityLoginFacade {
   private readonly _authFacade = inject(AuthService);
 
   readonly $isPending = this._authFacade.$isLoginLoading;

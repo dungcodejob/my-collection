@@ -5,7 +5,7 @@ import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmSmallDirective } from "@spartan-ng/ui-typography-helm";
 
 @Component({
-  selector: "app-sidebar",
+  selector: "app-home-sidebar",
   standalone: true,
   imports: [HlmSmallDirective, HlmButtonDirective, HlmIconComponent],
   providers: [
@@ -15,7 +15,7 @@ import { HlmSmallDirective } from "@spartan-ng/ui-typography-helm";
       lucideSettings,
     }),
   ],
-  templateUrl: "./sidebar.component.html",
-  styleUrl: "./sidebar.component.scss",
+  templateUrl: "./home-sidebar.component.html",
+  styleUrl: "./home-sidebar.component.scss",
 })
-export class SidebarComponent {}
+export class HomeSidebarComponent {}

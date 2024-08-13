@@ -5,7 +5,9 @@ export const securityRoutes: Routes = [
   {
     path: "login",
     loadComponent: () =>
-      import("./containers/login/login.component").then(m => m.LoginComponent),
+      import("../security-login/security-login.component").then(
+        m => m.SecurityLoginComponent
+      ),
     canActivate: [noAuthGuard],
   },
 ];

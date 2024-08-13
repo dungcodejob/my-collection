@@ -15,7 +15,7 @@ import { HlmCheckboxComponent } from "@spartan-ng/ui-checkbox-helm";
 import { HlmIconComponent } from "@spartan-ng/ui-icon-helm";
 import { HlmInputDirective, HlmInputErrorDirective } from "@spartan-ng/ui-input-helm";
 import { HlmLabelDirective } from "@spartan-ng/ui-label-helm";
-import { LoginFacade } from "./login.facade.ts";
+import { SecurityLoginFacade } from "./security-login.facade";
 
 type LoginForm = FormGroup<{
   username: FormControl<string>;
@@ -41,15 +41,15 @@ type LoginForm = FormGroup<{
     provideIcons({
       lucideLoader2,
     }),
-    LoginFacade,
+    SecurityLoginFacade,
   ],
-  templateUrl: "./login.component.html",
-  styleUrl: "./login.component.scss",
+  templateUrl: "./security-login.component.html",
+  styleUrl: "./security-login.component.scss",
 })
-export class LoginComponent implements OnInit {
+export class SecurityLoginComponent implements OnInit {
   private readonly _injector = inject(Injector);
   private readonly _nonNullFB = inject(NonNullableFormBuilder);
-  private readonly _loginFacade = inject(LoginFacade);
+  private readonly _loginFacade = inject(SecurityLoginFacade);
 
   $error = this._loginFacade.$error;
   $isPending = this._loginFacade.$isPending;

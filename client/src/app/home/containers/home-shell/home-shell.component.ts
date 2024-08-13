@@ -7,8 +7,8 @@ import {
   CollectionStore,
   provideCollectionMockApi,
 } from "@collection/data-access";
+import { HomeSidebarComponent } from "@home/components/home-sidebar/home-sidebar.component";
 import { RootFacade } from "@shared/data-access";
-import { SidebarComponent } from "@shell/components/sidebar/sidebar.component";
 import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
 import { HlmSpinnerComponent } from "@spartan-ng/ui-spinner-helm";
 import { Observable, defer, filter, map, merge, of, switchMap } from "rxjs";
@@ -25,7 +25,7 @@ type ViewModel = {
     RouterOutlet,
     AsyncPipe,
 
-    SidebarComponent,
+    HomeSidebarComponent,
     HlmToasterComponent,
     HlmSpinnerComponent,
     CollectionListComponent,
@@ -36,10 +36,10 @@ type ViewModel = {
     CollectionStore,
     CollectionFacade,
   ],
-  templateUrl: "./layout.component.html",
-  styleUrl: "./layout.component.scss",
+  templateUrl: "./home-shell.component.html",
+  styleUrl: "./home-shell.component.scss",
 })
-export class LayoutComponent {
+export class HomeShellComponent {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _router = inject(Router);
   private readonly _facade = inject(RootFacade);
