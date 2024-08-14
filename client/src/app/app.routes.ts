@@ -1,7 +1,6 @@
 import { Routes } from "@angular/router";
 import { authGuard, noAuthGuard } from "@core/auth";
-import { LayoutComponent } from "@shell/containers/layout/layout.component";
-import { NotAuthorizedComponent } from "@shell/containers/not-authorized/not-authorized.component";
+import { NotAuthorizedComponent } from "./home";
 
 export const routes: Routes = [
   {
@@ -12,13 +11,12 @@ export const routes: Routes = [
   {
     path: "home",
     canActivate: [authGuard],
-    component: LayoutComponent,
+    loadComponent: () => import("./home").then(m => m.HomeShellComponent),
     providers: [],
     children: [
       {
         path: ":collectionId",
-        loadChildren: () =>
-          import("@bookmark/bookmark.routes").then(m => m.bookmarkRoutes),
+        loadChildren: () => import("./bookmark").then(m => m.bookmarkRoutes),
       },
     ],
   },
@@ -26,7 +24,7 @@ export const routes: Routes = [
   {
     path: "security",
     canActivate: [noAuthGuard],
-    loadChildren: () => import("@security/security.routes").then(m => m.securityRoutes),
+    loadChildren: () => import("./security").then(m => m.securityRoutes),
   },
   {
     path: "not-authorized",
