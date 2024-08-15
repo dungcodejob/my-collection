@@ -2,23 +2,23 @@ import { Signal } from "@angular/core";
 import { ServerSideError } from "@core/http";
 import { Status } from "../status/status-name.type";
 
-export type ApiState<T = unknown> = {
+export type ApiState<T> = {
   status: Status;
   data: T;
 };
 
-export type ApiSignals<T = unknown> = {
-  $pending: Signal<boolean>;
+export type ApiSignals<T> = {
+  $loading: Signal<boolean>;
   $data: Signal<T>;
   $error: Signal<ServerSideError | null>;
 };
 
-export type NamedApiState<Name extends string> = {
-  [K in Name as `${K}ApiState`]: ApiState;
+export type NamedApiState<T, Name extends string> = {
+  [K in Name as `${K}ApiState`]: ApiState<T>;
 };
 
-export type NamedApiSignals<Name extends string, T = unknown> = {
-  [K in Name as `$${K}Pending`]: Signal<boolean>;
+export type NamedApiSignals<T, Name extends string> = {
+  [K in Name as `$${K}Loading`]: Signal<boolean>;
 } & {
   [K in Name as `$${K}Data`]: Signal<T>;
 } & {
