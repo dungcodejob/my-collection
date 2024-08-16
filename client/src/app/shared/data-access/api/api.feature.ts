@@ -1,12 +1,23 @@
-import { Signal, computed } from "@angular/core";
+import { computed, Signal } from "@angular/core";
+import { ResponseDto } from "@core/http";
 import {
   SignalStoreFeature,
   signalStoreFeature,
+  StateSignal,
   withComputed,
-  withState,
+  withMethods,
+  withState
 } from "@ngrx/signals";
 import { EmptyFeatureResult } from "@ngrx/signals/src/signal-store-models";
-import { ApiSignals, ApiState, NamedApiSignals, NamedApiState } from "./api-name.type";
+import { catchError, map, Observable, of, startWith } from "rxjs";
+import {
+  ApiMethods,
+  ApiSignals,
+  ApiState,
+  NamedApiMethods,
+  NamedApiSignals,
+  NamedApiState,
+} from "./api-name.type";
 
 function getApiStateKeys(config?: { name?: string }) {
   const name = config?.name;
@@ -15,6 +26,7 @@ function getApiStateKeys(config?: { name?: string }) {
     loadingKey: name ? `$${name}Loading` : "$loading",
     dataKey: name ? `$${name}Data` : "$data",
     errorKey: name ? `$${name}Error` : "$error",
+    handleKey: name ? `$${name}ApiHandle` : "$apiHandle",
   };
 }
 
@@ -31,7 +43,7 @@ export function withApiFeature<TData>(config: { type: TData }): SignalStoreFeatu
   {
     state: ApiState<TData>;
     signals: ApiSignals<TData>;
-    methods: {};
+    methods: ApiMethods<TData>;
   }
 >;
 export function withApiFeature<TData, Name extends string>(config: {
@@ -42,7 +54,7 @@ export function withApiFeature<TData, Name extends string>(config: {
   {
     state: NamedApiState<TData, Name>;
     signals: NamedApiSignals<TData, Name>;
-    methods: {};
+    methods: NamedApiMethods<TData, Name>;
   }
 >;
 export function withApiFeature<TData>(config: {
@@ -53,7 +65,7 @@ export function withApiFeature<TData>(config: {
   {
     state: ApiState<TData>;
     signals: ApiSignals<TData>;
-    methods: {};
+    methods: ApiMethods<TData>;
   }
 >;
 export function withApiFeature<TData, Name extends string>(config: {
@@ -65,7 +77,7 @@ export function withApiFeature<TData, Name extends string>(config: {
   {
     state: NamedApiState<TData, Name>;
     signals: NamedApiSignals<TData, Name>;
-    methods: {};
+    methods: NamedApiMethods<TData, Name>;
   }
 >;
 export function withApiFeature<TData, Name extends string>(config?: {
@@ -73,7 +85,7 @@ export function withApiFeature<TData, Name extends string>(config?: {
   default?: TData;
   name?: Name;
 }) {
-  const { apiKey, errorKey, loadingKey, dataKey } = getApiStateKeys(config);
+  const { apiKey, errorKey, loadingKey, dataKey, handleKey } = getApiStateKeys(config);
   console.log(apiKey, errorKey, loadingKey, dataKey);
   return signalStoreFeature(
     withState({
@@ -91,6 +103,33 @@ export function withApiFeature<TData, Name extends string>(config?: {
           const status = $apiState().status;
           return typeof status === "object" ? status.error : null;
         }),
+      };
+    }),
+    withMethods((store: StateSignal<any>) => {
+      return {
+        [handleKey]: <R extends ResponseDto<TData>>(
+          source$: Observable<R>
+        ): Observable<ApiState<TData>> => {
+          return source$.pipe(
+            map(
+              res =>
+                ({
+                  status: "fulfilled",
+                  data: res.result,
+                }) as ApiState<TData>
+            ),
+            startWith({
+              status: "pending",
+              data: config ? config.default : null,
+            } as ApiState<TData>),
+            catchError(error =>
+              of({
+                status: { error },
+                data: config ? config.default : null,
+              } as ApiState<TData>)
+            )
+          );
+        },
       };
     })
   );
