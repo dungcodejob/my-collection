@@ -2,7 +2,7 @@ import { Injectable, inject } from "@angular/core";
 import { debouncedSignal } from "@shared/utils";
 import { RootStore } from "./root.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class RootFacade {
   private readonly _layoutStore = inject(RootStore);
 

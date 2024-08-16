@@ -6,7 +6,9 @@ import {
   withComputed,
   withState,
 } from "@ngrx/signals";
-import { SignalStoreFeatureResult } from "@ngrx/signals/src/signal-store-models";
+import {
+  EmptyFeatureResult
+} from "@ngrx/signals/src/signal-store-models";
 import { capitalize } from "@shared/utils";
 import {
   NamedStatusSignals,
@@ -26,21 +28,18 @@ function getStatusStateKeys(config?: { name: string }) {
   };
 }
 
-export function withStatus<Input extends SignalStoreFeatureResult>(): SignalStoreFeature<
-  Input,
+export function withStatus(): SignalStoreFeature<
+  EmptyFeatureResult,
   {
     state: StatusState;
     signals: StatusSignals;
     methods: {};
   }
 >;
-export function withStatus<
-  Input extends SignalStoreFeatureResult,
-  Name extends string,
->(config: {
+export function withStatus<Name extends string>(config: {
   name: Name;
 }): SignalStoreFeature<
-  Input,
+  EmptyFeatureResult,
   {
     state: NamedStatusState<Name>;
     signals: NamedStatusSignals<Name>;

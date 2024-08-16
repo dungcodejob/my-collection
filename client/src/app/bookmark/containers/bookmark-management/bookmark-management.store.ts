@@ -1,6 +1,6 @@
 import { inject } from "@angular/core";
 import { ServerSideError } from "@core/http";
-import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
+import { patchState, signalStore, type, withMethods, withState } from "@ngrx/signals";
 import {
   addEntity,
   removeEntity,
@@ -16,6 +16,7 @@ import {
   withPagination,
   withStatus,
 } from "@shared/data-access";
+import { withApiFeature } from "@shared/data-access/api/api.feature";
 import { BookmarkMessage } from "@shared/enums";
 import {
   BookmarkFilterDto,
@@ -38,16 +39,17 @@ const initialState: BookmarkState = {
 
 export const BookmarkManagementStore = signalStore(
   withState<BookmarkState>(initialState),
+  withEntities<BookmarkVM>(),
+  withApiFeature({ name: "bookmark", type: type<BookmarkVM[]>() }),
   withStatus({ name: "fetch" }),
   withStatus({ name: "layout" }),
-  withEntities<BookmarkVM>(),
   withPagination(),
+
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();
     const toastService = inject(ToastService);
 
     return {
-      ...store,
       setFilter: (filter: BookmarkFilterDto | null) =>
         patchState(store, state => ({
           ...state,

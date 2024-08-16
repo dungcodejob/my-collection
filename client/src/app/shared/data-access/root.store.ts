@@ -5,6 +5,7 @@ type RootState = { loading: boolean };
 const initialState: RootState = { loading: false };
 
 export const RootStore = signalStore(
+  { providedIn: "root" },
   withState<RootState>(initialState),
   withMethods(store => {
     return {
