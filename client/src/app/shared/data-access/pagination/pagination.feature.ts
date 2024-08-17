@@ -8,7 +8,9 @@ import {
   withMethods,
   withState,
 } from "@ngrx/signals";
-import { SignalStoreFeatureResult } from "@ngrx/signals/src/signal-store-models";
+import {
+  EmptyFeatureResult
+} from "@ngrx/signals/src/signal-store-models";
 import { PaginationDto } from "@shared/models";
 import {
   NamedPaginationMethods,
@@ -42,23 +44,18 @@ function getPaginationStateKeys(config?: { name: string }) {
 
 const initialState: PaginationDto = { currentPage: CURRENT_PAGE, pageSize: PAGE_SIZE };
 
-export function withPagination<
-  Input extends SignalStoreFeatureResult,
->(): SignalStoreFeature<
-  Input,
+export function withPagination(): SignalStoreFeature<
+  EmptyFeatureResult,
   {
     state: PaginationState;
     signals: PaginationSignals;
     methods: PaginationMethods;
   }
 >;
-export function withPagination<
-  Input extends SignalStoreFeatureResult,
-  Name extends string,
->(config: {
+export function withPagination<Name extends string>(config: {
   name: Name;
 }): SignalStoreFeature<
-  Input,
+  EmptyFeatureResult,
   {
     state: NamedPaginationState<Name>;
     signals: NamedPaginationSignals<Name>;
@@ -98,7 +95,6 @@ export function withPagination<Name extends string>(config?: {
     }),
     withMethods((store: StateSignal<any>) => {
       return {
-        ...store,
         [resetKey]: () =>
           patchState(store, {
             [currentPageKey]: initialState.currentPage,

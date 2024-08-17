@@ -6,7 +6,7 @@ import {
   StateSignal,
   withComputed,
   withMethods,
-  withState
+  withState,
 } from "@ngrx/signals";
 import { EmptyFeatureResult } from "@ngrx/signals/src/signal-store-models";
 import { catchError, map, Observable, of, startWith } from "rxjs";
