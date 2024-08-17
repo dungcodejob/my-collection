@@ -12,5 +12,7 @@ export class RootFacade {
   showLoading = this._layoutStore.showLoading;
   hideLoading = this._layoutStore.hideLoading;
 
-  constructor() {}
+  useLoading<T>() {
+    return this._layoutStore.useLoading<T>();
+  }
 }

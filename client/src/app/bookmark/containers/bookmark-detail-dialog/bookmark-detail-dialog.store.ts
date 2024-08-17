@@ -6,8 +6,7 @@ import {
   setError,
   setFulfilled,
   setPending,
-  withPagination,
-  withStatus,
+  withStatus
 } from "@shared/data-access";
 import { MetadataDto } from "@shared/models";
 import { prefix } from "@shared/utils";
@@ -25,12 +24,10 @@ const initialState: BookmarkDetailDialogState = {
 export const BookmarkDetailDialogStore = signalStore(
   withState<BookmarkDetailDialogState>(initialState),
   withStatus(),
-  withPagination(),
   withMethods(store => {
     const crawlApi = injectCrawlApi();
 
     return {
-      ...store,
       getMetadata: rxMethod<string>(
         pipe(
           switchMap(url =>
