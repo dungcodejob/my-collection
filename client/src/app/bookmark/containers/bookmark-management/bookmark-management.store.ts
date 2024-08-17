@@ -1,5 +1,6 @@
 import { inject } from "@angular/core";
 import { ServerSideError } from "@core/http";
+import { withLogger } from "@core/log";
 import { patchState, signalStore, type, withMethods, withState } from "@ngrx/signals";
 import {
   addEntity,
@@ -47,9 +48,9 @@ export const BookmarkManagementStore = signalStore(
   withApiFeature({ name: "create", type: type<BookmarkVM>() }),
   withApiFeature({ name: "update", type: type<BookmarkVM>() }),
   // withStatus({ name: "fetch" }),
-  withApiFeature({ name: "delete", type: type<BookmarkVM>() }),
+  // withApiFeature({ name: "delete", type: type<BookmarkVM>() }),
   // withStatus({ name: "layout" }),
-
+  withLogger("bookmark"),
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();
     const toastService = inject(ToastService);

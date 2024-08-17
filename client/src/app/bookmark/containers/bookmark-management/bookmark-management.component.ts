@@ -16,6 +16,7 @@ import {
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
 import { CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
+import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService } from "@shared/ui";
 import { isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
@@ -47,6 +48,7 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     HlmIconComponent,
     HlmButtonDirective,
     BookmarkListComponent,
+    FunctionPipe,
   ],
   providers: [
     // provideBookmarkApi(),
@@ -67,8 +69,10 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
 export class BookmarkManagementComponent implements OnInit {
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
+
   protected readonly facade = inject(BookmarkManagementFacade);
 
+  test = 1;
   // items = input.required({
   //   transform: coerceArray<BookmarkDto>,
   // });
@@ -83,6 +87,7 @@ export class BookmarkManagementComponent implements OnInit {
   ngOnInit(): void {
     this.facade.enter();
   }
+
 
   onAdd(): void {
     const collectionId = this.facade.$collection()?.id as string;

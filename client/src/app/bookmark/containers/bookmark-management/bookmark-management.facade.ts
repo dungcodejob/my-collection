@@ -10,12 +10,10 @@ export class BookmarkManagementFacade {
   private readonly _bookmarkStore = inject(BookmarkManagementStore);
   private readonly _tagStore = inject(TagStore);
 
-
   $collection = this._collectionFacade.$selectedEntity;
   $loading = this._bookmarkStore.$isPending;
   $bookmarks = this._bookmarkStore.entities;
   $pagination = this._bookmarkStore.$pagination;
-
   enter() {
     effect(
       () => {
