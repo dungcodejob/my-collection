@@ -1,6 +1,5 @@
 import { Injectable, effect, inject } from "@angular/core";
 import { TagStore } from "@bookmark/data-access";
-import { CollectionFacade } from "@collection/data-access";
 import { ToastService } from "@shared/services";
 
 import { RootFacade } from "@shared/data-access";
@@ -8,7 +7,6 @@ import { BookmarkDetailDialogStore } from "./bookmark-detail-dialog.store";
 
 @Injectable()
 export class BookmarkDetailDialogFacade {
-  private readonly _collectionFacade = inject(CollectionFacade);
   private readonly _toastService = inject(ToastService);
   private readonly _rootFacade = inject(RootFacade);
   private readonly _bookmarkDetailDialogStore = inject(BookmarkDetailDialogStore);
@@ -35,8 +33,7 @@ export class BookmarkDetailDialogFacade {
     this._tagStore.load();
   }
 
-  createTag(title: string) {
-    const collectionId = this._collectionFacade.$selectedCollectionId() as string;
+  createTag(title: string, collectionId: string) {
     this._tagStore.create({ title, collectionId });
   }
 

@@ -4,11 +4,13 @@ import {
   Component,
   OnInit,
   ViewContainerRef,
+  computed,
   inject,
 } from "@angular/core";
 import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
 import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import {
+  BookmarkFacade,
   TagStore,
   provideBookmarkMockApi,
   provideCrawlApi,
@@ -18,13 +20,17 @@ import { lucideRotateCw } from "@ng-icons/lucide";
 import { CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService } from "@shared/ui";
-import { isNotFalsy } from "@shared/utils";
+import {
+  injectAutoEffect,
+  injectParams,
+  injectQueryParams,
+  isNotFalsy,
+} from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
 import { Observable, filter, map, take } from "rxjs";
 import { BookmarkManagementFacade } from "./bookmark-management.facade";
-import { BookmarkManagementStore } from "./bookmark-management.store";
 
 // Generics
 export function coerceArray<T>(value: T | T[]): T[];
@@ -58,7 +64,6 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     provideTagMockApi(),
     TagStore,
     BookmarkManagementFacade,
-    BookmarkManagementStore,
 
     provideIcons({
       lucideRotateCw,
@@ -67,12 +72,20 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
   ],
 })
 export class BookmarkManagementComponent implements OnInit {
+  private readonly _autoEffect = injectAutoEffect();
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
+  protected readonly facade = inject(BookmarkFacade);
 
-  protected readonly facade = inject(BookmarkManagementFacade);
+  readonly $collectionId = injectParams("collectionId");
+  readonly $keyword = injectQueryParams("keyword");
+  readonly $filter = computed(() => {
+    return {
+      collectionId: this.$collectionId() ?? undefined,
+      keyword: this.$keyword() ?? undefined,
+    };
+  });
 
-  test = 1;
   // items = input.required({
   //   transform: coerceArray<BookmarkDto>,
   // });
@@ -86,28 +99,36 @@ export class BookmarkManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.facade.enter();
+
+    this._autoEffect(
+      () => {
+        const filter = this.$filter();
+        console.log(filter);
+        this.facade.setFilter(filter);
+      },
+      { allowSignalWrites: true }
+    );
   }
 
-
   onAdd(): void {
-    const collectionId = this.facade.$collection()?.id as string;
     const result$: Observable<CreateBookmarkDto> = this._dialogService
       .open(BookmarkDetailDialogComponent, {
         closeOnBackdropClick: false,
         contentClass: "max-w-[40rem]",
         vcr: this._vcr,
+        context: { collectionId: this.$collectionId() },
       })
       .closed$.pipe(
         take(1),
         filter(isNotFalsy),
-        map(data => ({ ...data, collectionId }))
+        map(data => ({ ...data, collectionId: this.$collectionId() }))
       );
 
     this.facade.create(result$);
   }
 
   onEdit(id: string): void {
-    const data = this.facade.$bookmarks().find(b => b.id === id);
+    const data = this.facade.$items().find(b => b.id === id);
 
     if (data) {
       const result$: Observable<UpdateBookmarkDto> = this._dialogService

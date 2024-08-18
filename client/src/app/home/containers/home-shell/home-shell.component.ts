@@ -2,11 +2,6 @@ import { AsyncPipe } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
 import { CollectionListComponent } from "@collection/containers/collection-list/collection-list.component";
-import {
-  CollectionFacade,
-  CollectionStore,
-  provideCollectionMockApi,
-} from "@collection/data-access";
 import { HomeSidebarComponent } from "@home/components/home-sidebar/home-sidebar.component";
 import { RootFacade } from "@shared/data-access";
 import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
@@ -32,9 +27,6 @@ type ViewModel = {
   ],
   providers: [
     // provideCollectionApi(),
-    provideCollectionMockApi(),
-    CollectionStore,
-    CollectionFacade,
   ],
   templateUrl: "./home-shell.component.html",
   styleUrl: "./home-shell.component.scss",

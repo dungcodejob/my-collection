@@ -1,15 +1,31 @@
 import { Injectable, Type } from "@angular/core";
 import { ExternalToast, toast } from "ngx-sonner";
 
+type ExtraToast = ExternalToast & {
+  params: any[];
+};
+
 @Injectable({ providedIn: "root" })
 export class ToastService {
   constructor() {}
 
-  error(message: string | Type<unknown>, data?: ExternalToast) {
+  error(message: string | Type<unknown>, data?: ExtraToast) {
+    let format = message;
+    if (typeof message === "string" && data) {
+      format = message.replace(/{(\d+)}/g, (match, index) => {
+        return typeof data.params[index] !== "undefined" ? data.params[index] : match;
+      });
+    }
     const description = this._getTimeDescription();
     toast.error(message, { description, ...data });
   }
-  success(message: string | Type<unknown>, data?: ExternalToast) {
+  success(message: string | Type<unknown>, data?: ExtraToast) {
+    let format = message;
+    if (typeof message === "string" && data) {
+      format = message.replace(/{(\d+)}/g, (match, index) => {
+        return typeof data.params[index] !== "undefined" ? data.params[index] : match;
+      });
+    }
     const description = this._getTimeDescription();
     toast.success(message, { description, ...data });
   }

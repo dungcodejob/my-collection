@@ -1,7 +1,6 @@
 import { inject } from "@angular/core";
 import { ServerSideError } from "@core/http";
-import { withLogger } from "@core/log";
-import { patchState, signalStore, type, withMethods, withState } from "@ngrx/signals";
+import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import {
   addEntity,
   removeEntity,
@@ -11,15 +10,15 @@ import {
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import {
-  RootFacade,
   setError,
   setFulfilled,
   setPending,
   withPagination,
   withStatus,
 } from "@shared/data-access";
-import { withApiFeature } from "@shared/data-access/api/api.feature";
-import { BookmarkMessage } from "@shared/enums";
+
+import { tapResponse } from "@ngrx/component-store";
+import { MessageKeys } from "@shared/constants";
 import {
   BookmarkFilterDto,
   BookmarkVM,
@@ -28,9 +27,8 @@ import {
 } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
-import { EMPTY, catchError, filter, map, pipe, switchMap, tap } from "rxjs";
-import { injectBookmarkApi } from "../../data-access";
-
+import { filter, map, pipe, switchMap, tap } from "rxjs";
+import { injectBookmarkApi } from "./bookmark/bookmark.provider";
 type BookmarkState = {
   filter: BookmarkFilterDto | null;
 };
@@ -39,29 +37,20 @@ const initialState: BookmarkState = {
   filter: null,
 };
 
-export const BookmarkManagementStore = signalStore(
+export const BookmarkStore = signalStore(
   withState<BookmarkState>(initialState),
   withEntities<BookmarkVM>(),
-  withStatus(),
   withPagination(),
-  withApiFeature({ name: "bookmark", type: type<BookmarkVM[]>() }),
-  withApiFeature({ name: "create", type: type<BookmarkVM>() }),
-  withApiFeature({ name: "update", type: type<BookmarkVM>() }),
-  // withStatus({ name: "fetch" }),
-  // withApiFeature({ name: "delete", type: type<BookmarkVM>() }),
-  // withStatus({ name: "layout" }),
-  withLogger("bookmark"),
+  withStatus({ name: "list" }),
+  withStatus({ name: "item" }),
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();
     const toastService = inject(ToastService);
-    const appFacade = inject(RootFacade);
 
     return {
-      setFilter: (filter: BookmarkFilterDto | null) =>
-        patchState(store, state => ({
-          ...state,
-          filter: { ...state.filter, ...filter },
-        })),
+      setFilter: rxMethod<BookmarkFilterDto>(value$ => {
+        return value$.pipe(tap(value => patchState(store, { filter: value })));
+      }),
       findAll: rxMethod<void>(
         pipe(
           switchMap(() => {
@@ -69,17 +58,16 @@ export const BookmarkManagementStore = signalStore(
             const pagination = store.$pagination();
             const query = { ...filter, ...pagination };
             return bookmarkApi.findAll(query).pipe(
-              prefix(() => patchState(store, setPending())),
-              tap({
-                next: res => {
-                  patchState(store, setAllEntities(res.result.items), setFulfilled());
-                },
-                error: err => {
-                  // TODO: using logger service
-                  patchState(store, setError(err));
-                },
-              }),
-              catchError(() => EMPTY)
+              prefix(() => patchState(store, setPending("list"))),
+              tapResponse({
+                next: res =>
+                  patchState(
+                    store,
+                    setAllEntities(res.result.items),
+                    setFulfilled("list")
+                  ),
+                error: (err: any) => patchState(store, setError(err, "list")),
+              })
             );
           })
         )
@@ -88,23 +76,21 @@ export const BookmarkManagementStore = signalStore(
         pipe(
           switchMap(bookmarkToCreate =>
             bookmarkApi.create(bookmarkToCreate).pipe(
-              appFacade.useLoading(),
-              tap({
+              prefix(() => patchState(store, setPending("item"))),
+              tapResponse({
                 next: res => {
                   const data = res.result.data;
-                  patchState(store, addEntity(data));
+                  patchState(store, addEntity(data), setFulfilled("item"));
 
                   toastService.success(`Bookmark “${data.title}“ was created`);
                 },
-                error: err => {
+                error: (err: any) => {
                   const message = "Bookmark could not be created";
-                  // TODO: using logger service
-                  console.log(err);
-                  patchState(store);
+
+                  patchState(store, setError(err, "item"));
                   toastService.error(message);
                 },
-              }),
-              catchError(() => EMPTY)
+              })
             )
           )
         )
@@ -113,22 +99,26 @@ export const BookmarkManagementStore = signalStore(
         pipe(
           switchMap(bookmarkToUpdate =>
             bookmarkApi.update(bookmarkToUpdate.id, bookmarkToUpdate).pipe(
-              appFacade.useLoading(),
-              tap({
+              prefix(() => patchState(store, setPending("item"))),
+              tapResponse({
                 next: res => {
                   const data = res.result.data;
-                  patchState(store, updateEntity({ id: data.id, changes: data }));
+
+                  patchState(
+                    store,
+                    updateEntity({ id: data.id, changes: data }),
+                    setFulfilled("item")
+                  );
 
                   toastService.success(`Bookmark “${data.title}“ was updated`);
                 },
-                error: err => {
+                error: (err: any) => {
+                  patchState(store, setError(err, "item"));
+
                   const message = "Bookmark could not be updated";
-                  // TODO: using logger service
-                  console.log(err);
                   toastService.error(message);
                 },
-              }),
-              catchError(() => EMPTY)
+              })
             )
           )
         )
@@ -139,30 +129,35 @@ export const BookmarkManagementStore = signalStore(
           filter(isNotNil),
           switchMap(bookmarkToDelete =>
             bookmarkApi.delete(bookmarkToDelete.id).pipe(
-              appFacade.useLoading(),
-              tap({
+              prefix(() => patchState(store, setPending("item"))),
+              tapResponse({
                 next: () => {
-                  patchState(store, removeEntity(bookmarkToDelete.id));
+                  patchState(
+                    store,
+                    removeEntity(bookmarkToDelete.id),
+                    setFulfilled("item")
+                  );
                   toastService.success(
                     `Bookmark “${bookmarkToDelete.title}“ was deleted`
                   );
                 },
-                error: err => {
-                  let message = `Bookmark “${bookmarkToDelete.title}” could not be deleted`;
-                  if (err instanceof ServerSideError) {
-                    switch (err.message) {
-                      case BookmarkMessage.NotExist:
-                        message = `Bookmark “${bookmarkToDelete.title}” to be deleted does not exist`;
-                        break;
+                error: (err: any) => {
+                  patchState(store, setError(err, "item"));
 
-                      default:
-                        break;
-                    }
+                  if (err instanceof ServerSideError) {
+                    const Messages: Record<string, string> = {
+                      [MessageKeys.Bookmark.NotExist]:
+                        `Bookmark “${bookmarkToDelete.title}” to be deleted does not exist`,
+
+                      default: `Bookmark “${bookmarkToDelete.title}” could not be deleted`,
+                    };
+
+                    const key = err.message;
+                    const message = Messages[key] || Messages["default"];
+                    toastService.error(message);
                   }
-                  toastService.error(message);
                 },
-              }),
-              catchError(() => EMPTY)
+              })
             )
           )
         )
