@@ -66,7 +66,7 @@ export const BookmarkStore = signalStore(
                     setAllEntities(res.result.items),
                     setFulfilled("list")
                   ),
-                error: (err: any) => patchState(store, setError(err, "list")),
+                error: (err: Error) => patchState(store, setError(err, "list")),
               })
             );
           })
@@ -84,7 +84,7 @@ export const BookmarkStore = signalStore(
 
                   toastService.success(`Bookmark “${data.title}“ was created`);
                 },
-                error: (err: any) => {
+                error: (err: Error) => {
                   const message = "Bookmark could not be created";
 
                   patchState(store, setError(err, "item"));
@@ -112,7 +112,7 @@ export const BookmarkStore = signalStore(
 
                   toastService.success(`Bookmark “${data.title}“ was updated`);
                 },
-                error: (err: any) => {
+                error: (err: Error) => {
                   patchState(store, setError(err, "item"));
 
                   const message = "Bookmark could not be updated";
@@ -141,7 +141,7 @@ export const BookmarkStore = signalStore(
                     `Bookmark “${bookmarkToDelete.title}“ was deleted`
                   );
                 },
-                error: (err: any) => {
+                error: (err: Error) => {
                   patchState(store, setError(err, "item"));
 
                   if (err instanceof ServerSideError) {

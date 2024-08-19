@@ -6,9 +6,7 @@ import {
   withComputed,
   withState,
 } from "@ngrx/signals";
-import {
-  EmptyFeatureResult
-} from "@ngrx/signals/src/signal-store-models";
+import { EmptyFeatureResult } from "@ngrx/signals/src/signal-store-models";
 import { capitalize } from "@shared/utils";
 import {
   NamedStatusSignals,

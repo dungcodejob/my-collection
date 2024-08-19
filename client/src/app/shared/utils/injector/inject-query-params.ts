@@ -153,6 +153,7 @@ export function injectQueryParams<ReadT>(
 /**
  * The `injectQueryParams` function namespace provides additional functionality for handling array query parameters.
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace injectQueryParams {
   /**
    * Retrieve an array query parameter with optional configuration options.

@@ -2,7 +2,7 @@ import { Injectable, Type } from "@angular/core";
 import { ExternalToast, toast } from "ngx-sonner";
 
 type ExtraToast = ExternalToast & {
-  params: any[];
+  params: (string | number | boolean)[];
 };
 
 @Injectable({ providedIn: "root" })
@@ -10,31 +10,34 @@ export class ToastService {
   constructor() {}
 
   error(message: string | Type<unknown>, data?: ExtraToast) {
-    let format = message;
-    if (typeof message === "string" && data) {
-      format = message.replace(/{(\d+)}/g, (match, index) => {
-        return typeof data.params[index] !== "undefined" ? data.params[index] : match;
-      });
-    }
+    const format = this._format(message, data?.params);
     const description = this._getTimeDescription();
-    toast.error(message, { description, ...data });
+    toast.error(format, { description, ...data });
   }
   success(message: string | Type<unknown>, data?: ExtraToast) {
-    let format = message;
-    if (typeof message === "string" && data) {
-      format = message.replace(/{(\d+)}/g, (match, index) => {
-        return typeof data.params[index] !== "undefined" ? data.params[index] : match;
+    const format = this._format(message, data?.params);
+    const description = this._getTimeDescription();
+    toast.success(format, { description, ...data });
+  }
+
+  show(message: string | Type<unknown>, data?: ExtraToast) {
+    const format = this._format(message, data?.params);
+    const description = this._getTimeDescription();
+    toast(format, { description, ...data });
+  }
+
+  private _format(
+    message: string | Type<unknown>,
+    params?: (string | number | boolean)[]
+  ) {
+    if (typeof message === "string" && params && params.length > 0) {
+      return message.replace(/{(\d+)}/g, (match, index) => {
+        return typeof params[index] !== "undefined" ? params[index].toString() : match;
       });
     }
-    const description = this._getTimeDescription();
-    toast.success(message, { description, ...data });
-  }
 
-  show(message: string | Type<unknown>, data?: ExternalToast) {
-    const description = this._getTimeDescription();
-    toast(message, { description, ...data });
+    return message;
   }
-
   private _getTimeDescription() {
     // Example: Thursday, April 04, 2024 at 8:25 PM
     const now = new Date();

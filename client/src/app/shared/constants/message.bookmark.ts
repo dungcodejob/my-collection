@@ -5,5 +5,3 @@ export class Bookmark {
   static UpdateFailure = "Bookmark.UpdateFailure";
   static NotExist = "Bookmark.NotExist";
 }
-
-

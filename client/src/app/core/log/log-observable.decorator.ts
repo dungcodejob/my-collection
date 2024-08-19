@@ -1,17 +1,14 @@
-// export function log$(target: any, propertyKey: string) {
-//   let propertyValue;
-
 import { Observable, tap } from "rxjs";
 
 export function LogObservable(): PropertyDecorator {
-  let propertyValue: any;
+  let propertyValue: unknown;
 
   return (target: object, propertyKey: string | symbol) => {
     function getter() {
       return propertyValue;
     }
 
-    function setter(value: any) {
+    function setter(value: unknown) {
       if (value instanceof Observable) {
         propertyValue = value.pipe(
           tap(res => {

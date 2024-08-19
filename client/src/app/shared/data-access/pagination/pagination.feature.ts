@@ -8,9 +8,7 @@ import {
   withMethods,
   withState,
 } from "@ngrx/signals";
-import {
-  EmptyFeatureResult
-} from "@ngrx/signals/src/signal-store-models";
+import { EmptyFeatureResult } from "@ngrx/signals/src/signal-store-models";
 import { PaginationDto } from "@shared/models";
 import {
   NamedPaginationMethods,
@@ -93,6 +91,7 @@ export function withPagination<Name extends string>(config?: {
         })),
       };
     }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     withMethods((store: StateSignal<any>) => {
       return {
         [resetKey]: () =>

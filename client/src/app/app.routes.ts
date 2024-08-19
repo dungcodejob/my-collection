@@ -1,5 +1,9 @@
 import { Routes } from "@angular/router";
-import { CollectionFacade, CollectionStore, provideCollectionMockApi } from "@collection/data-access";
+import {
+  CollectionFacade,
+  CollectionStore,
+  provideCollectionMockApi,
+} from "@collection/data-access";
 import { authGuard, noAuthGuard } from "@core/auth";
 import { NotAuthorizedComponent } from "./home";
 

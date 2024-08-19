@@ -1,5 +1,3 @@
-
-
 export class Collection {
   static CreateSuccess = "Collection.CreateSuccess";
   static CreateFailure = "Collection.CreateFailure";
