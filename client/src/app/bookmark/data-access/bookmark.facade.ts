@@ -1,7 +1,7 @@
-import { inject, Injectable, Injector, untracked } from "@angular/core";
+import { inject, Injectable, Injector, Signal, untracked } from "@angular/core";
 import { CollectionFacade } from "@collection/data-access";
 import { RootFacade } from "@shared/data-access";
-import { BookmarkFilterDto } from "@shared/models";
+import { BookmarkFilterDto, PaginationDto } from "@shared/models";
 import { injectAutoEffect } from "@shared/utils";
 import { BookmarkStore } from "./bookmark.store";
 
@@ -26,13 +26,18 @@ export class BookmarkFacade {
     this._autoEffect(() => {
       this._store.filter();
       this._store.$pagination();
+
+      console.log(this._store.filter());
       untracked(() => this._store.findAll());
     });
   }
 
-  setFilter(filter: BookmarkFilterDto) {
-    this._store.setFilter(filter);
-    this._store.paginationReset();
+  connectFilter($filter: Signal<BookmarkFilterDto>) {
+    this._store.setFilter($filter);
+  }
+
+  connectPagination($pagination: Signal<PaginationDto>) {
+    this._store.setPagination($pagination);
   }
 
   create = this._store.create;

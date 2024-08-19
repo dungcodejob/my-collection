@@ -23,6 +23,7 @@ import {
   BookmarkFilterDto,
   BookmarkVM,
   CreateBookmarkDto,
+  PaginationDto,
   UpdateBookmarkDto,
 } from "@shared/models";
 import { ToastService } from "@shared/services";
@@ -50,6 +51,9 @@ export const BookmarkStore = signalStore(
     return {
       setFilter: rxMethod<BookmarkFilterDto>(value$ => {
         return value$.pipe(tap(value => patchState(store, { filter: value })));
+      }),
+      setPagination: rxMethod<PaginationDto>(value$ => {
+        return value$.pipe(tap(value => patchState(store, { ...value })));
       }),
       findAll: rxMethod<void>(
         pipe(

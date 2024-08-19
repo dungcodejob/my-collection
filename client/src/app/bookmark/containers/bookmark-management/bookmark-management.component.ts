@@ -2,11 +2,15 @@ import { NgFor, NgIf, NgTemplateOutlet } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   ViewContainerRef,
   computed,
   inject,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
 import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import {
@@ -17,7 +21,12 @@ import {
   provideTagMockApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
-import { CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
+import {
+  BookmarkFilterDto,
+  CreateBookmarkDto,
+  PaginationDto,
+  UpdateBookmarkDto,
+} from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService } from "@shared/ui";
 import {
@@ -28,8 +37,17 @@ import {
 } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
+import { HlmInputDirective } from "@spartan-ng/ui-input-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
-import { Observable, filter, map, take } from "rxjs";
+import {
+  Observable,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  take,
+  tap,
+} from "rxjs";
 import { BookmarkManagementFacade } from "./bookmark-management.facade";
 
 // Generics
@@ -55,6 +73,8 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     HlmButtonDirective,
     BookmarkListComponent,
     FunctionPipe,
+    ReactiveFormsModule,
+    HlmInputDirective,
   ],
   providers: [
     // provideBookmarkApi(),
@@ -73,8 +93,12 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
 })
 export class BookmarkManagementComponent implements OnInit {
   private readonly _autoEffect = injectAutoEffect();
+  private readonly _destroyRef = inject(DestroyRef);
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
+  private readonly _router = inject(Router);
+  private readonly _route = inject(ActivatedRoute);
+
   protected readonly facade = inject(BookmarkFacade);
 
   readonly $collectionId = injectParams("collectionId");
@@ -86,28 +110,39 @@ export class BookmarkManagementComponent implements OnInit {
     };
   });
 
-  // items = input.required({
-  //   transform: coerceArray<BookmarkDto>,
-  // });
-  // loading = input(false);
-  // @Input() error: string | null = null;
-  // @Input() isNext = false;
-  // @Input() isPrev = false;
-  // @Output() next = new EventEmitter<void>();
-  // @Output() edit = new EventEmitter<string>();
-  // @Output() prev = new EventEmitter<void>();
+  readonly $pageSize = injectQueryParams("pageSize", {
+    initialValue: 20,
+    transform: v => Number(v),
+  });
+  readonly $currentPage = injectQueryParams("pageSize", {
+    initialValue: 1,
+    transform: v => Number(v),
+  });
+  readonly $pagination = computed(() => {
+    return {
+      pageSize: this.$pageSize() as number,
+      currentPage: this.$currentPage() as number,
+    };
+  });
 
+  searchControl = new FormControl<string | null>(null);
   ngOnInit(): void {
     this.facade.enter();
 
-    this._autoEffect(
-      () => {
-        const filter = this.$filter();
-        console.log(filter);
-        this.facade.setFilter(filter);
-      },
-      { allowSignalWrites: true }
-    );
+    this.searchControl.setValue(this.$keyword());
+    this.facade.connectFilter(this.$filter);
+    this.facade.connectPagination(this.$pagination);
+
+    this.searchControl.valueChanges
+      .pipe(
+        distinctUntilChanged(),
+        debounceTime(200),
+        tap(keyword => {
+          this.updateFilter({ keyword: keyword ?? undefined });
+        }),
+        takeUntilDestroyed(this._destroyRef)
+      )
+      .subscribe();
   }
 
   onAdd(): void {
@@ -136,7 +171,7 @@ export class BookmarkManagementComponent implements OnInit {
           closeOnBackdropClick: false,
           contentClass: "max-w-[40rem]",
           vcr: this._vcr,
-          context: { data },
+          context: { collectionId: this.$collectionId(), data },
         })
         .closed$.pipe(
           take(1),
@@ -159,5 +194,21 @@ export class BookmarkManagementComponent implements OnInit {
         map(() => id)
       );
     this.facade.delete(id$);
+  }
+
+  private updateFilter(filterToUpdate: Partial<BookmarkFilterDto>): void {
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: filterToUpdate,
+      queryParamsHandling: "merge",
+    });
+  }
+
+  private updatePagination(paginationToUpdate: Partial<PaginationDto>): void {
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: paginationToUpdate,
+      queryParamsHandling: "merge",
+    });
   }
 }

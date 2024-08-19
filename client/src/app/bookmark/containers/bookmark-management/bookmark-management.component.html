@@ -13,10 +13,15 @@
       </nav>
     </div>
   </header>
-  <div class="p-4"></div>
-
-  <app-bookmark-list
-    [items]="facade.$items()"
-    (onEdit)="onEdit($event)"
-    (onDelete)="onDelete($event)"></app-bookmark-list>
+  <div class="p-4 flex flex-col gap-4">
+    <input
+      hlmInput
+      class="bg-white"
+      [formControl]="searchControl"
+      placeholder="Search..." />
+    <app-bookmark-list
+      [items]="facade.$items()"
+      (onEdit)="onEdit($event)"
+      (onDelete)="onDelete($event)"></app-bookmark-list>
+  </div>
 </div>
