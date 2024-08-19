@@ -1,18 +1,16 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable, Signal, inject } from "@angular/core";
 import { debouncedSignal } from "@shared/utils";
+import { Observable } from "rxjs";
 import { RootStore } from "./root.store";
-
+import { Status } from "./status/status-name.type";
+type RxMethodInput<Input> = Input | Observable<Input> | Signal<Input>;
 @Injectable({ providedIn: "root" })
 export class RootFacade {
-  private readonly _layoutStore = inject(RootStore);
+  private readonly _store = inject(RootStore);
 
-  $loading = debouncedSignal(this._layoutStore.loading, 200);
+  $loading = debouncedSignal(this._store.$isPending, 200);
 
-  setLoading = this._layoutStore.setLoading;
-  showLoading = this._layoutStore.showLoading;
-  hideLoading = this._layoutStore.hideLoading;
-
-  useLoading<T>() {
-    return this._layoutStore.useLoading<T>();
+  setStatus(value: RxMethodInput<Status>) {
+    this._store.setStatus(value);
   }
 }

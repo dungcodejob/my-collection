@@ -16,7 +16,7 @@
   <div class="p-4"></div>
 
   <app-bookmark-list
-    [items]="facade.$bookmarks()"
+    [items]="facade.$items()"
     (onEdit)="onEdit($event)"
     (onDelete)="onDelete($event)"></app-bookmark-list>
 </div>

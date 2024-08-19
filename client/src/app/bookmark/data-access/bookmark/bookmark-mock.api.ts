@@ -39,7 +39,7 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
       totalCount: this._bookmarkEntities.length,
       totalPages: this._bookmarkEntities.length / query.pageSize,
     };
-    let result = this._bookmarkEntities;
+    let result = structuredClone(this._bookmarkEntities);
     if (query.collectionId) {
       result = result.filter(item => item.collectionId === query.collectionId);
     }

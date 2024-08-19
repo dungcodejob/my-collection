@@ -24,15 +24,16 @@ import {
   setPending,
   withStatus,
 } from "@shared/data-access";
-import { CollectionMessage } from "@shared/enums";
+
 import { CollectionVM, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 
+import { getMessage, MessageKeys } from "@shared/constants";
 import { PadDialogService } from "@shared/ui";
 import { isNotNil, prefix } from "@shared/utils";
 import {
-  EMPTY,
   catchError,
+  EMPTY,
   filter,
   map,
   of,
@@ -190,12 +191,13 @@ export const CollectionStore = signalStore(
                     next: res => {
                       const data = res.result.data;
                       patchState(store, addCollection(data), setFulfilled());
-                      toastService.success(`Collection “${data.title}“ was created`);
+
+                      const key = res.message ?? MessageKeys.Bookmark.CreateSuccess;
+                      const message = getMessage(key);
+                      toastService.success(message, { params: [data.title] });
                     },
                     error: err => {
                       const message = "Collection could not be created";
-                      // TODO: using logger service
-                      console.log(err);
                       patchState(store, setError(err));
                       toastService.error(message);
                     },
@@ -219,25 +221,21 @@ export const CollectionStore = signalStore(
                   tap({
                     next: res => {
                       const data = res.result.data;
+
                       patchState(store, state => ({ collections: state.collections }));
                       patchState(store, updateCollection(data.id, data), setFulfilled());
-                      toastService.success(`Collection “${data.title}“ was saved`);
+
+                      const key = res.message ?? MessageKeys.Bookmark.CreateSuccess;
+                      const message = getMessage(key);
+                      toastService.success(message, { params: [data.title] });
                     },
                     error: err => {
-                      let message = `Collection “${data.title}” could not be saved`;
                       if (err instanceof ServerSideError) {
-                        switch (err.message) {
-                          case CollectionMessage.NotExist:
-                            message = `Collection “${data.title}” to be updated does not exist`;
-                            break;
-
-                          default:
-                            break;
-                        }
+                        const key = err.message ?? MessageKeys.Bookmark.CreateSuccess;
+                        const message = getMessage(key);
+                        toastService.error(message);
                       }
-                      // TODO: using logger service
-                      console.log(err);
-                      toastService.error(message);
+
                       patchState(store, setError(err));
                     },
                   }),
@@ -271,7 +269,7 @@ export const CollectionStore = signalStore(
                         let message = `Collection “${data.title}” could not be deleted`;
                         if (err instanceof ServerSideError) {
                           switch (err.message) {
-                            case CollectionMessage.NotExist:
+                            case MessageKeys.Collection.NotExist:
                               message = `Collection “${data.title}” to be deleted does not exist`;
                               break;
 
