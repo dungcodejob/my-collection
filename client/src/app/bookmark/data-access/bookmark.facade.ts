@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector, Signal, untracked } from "@angular/core";
+import { inject, Injectable, Signal, untracked } from "@angular/core";
 import { CollectionFacade } from "@collection/data-access";
 import { RootFacade } from "@shared/data-access";
 import { BookmarkFilterDto, PaginationDto } from "@shared/models";
@@ -8,7 +8,6 @@ import { BookmarkStore } from "./bookmark.store";
 @Injectable()
 export class BookmarkFacade {
   private readonly _autoEffect = injectAutoEffect();
-  private readonly _injector = inject(Injector);
   private readonly _rootFacade = inject(RootFacade);
   private readonly _collectionFacade = inject(CollectionFacade);
   private readonly _store = inject(BookmarkStore);
@@ -18,6 +17,8 @@ export class BookmarkFacade {
   readonly $loading = this._store.$isListPending;
   readonly $error = this._store.$listError;
   readonly $pagination = this._store.$pagination;
+
+  readonly $filter = this._store.filter;
 
   enter() {
     const $itemStatus = this._store.itemStatus;
@@ -39,6 +40,9 @@ export class BookmarkFacade {
   connectPagination($pagination: Signal<PaginationDto>) {
     this._store.setPagination($pagination);
   }
+
+  setFilter = this._store.setFilter;
+  setPagination = this._store.setPagination;
 
   create = this._store.create;
   edit = this._store.update;

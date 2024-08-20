@@ -50,7 +50,12 @@ export const BookmarkStore = signalStore(
 
     return {
       setFilter: rxMethod<BookmarkFilterDto>(value$ => {
-        return value$.pipe(tap(value => patchState(store, { filter: value })));
+        return value$.pipe(
+          tap(value => {
+            const filter = { ...store.filter(), ...value };
+            patchState(store, { filter });
+          })
+        );
       }),
       setPagination: rxMethod<PaginationDto>(value$ => {
         return value$.pipe(tap(value => patchState(store, { ...value })));

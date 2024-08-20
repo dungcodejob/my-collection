@@ -21,12 +21,7 @@ import {
   provideTagMockApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
-import {
-  BookmarkFilterDto,
-  CreateBookmarkDto,
-  PaginationDto,
-  UpdateBookmarkDto,
-} from "@shared/models";
+import { CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService } from "@shared/ui";
 import {
@@ -48,7 +43,6 @@ import {
   take,
   tap,
 } from "rxjs";
-import { BookmarkManagementFacade } from "./bookmark-management.facade";
 
 // Generics
 export function coerceArray<T>(value: T | T[]): T[];
@@ -83,7 +77,6 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     // provideTagApi(),
     provideTagMockApi(),
     TagStore,
-    BookmarkManagementFacade,
 
     provideIcons({
       lucideRotateCw,
@@ -103,46 +96,21 @@ export class BookmarkManagementComponent implements OnInit {
 
   readonly $collectionId = injectParams("collectionId");
   readonly $keyword = injectQueryParams("keyword");
-  readonly $filter = computed(() => {
-    return {
-      collectionId: this.$collectionId() ?? undefined,
-      keyword: this.$keyword() ?? undefined,
-    };
-  });
-
   readonly $pageSize = injectQueryParams("pageSize", {
     initialValue: 20,
     transform: v => Number(v),
   });
-  readonly $currentPage = injectQueryParams("pageSize", {
+  readonly $currentPage = injectQueryParams("currentPage", {
     initialValue: 1,
     transform: v => Number(v),
-  });
-  readonly $pagination = computed(() => {
-    return {
-      pageSize: this.$pageSize() as number,
-      currentPage: this.$currentPage() as number,
-    };
   });
 
   searchControl = new FormControl<string | null>(null);
   ngOnInit(): void {
     this.facade.enter();
-
-    this.searchControl.setValue(this.$keyword());
-    this.facade.connectFilter(this.$filter);
-    this.facade.connectPagination(this.$pagination);
-
-    this.searchControl.valueChanges
-      .pipe(
-        distinctUntilChanged(),
-        debounceTime(200),
-        tap(keyword => {
-          this.updateFilter({ keyword: keyword ?? undefined });
-        }),
-        takeUntilDestroyed(this._destroyRef)
-      )
-      .subscribe();
+    this.connect();
+    this.syncToUrl();
+    this.formValueEffect();
   }
 
   onAdd(): void {
@@ -196,19 +164,47 @@ export class BookmarkManagementComponent implements OnInit {
     this.facade.delete(id$);
   }
 
-  private updateFilter(filterToUpdate: Partial<BookmarkFilterDto>): void {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: filterToUpdate,
-      queryParamsHandling: "merge",
+  private connect() {
+    const $filter = computed(() => {
+      return {
+        collectionId: this.$collectionId() ?? undefined,
+        keyword: this.$keyword() ?? undefined,
+      };
+    });
+    const $pagination = computed(() => {
+      return {
+        pageSize: this.$pageSize() as number,
+        currentPage: this.$currentPage() as number,
+      };
+    });
+    this.facade.connectFilter($filter);
+    this.facade.connectPagination($pagination);
+  }
+
+  private syncToUrl() {
+    this._autoEffect(() => {
+      const filter = this.facade.$filter();
+      const pagination = this.facade.$pagination();
+
+      this._router.navigate([], {
+        relativeTo: this._route,
+        queryParams: { ...filter, ...pagination },
+        queryParamsHandling: "merge",
+      });
     });
   }
 
-  private updatePagination(paginationToUpdate: Partial<PaginationDto>): void {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: paginationToUpdate,
-      queryParamsHandling: "merge",
-    });
+  private formValueEffect() {
+    this.searchControl.setValue(this.$keyword());
+    this.searchControl.valueChanges
+      .pipe(
+        distinctUntilChanged(),
+        debounceTime(200),
+        tap(keyword => {
+          this.facade.setFilter({ keyword: keyword ?? undefined });
+        }),
+        takeUntilDestroyed(this._destroyRef)
+      )
+      .subscribe();
   }
 }
