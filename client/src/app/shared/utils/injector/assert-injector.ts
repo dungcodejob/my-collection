@@ -26,7 +26,7 @@ import {
  * injectValue(); // string
  * ```
  */
-export function assertInjector<Runner extends () => any>(
+export function assertInjector<Runner extends () => TReturn, TReturn>(
   fn: Function,
   injector: Injector | undefined | null,
   runner: Runner
@@ -55,10 +55,10 @@ export function assertInjector(
   fn: Function,
   injector: Injector | undefined | null
 ): Injector;
-export function assertInjector(
+export function assertInjector<TReturn>(
   fn: Function,
   injector: Injector | undefined | null,
-  runner?: () => any
+  runner?: () => TReturn
 ) {
   !injector && assertInInjectionContext(fn);
   const assertedInjector = injector ?? inject(Injector);

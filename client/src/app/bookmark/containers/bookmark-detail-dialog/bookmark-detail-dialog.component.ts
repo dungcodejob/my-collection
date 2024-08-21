@@ -81,6 +81,7 @@ export class BookmarkDetailDialogComponent implements OnInit {
   private readonly _fb = inject(FormBuilder);
   private readonly _dialogContext = injectBrnDialogContext<{
     data: BookmarkVM | null;
+    collectionId: string;
   }>();
   protected readonly facade = inject(BookmarkDetailDialogFacade);
 
@@ -137,7 +138,7 @@ export class BookmarkDetailDialogComponent implements OnInit {
   }
 
   onTagCreate(title: string): void {
-    this.facade.createTag(title);
+    this.facade.createTag(title, this._dialogContext.collectionId);
   }
 
   onGetMetadata(): void {

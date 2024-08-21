@@ -1,4 +1,4 @@
-import { Injectable, Injector, computed, effect, inject, untracked } from "@angular/core";
+import { Injectable, Injector, computed, inject } from "@angular/core";
 import { CollectionStore } from "@collection/data-access";
 import { RootFacade } from "@shared/data-access";
 
@@ -8,11 +8,11 @@ export class CollectionFacade {
   private readonly _collectionStore = inject(CollectionStore);
   private readonly _rootFacade = inject(RootFacade);
 
-  $collections = this._collectionStore.collections;
-  $selectedCollectionId = this._collectionStore.$selectedCollectionId;
+  $items = this._collectionStore.collections;
+  $selectedId = this._collectionStore.$selectedCollectionId;
   $selectedEntity = computed(() => {
-    const entities = this.$collections();
-    const selectedId = this.$selectedCollectionId();
+    const entities = this.$items();
+    const selectedId = this.$selectedId();
 
     return entities.find(entity => entity.id === selectedId);
   });
@@ -20,15 +20,8 @@ export class CollectionFacade {
   enter(): void {
     this._collectionStore.findAll();
 
-    effect(
-      () => {
-        const pending = this._collectionStore.$isPending();
-        untracked(() => {
-          this._rootFacade.setLoading(pending);
-        });
-      },
-      { injector: this._injector }
-    );
+    const $status = this._collectionStore.status;
+    this._rootFacade.setStatus($status);
   }
 
   create(): void {

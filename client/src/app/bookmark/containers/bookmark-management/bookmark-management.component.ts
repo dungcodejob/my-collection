@@ -2,13 +2,18 @@ import { NgFor, NgIf, NgTemplateOutlet } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   ViewContainerRef,
   inject,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
 import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
 import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import {
+  BookmarkFacade,
   TagStore,
   provideBookmarkMockApi,
   provideCrawlApi,
@@ -18,13 +23,25 @@ import { lucideRotateCw } from "@ng-icons/lucide";
 import { CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService } from "@shared/ui";
-import { isNotFalsy } from "@shared/utils";
+import {
+  injectAutoEffect,
+  injectParams,
+  injectQueryParams,
+  isNotFalsy,
+} from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
+import { HlmInputDirective } from "@spartan-ng/ui-input-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
-import { Observable, filter, map, take } from "rxjs";
-import { BookmarkManagementFacade } from "./bookmark-management.facade";
-import { BookmarkManagementStore } from "./bookmark-management.store";
+import {
+  Observable,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  take,
+  tap,
+} from "rxjs";
 
 // Generics
 export function coerceArray<T>(value: T | T[]): T[];
@@ -49,6 +66,8 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     HlmButtonDirective,
     BookmarkListComponent,
     FunctionPipe,
+    ReactiveFormsModule,
+    HlmInputDirective,
   ],
   providers: [
     // provideBookmarkApi(),
@@ -57,8 +76,6 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     // provideTagApi(),
     provideTagMockApi(),
     TagStore,
-    BookmarkManagementFacade,
-    BookmarkManagementStore,
 
     provideIcons({
       lucideRotateCw,
@@ -67,47 +84,53 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
   ],
 })
 export class BookmarkManagementComponent implements OnInit {
+  private readonly _autoEffect = injectAutoEffect();
+  private readonly _destroyRef = inject(DestroyRef);
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
+  private readonly _router = inject(Router);
+  private readonly _route = inject(ActivatedRoute);
 
-  protected readonly facade = inject(BookmarkManagementFacade);
+  protected readonly facade = inject(BookmarkFacade);
 
-  test = 1;
-  // items = input.required({
-  //   transform: coerceArray<BookmarkDto>,
-  // });
-  // loading = input(false);
-  // @Input() error: string | null = null;
-  // @Input() isNext = false;
-  // @Input() isPrev = false;
-  // @Output() next = new EventEmitter<void>();
-  // @Output() edit = new EventEmitter<string>();
-  // @Output() prev = new EventEmitter<void>();
+  readonly $collectionId = injectParams("collectionId");
+  readonly $keyword = injectQueryParams("keyword");
+  readonly $pageSize = injectQueryParams("pageSize", {
+    initialValue: 20,
+    transform: v => Number(v),
+  });
+  readonly $currentPage = injectQueryParams("currentPage", {
+    initialValue: 1,
+    transform: v => Number(v),
+  });
 
+  searchControl = new FormControl<string | null>(null);
   ngOnInit(): void {
     this.facade.enter();
+    this.connect();
+    this.syncToUrl();
+    this.formValueEffect();
   }
 
-
   onAdd(): void {
-    const collectionId = this.facade.$collection()?.id as string;
     const result$: Observable<CreateBookmarkDto> = this._dialogService
       .open(BookmarkDetailDialogComponent, {
         closeOnBackdropClick: false,
         contentClass: "max-w-[40rem]",
         vcr: this._vcr,
+        context: { collectionId: this.$collectionId() },
       })
       .closed$.pipe(
         take(1),
         filter(isNotFalsy),
-        map(data => ({ ...data, collectionId }))
+        map(data => ({ ...data, collectionId: this.$collectionId() }))
       );
 
     this.facade.create(result$);
   }
 
   onEdit(id: string): void {
-    const data = this.facade.$bookmarks().find(b => b.id === id);
+    const data = this.facade.$items().find(b => b.id === id);
 
     if (data) {
       const result$: Observable<UpdateBookmarkDto> = this._dialogService
@@ -115,7 +138,7 @@ export class BookmarkManagementComponent implements OnInit {
           closeOnBackdropClick: false,
           contentClass: "max-w-[40rem]",
           vcr: this._vcr,
-          context: { data },
+          context: { collectionId: this.$collectionId(), data },
         })
         .closed$.pipe(
           take(1),
@@ -138,5 +161,45 @@ export class BookmarkManagementComponent implements OnInit {
         map(() => id)
       );
     this.facade.delete(id$);
+  }
+
+  private connect() {
+    this.facade.setCollectionId(this.$collectionId());
+
+    this.facade.setFilter({
+      keyword: this.$keyword(),
+    });
+
+    this.facade.setPagination({
+      pageSize: this.$pageSize() as number,
+      currentPage: this.$currentPage() as number,
+    });
+  }
+
+  private syncToUrl() {
+    this._autoEffect(() => {
+      const filter = this.facade.$filter();
+      const pagination = this.facade.$pagination();
+
+      this._router.navigate([], {
+        relativeTo: this._route,
+        queryParams: { ...filter, ...pagination },
+        queryParamsHandling: "merge",
+      });
+    });
+  }
+
+  private formValueEffect() {
+    this.searchControl.setValue(this.$keyword());
+    this.searchControl.valueChanges
+      .pipe(
+        distinctUntilChanged(),
+        debounceTime(200),
+        tap(keyword => {
+          this.facade.setFilter({ keyword });
+        }),
+        takeUntilDestroyed(this._destroyRef)
+      )
+      .subscribe();
   }
 }

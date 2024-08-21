@@ -3,7 +3,6 @@ import { ResponseDto } from "@core/http";
 import {
   SignalStoreFeature,
   signalStoreFeature,
-  StateSignal,
   withComputed,
   withMethods,
   withState,
@@ -105,7 +104,7 @@ export function withApiFeature<TData, Name extends string>(config?: {
         }),
       };
     }),
-    withMethods((store: StateSignal<any>) => {
+    withMethods(() => {
       return {
         [handleKey]: <R extends ResponseDto<TData>>(
           source$: Observable<R>

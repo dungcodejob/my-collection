@@ -1,3 +1,5 @@
+export * from "./bookmark.facade";
+export * from "./bookmark.store";
 export * from "./bookmark/bookmark.provider";
 export * from "./crawl/crawl.provider";
 export * from "./tag/tag.provider";
