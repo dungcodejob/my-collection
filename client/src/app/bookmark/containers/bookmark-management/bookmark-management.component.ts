@@ -5,7 +5,6 @@ import {
   DestroyRef,
   OnInit,
   ViewContainerRef,
-  computed,
   inject,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -165,20 +164,16 @@ export class BookmarkManagementComponent implements OnInit {
   }
 
   private connect() {
-    const $filter = computed(() => {
-      return {
-        collectionId: this.$collectionId() ?? undefined,
-        keyword: this.$keyword() ?? undefined,
-      };
+    this.facade.setCollectionId(this.$collectionId());
+
+    this.facade.setFilter({
+      keyword: this.$keyword(),
     });
-    const $pagination = computed(() => {
-      return {
-        pageSize: this.$pageSize() as number,
-        currentPage: this.$currentPage() as number,
-      };
+
+    this.facade.setPagination({
+      pageSize: this.$pageSize() as number,
+      currentPage: this.$currentPage() as number,
     });
-    this.facade.connectFilter($filter);
-    this.facade.connectPagination($pagination);
   }
 
   private syncToUrl() {
@@ -201,7 +196,7 @@ export class BookmarkManagementComponent implements OnInit {
         distinctUntilChanged(),
         debounceTime(200),
         tap(keyword => {
-          this.facade.setFilter({ keyword: keyword ?? undefined });
+          this.facade.setFilter({ keyword });
         }),
         takeUntilDestroyed(this._destroyRef)
       )

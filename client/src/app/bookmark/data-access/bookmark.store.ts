@@ -31,11 +31,15 @@ import { isNotNil, prefix } from "@shared/utils";
 import { filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi } from "./bookmark/bookmark.provider";
 type BookmarkState = {
-  filter: BookmarkFilterDto | null;
+  collectionId: string | null;
+  filter: BookmarkFilterDto;
 };
 
 const initialState: BookmarkState = {
-  filter: null,
+  collectionId: null,
+  filter: {
+    keyword: null,
+  },
 };
 
 export const BookmarkStore = signalStore(
@@ -49,6 +53,13 @@ export const BookmarkStore = signalStore(
     const toastService = inject(ToastService);
 
     return {
+      setCollectionId: rxMethod<string | null>(value$ => {
+        return value$.pipe(
+          tap(value => {
+            patchState(store, { collectionId: value });
+          })
+        );
+      }),
       setFilter: rxMethod<BookmarkFilterDto>(value$ => {
         return value$.pipe(
           tap(value => {
@@ -63,9 +74,10 @@ export const BookmarkStore = signalStore(
       findAll: rxMethod<void>(
         pipe(
           switchMap(() => {
+            const collectionId = store.collectionId();
             const filter = store.filter();
             const pagination = store.$pagination();
-            const query = { ...filter, ...pagination };
+            const query = { collectionId, ...filter, ...pagination };
             return bookmarkApi.findAll(query).pipe(
               prefix(() => patchState(store, setPending("list"))),
               tapResponse({

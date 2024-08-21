@@ -3,8 +3,10 @@ import { CollectionFacade } from "@collection/data-access";
 import { RootFacade } from "@shared/data-access";
 import { BookmarkFilterDto, PaginationDto } from "@shared/models";
 import { injectAutoEffect } from "@shared/utils";
+import { Observable } from "rxjs";
 import { BookmarkStore } from "./bookmark.store";
 
+type RxMethodInput<Input> = Input | Observable<Input> | Signal<Input>;
 @Injectable()
 export class BookmarkFacade {
   private readonly _autoEffect = injectAutoEffect();
@@ -29,20 +31,22 @@ export class BookmarkFacade {
       this._store.$pagination();
 
       console.log(this._store.filter());
+
       untracked(() => this._store.findAll());
     });
   }
 
-  connectFilter($filter: Signal<BookmarkFilterDto>) {
-    this._store.setFilter($filter);
+  setCollectionId(value: RxMethodInput<string | null>) {
+    this._store.setCollectionId(value);
   }
 
-  connectPagination($pagination: Signal<PaginationDto>) {
-    this._store.setPagination($pagination);
+  setFilter(value: RxMethodInput<BookmarkFilterDto>) {
+    this._store.setFilter(value);
   }
 
-  setFilter = this._store.setFilter;
-  setPagination = this._store.setPagination;
+  setPagination(pagination: RxMethodInput<PaginationDto>) {
+    this._store.setPagination(pagination);
+  }
 
   create = this._store.create;
   edit = this._store.update;
