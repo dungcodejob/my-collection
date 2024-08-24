@@ -7,9 +7,9 @@ import {
   ViewContainerRef,
   inject,
 } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
+import { BookmarkFilterComponent } from "@bookmark/components/bookmark-filter/bookmark-filter.component";
 import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
 import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import {
@@ -20,7 +20,7 @@ import {
   provideTagMockApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
-import { CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
+import { BookmarkFilterDto, CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService } from "@shared/ui";
 import {
@@ -35,12 +35,9 @@ import { HlmInputDirective } from "@spartan-ng/ui-input-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
 import {
   Observable,
-  debounceTime,
-  distinctUntilChanged,
   filter,
   map,
-  take,
-  tap,
+  take
 } from "rxjs";
 
 // Generics
@@ -68,6 +65,8 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     FunctionPipe,
     ReactiveFormsModule,
     HlmInputDirective,
+    HlmButtonDirective,
+    BookmarkFilterComponent,
   ],
   providers: [
     // provideBookmarkApi(),
@@ -109,7 +108,6 @@ export class BookmarkManagementComponent implements OnInit {
     this.facade.enter();
     this.connect();
     this.syncToUrl();
-    this.formValueEffect();
   }
 
   onAdd(): void {
@@ -163,17 +161,13 @@ export class BookmarkManagementComponent implements OnInit {
     this.facade.delete(id$);
   }
 
+  onFilterChange(filter: BookmarkFilterDto): void {
+    console.log("onFilterChange", filter);
+    this.facade.setFilter(filter);
+  }
+
   private connect() {
     this.facade.setCollectionId(this.$collectionId());
-
-    this.facade.setFilter({
-      keyword: this.$keyword(),
-    });
-
-    this.facade.setPagination({
-      pageSize: this.$pageSize() as number,
-      currentPage: this.$currentPage() as number,
-    });
   }
 
   private syncToUrl() {
@@ -187,19 +181,5 @@ export class BookmarkManagementComponent implements OnInit {
         queryParamsHandling: "merge",
       });
     });
-  }
-
-  private formValueEffect() {
-    this.searchControl.setValue(this.$keyword());
-    this.searchControl.valueChanges
-      .pipe(
-        distinctUntilChanged(),
-        debounceTime(200),
-        tap(keyword => {
-          this.facade.setFilter({ keyword });
-        }),
-        takeUntilDestroyed(this._destroyRef)
-      )
-      .subscribe();
   }
 }
