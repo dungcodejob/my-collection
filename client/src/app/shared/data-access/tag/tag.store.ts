@@ -16,10 +16,10 @@ import { EMPTY, catchError, pipe, switchMap, tap } from "rxjs";
 
 import { injectTagApi } from "./tag.provider";
 
-type TagState = {
+interface TagState {
   filter: TagFilterDto | null;
   result: TagVM | null;
-};
+}
 
 const initialState: TagState = {
   filter: null,
@@ -27,10 +27,10 @@ const initialState: TagState = {
 };
 
 export const TagStore = signalStore(
+  withState<TagState>(initialState),
+  withEntities<TagVM>(),
   withStatus(),
   withPagination(),
-  withEntities<TagVM>(),
-  withState<TagState>(initialState),
   withMethods(store => {
     const tagApi = injectTagApi();
     const toastService = inject(ToastService);

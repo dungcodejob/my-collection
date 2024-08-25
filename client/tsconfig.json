@@ -69,11 +69,14 @@
       "@spartan-ng/ui-select-helm": [
         ".\\libs/ui-select-helm/src/index.ts"
       ],
+      "@spartan-ng/ui-command-helm": [
+        ".\\libs/ui-command-helm/src/index.ts"
+      ],
       "@spartan-ng/ui-separator-helm": [
         ".\\libs/ui-separator-helm/src/index.ts"
       ],
-      "@spartan-ng/ui-command-helm": [
-        ".\\libs/ui-command-helm/src/index.ts"
+      "@spartan-ng/ui-formfield-helm": [
+        ".\\libs/ui-formfield-helm/src/index.ts"
       ]
     },
     "outDir": "./dist/out-tsc",

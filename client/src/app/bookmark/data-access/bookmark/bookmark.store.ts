@@ -17,7 +17,7 @@ import {
   withStatus,
 } from "@shared/data-access";
 
-import { tapResponse } from "@ngrx/component-store";
+import { tapResponse } from "@ngrx/operators";
 import { MessageKeys } from "@shared/constants";
 import {
   BookmarkFilterDto,
@@ -30,10 +30,10 @@ import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
 import { filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi } from "./bookmark.provider";
-type BookmarkState = {
+interface BookmarkState {
   collectionId: string | null;
   filter: BookmarkFilterDto;
-};
+}
 
 const initialState: BookmarkState = {
   collectionId: null,

@@ -1,7 +1,7 @@
 import { Signal, computed } from "@angular/core";
 import {
   SignalStoreFeature,
-  StateSignal,
+  WritableStateSource,
   patchState,
   signalStoreFeature,
   withComputed,
@@ -46,7 +46,7 @@ export function withPagination(): SignalStoreFeature<
   EmptyFeatureResult,
   {
     state: PaginationState;
-    signals: PaginationSignals;
+    computed: PaginationSignals;
     methods: PaginationMethods;
   }
 >;
@@ -56,7 +56,7 @@ export function withPagination<Name extends string>(config: {
   EmptyFeatureResult,
   {
     state: NamedPaginationState<Name>;
-    signals: NamedPaginationSignals<Name>;
+    computed: NamedPaginationSignals<Name>;
     methods: NamedPaginationMethods<Name>;
   }
 >;
@@ -92,7 +92,7 @@ export function withPagination<Name extends string>(config?: {
       };
     }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    withMethods((store: StateSignal<any>) => {
+    withMethods((store: WritableStateSource<any>) => {
       return {
         [resetKey]: () =>
           patchState(store, {

@@ -1,12 +1,12 @@
 import { Signal, computed } from "@angular/core";
 import { ServerSideError } from "@core/http";
 import {
+  EmptyFeatureResult,
   SignalStoreFeature,
   signalStoreFeature,
   withComputed,
   withState,
 } from "@ngrx/signals";
-import { EmptyFeatureResult } from "@ngrx/signals/src/signal-store-models";
 import { capitalize } from "@shared/utils";
 import {
   NamedStatusSignals,
@@ -30,7 +30,7 @@ export function withStatus(): SignalStoreFeature<
   EmptyFeatureResult,
   {
     state: StatusState;
-    signals: StatusSignals;
+    computed: StatusSignals;
     methods: {};
   }
 >;
@@ -40,8 +40,7 @@ export function withStatus<Name extends string>(config: {
   EmptyFeatureResult,
   {
     state: NamedStatusState<Name>;
-    signals: NamedStatusSignals<Name>;
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    computed: NamedStatusSignals<Name>;
     methods: {};
   }
 >;
