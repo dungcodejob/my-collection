@@ -1,6 +1,6 @@
 import { inject, Injectable, Signal, untracked } from "@angular/core";
 import { CollectionFacade } from "@collection/data-access";
-import { RootFacade } from "@shared/data-access";
+import { RootFacade, TagFacade } from "@shared/data-access";
 import { BookmarkFilterDto, PaginationDto } from "@shared/models";
 import { injectAutoEffect } from "@shared/utils";
 import { Observable } from "rxjs";
@@ -12,13 +12,16 @@ export class BookmarkFacade {
   private readonly _autoEffect = injectAutoEffect();
   private readonly _rootFacade = inject(RootFacade);
   private readonly _collectionFacade = inject(CollectionFacade);
+  private readonly _tagFacade = inject(TagFacade);
   private readonly _store = inject(BookmarkStore);
 
   readonly $collection = this._collectionFacade.$selectedEntity;
-  readonly $items = this._store.entities;
+  readonly $bookmarks = this._store.entities;
   readonly $loading = this._store.$isListPending;
   readonly $error = this._store.$listError;
   readonly $pagination = this._store.$pagination;
+
+  readonly $tags = this._tagFacade.$tags;
 
   readonly $filter = this._store.filter;
 

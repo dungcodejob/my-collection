@@ -4,6 +4,7 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  computed,
   inject,
   input,
   output,
@@ -16,7 +17,8 @@ import {
   ReactiveFormsModule,
 } from "@angular/forms";
 import { lucideRotateCw } from "@ng-icons/lucide";
-import { BookmarkFilterDto } from "@shared/models";
+import { BookmarkFilterDto, TagVM } from "@shared/models";
+import { FilterSelectComponent } from "@shared/ui";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmInputDirective } from "@spartan-ng/ui-input-helm";
@@ -39,6 +41,8 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     HlmButtonDirective,
     HlmIconComponent,
     HlmButtonDirective,
+
+    FilterSelectComponent,
   ],
   providers: [
     provideIcons({
@@ -54,10 +58,17 @@ export class BookmarkFilterComponent implements OnInit {
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _fb = inject(NonNullableFormBuilder);
 
-  $keyword = input.required<string | null>({ alias: "keyword" });
-  $tags = input.required<string[]>({ alias: "tags" });
+  $tags = input<TagVM[]>([], { alias: "tags" });
+  $filter = input.required<BookmarkFilterDto>({ alias: "filter" });
 
   form!: BookmarkFilterForm;
+
+  $tagOptions = computed(() =>
+    this.$tags().map(item => ({
+      label: item.title,
+      value: item,
+    }))
+  );
 
   onFilterChange = output<BookmarkFilterDto>();
 
@@ -67,9 +78,10 @@ export class BookmarkFilterComponent implements OnInit {
   }
 
   private _initForm(): void {
+    const { keyword } = this.$filter();
     this.form = this._fb.group<BookmarkFilterForm["controls"]>({
-      keyword: this._fb.control(this.$keyword()),
-      tags: this._fb.control(this.$tags()),
+      keyword: this._fb.control(keyword),
+      tags: this._fb.control([]),
     });
   }
 

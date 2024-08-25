@@ -29,7 +29,7 @@ import {
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
 import { filter, map, pipe, switchMap, tap } from "rxjs";
-import { injectBookmarkApi } from "./bookmark/bookmark.provider";
+import { injectBookmarkApi } from "./bookmark.provider";
 type BookmarkState = {
   collectionId: string | null;
   filter: BookmarkFilterDto;

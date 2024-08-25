@@ -1,9 +1,4 @@
 import { Routes } from "@angular/router";
-import {
-  CollectionFacade,
-  CollectionStore,
-  provideCollectionMockApi,
-} from "@collection/data-access";
 import { authGuard, noAuthGuard } from "@core/auth";
 import { NotAuthorizedComponent } from "./home";
 
@@ -17,7 +12,7 @@ export const routes: Routes = [
     path: "home",
     canActivate: [authGuard],
     loadComponent: () => import("./home").then(m => m.HomeShellComponent),
-    providers: [provideCollectionMockApi(), CollectionStore, CollectionFacade],
+    providers: [],
     children: [
       {
         path: ":collectionId",

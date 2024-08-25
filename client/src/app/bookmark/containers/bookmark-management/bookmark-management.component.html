@@ -15,11 +15,11 @@
   </header>
   <div class="p-4 flex flex-col gap-4">
     <app-bookmark-filter
-      [keyword]="$keyword()"
-      [tags]="[]"
+      [filter]="$filter()"
+      [tags]="$tags()"
       (onFilterChange)="onFilterChange($event)"></app-bookmark-filter>
     <app-bookmark-list
-      [items]="facade.$items()"
+      [items]="$bookmarks()"
       (onEdit)="onEdit($event)"
       (onDelete)="onDelete($event)"></app-bookmark-list>
   </div>

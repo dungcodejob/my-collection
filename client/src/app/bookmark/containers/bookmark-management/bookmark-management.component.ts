@@ -14,10 +14,8 @@ import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookma
 import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import {
   BookmarkFacade,
-  TagStore,
   provideBookmarkMockApi,
   provideCrawlApi,
-  provideTagMockApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
 import { BookmarkFilterDto, CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
@@ -33,12 +31,7 @@ import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmInputDirective } from "@spartan-ng/ui-input-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
-import {
-  Observable,
-  filter,
-  map,
-  take
-} from "rxjs";
+import { Observable, filter, map, take } from "rxjs";
 
 // Generics
 export function coerceArray<T>(value: T | T[]): T[];
@@ -73,8 +66,6 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     provideBookmarkMockApi(),
     provideCrawlApi(),
     // provideTagApi(),
-    provideTagMockApi(),
-    TagStore,
 
     provideIcons({
       lucideRotateCw,
@@ -103,9 +94,14 @@ export class BookmarkManagementComponent implements OnInit {
     transform: v => Number(v),
   });
 
+  readonly $filter = this.facade.$filter;
+  readonly $tags = this.facade.$tags;
+  readonly $bookmarks = this.facade.$bookmarks;
+
   searchControl = new FormControl<string | null>(null);
   ngOnInit(): void {
     this.facade.enter();
+    this.onFilterChange({ keyword: this.$keyword() });
     this.connect();
     this.syncToUrl();
   }
@@ -128,7 +124,7 @@ export class BookmarkManagementComponent implements OnInit {
   }
 
   onEdit(id: string): void {
-    const data = this.facade.$items().find(b => b.id === id);
+    const data = this.facade.$bookmarks().find(b => b.id === id);
 
     if (data) {
       const result$: Observable<UpdateBookmarkDto> = this._dialogService
@@ -162,7 +158,6 @@ export class BookmarkManagementComponent implements OnInit {
   }
 
   onFilterChange(filter: BookmarkFilterDto): void {
-    console.log("onFilterChange", filter);
     this.facade.setFilter(filter);
   }
 

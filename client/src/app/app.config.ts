@@ -5,6 +5,9 @@ import {
   withRouterConfig,
 } from "@angular/router";
 
+import { provideBookmark } from "@bookmark/data-access";
+import { provideCollection } from "@collection/data-access";
+import { provideTag } from "@shared/data-access";
 import { routes } from "./app.routes";
 import { provideCore } from "./core";
 
@@ -16,5 +19,8 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withRouterConfig({ paramsInheritanceStrategy: "always" })
     ),
+    provideBookmark(),
+    provideTag(),
+    provideCollection(),
   ],
 };
