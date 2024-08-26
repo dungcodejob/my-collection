@@ -16,10 +16,10 @@
   <div class="p-4 flex flex-col gap-4">
     <app-bookmark-filter
       [filter]="$filter()"
-      [tags]="$tags()"
+      [tags]="$tagItems()"
       (onFilterChange)="onFilterChange($event)"></app-bookmark-filter>
     <app-bookmark-list
-      [items]="$bookmarks()"
+      [items]="$bookmarkItems()"
       (onEdit)="onEdit($event)"
       (onDelete)="onDelete($event)"></app-bookmark-list>
   </div>

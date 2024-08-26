@@ -17,12 +17,16 @@ import { EMPTY, catchError, pipe, switchMap, tap } from "rxjs";
 import { injectTagApi } from "./tag.provider";
 
 interface TagState {
-  filter: TagFilterDto | null;
+  collectionId: string | null;
+  filter: TagFilterDto;
   result: TagVM | null;
 }
 
 const initialState: TagState = {
-  filter: null,
+  collectionId: null,
+  filter: {
+    keyword: null,
+  },
   result: null,
 };
 
@@ -36,8 +40,14 @@ export const TagStore = signalStore(
     const toastService = inject(ToastService);
 
     return {
-      ...store,
-      enter: () => patchState(store, { result: null }),
+      reset: () => patchState(store, { result: null }),
+      setCollectionId: rxMethod<string | null>(value$ => {
+        return value$.pipe(
+          tap(value => {
+            patchState(store, { collectionId: value });
+          })
+        );
+      }),
       setFilter: (value: TagFilterDto | null) =>
         patchState(store, state => {
           return { filter: { ...state.filter, ...value } };
@@ -47,8 +57,9 @@ export const TagStore = signalStore(
           switchMap(() => {
             const filter = store.filter();
             const pagination = store.$pagination();
+            const collectionId = store.collectionId();
             if (filter) {
-              return tagApi.findAll({ ...filter, ...pagination }).pipe(
+              return tagApi.findAll({ collectionId, ...filter, ...pagination }).pipe(
                 prefix(() => patchState(store, setPending())),
                 tap({
                   next: res =>

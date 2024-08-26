@@ -4,6 +4,7 @@ export * from "./auth/token.dto";
 export * from "./base.dto";
 export * from "./base.vm";
 export * from "./bookmark/bookmark-query.dto";
+export * from "./bookmark/bookmark-query.vm";
 export * from "./bookmark/bookmark.dto";
 export * from "./bookmark/bookmark.vm";
 export * from "./bookmark/metadata.dto";

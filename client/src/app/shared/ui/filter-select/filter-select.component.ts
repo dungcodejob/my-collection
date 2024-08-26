@@ -1,12 +1,18 @@
 import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
+  forwardRef,
+  inject,
   input,
+  OnInit,
+  signal,
+  untracked,
   viewChildren,
 } from "@angular/core";
-import { ControlValueAccessor } from "@angular/forms";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { provideIcons } from "@ng-icons/core";
 import {
   lucideCalendar,
@@ -15,7 +21,7 @@ import {
   lucideSearch,
   lucideSmile,
 } from "@ng-icons/lucide";
-import { isNotNil } from "@shared/utils";
+import { injectAutoEffect, isNotNil } from "@shared/utils";
 import { HlmBadgeDirective } from "@spartan-ng/ui-badge-helm";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmCheckboxComponent } from "@spartan-ng/ui-checkbox-helm";
@@ -86,9 +92,18 @@ const CommandImports = [
       lucideSmile,
       lucidePlus,
     }),
+
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => FilterSelectComponent),
+      multi: true,
+    },
   ],
 })
-export class FilterSelectComponent<T = unknown> implements ControlValueAccessor {
+export class FilterSelectComponent<T = unknown> implements ControlValueAccessor, OnInit {
+  private readonly _autoEffect = injectAutoEffect();
+  private readonly _cdr = inject(ChangeDetectorRef);
+
   $title = input("", { alias: "title" });
   $count = input(2, { alias: "count" });
   $getKeyFn = input(
@@ -129,52 +144,89 @@ export class FilterSelectComponent<T = unknown> implements ControlValueAccessor 
     return [];
   });
 
-  selectedItems = new Map<string, FilterOptionVM<T>>();
+  selectedOptionMaps = new Map<string, FilterOptionVM<T>>();
+  $selectedItems = signal<T[]>([]);
 
   $selectedDisplay = computed(() => {
     return;
   });
+
+  ngOnInit(): void {
+    this._autoEffect(() => {
+      const options = this.$options();
+
+      untracked(() => {
+        const selectedItems = this.$selectedItems();
+        const getKeyFn = this.$getKeyFn();
+        for (const item of selectedItems) {
+          const key = getKeyFn(item);
+          const option = options.find(option => getKeyFn(option.value) === key);
+          if (option) {
+            this.selectedOptionMaps.set(key, {
+              label: option.label,
+              value: item,
+            });
+          }
+        }
+      });
+    });
+  }
+
   onChange!: (value: T[]) => void;
   onTouched!: () => void;
 
   isSelected(value: T) {
-    return this.selectedItems.has(this.$getKeyFn()(value));
+    return this.selectedOptionMaps.has(this.$getKeyFn()(value));
   }
 
   onToggle(option: FilterOptionVM<T>) {
-    console.log("onToggle", option);
     const key = this.$getKeyFn()(option.value);
 
     if (this.isSelected(option.value)) {
-      this.selectedItems.delete(key);
+      this.selectedOptionMaps.delete(key);
     } else {
-      this.selectedItems.set(key, option);
+      this.selectedOptionMaps.set(key, option);
     }
 
-    if (this.onChange) {
-      this.onChange([...this.selectedItems.values()].map(item => item.value));
-    }
+    this._emitValue();
   }
 
   onClear() {
-    this.selectedItems.clear();
+    this.selectedOptionMaps.clear();
+    this._emitValue();
   }
 
   writeValue(obj: T[] | null | undefined): void {
-    if (isNotNil(obj)) {
+    this.$selectedItems.set(obj ?? []);
+    const options = this.$options();
+    this.selectedOptionMaps.clear();
+    if (isNotNil(obj) && options.length > 0) {
+      const getKeyFn = this.$getKeyFn();
       for (const item of obj) {
-        const key = this.$getKeyFn()(item);
-        this.selectedItems.set(key, {
-          label: `${item}`,
-          value: item,
-        });
+        const key = getKeyFn(item);
+        const option = this.$options().find(option => getKeyFn(option.value) === key);
+        if (option) {
+          this.selectedOptionMaps.set(key, {
+            label: option.label,
+            value: item,
+          });
+        }
       }
     }
+    this._cdr.markForCheck();
   }
   registerOnChange(fn: (value: T[]) => void): void {
     this.onChange = fn;
   }
   registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
+  }
+
+  private _emitValue() {
+    if (this.onChange) {
+      const values = [...this.selectedOptionMaps.values()].map(item => item.value);
+      this.$selectedItems.set(values);
+      this.onChange(values);
+    }
   }
 }

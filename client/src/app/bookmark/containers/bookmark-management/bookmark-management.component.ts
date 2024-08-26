@@ -18,15 +18,15 @@ import {
   provideCrawlApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
-import { BookmarkFilterDto, CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
+import {
+  BookmarkFilterVM,
+  CreateBookmarkDto,
+  TagVM,
+  UpdateBookmarkDto,
+} from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService } from "@shared/ui";
-import {
-  injectAutoEffect,
-  injectParams,
-  injectQueryParams,
-  isNotFalsy,
-} from "@shared/utils";
+import { injectAutoEffect, injectQueryParams, isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmInputDirective } from "@spartan-ng/ui-input-helm";
@@ -83,8 +83,17 @@ export class BookmarkManagementComponent implements OnInit {
 
   protected readonly facade = inject(BookmarkFacade);
 
-  readonly $collectionId = injectParams("collectionId");
+  readonly $collectionId = this.facade.$collectionId;
   readonly $keyword = injectQueryParams("keyword");
+  readonly $tags = injectQueryParams<TagVM[]>(params => {
+    const tags = params["tags"];
+    if (tags) {
+      return JSON.parse(tags);
+    }
+
+    return [];
+  });
+
   readonly $pageSize = injectQueryParams("pageSize", {
     initialValue: 20,
     transform: v => Number(v),
@@ -95,14 +104,12 @@ export class BookmarkManagementComponent implements OnInit {
   });
 
   readonly $filter = this.facade.$filter;
-  readonly $tags = this.facade.$tags;
-  readonly $bookmarks = this.facade.$bookmarks;
+  readonly $tagItems = this.facade.$tagItems;
+  readonly $bookmarkItems = this.facade.$bookmarkItems;
 
   searchControl = new FormControl<string | null>(null);
   ngOnInit(): void {
-    this.facade.enter();
-    this.onFilterChange({ keyword: this.$keyword() });
-    this.connect();
+    this.initializer();
     this.syncToUrl();
   }
 
@@ -124,7 +131,7 @@ export class BookmarkManagementComponent implements OnInit {
   }
 
   onEdit(id: string): void {
-    const data = this.facade.$bookmarks().find(b => b.id === id);
+    const data = this.facade.$bookmarkItems().find(b => b.id === id);
 
     if (data) {
       const result$: Observable<UpdateBookmarkDto> = this._dialogService
@@ -157,22 +164,22 @@ export class BookmarkManagementComponent implements OnInit {
     this.facade.delete(id$);
   }
 
-  onFilterChange(filter: BookmarkFilterDto): void {
+  onFilterChange(filter: BookmarkFilterVM): void {
     this.facade.setFilter(filter);
   }
 
-  private connect() {
-    this.facade.setCollectionId(this.$collectionId());
+  private initializer() {
+    console.log({ keyword: this.$keyword(), tags: this.$tags() });
+    this.facade.enter({ keyword: this.$keyword(), tags: this.$tags() });
   }
 
   private syncToUrl() {
     this._autoEffect(() => {
       const filter = this.facade.$filter();
       const pagination = this.facade.$pagination();
-
       this._router.navigate([], {
         relativeTo: this._route,
-        queryParams: { ...filter, ...pagination },
+        queryParams: { ...filter, tags: JSON.stringify(filter.tags), ...pagination },
         queryParamsHandling: "merge",
       });
     });

@@ -16,8 +16,8 @@ import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
 } from "@angular/forms";
-import { lucideRotateCw } from "@ng-icons/lucide";
-import { BookmarkFilterDto, TagVM } from "@shared/models";
+import { lucideRotateCw, lucideX } from "@ng-icons/lucide";
+import { BookmarkFilterVM, TagVM } from "@shared/models";
 import { FilterSelectComponent } from "@shared/ui";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
@@ -26,7 +26,7 @@ import { combineLatest, debounceTime, distinctUntilChanged, startWith, tap } fro
 
 type BookmarkFilterForm = FormGroup<{
   keyword: FormControl<string | null>;
-  tags: FormControl<string[]>;
+  tags: FormControl<TagVM[]>;
 }>;
 
 const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-plus"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>`;
@@ -48,6 +48,7 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     provideIcons({
       lucideRotateCw,
       lucideCirclePlus,
+      lucideX,
     }),
   ],
   templateUrl: "./bookmark-filter.component.html",
@@ -59,7 +60,7 @@ export class BookmarkFilterComponent implements OnInit {
   private readonly _fb = inject(NonNullableFormBuilder);
 
   $tags = input<TagVM[]>([], { alias: "tags" });
-  $filter = input.required<BookmarkFilterDto>({ alias: "filter" });
+  $filter = input.required<BookmarkFilterVM>({ alias: "filter" });
 
   form!: BookmarkFilterForm;
 
@@ -70,19 +71,28 @@ export class BookmarkFilterComponent implements OnInit {
     }))
   );
 
-  onFilterChange = output<BookmarkFilterDto>();
+  onFilterChange = output<BookmarkFilterVM>();
 
   ngOnInit(): void {
     this._initForm();
+    this._setFormValue();
     this._formValueEffect();
   }
 
+  onReset() {
+    this.form.reset();
+  }
+
   private _initForm(): void {
-    const { keyword } = this.$filter();
     this.form = this._fb.group<BookmarkFilterForm["controls"]>({
-      keyword: this._fb.control(keyword),
+      keyword: this._fb.control(null),
       tags: this._fb.control([]),
     });
+  }
+
+  private _setFormValue(): void {
+    const filter = this.$filter();
+    this.form.patchValue(filter);
   }
 
   private _formValueEffect(): void {

@@ -1,12 +1,12 @@
 import { AsyncPipe } from "@angular/common";
-import { Component, inject } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
 import { CollectionListComponent } from "@collection/containers/collection-list/collection-list.component";
 import { HomeSidebarComponent } from "@home/components/home-sidebar/home-sidebar.component";
-import { RootFacade } from "@shared/data-access";
 import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
 import { HlmSpinnerComponent } from "@spartan-ng/ui-spinner-helm";
-import { Observable, defer, filter, map, merge, of, switchMap } from "rxjs";
+import { defer, filter, map, merge, Observable, of, switchMap } from "rxjs";
+import { HomeShellFacade } from "./home-shell.facade";
 
 interface ViewModel {
   hasHeader: boolean;
@@ -26,15 +26,16 @@ interface ViewModel {
     CollectionListComponent,
   ],
   providers: [
+    HomeShellFacade,
     // provideCollectionApi(),
   ],
   templateUrl: "./home-shell.component.html",
   styleUrl: "./home-shell.component.scss",
 })
-export class HomeShellComponent {
+export class HomeShellComponent implements OnInit {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _router = inject(Router);
-  private readonly _facade = inject(RootFacade);
+  private readonly _facade = inject(HomeShellFacade);
 
   $loading = this._facade.$loading;
 
@@ -56,4 +57,8 @@ export class HomeShellComponent {
       )
     )
   );
+
+  ngOnInit(): void {
+    this._facade.enter();
+  }
 }

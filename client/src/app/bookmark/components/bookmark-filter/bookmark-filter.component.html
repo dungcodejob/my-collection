@@ -2,7 +2,7 @@
   <input
     hlmInput
     size="sm"
-    class="bg-white"
+    class="bg-white h-8 w-36 lg:w-64"
     formControlName="keyword"
     placeholder="Search..." />
 
@@ -12,15 +12,11 @@
         </div>
       </button> -->
 
-  <button
-    hlmBtn
-    variant="outline"
-    size="sm"
-    class="border border-dashed px-4 bg-white shadow-sm">
-    <div class="flex gap-2 items-center">
-      <hlm-icon name="lucideCirclePlus" size="sm"></hlm-icon> Tag
-    </div>
+  <app-filter-select
+    title="Tag"
+    [options]="$tagOptions()"
+    formControlName="tags"></app-filter-select>
+  <button hlmBtn variant="ghost" class="bg-white h-8 px-2 lg:px-3" (click)="onReset()">
+    Reset <hlm-icon name="lucideX" class="ml-2 h-4 w-4"></hlm-icon>
   </button>
-
-  <app-filter-select title="Tag" [options]="$tagOptions()"></app-filter-select>
 </div>

@@ -8,11 +8,11 @@
     <div class="flex gap-2 items-center">
       <hlm-icon name="lucideCirclePlus" size="sm"></hlm-icon>
       {{ $title() }}
-      @if (selectedItems.size > 0) {
+      @if (selectedOptionMaps.size > 0) {
         <brn-separator hlmSeparator orientation="vertical" class="h-4" />
-        @if (selectedItems.size < 3) {
+        @if (selectedOptionMaps.size < $count() + 1) {
           <div class="hidden space-x-1 lg:flex">
-            @for (item of selectedItems.values(); track $index) {
+            @for (item of selectedOptionMaps.values(); track $index) {
               <div hlmBadge variant="secondary" class="rounded-sm px-1 font-normal">
                 {{ item.label }}
               </div>
@@ -20,7 +20,7 @@
           </div>
         } @else {
           <div hlmBadge variant="secondary" class="rounded-sm px-1 font-normal">
-            {{ selectedItems.size }} selected
+            {{ selectedOptionMaps.size }} selected
           </div>
         }
       }
@@ -49,8 +49,10 @@
             </button>
           }
         </brn-cmd-group>
-        <brn-cmd-separator [hidden]="selectedItems.size === 0" hlm></brn-cmd-separator>
-        <brn-cmd-group hlm [class.hidden]="selectedItems.size === 0">
+        <brn-cmd-separator
+          [hidden]="selectedOptionMaps.size === 0"
+          hlm></brn-cmd-separator>
+        <brn-cmd-group hlm [class.hidden]="selectedOptionMaps.size === 0">
           <button brnCmdItem hlm class="justify-center" (selected)="onClear()">
             Clear filters
           </button>

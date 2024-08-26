@@ -20,7 +20,7 @@ import {
 import { tapResponse } from "@ngrx/operators";
 import { MessageKeys } from "@shared/constants";
 import {
-  BookmarkFilterDto,
+  BookmarkFilterVM,
   BookmarkVM,
   CreateBookmarkDto,
   PaginationDto,
@@ -32,12 +32,13 @@ import { filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi } from "./bookmark.provider";
 interface BookmarkState {
   collectionId: string | null;
-  filter: BookmarkFilterDto;
+  filter: BookmarkFilterVM;
 }
 
 const initialState: BookmarkState = {
   collectionId: null,
   filter: {
+    tags: [],
     keyword: null,
   },
 };
@@ -59,11 +60,12 @@ export const BookmarkStore = signalStore(
           })
         );
       }),
-      setFilter: rxMethod<BookmarkFilterDto>(value$ => {
+      setFilter: rxMethod<BookmarkFilterVM>(value$ => {
         return value$.pipe(
           tap(value => {
             const filter = { ...store.filter(), ...value };
             patchState(store, { filter });
+            store.paginationReset();
           })
         );
       }),
@@ -76,7 +78,12 @@ export const BookmarkStore = signalStore(
             const collectionId = store.collectionId();
             const filter = store.filter();
             const pagination = store.$pagination();
-            const query = { collectionId, ...filter, ...pagination };
+            const query = {
+              collectionId,
+              ...filter,
+              ...pagination,
+              tagIds: filter.tags.map(tag => tag.id),
+            };
             return bookmarkApi.findAll(query).pipe(
               prefix(() => patchState(store, setPending("list"))),
               tapResponse({
