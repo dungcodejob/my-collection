@@ -51,7 +51,6 @@ export const BookmarkStore = signalStore(
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();
     const toastService = inject(ToastService);
-
     return {
       setCollectionId: rxMethod<string | null>(value$ => {
         return value$.pipe(

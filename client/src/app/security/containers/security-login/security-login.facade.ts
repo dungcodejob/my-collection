@@ -9,10 +9,6 @@ export class SecurityLoginFacade {
   readonly $isPending = this._authFacade.$isLoginLoading;
   readonly $error = this._authFacade.$loginError;
 
-  constructor() {}
-
-  enter(): void {}
-
   login(body: Credentials): void {
     this._authFacade.login(body);
   }

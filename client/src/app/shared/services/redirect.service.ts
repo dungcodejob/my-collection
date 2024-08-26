@@ -9,8 +9,6 @@ export class RedirectService {
 
   private _previousUrl = this._location.path();
 
-  constructor() {}
-
   redirectToPreviousUrl() {
     if (!this._previousUrl.includes("security")) {
       this._router.navigateByUrl(this._previousUrl);

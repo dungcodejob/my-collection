@@ -7,9 +7,9 @@ import { MetadataDto } from "@shared/models";
 import { prefix } from "@shared/utils";
 import { pipe, switchMap } from "rxjs";
 import { injectCrawlApi } from "../../data-access";
-type BookmarkDetailDialogState = {
+interface BookmarkDetailDialogState {
   metadata: MetadataDto | null;
-};
+}
 
 const initialState: BookmarkDetailDialogState = {
   metadata: null,

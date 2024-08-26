@@ -7,8 +7,6 @@ type ExtraToast = ExternalToast & {
 
 @Injectable({ providedIn: "root" })
 export class ToastService {
-  constructor() {}
-
   error(message: string | Type<unknown>, data?: ExtraToast) {
     const format = this._format(message, data?.params);
     const description = this._getTimeDescription();

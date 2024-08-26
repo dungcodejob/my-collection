@@ -18,14 +18,14 @@ module.exports = tsEslint.config(
     ],
     processor: angular.processInlineTemplates,
     rules: {
-      "@angular-eslint/directive-selector": [
-        "error",
-        {
-          type: "attribute",
-          prefix: "app",
-          style: "camelCase",
-        },
-      ],
+      // "@angular-eslint/directive-selector": [
+      //   "error",
+      //   {
+      //     type: "attribute",
+      //     prefix: "app",
+      //     style: "camelCase",
+      //   },
+      // ],
       "@angular-eslint/component-selector": [
         "error",
         {
@@ -34,12 +34,13 @@ module.exports = tsEslint.config(
           style: "kebab-case",
         },
       ],
+      "@typescript-eslint/no-empty-object-type": "off",
     },
   },
   {
     files: ["**/*.html"],
     extends: [
-      // ...angular.configs.templateRecommended,
+      ...angular.configs.templateRecommended,
       // ...angular.configs.templateAccessibility,
     ],
     rules: {

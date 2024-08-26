@@ -1,22 +1,26 @@
 import { Signal } from "@angular/core";
+import {
+  MethodsDictionary,
+  SignalsDictionary,
+} from "@ngrx/signals/src/signal-store-models";
 import { PaginationDto } from "@shared/models";
 
-export type PaginationState = {
+export interface PaginationState {
   pageSize: number;
   currentPage: number;
-};
+}
 
-export type PaginationSignals = {
+export interface PaginationSignals extends SignalsDictionary {
   $pagination: Signal<PaginationDto>;
-};
+}
 
-export type PaginationMethods = {
+export interface PaginationMethods extends MethodsDictionary {
   setCurrentPage: (currentPage: number) => void;
   setPageSize: (pageSize: number) => void;
   nextPage: () => void;
   prevPage: () => void;
   paginationReset: () => void;
-};
+}
 
 export type NamedPaginationState<Name extends string> = {
   [K in Name as `${K}PageSize`]: PaginationState["pageSize"];

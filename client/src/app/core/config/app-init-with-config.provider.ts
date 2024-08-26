@@ -5,7 +5,7 @@ export interface OnInitConfig {
   configure(config: EnvConfig): void;
 }
 
-export const APP_INIT_WITH_CONFIG = new InjectionToken<Readonly<OnInitConfig[]>>(
+export const APP_INIT_WITH_CONFIG = new InjectionToken<readonly OnInitConfig[]>(
   "APP_INI_WITH_CONFIG"
 );
 

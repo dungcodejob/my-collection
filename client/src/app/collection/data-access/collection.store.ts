@@ -44,9 +44,9 @@ import {
 } from "rxjs";
 import { injectCollectionApi } from ".";
 
-type CollectionState = {
+interface CollectionState {
   collections: CollectionVM[];
-};
+}
 
 const initialState: CollectionState = {
   collections: [],

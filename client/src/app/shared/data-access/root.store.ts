@@ -4,7 +4,9 @@ import { tap } from "rxjs";
 import { Status } from "./status/status-name.type";
 import { withStatus } from "./status/status.feature";
 
-type RootState = { loading: boolean };
+interface RootState {
+  loading: boolean;
+}
 
 const initialState: RootState = { loading: false };
 

@@ -8,10 +8,10 @@ import { HlmToasterComponent } from "@spartan-ng/ui-sonner-helm";
 import { HlmSpinnerComponent } from "@spartan-ng/ui-spinner-helm";
 import { Observable, defer, filter, map, merge, of, switchMap } from "rxjs";
 
-type ViewModel = {
+interface ViewModel {
   hasHeader: boolean;
   hasSideBar: boolean;
-};
+}
 
 @Component({
   selector: "app-layout",

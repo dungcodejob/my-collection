@@ -54,6 +54,7 @@ export function withStatus<Name extends string>(config?: {
     withState({ [statusKey]: "idle" }),
     withComputed((store: Record<string, Signal<unknown>>) => {
       const $status = store[statusKey] as Signal<Status>;
+
       return {
         [isPendingKey]: computed(() => $status() === "pending"),
         [isFulfilledKey]: computed(() => $status() === "fulfilled"),

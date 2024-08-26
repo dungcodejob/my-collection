@@ -10,4 +10,7 @@ export type CreateCollectionDto = Omit<CollectionDto, keyof BaseDto | "position"
 
 export type UpdateCollectionDto = Omit<CollectionDto, keyof BaseDto | "position">;
 
-export type MoveCollectionDto = { prevPosition: string; nextPosition: string };
+export interface MoveCollectionDto {
+  prevPosition: string;
+  nextPosition: string;
+}

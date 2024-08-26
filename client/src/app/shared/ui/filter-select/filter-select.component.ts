@@ -92,12 +92,12 @@ export class FilterSelectComponent<T = unknown> implements ControlValueAccessor 
   $title = input("", { alias: "title" });
   $count = input(2, { alias: "count" });
   $getKeyFn = input(
-    (value: any) => {
+    (value: T) => {
       if (typeof value === "object") {
-        return value["id"];
+        return (value as { id: string })["id"];
       }
 
-      return value;
+      return `${value}`;
     },
     { alias: "getKeyFn" }
   );
@@ -151,9 +151,9 @@ export class FilterSelectComponent<T = unknown> implements ControlValueAccessor 
       this.selectedItems.set(key, option);
     }
 
-    this.onChange
-      ? this.onChange([...this.selectedItems.values()].map(item => item.value))
-      : null;
+    if (this.onChange) {
+      this.onChange([...this.selectedItems.values()].map(item => item.value));
+    }
   }
 
   onClear() {
@@ -171,10 +171,10 @@ export class FilterSelectComponent<T = unknown> implements ControlValueAccessor 
       }
     }
   }
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: T[]) => void): void {
     this.onChange = fn;
   }
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 }

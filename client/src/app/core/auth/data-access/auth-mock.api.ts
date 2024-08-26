@@ -6,7 +6,6 @@ import { Observable, delay, of } from "rxjs";
 @Injectable({ providedIn: "root" })
 export class AuthMockApi {
   private readonly _httpService = inject(HttpService);
-  constructor() {}
 
   login(body: Credentials): Observable<SingleResponseDto<AuthResultDto>> {
     const user = this._createFakeUser(body);

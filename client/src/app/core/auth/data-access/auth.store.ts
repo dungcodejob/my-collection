@@ -10,11 +10,11 @@ import { TokenDto } from "../../../shared/models/auth/token.dto";
 import { UserProfileDto } from "../../../shared/models/user/user-profile.dto";
 import { AuthApi } from "./auth.api";
 
-type AuthState = {
+interface AuthState {
   token: TokenDto | null;
   user: UserProfileDto | null;
   authenticationHandled: boolean;
-};
+}
 
 export const initialState: AuthState = {
   token: null,

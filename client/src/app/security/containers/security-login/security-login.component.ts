@@ -65,7 +65,6 @@ export class SecurityLoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._loginFacade.enter();
     this._initForm();
 
     effect(

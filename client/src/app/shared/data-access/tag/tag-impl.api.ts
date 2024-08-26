@@ -17,7 +17,7 @@ export class TagImplApi implements TagApi {
   private readonly _http = inject(HttpService);
   private readonly _responseAdapter = new ResponseAdapter();
   private readonly _tagAdapter = new TagAdapter();
-  constructor() {}
+
   findAll(query: TagQueryDto): Observable<PaginationResponseDto<TagVM>> {
     let params = new HttpParams();
     if (query.collectionId) {
