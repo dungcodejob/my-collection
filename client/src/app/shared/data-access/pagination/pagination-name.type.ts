@@ -3,15 +3,27 @@ import {
   MethodsDictionary,
   SignalsDictionary,
 } from "@ngrx/signals/src/signal-store-models";
-import { PaginationDto } from "@shared/models";
+
+export interface PaginationMeta {
+  currentPage: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+interface PaginationViewAttributes {
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+}
+
+export type PaginationVM = PaginationMeta & PaginationViewAttributes;
 
 export interface PaginationState {
-  pageSize: number;
-  currentPage: number;
+  pagination: PaginationMeta;
 }
 
 export interface PaginationSignals extends SignalsDictionary {
-  $pagination: Signal<PaginationDto>;
+  $pagination: Signal<PaginationVM>;
 }
 
 export interface PaginationMethods extends MethodsDictionary {
@@ -23,11 +35,11 @@ export interface PaginationMethods extends MethodsDictionary {
 }
 
 export type NamedPaginationState<Name extends string> = {
-  [K in Name as `${K}PageSize`]: PaginationState["pageSize"];
-} & { [K in Name as `${K}CurrentPage`]: PaginationState["currentPage"] };
+  [K in Name as `${K}Pagination`]: PaginationMeta;
+};
 
 export type NamedPaginationSignals<Name extends string> = {
-  [K in Name as `$${Capitalize<K>}Pagination`]: PaginationSignals["$pagination"];
+  [K in Name as `$${Capitalize<K>}Pagination`]: Signal<PaginationVM>;
 };
 
 export type NamedPaginationMethods<ActionName extends string> = {

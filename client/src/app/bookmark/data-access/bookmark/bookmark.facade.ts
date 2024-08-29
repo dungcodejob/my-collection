@@ -1,7 +1,7 @@
 import { inject, Injectable, Signal, untracked } from "@angular/core";
 import { CollectionFacade } from "@collection/data-access";
 import { RootFacade, TagFacade } from "@shared/data-access";
-import { BookmarkFilterVM, PaginationDto } from "@shared/models";
+import { BookmarkFilterVM } from "@shared/models";
 import { injectAutoEffect } from "@shared/utils";
 import { Observable } from "rxjs";
 import { BookmarkStore } from "./bookmark.store";
@@ -47,11 +47,15 @@ export class BookmarkFacade {
     this._store.setFilter(value);
   }
 
-  setPagination(pagination: RxMethodInput<PaginationDto>) {
-    this._store.setPagination(pagination);
-  }
-
   create = this._store.create;
   edit = this._store.update;
   delete = this._store.delete;
+
+  nextPage() {
+    this._store.nextPage();
+  }
+
+  previousPage() {
+    this._store.prevPage();
+  }
 }

@@ -22,5 +22,9 @@
       [items]="$bookmarkItems()"
       (onEdit)="onEdit($event)"
       (onDelete)="onDelete($event)"></app-bookmark-list>
+    <app-pagination
+      [pagination]="$pagination()"
+      (next)="onNextPage()"
+      (previous)="onPreviousPage()"></app-pagination>
   </div>
 </div>

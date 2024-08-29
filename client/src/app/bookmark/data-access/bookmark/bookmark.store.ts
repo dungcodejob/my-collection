@@ -19,12 +19,12 @@ import {
 
 import { tapResponse } from "@ngrx/operators";
 import { MessageKeys } from "@shared/constants";
+import { PaginationMeta } from "@shared/data-access/pagination/pagination-name.type";
 import {
   BookmarkFilterVM,
   BookmarkVM,
   CreateBookmarkDto,
-  PaginationDto,
-  UpdateBookmarkDto,
+  UpdateBookmarkDto
 } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
@@ -69,8 +69,8 @@ export const BookmarkStore = signalStore(
           })
         );
       }),
-      setPagination: rxMethod<PaginationDto>(value$ => {
-        return value$.pipe(tap(value => patchState(store, { ...value })));
+      setPagination: rxMethod<PaginationMeta>(value$ => {
+        return value$.pipe(tap(value => patchState(store, { pagination: value })));
       }),
       findAll: rxMethod<void>(
         pipe(

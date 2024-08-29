@@ -25,7 +25,7 @@ import {
   UpdateBookmarkDto,
 } from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
-import { PadDialogService } from "@shared/ui";
+import { PadDialogService, PaginationComponent } from "@shared/ui";
 import { injectAutoEffect, injectQueryParams, isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
@@ -60,6 +60,7 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     HlmInputDirective,
     HlmButtonDirective,
     BookmarkFilterComponent,
+    PaginationComponent,
   ],
   providers: [
     // provideBookmarkApi(),
@@ -106,6 +107,7 @@ export class BookmarkManagementComponent implements OnInit {
   readonly $filter = this.facade.$filter;
   readonly $tagItems = this.facade.$tagItems;
   readonly $bookmarkItems = this.facade.$bookmarkItems;
+  readonly $pagination = this.facade.$pagination;
 
   searchControl = new FormControl<string | null>(null);
   ngOnInit(): void {
@@ -166,6 +168,14 @@ export class BookmarkManagementComponent implements OnInit {
 
   onFilterChange(filter: BookmarkFilterVM): void {
     this.facade.setFilter(filter);
+  }
+
+  onNextPage(): void {
+    this.facade.nextPage();
+  }
+
+  onPreviousPage(): void {
+    this.facade.previousPage();
   }
 
   private initializer() {

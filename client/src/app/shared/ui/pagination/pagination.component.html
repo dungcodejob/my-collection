@@ -1,0 +1,27 @@
+<nav hlmPagination>
+  <ul hlmPaginationContent>
+    <button hlmPaginationItem [disabled]="!$hasPrevious()" (click)="onPrevious()">
+      <hlm-pagination-previous />
+    </button>
+    @if ($currentPage() > ($maxItemDisplay() + 1) / 2) {
+      <li hlmPaginationItem>
+        <hlm-pagination-ellipsis />
+      </li>
+    }
+
+    @for (page of $pages(); track $index) {
+      <li hlmPaginationItem>
+        <a hlmPaginationLink link="#" [isActive]="$currentPage() === page">{{ page }}</a>
+      </li>
+    }
+
+    @if ($currentPage() < $totalPages() - ($maxItemDisplay() + 1) / 2) {
+      <li hlmPaginationItem>
+        <hlm-pagination-ellipsis />
+      </li>
+    }
+    <button hlmPaginationItem [disabled]="!$hasNext()" (click)="onNext()">
+      <hlm-pagination-next />
+    </button>
+  </ul>
+</nav>
