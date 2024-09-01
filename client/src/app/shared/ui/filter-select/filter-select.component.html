@@ -5,7 +5,7 @@
     variant="outline"
     size="sm"
     class="h-8 border-dashed bg-white">
-    <div class="flex gap-2 items-center">
+    <div class="flex gap-2 items-center text-xs">
       <hlm-icon name="lucideCirclePlus" size="sm"></hlm-icon>
       {{ $title() }}
       @if (selectedOptionMaps.size > 0) {
@@ -30,15 +30,15 @@
     <brn-cmd hlm>
       <hlm-cmd-input-wrapper>
         <hlm-icon size="sm" name="lucideSearch" class="!h-4 !w-4" />
-        <input brnCmdInput hlm class="h-9" [placeholder]="$title()" />
+        <input brnCmdInput hlm class="h-9 " [placeholder]="$title()" />
       </hlm-cmd-input-wrapper>
 
-      <div *brnCmdEmpty hlmCmdEmpty>No results found.</div>
+      <div *brnCmdEmpty hlmCmdEmpty class="text-xs">No results found.</div>
       <brn-cmd-list hlm>
         <brn-cmd-group hlm>
           @for (item of $options(); track item.label; let idx = $index) {
             <button
-              class="relative flex items-center"
+              class="relative flex items-center "
               brnCmdItem
               hlm
               [value]="item.label"

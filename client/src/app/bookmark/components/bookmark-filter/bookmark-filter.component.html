@@ -16,7 +16,9 @@
     title="Tag"
     [options]="$tagOptions()"
     formControlName="tags"></app-filter-select>
-  <button hlmBtn variant="ghost" class="bg-white h-8 px-2 lg:px-3" (click)="onReset()">
-    Reset <hlm-icon name="lucideX" class="ml-2 h-4 w-4"></hlm-icon>
-  </button>
+  @if ($isHasFilter()) {
+    <button hlmBtn variant="ghost" class="bg-white h-8 px-2 lg:px-3" (click)="onReset()">
+      Reset <hlm-icon name="lucideX" class="ml-2 h-4 w-4"></hlm-icon>
+    </button>
+  }
 </div>

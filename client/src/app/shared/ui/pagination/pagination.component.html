@@ -1,27 +1,50 @@
-<nav hlmPagination>
-  <ul hlmPaginationContent>
-    <button hlmPaginationItem [disabled]="!$hasPrevious()" (click)="onPrevious()">
-      <hlm-pagination-previous />
-    </button>
-    @if ($currentPage() > ($maxItemDisplay() + 1) / 2) {
-      <li hlmPaginationItem>
-        <hlm-pagination-ellipsis />
-      </li>
-    }
+@if ($pages().length > 0) {
+  <div class="flex gap-8 justify-end w-full">
+    <div class="flex gap-2 items-center">
+      <p class="text-sm font-medium">Page size</p>
+      <brn-select class="inline-block" [ngModel]="$pageSize()">
+        <hlm-select-trigger class="h-8 w-[4.5rem]">
+          <hlm-select-value />
+        </hlm-select-trigger>
+        <hlm-select-content>
+          @for (item of $pageSizeOptions(); track $index) {
+            <hlm-option [value]="item">{{ item }}</hlm-option>
+          }
+        </hlm-select-content>
+      </brn-select>
+    </div>
+    <nav hlmPagination class="w-fit m-0">
+      <ul hlmPaginationContent>
+        <button hlmPaginationItem [disabled]="!$hasPrevious()" (click)="onPrevious()">
+          <hlm-pagination-previous class="h-8" />
+        </button>
+        @if ($currentPage() > ($maxItemDisplay() + 1) / 2) {
+          <li hlmPaginationItem>
+            <hlm-pagination-ellipsis class="h-8 w-8" />
+          </li>
+        }
 
-    @for (page of $pages(); track $index) {
-      <li hlmPaginationItem>
-        <a hlmPaginationLink link="#" [isActive]="$currentPage() === page">{{ page }}</a>
-      </li>
-    }
+        @for (page of $pages(); track $index) {
+          <li hlmPaginationItem>
+            <a
+              hlmPaginationLink
+              class="h-8 w-8"
+              link="#"
+              [isActive]="$currentPage() === page"
+              >{{ page }}</a
+            >
+          </li>
+        }
 
-    @if ($currentPage() < $totalPages() - ($maxItemDisplay() + 1) / 2) {
-      <li hlmPaginationItem>
-        <hlm-pagination-ellipsis />
-      </li>
-    }
-    <button hlmPaginationItem [disabled]="!$hasNext()" (click)="onNext()">
-      <hlm-pagination-next />
-    </button>
-  </ul>
-</nav>
+        @if ($currentPage() < $totalPages() - ($maxItemDisplay() + 1) / 2) {
+          <li hlmPaginationItem>
+            <hlm-pagination-ellipsis class="h-8 w-8" />
+          </li>
+        }
+        <button hlmPaginationItem [disabled]="!$hasNext()" (click)="onNext()">
+          <hlm-pagination-next class="h-8" />
+        </button>
+      </ul>
+    </nav>
+  </div>
+}

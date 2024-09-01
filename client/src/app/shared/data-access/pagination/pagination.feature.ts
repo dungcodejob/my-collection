@@ -43,7 +43,7 @@ function getPaginationStateKeys(config?: { name: string }) {
 const initialState: PaginationMeta = {
   currentPage: CURRENT_PAGE,
   pageSize: PAGE_SIZE,
-  totalCount: 300,
+  totalCount: 200,
 };
 
 export function withPagination(): SignalStoreFeature<

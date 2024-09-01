@@ -4,7 +4,9 @@ import {
   computed,
   input,
   output,
+  signal,
 } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { PaginationVM } from "@shared/data-access/pagination/pagination-name.type";
 import {
   HlmPaginationContentDirective,
@@ -15,19 +17,23 @@ import {
   HlmPaginationNextComponent,
   HlmPaginationPreviousComponent,
 } from "@spartan-ng/ui-pagination-helm";
+import { BrnSelectImports } from "@spartan-ng/ui-select-brain";
+import { HlmSelectImports } from "@spartan-ng/ui-select-helm";
+const PaginationImports = [
+  HlmPaginationDirective,
+  HlmPaginationContentDirective,
+  HlmPaginationItemDirective,
+  HlmPaginationPreviousComponent,
+  HlmPaginationNextComponent,
+  HlmPaginationLinkDirective,
+  HlmPaginationEllipsisComponent,
+];
 
+const SelectImports = [BrnSelectImports, HlmSelectImports];
 @Component({
   selector: "app-pagination",
   standalone: true,
-  imports: [
-    HlmPaginationDirective,
-    HlmPaginationContentDirective,
-    HlmPaginationItemDirective,
-    HlmPaginationPreviousComponent,
-    HlmPaginationNextComponent,
-    HlmPaginationLinkDirective,
-    HlmPaginationEllipsisComponent,
-  ],
+  imports: [PaginationImports, SelectImports, FormsModule],
   templateUrl: "./pagination.component.html",
   styleUrl: "./pagination.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,6 +69,8 @@ export class PaginationComponent {
 
     return Array.from({ length: endPage - startPage + 1 }, (_, i) => i + startPage);
   });
+
+  $pageSizeOptions = signal([10, 20, 25, 40, 50]);
 
   next = output();
   previous = output();
