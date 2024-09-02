@@ -7,3 +7,5 @@ export * from "./root.facade";
 export * from "./root.store";
 export * from "./status/status-name.type";
 export * from "./status/status.feature";
+
+export * from "./tag";

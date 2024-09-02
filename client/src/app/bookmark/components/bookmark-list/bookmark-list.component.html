@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-3">
   @for (item of $items(); track item.id) {
     <div class="justify-start h-auto group relative">
-      <app-bookmark-item [data]="item"></app-bookmark-item>
+      <app-bookmark-item [data]="item" [visibility]="$visibility()"></app-bookmark-item>
       <div class="invisible group-hover:visible absolute top-3 right-3 flex gap-2">
         <button
           hlmBtn

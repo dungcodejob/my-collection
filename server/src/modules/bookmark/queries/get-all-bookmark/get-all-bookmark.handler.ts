@@ -11,6 +11,6 @@ export class GetAllBookHandler implements IQueryHandler<GetAllBookmarkQuery> {
     @Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork
   ) {}
   async execute(query: GetAllBookmarkQuery): Promise<BookmarkEntity[]> {
-    return this._unitOfWork.bookmark.findAll(query.userId, query.tagIds);
+    return this._unitOfWork.bookmark.findAll(query.userId, query.keyword, query.tagIds);
   }
 }

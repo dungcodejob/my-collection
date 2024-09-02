@@ -17,28 +17,47 @@ import {
   withStatus,
 } from "@shared/data-access";
 
-import { tapResponse } from "@ngrx/component-store";
+import { tapResponse } from "@ngrx/operators";
 import { MessageKeys } from "@shared/constants";
+import { PaginationMeta } from "@shared/data-access/pagination/pagination-name.type";
 import {
-  BookmarkFilterDto,
+  BookmarkFilterVM,
   BookmarkVM,
   CreateBookmarkDto,
-  PaginationDto,
   UpdateBookmarkDto,
 } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
 import { filter, map, pipe, switchMap, tap } from "rxjs";
-import { injectBookmarkApi } from "./bookmark/bookmark.provider";
-type BookmarkState = {
+import { injectBookmarkApi } from "./bookmark.provider";
+
+export const BookmarkViewOption = {
+  Description: "Description",
+  Tags: "Tags",
+  Info: "Info",
+  Cover: "Cover",
+} as const;
+
+export type BookmarkViewKey = keyof typeof BookmarkViewOption;
+export type BookmarkVisibility = Record<BookmarkViewKey, boolean>;
+
+interface BookmarkState {
   collectionId: string | null;
-  filter: BookmarkFilterDto;
-};
+  filter: BookmarkFilterVM;
+  visibility: BookmarkVisibility;
+}
 
 const initialState: BookmarkState = {
   collectionId: null,
   filter: {
+    tags: [],
     keyword: null,
+  },
+  visibility: {
+    [BookmarkViewOption.Description]: true,
+    [BookmarkViewOption.Tags]: true,
+    [BookmarkViewOption.Info]: true,
+    [BookmarkViewOption.Cover]: true,
   },
 };
 
@@ -51,7 +70,6 @@ export const BookmarkStore = signalStore(
   withMethods(store => {
     const bookmarkApi = injectBookmarkApi();
     const toastService = inject(ToastService);
-
     return {
       setCollectionId: rxMethod<string | null>(value$ => {
         return value$.pipe(
@@ -60,16 +78,26 @@ export const BookmarkStore = signalStore(
           })
         );
       }),
-      setFilter: rxMethod<BookmarkFilterDto>(value$ => {
+      visibilityToggle: (key: keyof BookmarkVisibility) => {
+        const visibility = store.visibility();
+        patchState(store, {
+          visibility: {
+            ...visibility,
+            [key]: !visibility[key],
+          },
+        });
+      },
+      setFilter: rxMethod<BookmarkFilterVM>(value$ => {
         return value$.pipe(
           tap(value => {
             const filter = { ...store.filter(), ...value };
             patchState(store, { filter });
+            store.paginationReset();
           })
         );
       }),
-      setPagination: rxMethod<PaginationDto>(value$ => {
-        return value$.pipe(tap(value => patchState(store, { ...value })));
+      setPagination: rxMethod<PaginationMeta>(value$ => {
+        return value$.pipe(tap(value => patchState(store, { pagination: value })));
       }),
       findAll: rxMethod<void>(
         pipe(
@@ -77,7 +105,12 @@ export const BookmarkStore = signalStore(
             const collectionId = store.collectionId();
             const filter = store.filter();
             const pagination = store.$pagination();
-            const query = { collectionId, ...filter, ...pagination };
+            const query = {
+              collectionId,
+              ...filter,
+              ...pagination,
+              tagIds: filter.tags.map(tag => tag.id),
+            };
             return bookmarkApi.findAll(query).pipe(
               prefix(() => patchState(store, setPending("list"))),
               tapResponse({

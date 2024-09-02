@@ -8,7 +8,7 @@ export class CollectionFacade {
   private readonly _collectionStore = inject(CollectionStore);
   private readonly _rootFacade = inject(RootFacade);
 
-  $items = this._collectionStore.collections;
+  $items = this._collectionStore.entities;
   $selectedId = this._collectionStore.$selectedCollectionId;
   $selectedEntity = computed(() => {
     const entities = this.$items();

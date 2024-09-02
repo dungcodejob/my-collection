@@ -19,14 +19,18 @@ export class BookmarkService {
   ) {}
 
   async findAll(userId: string, dto?: BookmarkFilterDto): Promise<BookmarkEntity[]> {
-    return this._queryBus.execute(new GetAllBookmarkQuery(userId));
+    return this._queryBus.execute(
+      new GetAllBookmarkQuery(userId, dto.keyword, dto.tagIds)
+    );
   }
 
   async findByCollectionId(
     collectionId: string,
     dto?: BookmarkFilterDto
   ): Promise<BookmarkEntity[]> {
-    return this._queryBus.execute(new GetBookmarkInCollectionQuery(collectionId));
+    return this._queryBus.execute(
+      new GetBookmarkInCollectionQuery(collectionId, dto.keyword, dto.tagIds)
+    );
   }
 
   async create(dto: CreateBookmarkBodyDto): Promise<BookmarkEntity> {

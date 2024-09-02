@@ -92,10 +92,6 @@ export class BookmarkTagSelectComponent implements ControlValueAccessor {
   registerOnTouched(fn: TouchedFn): void {
     this._onTouched = fn;
   }
-  setDisabledState?(isDisabled: boolean): void {
-    // throw new Error("Method not implemented.");
-    console.log("Method not implemented");
-  }
 
   onOptionSelected(tag: TagVM): void {
     const value = [...this.$selected(), tag];

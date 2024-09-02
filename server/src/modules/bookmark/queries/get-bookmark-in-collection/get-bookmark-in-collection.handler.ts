@@ -15,6 +15,10 @@ export class GetBookmarkInCollectionBookHandler
     @Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork
   ) {}
   async execute(query: GetBookmarkInCollectionQuery): Promise<BookmarkEntity[]> {
-    return this._unitOfWork.bookmark.findByCollectionId(query.collectionId, query.tagIds);
+    return this._unitOfWork.bookmark.findByCollectionId(
+      query.collectionId,
+      query.keyword,
+      query.tagIds
+    );
   }
 }

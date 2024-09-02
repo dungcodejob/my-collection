@@ -1,5 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, input } from "@angular/core";
+import { BookmarkVisibility } from "@bookmark/data-access";
 import { BookmarkVM } from "@shared/models";
 import { HlmBadgeDirective } from "@spartan-ng/ui-badge-helm";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
@@ -14,4 +15,5 @@ import { HlmCardDirective } from "@spartan-ng/ui-card-helm";
 })
 export class BookmarkItemComponent {
   $data = input.required<BookmarkVM>({ alias: "data" });
+  $visibility = input.required<BookmarkVisibility>({ alias: "visibility" });
 }

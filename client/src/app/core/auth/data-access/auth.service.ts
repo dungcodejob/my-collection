@@ -22,8 +22,6 @@ export class AuthService {
   readonly $isRefreshLoading = this._authStore.$isRefreshPending;
   readonly $refreshError = this._authStore.$refreshError;
 
-  constructor() {}
-
   initializer() {
     const tokens = this._storageService.getObject<TokenDto>(LocalStorageKeys.Token);
     const user = this._storageService.getObject<UserProfileDto>(LocalStorageKeys.User);

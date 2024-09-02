@@ -1,5 +1,5 @@
 import { ServerSideError } from "@core/http";
-import { tapResponse } from "@ngrx/component-store";
+import { tapResponse } from "@ngrx/operators";
 import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { setError, setFulfilled, setPending, withStatus } from "@shared/data-access";
@@ -7,10 +7,9 @@ import { MetadataDto } from "@shared/models";
 import { prefix } from "@shared/utils";
 import { pipe, switchMap } from "rxjs";
 import { injectCrawlApi } from "../../data-access";
-
-type BookmarkDetailDialogState = {
+interface BookmarkDetailDialogState {
   metadata: MetadataDto | null;
-};
+}
 
 const initialState: BookmarkDetailDialogState = {
   metadata: null,

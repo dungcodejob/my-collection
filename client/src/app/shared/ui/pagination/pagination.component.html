@@ -1,0 +1,57 @@
+@if ($pages().length > 0) {
+  <div class="flex gap-8 justify-end w-full">
+    <div class="flex gap-2 items-center">
+      <p class="text-sm font-medium">Page size</p>
+      <brn-select class="inline-block" [ngModel]="$pageSize()">
+        <hlm-select-trigger class="h-8 w-[4.5rem]">
+          <hlm-select-value />
+        </hlm-select-trigger>
+        <hlm-select-content>
+          @for (item of $pageSizeOptions(); track $index) {
+            <hlm-option [value]="item">{{ item }}</hlm-option>
+          }
+        </hlm-select-content>
+      </brn-select>
+    </div>
+    <nav hlmPagination class="w-fit m-0">
+      <ul hlmPaginationContent>
+        <li hlmPaginationItem>
+          <button
+            class="w-full h-full"
+            [disabled]="!$hasPrevious()"
+            (click)="onPrevious()">
+            <hlm-pagination-previous class="h-8" />
+          </button>
+        </li>
+        @if ($currentPage() > ($maxItemDisplay() + 1) / 2) {
+          <li hlmPaginationItem>
+            <hlm-pagination-ellipsis class="h-8 w-8" />
+          </li>
+        }
+
+        @for (page of $pages(); track $index) {
+          <li hlmPaginationItem>
+            <button
+              hlmPaginationLink
+              class="h-8 w-8"
+              [isActive]="$currentPage() === page"
+              (click)="onPageChange(page)">
+              {{ page }}
+            </button>
+          </li>
+        }
+
+        @if ($currentPage() < $totalPages() - ($maxItemDisplay() + 1) / 2) {
+          <li hlmPaginationItem>
+            <hlm-pagination-ellipsis class="h-8 w-8" />
+          </li>
+        }
+        <li hlmPaginationItem>
+          <button class="w-full h-full" [disabled]="!$hasNext()" (click)="onNext()">
+            <hlm-pagination-next class="h-8" />
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+}

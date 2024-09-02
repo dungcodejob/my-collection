@@ -5,23 +5,13 @@ import { Observable, map, pipe } from "rxjs";
 import { ResponseDto } from "./response.dto";
 import { ServerSideError } from "./server-side.error";
 
-type HttpOptions = {
-  headers?:
-    | HttpHeaders
-    | {
-        [header: string]: string | string[];
-      };
+interface HttpOptions {
+  headers?: HttpHeaders | Record<string, string | string[]>;
   context?: HttpContext;
   observe?: "body";
   params?:
     | HttpParams
-    | {
-        [param: string]:
-          | string
-          | number
-          | boolean
-          | ReadonlyArray<string | number | boolean>;
-      };
+    | Record<string, string | number | boolean | readonly (string | number | boolean)[]>;
   reportProgress?: boolean;
   responseType?: "json";
   withCredentials?: boolean;
@@ -30,7 +20,7 @@ type HttpOptions = {
         includeHeaders?: string[];
       }
     | boolean;
-};
+}
 
 @Injectable()
 export class HttpService implements OnInitConfig {

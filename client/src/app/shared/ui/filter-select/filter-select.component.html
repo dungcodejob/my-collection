@@ -1,0 +1,63 @@
+<brn-popover align="start" sideOffset="5">
+  <button
+    brnPopoverTrigger
+    hlmBtn
+    variant="outline"
+    size="sm"
+    class="h-8 border-dashed bg-white">
+    <div class="flex gap-2 items-center text-xs">
+      <hlm-icon name="lucideCirclePlus" size="sm"></hlm-icon>
+      {{ $title() }}
+      @if (selectedOptionMaps.size > 0) {
+        <brn-separator hlmSeparator orientation="vertical" class="h-4" />
+        @if (selectedOptionMaps.size < $count() + 1) {
+          <div class="hidden space-x-1 lg:flex">
+            @for (item of selectedOptionMaps.values(); track $index) {
+              <div hlmBadge variant="secondary" class="rounded-sm px-1 font-normal">
+                {{ item.label }}
+              </div>
+            }
+          </div>
+        } @else {
+          <div hlmBadge variant="secondary" class="rounded-sm px-1 font-normal">
+            {{ selectedOptionMaps.size }} selected
+          </div>
+        }
+      }
+    </div>
+  </button>
+  <div *brnPopoverContent="let ctx" hlmPopoverContent class="w-48 p-0 flex">
+    <brn-cmd hlm>
+      <hlm-cmd-input-wrapper>
+        <hlm-icon size="sm" name="lucideSearch" class="!h-4 !w-4" />
+        <input brnCmdInput hlm class="h-9 " [placeholder]="$title()" />
+      </hlm-cmd-input-wrapper>
+
+      <div *brnCmdEmpty hlmCmdEmpty class="text-xs">No results found.</div>
+      <brn-cmd-list hlm>
+        <brn-cmd-group hlm>
+          @for (item of $options(); track item.label; let idx = $index) {
+            <button
+              class="relative flex items-center "
+              brnCmdItem
+              hlm
+              [value]="item.label"
+              (selected)="onToggle(item)">
+              <hlm-checkbox class="mr-2" [checked]="isSelected(item.value)" />
+              {{ item.label }}
+              <div class="absolute top-0 right-0 w-full h-full z-10"></div>
+            </button>
+          }
+        </brn-cmd-group>
+        <brn-cmd-separator
+          [hidden]="selectedOptionMaps.size === 0"
+          hlm></brn-cmd-separator>
+        <brn-cmd-group hlm [class.hidden]="selectedOptionMaps.size === 0">
+          <button brnCmdItem hlm class="justify-center" (selected)="onClear()">
+            Clear filters
+          </button>
+        </brn-cmd-group>
+      </brn-cmd-list>
+    </brn-cmd>
+  </div>
+</brn-popover>

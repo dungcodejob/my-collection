@@ -2,46 +2,37 @@ import { NgFor, NgIf, NgTemplateOutlet } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   OnInit,
   ViewContainerRef,
   inject,
 } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
+import { BookmarkFilterComponent } from "@bookmark/components/bookmark-filter/bookmark-filter.component";
 import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
+import { BookmarkViewComponent } from "@bookmark/components/bookmark-view/bookmark-view.component";
 import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import {
   BookmarkFacade,
-  TagStore,
+  BookmarkVisibility,
   provideBookmarkMockApi,
   provideCrawlApi,
-  provideTagMockApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
-import { CreateBookmarkDto, UpdateBookmarkDto } from "@shared/models";
-import { FunctionPipe } from "@shared/pipes";
-import { PadDialogService } from "@shared/ui";
 import {
-  injectAutoEffect,
-  injectParams,
-  injectQueryParams,
-  isNotFalsy,
-} from "@shared/utils";
+  BookmarkFilterVM,
+  CreateBookmarkDto,
+  TagVM,
+  UpdateBookmarkDto,
+} from "@shared/models";
+import { FunctionPipe } from "@shared/pipes";
+import { PadDialogService, PaginationComponent } from "@shared/ui";
+import { injectAutoEffect, injectQueryParams, isNotFalsy } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent, provideIcons } from "@spartan-ng/ui-icon-helm";
 import { HlmInputDirective } from "@spartan-ng/ui-input-helm";
 import { HlmH4Directive } from "@spartan-ng/ui-typography-helm";
-import {
-  Observable,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  take,
-  tap,
-} from "rxjs";
+import { Observable, filter, map, take } from "rxjs";
 
 // Generics
 export function coerceArray<T>(value: T | T[]): T[];
@@ -68,14 +59,17 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     FunctionPipe,
     ReactiveFormsModule,
     HlmInputDirective,
+    HlmButtonDirective,
+    BookmarkFilterComponent,
+    PaginationComponent,
+    BookmarkFilterComponent,
+    BookmarkViewComponent,
   ],
   providers: [
     // provideBookmarkApi(),
     provideBookmarkMockApi(),
     provideCrawlApi(),
     // provideTagApi(),
-    provideTagMockApi(),
-    TagStore,
 
     provideIcons({
       lucideRotateCw,
@@ -85,7 +79,6 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
 })
 export class BookmarkManagementComponent implements OnInit {
   private readonly _autoEffect = injectAutoEffect();
-  private readonly _destroyRef = inject(DestroyRef);
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
   private readonly _router = inject(Router);
@@ -93,8 +86,17 @@ export class BookmarkManagementComponent implements OnInit {
 
   protected readonly facade = inject(BookmarkFacade);
 
-  readonly $collectionId = injectParams("collectionId");
+  readonly $collectionId = this.facade.$collectionId;
   readonly $keyword = injectQueryParams("keyword");
+  readonly $tags = injectQueryParams<TagVM[]>(params => {
+    const tags = params["tags"];
+    if (tags) {
+      return JSON.parse(tags);
+    }
+
+    return [];
+  });
+
   readonly $pageSize = injectQueryParams("pageSize", {
     initialValue: 20,
     transform: v => Number(v),
@@ -104,12 +106,15 @@ export class BookmarkManagementComponent implements OnInit {
     transform: v => Number(v),
   });
 
-  searchControl = new FormControl<string | null>(null);
+  readonly $filter = this.facade.$filter;
+  readonly $tagItems = this.facade.$tagItems;
+  readonly $bookmarkItems = this.facade.$bookmarkItems;
+  readonly $pagination = this.facade.$pagination;
+  readonly $visibility = this.facade.$visibility;
+
   ngOnInit(): void {
-    this.facade.enter();
-    this.connect();
+    this.initializer();
     this.syncToUrl();
-    this.formValueEffect();
   }
 
   onAdd(): void {
@@ -130,7 +135,7 @@ export class BookmarkManagementComponent implements OnInit {
   }
 
   onEdit(id: string): void {
-    const data = this.facade.$items().find(b => b.id === id);
+    const data = this.facade.$bookmarkItems().find(b => b.id === id);
 
     if (data) {
       const result$: Observable<UpdateBookmarkDto> = this._dialogService
@@ -163,43 +168,35 @@ export class BookmarkManagementComponent implements OnInit {
     this.facade.delete(id$);
   }
 
-  private connect() {
-    this.facade.setCollectionId(this.$collectionId());
+  onFilterChange(filter: BookmarkFilterVM): void {
+    this.facade.setFilter(filter);
+  }
 
-    this.facade.setFilter({
-      keyword: this.$keyword(),
-    });
+  onNextPage(): void {
+    this.facade.nextPage();
+  }
 
-    this.facade.setPagination({
-      pageSize: this.$pageSize() as number,
-      currentPage: this.$currentPage() as number,
-    });
+  onPreviousPage(): void {
+    this.facade.previousPage();
+  }
+
+  onVisibilityToggle(key: keyof BookmarkVisibility): void {
+    this.facade.visibilityToggle(key);
+  }
+
+  private initializer() {
+    this.facade.enter({ keyword: this.$keyword(), tags: this.$tags() });
   }
 
   private syncToUrl() {
     this._autoEffect(() => {
       const filter = this.facade.$filter();
       const pagination = this.facade.$pagination();
-
       this._router.navigate([], {
         relativeTo: this._route,
-        queryParams: { ...filter, ...pagination },
+        queryParams: { ...filter, tags: JSON.stringify(filter.tags), ...pagination },
         queryParamsHandling: "merge",
       });
     });
-  }
-
-  private formValueEffect() {
-    this.searchControl.setValue(this.$keyword());
-    this.searchControl.valueChanges
-      .pipe(
-        distinctUntilChanged(),
-        debounceTime(200),
-        tap(keyword => {
-          this.facade.setFilter({ keyword });
-        }),
-        takeUntilDestroyed(this._destroyRef)
-      )
-      .subscribe();
   }
 }

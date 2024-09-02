@@ -1,24 +1,28 @@
 import { Signal } from "@angular/core";
 import { ResponseDto, ServerSideError } from "@core/http";
+import {
+  MethodsDictionary,
+  SignalsDictionary,
+} from "@ngrx/signals/src/signal-store-models";
 import { Observable } from "rxjs";
 import { Status } from "../status/status-name.type";
 
-export type ApiState<T> = {
+export interface ApiState<T> {
   status: Status;
   data: T;
-};
+}
 
-export type ApiSignals<T> = {
+export interface ApiSignals<T> extends SignalsDictionary {
   $loading: Signal<boolean>;
   $data: Signal<T>;
   $error: Signal<ServerSideError | null>;
-};
+}
 
-export type ApiMethods<TData> = {
+export interface ApiMethods<TData> extends MethodsDictionary {
   $apiHandle: <R extends ResponseDto<TData>>(
     source$: Observable<R>
   ) => Observable<ApiState<TData>>;
-};
+}
 
 export type NamedApiState<T, Name extends string> = {
   [K in Name as `${K}ApiState`]: ApiState<T>;

@@ -1,7 +1,7 @@
 import { Signal, computed } from "@angular/core";
 import {
   SignalStoreFeature,
-  StateSignal,
+  WritableStateSource,
   patchState,
   signalStoreFeature,
   withComputed,
@@ -9,11 +9,11 @@ import {
   withState,
 } from "@ngrx/signals";
 import { EmptyFeatureResult } from "@ngrx/signals/src/signal-store-models";
-import { PaginationDto } from "@shared/models";
 import {
   NamedPaginationMethods,
   NamedPaginationSignals,
   NamedPaginationState,
+  PaginationMeta,
   PaginationMethods,
   PaginationSignals,
   PaginationState,
@@ -40,13 +40,17 @@ function getPaginationStateKeys(config?: { name: string }) {
   };
 }
 
-const initialState: PaginationDto = { currentPage: CURRENT_PAGE, pageSize: PAGE_SIZE };
+const initialState: PaginationMeta = {
+  currentPage: CURRENT_PAGE,
+  pageSize: PAGE_SIZE,
+  totalCount: 0,
+};
 
 export function withPagination(): SignalStoreFeature<
   EmptyFeatureResult,
   {
     state: PaginationState;
-    signals: PaginationSignals;
+    computed: PaginationSignals;
     methods: PaginationMethods;
   }
 >;
@@ -56,7 +60,7 @@ export function withPagination<Name extends string>(config: {
   EmptyFeatureResult,
   {
     state: NamedPaginationState<Name>;
-    signals: NamedPaginationSignals<Name>;
+    computed: NamedPaginationSignals<Name>;
     methods: NamedPaginationMethods<Name>;
   }
 >;
@@ -77,42 +81,70 @@ export function withPagination<Name extends string>(config?: {
 
   return signalStoreFeature(
     withState({
-      [currentPageKey]: initialState.currentPage,
-      [pageSizeKey]: initialState.pageSize,
+      [paginationKey]: initialState,
     }),
     withComputed((store: Record<string, Signal<unknown>>) => {
-      const $currentPage = store[currentPageKey] as Signal<number>;
-      const $pageSize = store[pageSizeKey] as Signal<number>;
+      const $pagination = store[paginationKey] as Signal<PaginationMeta>;
+
       return {
         ...store,
-        [paginationKey]: computed(() => ({
-          currentPage: $currentPage(),
-          pageSize: $pageSize(),
-        })),
+        [paginationKey]: computed(() => {
+          const pagination = $pagination();
+          const totalPages = Math.round(pagination.totalCount / pagination.pageSize);
+          return {
+            currentPage: pagination.currentPage,
+            pageSize: pagination.pageSize,
+            totalCount: pagination.totalCount,
+            totalPages: totalPages,
+            hasPrevious: pagination.currentPage > 1,
+            hasNext: pagination.currentPage < totalPages,
+          };
+        }),
       };
     }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    withMethods((store: StateSignal<any>) => {
+    withMethods((store: Record<string, Signal<unknown>>) => {
+      const pagination = store[paginationKey] as Signal<PaginationMeta>;
       return {
-        [resetKey]: () =>
-          patchState(store, {
-            [currentPageKey]: initialState.currentPage,
-            [pageSizeKey]: initialState.pageSize,
-          }),
-        [setCurrentPageKey]: (currentPage: number) =>
-          patchState(store, state => ({ ...state, [currentPageKey]: currentPage })),
-        [setPageSizeKey]: (pageSize: number) =>
-          patchState(store, state => ({ ...state, [pageSizeKey]: pageSize })),
-        [nextPageKey]: () =>
-          patchState(store, state => ({
-            ...state,
-            [currentPageKey]: state[currentPageKey] + 1,
-          })),
-        [prevPageKey]: () =>
-          patchState(store, state => ({
-            ...state,
-            [currentPageKey]: state[currentPageKey] - 1,
-          })),
+        [resetKey]: () => {
+          patchState(store as WritableStateSource<object>, {
+            [paginationKey]: initialState,
+          });
+        },
+        [setCurrentPageKey]: (currentPage: number) => {
+          patchState(store as WritableStateSource<object>, {
+            [paginationKey]: {
+              ...pagination(),
+              currentPage: currentPage,
+            },
+          });
+        },
+        [setPageSizeKey]: (pageSize: number) => {
+          patchState(store as WritableStateSource<object>, {
+            [paginationKey]: {
+              ...pagination(),
+              pageSize: pageSize,
+            },
+          });
+        },
+        [nextPageKey]: () => {
+          const currentPage = pagination().currentPage;
+          patchState(store as WritableStateSource<object>, {
+            [paginationKey]: {
+              ...pagination(),
+              currentPage: currentPage + 1,
+            },
+          });
+        },
+        [prevPageKey]: () => {
+          const currentPage = pagination().currentPage;
+          patchState(store as WritableStateSource<object>, {
+            [paginationKey]: {
+              ...pagination(),
+              currentPage: currentPage - 1,
+            },
+          });
+        },
       };
     })
   );

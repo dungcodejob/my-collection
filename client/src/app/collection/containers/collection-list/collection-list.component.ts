@@ -12,6 +12,7 @@ import {
 } from "@ng-icons/lucide";
 import { CollectionDto } from "@shared/models";
 import { RedirectService } from "@shared/services";
+import { injectAutoEffect } from "@shared/utils";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
 import { HlmIconComponent } from "@spartan-ng/ui-icon-helm";
 import { BrnMenuTriggerDirective } from "@spartan-ng/ui-menu-brain";
@@ -65,14 +66,13 @@ const lucideEllipsis = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24
   ],
 })
 export class CollectionListComponent implements OnInit {
+  private readonly _autoEffect = injectAutoEffect();
   private readonly _redirectService = inject(RedirectService);
   private readonly _facade = inject(CollectionFacade);
 
-  $entities = this._facade.$items;
-  $selectedId = this._facade.$selectedId;
-  ngOnInit(): void {
-    this._facade.enter();
-  }
+  readonly $entities = this._facade.$items;
+  readonly $selectedId = this._facade.$selectedId;
+  ngOnInit(): void {}
 
   onCreate(): void {
     this._facade.create();

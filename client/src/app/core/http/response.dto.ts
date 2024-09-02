@@ -12,13 +12,21 @@ export type ResponseDto<T = unknown> = Readonly<{
   method: string;
 }>;
 
-export type SingleResult<T> = { data: T };
+export interface SingleResult<T> {
+  data: T;
+}
 export type SingleResponseDto<T> = ResponseDto<SingleResult<T>>;
 
-export type ListResult<T> = { items: T[]; meta: { count: number } };
+export interface ListResult<T> {
+  items: T[];
+  meta: { count: number };
+}
 export type ListResponseDto<T> = ResponseDto<ListResult<T>>;
 
-export type PaginationResult<T> = { items: T[]; meta: { pagination: PaginationMetaDto } };
+export interface PaginationResult<T> {
+  items: T[];
+  meta: { pagination: PaginationMetaDto };
+}
 export type PaginationResponseDto<T> = ResponseDto<PaginationResult<T>>;
 
 export interface ErrorResponseDto extends ResponseDto {}

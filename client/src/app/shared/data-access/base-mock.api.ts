@@ -13,8 +13,6 @@ import { LocalStorageService } from "@shared/services";
 export class BaseMockApi {
   private readonly _localStorage = inject(LocalStorageService);
 
-  constructor() {}
-
   protected _createBaseDto(): BaseDto {
     return {
       id: `${new Date().getTime()}`,

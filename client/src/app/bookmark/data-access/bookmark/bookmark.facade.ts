@@ -1,10 +1,10 @@
 import { inject, Injectable, Signal, untracked } from "@angular/core";
 import { CollectionFacade } from "@collection/data-access";
-import { RootFacade } from "@shared/data-access";
-import { BookmarkFilterDto, PaginationDto } from "@shared/models";
+import { RootFacade, TagFacade } from "@shared/data-access";
+import { BookmarkFilterVM } from "@shared/models";
 import { injectAutoEffect } from "@shared/utils";
 import { Observable } from "rxjs";
-import { BookmarkStore } from "./bookmark.store";
+import { BookmarkStore, BookmarkViewKey } from "./bookmark.store";
 
 type RxMethodInput<Input> = Input | Observable<Input> | Signal<Input>;
 @Injectable()
@@ -12,43 +12,55 @@ export class BookmarkFacade {
   private readonly _autoEffect = injectAutoEffect();
   private readonly _rootFacade = inject(RootFacade);
   private readonly _collectionFacade = inject(CollectionFacade);
+  private readonly _tagFacade = inject(TagFacade);
   private readonly _store = inject(BookmarkStore);
 
+  readonly $collectionId = this._collectionFacade.$selectedId;
   readonly $collection = this._collectionFacade.$selectedEntity;
-  readonly $items = this._store.entities;
+  readonly $bookmarkItems = this._store.entities;
   readonly $loading = this._store.$isListPending;
   readonly $error = this._store.$listError;
   readonly $pagination = this._store.$pagination;
+  readonly $visibility = this._store.visibility;
+
+  readonly $tagItems = this._tagFacade.$items;
 
   readonly $filter = this._store.filter;
 
-  enter() {
+  enter(filter: BookmarkFilterVM) {
     const $itemStatus = this._store.itemStatus;
     this._rootFacade.setStatus($itemStatus);
+
+    const $collectionSelectedId = this._collectionFacade.$selectedId;
+    this._store.setCollectionId($collectionSelectedId);
+    this.setFilter(filter);
 
     this._autoEffect(() => {
       this._store.filter();
       this._store.$pagination();
-
-      console.log(this._store.filter());
+      this._store.collectionId();
 
       untracked(() => this._store.findAll());
     });
   }
 
-  setCollectionId(value: RxMethodInput<string | null>) {
-    this._store.setCollectionId(value);
-  }
-
-  setFilter(value: RxMethodInput<BookmarkFilterDto>) {
+  setFilter(value: RxMethodInput<BookmarkFilterVM>) {
     this._store.setFilter(value);
-  }
-
-  setPagination(pagination: RxMethodInput<PaginationDto>) {
-    this._store.setPagination(pagination);
   }
 
   create = this._store.create;
   edit = this._store.update;
   delete = this._store.delete;
+
+  nextPage() {
+    this._store.nextPage();
+  }
+
+  previousPage() {
+    this._store.prevPage();
+  }
+
+  visibilityToggle(key: BookmarkViewKey) {
+    this._store.visibilityToggle(key);
+  }
 }

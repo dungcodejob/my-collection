@@ -5,7 +5,7 @@ import { EnvConfig } from "./env-config";
 type FactoryFn = () => (config: EnvConfig) => Observable<unknown>;
 
 export const APP_INIT_WITH_CONFIG_ASYNC = new InjectionToken<
-  Readonly<ReturnType<FactoryFn>[]>
+  readonly ReturnType<FactoryFn>[]
 >("APP_INIT_WITH_CONFIG_ASYNC");
 
 type ProviderFn = (fn: FactoryFn) => Provider;

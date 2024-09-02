@@ -1,39 +1,55 @@
 import { Signal } from "@angular/core";
-import { PaginationDto } from "@shared/models";
+import {
+  MethodsDictionary,
+  SignalsDictionary,
+} from "@ngrx/signals/src/signal-store-models";
 
-export type PaginationState = {
-  pageSize: number;
+export interface PaginationMeta {
   currentPage: number;
-};
+  pageSize: number;
+  totalCount: number;
+}
 
-export type PaginationSignals = {
-  $pagination: Signal<PaginationDto>;
-};
+interface PaginationViewAttributes {
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+}
 
-export type PaginationMethods = {
+export type PaginationVM = PaginationMeta & PaginationViewAttributes;
+
+export interface PaginationState {
+  pagination: PaginationMeta;
+}
+
+export interface PaginationSignals extends SignalsDictionary {
+  $pagination: Signal<PaginationVM>;
+}
+
+export interface PaginationMethods extends MethodsDictionary {
   setCurrentPage: (currentPage: number) => void;
   setPageSize: (pageSize: number) => void;
   nextPage: () => void;
   prevPage: () => void;
   paginationReset: () => void;
-};
+}
 
 export type NamedPaginationState<Name extends string> = {
-  [K in Name as `${K}PageSize`]: number;
-} & { [K in Name as `${K}CurrentPage`]: number };
+  [K in Name as `${K}Pagination`]: PaginationMeta;
+};
 
 export type NamedPaginationSignals<Name extends string> = {
-  [K in Name as `$${Capitalize<K>}Pagination`]: Signal<number>;
+  [K in Name as `$${Capitalize<K>}Pagination`]: Signal<PaginationVM>;
 };
 
 export type NamedPaginationMethods<ActionName extends string> = {
-  [K in ActionName as `set${Capitalize<K>}CurrentPage`]: (currentPage: number) => void;
+  [K in ActionName as `set${Capitalize<K>}CurrentPage`]: PaginationMethods["setCurrentPage"];
 } & {
-  [K in ActionName as `set${Capitalize<K>}PageSize`]: (pageSize: number) => void;
+  [K in ActionName as `set${Capitalize<K>}PageSize`]: PaginationMethods["setPageSize"];
 } & {
-  [K in ActionName as `next${Capitalize<K>}Page`]: () => void;
+  [K in ActionName as `next${Capitalize<K>}Page`]: PaginationMethods["nextPage"];
 } & {
-  [K in ActionName as `prev${Capitalize<K>}Page`]: () => void;
+  [K in ActionName as `prev${Capitalize<K>}Page`]: PaginationMethods["prevPage"];
 } & {
-  [K in ActionName as `pagination${Capitalize<K>}Reset`]: () => void;
+  [K in ActionName as `pagination${Capitalize<K>}Reset`]: PaginationMethods["paginationReset"];
 };
