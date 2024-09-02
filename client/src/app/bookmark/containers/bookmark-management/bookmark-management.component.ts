@@ -2,18 +2,19 @@ import { NgFor, NgIf, NgTemplateOutlet } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   OnInit,
   ViewContainerRef,
   inject,
 } from "@angular/core";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BookmarkFilterComponent } from "@bookmark/components/bookmark-filter/bookmark-filter.component";
 import { BookmarkListComponent } from "@bookmark/components/bookmark-list/bookmark-list.component";
+import { BookmarkViewComponent } from "@bookmark/components/bookmark-view/bookmark-view.component";
 import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-detail-dialog/bookmark-detail-dialog.component";
 import {
   BookmarkFacade,
+  BookmarkVisibility,
   provideBookmarkMockApi,
   provideCrawlApi,
 } from "@bookmark/data-access";
@@ -61,6 +62,8 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     HlmButtonDirective,
     BookmarkFilterComponent,
     PaginationComponent,
+    BookmarkFilterComponent,
+    BookmarkViewComponent,
   ],
   providers: [
     // provideBookmarkApi(),
@@ -76,7 +79,6 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
 })
 export class BookmarkManagementComponent implements OnInit {
   private readonly _autoEffect = injectAutoEffect();
-  private readonly _destroyRef = inject(DestroyRef);
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
   private readonly _router = inject(Router);
@@ -108,8 +110,8 @@ export class BookmarkManagementComponent implements OnInit {
   readonly $tagItems = this.facade.$tagItems;
   readonly $bookmarkItems = this.facade.$bookmarkItems;
   readonly $pagination = this.facade.$pagination;
+  readonly $visibility = this.facade.$visibility;
 
-  searchControl = new FormControl<string | null>(null);
   ngOnInit(): void {
     this.initializer();
     this.syncToUrl();
@@ -178,8 +180,11 @@ export class BookmarkManagementComponent implements OnInit {
     this.facade.previousPage();
   }
 
+  onVisibilityToggle(key: keyof BookmarkVisibility): void {
+    this.facade.visibilityToggle(key);
+  }
+
   private initializer() {
-    console.log({ keyword: this.$keyword(), tags: this.$tags() });
     this.facade.enter({ keyword: this.$keyword(), tags: this.$tags() });
   }
 

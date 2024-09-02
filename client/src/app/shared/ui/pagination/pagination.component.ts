@@ -74,6 +74,7 @@ export class PaginationComponent {
 
   next = output();
   previous = output();
+  pageChange = output<number>();
 
   onNext() {
     this.next.emit();
@@ -81,5 +82,9 @@ export class PaginationComponent {
 
   onPrevious() {
     this.previous.emit();
+  }
+
+  onPageChange(page: number) {
+    this.pageChange.emit(page);
   }
 }

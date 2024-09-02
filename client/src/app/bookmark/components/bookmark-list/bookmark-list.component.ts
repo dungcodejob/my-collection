@@ -1,5 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, input, output } from "@angular/core";
+import { BookmarkVisibility } from "@bookmark/data-access";
 import { lucideTrash2 } from "@ng-icons/lucide";
 import { BookmarkVM } from "@shared/models";
 import { HlmButtonDirective } from "@spartan-ng/ui-button-helm";
@@ -36,6 +37,7 @@ const lucideEdit = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24"
 })
 export class BookmarkListComponent {
   $items = input.required<BookmarkVM[]>({ alias: "items" });
+  $visibility = input.required<BookmarkVisibility>({ alias: "visibility" });
 
   onSelected = output<BookmarkId>();
   onEdit = output<BookmarkId>();

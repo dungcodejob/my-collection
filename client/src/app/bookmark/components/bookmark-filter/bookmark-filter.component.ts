@@ -62,6 +62,8 @@ export class BookmarkFilterComponent implements OnInit {
   $tags = input<TagVM[]>([], { alias: "tags" });
   $filter = input.required<BookmarkFilterVM>({ alias: "filter" });
 
+  onFilterChange = output<BookmarkFilterVM>();
+
   $isHasFilter = computed(() => {
     const filter = this.$filter();
     return filter.keyword || filter.tags.length > 0;
@@ -75,8 +77,6 @@ export class BookmarkFilterComponent implements OnInit {
       value: item,
     }))
   );
-
-  onFilterChange = output<BookmarkFilterVM>();
 
   ngOnInit(): void {
     this._initForm();

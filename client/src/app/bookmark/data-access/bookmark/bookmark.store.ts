@@ -24,15 +24,27 @@ import {
   BookmarkFilterVM,
   BookmarkVM,
   CreateBookmarkDto,
-  UpdateBookmarkDto
+  UpdateBookmarkDto,
 } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { isNotNil, prefix } from "@shared/utils";
 import { filter, map, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi } from "./bookmark.provider";
+
+export const BookmarkViewOption = {
+  Description: "Description",
+  Tags: "Tags",
+  Info: "Info",
+  Cover: "Cover",
+} as const;
+
+export type BookmarkViewKey = keyof typeof BookmarkViewOption;
+export type BookmarkVisibility = Record<BookmarkViewKey, boolean>;
+
 interface BookmarkState {
   collectionId: string | null;
   filter: BookmarkFilterVM;
+  visibility: BookmarkVisibility;
 }
 
 const initialState: BookmarkState = {
@@ -40,6 +52,12 @@ const initialState: BookmarkState = {
   filter: {
     tags: [],
     keyword: null,
+  },
+  visibility: {
+    [BookmarkViewOption.Description]: true,
+    [BookmarkViewOption.Tags]: true,
+    [BookmarkViewOption.Info]: true,
+    [BookmarkViewOption.Cover]: true,
   },
 };
 
@@ -60,6 +78,15 @@ export const BookmarkStore = signalStore(
           })
         );
       }),
+      visibilityToggle: (key: keyof BookmarkVisibility) => {
+        const visibility = store.visibility();
+        patchState(store, {
+          visibility: {
+            ...visibility,
+            [key]: !visibility[key],
+          },
+        });
+      },
       setFilter: rxMethod<BookmarkFilterVM>(value$ => {
         return value$.pipe(
           tap(value => {

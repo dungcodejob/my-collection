@@ -15,9 +15,14 @@
     </div>
     <nav hlmPagination class="w-fit m-0">
       <ul hlmPaginationContent>
-        <button hlmPaginationItem [disabled]="!$hasPrevious()" (click)="onPrevious()">
-          <hlm-pagination-previous class="h-8" />
-        </button>
+        <li hlmPaginationItem>
+          <button
+            class="w-full h-full"
+            [disabled]="!$hasPrevious()"
+            (click)="onPrevious()">
+            <hlm-pagination-previous class="h-8" />
+          </button>
+        </li>
         @if ($currentPage() > ($maxItemDisplay() + 1) / 2) {
           <li hlmPaginationItem>
             <hlm-pagination-ellipsis class="h-8 w-8" />
@@ -26,13 +31,13 @@
 
         @for (page of $pages(); track $index) {
           <li hlmPaginationItem>
-            <a
+            <button
               hlmPaginationLink
               class="h-8 w-8"
-              link="#"
               [isActive]="$currentPage() === page"
-              >{{ page }}</a
-            >
+              (click)="onPageChange(page)">
+              {{ page }}
+            </button>
           </li>
         }
 
@@ -41,9 +46,11 @@
             <hlm-pagination-ellipsis class="h-8 w-8" />
           </li>
         }
-        <button hlmPaginationItem [disabled]="!$hasNext()" (click)="onNext()">
-          <hlm-pagination-next class="h-8" />
-        </button>
+        <li hlmPaginationItem>
+          <button class="w-full h-full" [disabled]="!$hasNext()" (click)="onNext()">
+            <hlm-pagination-next class="h-8" />
+          </button>
+        </li>
       </ul>
     </nav>
   </div>

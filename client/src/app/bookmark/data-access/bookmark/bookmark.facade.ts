@@ -4,7 +4,7 @@ import { RootFacade, TagFacade } from "@shared/data-access";
 import { BookmarkFilterVM } from "@shared/models";
 import { injectAutoEffect } from "@shared/utils";
 import { Observable } from "rxjs";
-import { BookmarkStore } from "./bookmark.store";
+import { BookmarkStore, BookmarkViewKey } from "./bookmark.store";
 
 type RxMethodInput<Input> = Input | Observable<Input> | Signal<Input>;
 @Injectable()
@@ -21,6 +21,7 @@ export class BookmarkFacade {
   readonly $loading = this._store.$isListPending;
   readonly $error = this._store.$listError;
   readonly $pagination = this._store.$pagination;
+  readonly $visibility = this._store.visibility;
 
   readonly $tagItems = this._tagFacade.$items;
 
@@ -57,5 +58,9 @@ export class BookmarkFacade {
 
   previousPage() {
     this._store.prevPage();
+  }
+
+  visibilityToggle(key: BookmarkViewKey) {
+    this._store.visibilityToggle(key);
   }
 }
