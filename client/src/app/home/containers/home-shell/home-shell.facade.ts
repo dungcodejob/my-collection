@@ -1,17 +1,14 @@
 import { inject, Injectable } from "@angular/core";
-import { CollectionFacade } from "@collection/data-access";
-import { RootFacade, TagFacade } from "@shared/data-access";
+import { AppFacade, CollectionFacade } from "@shared/data-access";
 
 @Injectable()
 export class HomeShellFacade {
   private readonly _collectionFacade = inject(CollectionFacade);
-  private readonly _tagFacade = inject(TagFacade);
-  private readonly _rootFacade = inject(RootFacade);
+  private readonly _rootFacade = inject(AppFacade);
 
   $loading = this._rootFacade.$loading;
 
   enter() {
     this._collectionFacade.enter();
-    this._tagFacade.enter();
   }
 }

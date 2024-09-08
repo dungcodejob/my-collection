@@ -14,7 +14,7 @@ export class ResponseAdapter {
     const base = this._fromBaseDto(dto);
     return {
       ...base,
-      result: { data: adapter.fromDto(dto.result.data) },
+      result: { data: adapter.fromEntityDto(dto.result.data) },
     };
   }
 
@@ -26,7 +26,7 @@ export class ResponseAdapter {
     return {
       ...base,
       result: {
-        items: adapter.fromDto(dto.result.items),
+        items: adapter.fromEntityDto(dto.result.items),
         meta: dto.result.meta,
       },
     };
@@ -40,7 +40,7 @@ export class ResponseAdapter {
     return {
       ...base,
       result: {
-        items: adapter.fromDto(dto.result.items),
+        items: adapter.fromEntityDto(dto.result.items),
         meta: dto.result.meta,
       },
     };

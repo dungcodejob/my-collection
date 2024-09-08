@@ -1,7 +1,6 @@
 import { CdkDrag, CdkDragDrop, CdkDropList } from "@angular/cdk/drag-drop";
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { CollectionFacade } from "@collection/data-access";
 import { provideIcons } from "@ng-icons/core";
 import {
   lucideFilePenLine,
@@ -10,6 +9,7 @@ import {
   lucidePlusCircle,
   lucideTrash2,
 } from "@ng-icons/lucide";
+import { CollectionFacade } from "@shared/data-access";
 import { CollectionDto } from "@shared/models";
 import { RedirectService } from "@shared/services";
 import { injectAutoEffect } from "@shared/utils";
@@ -65,14 +65,13 @@ const lucideEllipsis = `<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24
     }),
   ],
 })
-export class CollectionListComponent implements OnInit {
+export class CollectionListComponent {
   private readonly _autoEffect = injectAutoEffect();
   private readonly _redirectService = inject(RedirectService);
   private readonly _facade = inject(CollectionFacade);
 
-  readonly $entities = this._facade.$items;
+  readonly $entities = this._facade.entities;
   readonly $selectedId = this._facade.$selectedId;
-  ngOnInit(): void {}
 
   onCreate(): void {
     this._facade.create();
@@ -91,6 +90,9 @@ export class CollectionListComponent implements OnInit {
   }
 
   onDrop(event: CdkDragDrop<CollectionDto[]>) {
-    this._facade.move(event.previousIndex, event.currentIndex);
+    this._facade.move({
+      fromIndex: event.previousIndex,
+      toIndex: event.currentIndex,
+    });
   }
 }

@@ -4,4 +4,3 @@ export * from "./confirm-dialog/dialog.service";
 
 export * from "./filter-select/filter-select.component";
 export * from "./pagination/pagination.component";
-

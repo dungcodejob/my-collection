@@ -1,19 +1,31 @@
-import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+  withState,
+} from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
+import { debouncedSignal } from "@shared/utils";
 import { tap } from "rxjs";
 import { Status } from "./status/status-name.type";
 import { withStatus } from "./status/status.feature";
 
-interface RootState {
+interface AppState {
   loading: boolean;
 }
 
-const initialState: RootState = { loading: false };
+const initialState: AppState = { loading: false };
 
-export const RootStore = signalStore(
+export const AppFacade = signalStore(
   { providedIn: "root" },
-  withState<RootState>(initialState),
+  withState<AppState>(initialState),
   withStatus(),
+  withComputed(store => {
+    return {
+      $loading: debouncedSignal(store.$isPending),
+    };
+  }),
   withMethods(store => {
     return {
       setStatus: rxMethod<Status>(value$ => {

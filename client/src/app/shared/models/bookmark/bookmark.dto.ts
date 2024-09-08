@@ -8,7 +8,7 @@ export interface BookmarkDto extends BaseDto, MetadataDto {
   tags: TagDto[];
 }
 
-export type BookmarkRequiredProps = Omit<BookmarkDto, keyof BaseDto | "tags">;
+type BookmarkRequiredProps = Omit<BookmarkDto, keyof BaseDto | "tags">;
 export type CreateBookmarkDto = BookmarkRequiredProps & {
   tagIds: string[];
 };

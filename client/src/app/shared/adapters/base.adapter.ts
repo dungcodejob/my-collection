@@ -2,11 +2,11 @@ import { BaseDto, BaseVM } from "@shared/models";
 import { ViewModelAdapter } from "./view-model.adapter";
 
 export class BaseAdapter implements ViewModelAdapter<BaseDto, BaseVM> {
-  fromDto(dto: BaseDto): BaseVM;
-  fromDto(dto: BaseDto[]): BaseVM[];
-  fromDto(dto: BaseDto | BaseDto[]): BaseVM | BaseVM[] {
+  fromEntityDto(dto: BaseDto): BaseVM;
+  fromEntityDto(dto: BaseDto[]): BaseVM[];
+  fromEntityDto(dto: BaseDto | BaseDto[]): BaseVM | BaseVM[] {
     if (Array.isArray(dto)) {
-      return dto.map(item => this.fromDto(item));
+      return dto.map(item => this.fromEntityDto(item));
     }
 
     return {
@@ -16,11 +16,11 @@ export class BaseAdapter implements ViewModelAdapter<BaseDto, BaseVM> {
     };
   }
 
-  toDto(vm: BaseVM): BaseDto;
-  toDto(vm: BaseVM[]): BaseDto[];
-  toDto(vm: BaseVM | BaseVM[]): BaseDto | BaseDto[] {
+  toEntityDto(vm: BaseVM): BaseDto;
+  toEntityDto(vm: BaseVM[]): BaseDto[];
+  toEntityDto(vm: BaseVM | BaseVM[]): BaseDto | BaseDto[] {
     if (Array.isArray(vm)) {
-      return vm.map(item => this.toDto(item));
+      return vm.map(item => this.toEntityDto(item));
     }
 
     return {

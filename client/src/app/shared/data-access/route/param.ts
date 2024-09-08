@@ -1,11 +1,12 @@
 import { Signal } from "@angular/core";
 import { ActivatedRouteSnapshot } from "@angular/router";
 
-export type ParamsConfig = Record<string, (param: string | undefined) => unknown>;
+type ParamsTransformFn = (param: string | undefined) => unknown;
+export type ParamsConfig = Record<string, ParamsTransformFn>;
 
 export type ParamsComputed<Config extends ParamsConfig> = {
   [Key in keyof Config]: Config[Key] extends infer TransformFn
-    ? TransformFn extends (...args: unknown[]) => unknown
+    ? TransformFn extends ParamsTransformFn
       ? Signal<ReturnType<TransformFn>>
       : never
     : never;

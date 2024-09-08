@@ -4,7 +4,7 @@
     <div class="h-[3.25rem] flex flex-wrap sm:justify-start sm:flex-nowrap">
       <nav class="flex basis-full items-center w-full mx-auto px-4 py-2">
         <div class="flex justify-between items-center w-full">
-          <h4 hlmH4>{{ facade.$collection()?.title }}</h4>
+          <h4 hlmH4>{{ $title() }}</h4>
           <button hlmBtn size="sm" class="text-nowrap gap-2" (click)="onAdd()">
             <hlm-icon size="sm" name="lucideCirclePlus"></hlm-icon>
             <span>Add Bookmark</span>

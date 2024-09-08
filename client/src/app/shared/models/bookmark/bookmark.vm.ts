@@ -12,3 +12,8 @@ export interface BookmarkVM extends BaseVM {
   collectionId: string;
   tags: TagVM[];
 }
+
+export type CreateBookmarkVM = Omit<BookmarkVM, keyof BaseVM>;
+export type UpdateBookmarkVM = Omit<BookmarkVM, keyof BaseVM | "url" | "domain"> & {
+  id: BaseVM["id"];
+};

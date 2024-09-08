@@ -8,8 +8,8 @@ export class BookmarkDetailDialogFacade {
   private readonly _bookmarkDetailDialogStore = inject(BookmarkDetailDialogStore);
   private readonly _tagFacade = inject(TagFacade);
 
-  $tags = this._tagFacade.$items;
-  $tagResult = this._tagFacade.$tagResult;
+  $tags = this._tagFacade.entities;
+  $tagResult = this._tagFacade.result;
   $metadata = this._bookmarkDetailDialogStore.metadata;
   $loading = this._bookmarkDetailDialogStore.$isPending;
 
