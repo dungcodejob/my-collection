@@ -152,3 +152,36 @@
 [NX Daemon Server] - 2024-09-08T11:42:52.753Z - Closed a connection. Number of open connections: 0
 [NX Daemon Server] - 2024-09-08T11:42:52.753Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
 [NX Daemon Server] - 2024-09-08T11:42:52.753Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-08T16:12:50.470Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-08T16:12:50.480Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-08T16:12:50.482Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T16:12:50.484Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-09-08T16:12:50.486Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T16:12:50.489Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-08T16:12:50.491Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-08T16:12:50.492Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 3.
+[NX Daemon Server] - 2024-09-08T16:12:50.492Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-08T16:12:50.492Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-08T16:12:50.492Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-08T16:12:50.954Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-08T16:12:50.958Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-08T16:12:50.964Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T16:12:50.966Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-08T16:12:50.967Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T16:12:50.969Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-08T16:12:50.970Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-08T16:12:50.970Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 1.
+[NX Daemon Server] - 2024-09-08T16:12:50.971Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-08T16:12:50.971Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-08T16:12:50.971Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-11T13:21:51.596Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-11T13:21:51.610Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-11T13:21:51.623Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-11T13:21:51.625Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-09-11T13:21:51.632Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-11T13:21:51.639Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-11T13:21:51.647Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-11T13:21:51.648Z - Handled FORCE_SHUTDOWN. Handling time: 1. Response time: 9.
+[NX Daemon Server] - 2024-09-11T13:21:51.648Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-11T13:21:51.649Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-11T13:21:51.651Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)

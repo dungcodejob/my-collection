@@ -7,6 +7,7 @@ import {
   BookmarkDto,
   BookmarkQueryDto,
   BookmarkVM,
+  CollectionDto,
   CreateBookmarkDto,
   TagDto,
   UpdateBookmarkDto,
@@ -18,6 +19,7 @@ import { BookmarkApi } from "./bookmark.api";
 export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
   private _bookmarkEntities: BookmarkDto[] = [];
   private _tagEntities: TagDto[] = [];
+  private _collectionEntities: CollectionDto[] = [];
   private readonly _responseAdapter = new ResponseAdapter();
   private readonly _bookmarkAdapter = new BookmarkAdapter();
 
@@ -27,7 +29,9 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
     this._bookmarkEntities =
       this._loadFromLocal<BookmarkDto[]>(LocalStorageKeys.Bookmark) ?? [];
 
-    this._tagEntities = this._loadFromLocal<BookmarkDto[]>(LocalStorageKeys.Tag) ?? [];
+    this._tagEntities = this._loadFromLocal<TagDto[]>(LocalStorageKeys.Tag) ?? [];
+    this._collectionEntities =
+      this._loadFromLocal<CollectionDto[]>(LocalStorageKeys.Collection) ?? [];
   }
 
   findAll(query: BookmarkQueryDto): Observable<PaginationResponseDto<BookmarkVM>> {
@@ -41,7 +45,7 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
     };
     let result = structuredClone(this._bookmarkEntities);
     if (query.collectionId) {
-      result = result.filter(item => item.collectionId === query.collectionId);
+      result = result.filter(item => item.collection.id === query.collectionId);
     }
 
     const offset = query.pageSize * (query.currentPage - 1);
@@ -57,9 +61,13 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
     const base = this._createBaseDto();
 
     const tags = this._tagEntities.filter(item => body.tagIds.includes(item.id));
+    const collection = this._collectionEntities.find(
+      item => item.id === body.collectionId
+    )!;
     const entity: BookmarkDto = {
       ...body,
       ...base,
+      collection: collection,
       tags,
     };
 

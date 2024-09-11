@@ -42,12 +42,7 @@ import {
   UpdateBookmarkVM,
 } from "@shared/models";
 import { ToastService } from "@shared/services";
-import {
-  injectAutoEffect,
-  injectQueryParams,
-  isNotNil,
-  prefix
-} from "@shared/utils";
+import { injectAutoEffect, injectQueryParams, isNotNil, prefix } from "@shared/utils";
 import { filter, map, Observable, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi } from "./bookmark.provider";
 
@@ -154,6 +149,7 @@ export const BookmarkFacade = signalStore(
           switchMap(bookmarkToCreate => {
             const dto: CreateBookmarkDto = {
               ...bookmarkToCreate,
+              collectionId: bookmarkToCreate.collection.id,
               tagIds: bookmarkToCreate.tags.map(tag => tag.id),
             };
             return bookmarkApi.create(dto).pipe(
