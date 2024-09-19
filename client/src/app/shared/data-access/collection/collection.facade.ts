@@ -20,6 +20,7 @@ import { tapResponse } from "@ngrx/operators";
 import { getMessage, MessageKeys } from "@shared/constants";
 import { PadDialogService } from "@shared/ui";
 import { injectParams, isNotNil, prefix } from "@shared/utils";
+import { plainToInstance } from "class-transformer";
 import {
   catchError,
   EMPTY,
@@ -161,7 +162,10 @@ export const CollectionFacade = signalStore(
             collectionApi.findAll().pipe(
               useAppStatus(),
               tapResponse({
-                next: res => patchState(store, { entities: res.result.items }),
+                next: res => {
+                  const items = plainToInstance(CollectionVM, res.result.items);
+                  patchState(store, { entities: items });
+                },
                 error: err => console.log(err),
               })
             )
@@ -178,7 +182,7 @@ export const CollectionFacade = signalStore(
                   useAppStatus(),
                   tapResponse({
                     next: res => {
-                      const data = res.result.data;
+                      const data = plainToInstance(CollectionVM, res.result.data);
                       patchState(store, addCollection(data));
 
                       const key = res.message ?? MessageKeys.Bookmark.CreateSuccess;
@@ -209,7 +213,7 @@ export const CollectionFacade = signalStore(
                   useAppStatus(),
                   tapResponse({
                     next: res => {
-                      const data = res.result.data;
+                      const data = plainToInstance(CollectionVM, res.result.data);
 
                       patchState(store, state => ({ entities: state.entities }));
                       patchState(store, updateCollection(data.id, data));
@@ -296,8 +300,10 @@ export const CollectionFacade = signalStore(
             return collectionApi.move(entity.id, { prevPosition, nextPosition }).pipe(
               prefix(() => patchState(store, moveCollection(fromIndex, toIndex))),
               tap({
-                next: res =>
-                  patchState(store, updateCollection(entity.id, res.result.data)),
+                next: res => {
+                  const data = plainToInstance(CollectionVM, res.result.data);
+                  patchState(store, updateCollection(entity.id, data));
+                },
                 error: err => {
                   // TODO: using logger service
                   console.log(err);

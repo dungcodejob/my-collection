@@ -44,6 +44,7 @@
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "ngx-sonner": "^0.3.4",
+    "reflect-metadata": "^0.2.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

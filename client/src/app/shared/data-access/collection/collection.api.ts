@@ -3,7 +3,7 @@ import {
   CollectionDto,
   CreateCollectionDto,
   MoveCollectionDto,
-  UpdateCollectionDto
+  UpdateCollectionDto,
 } from "@shared/models";
 import { Observable } from "rxjs";
 
