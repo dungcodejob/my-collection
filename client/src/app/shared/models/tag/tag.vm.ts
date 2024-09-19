@@ -16,3 +16,18 @@ export class TagVM extends BaseVM {
     this.collectionId = collectionId;
   }
 }
+
+interface OptionAttributes<TIdentity> {
+  identity: TIdentity;
+  label: string;
+}
+
+export class TagOption extends TagVM implements OptionAttributes<string> {
+  get identity(): string {
+    return this.id;
+  }
+
+  get label(): string {
+    return this.title;
+  }
+}

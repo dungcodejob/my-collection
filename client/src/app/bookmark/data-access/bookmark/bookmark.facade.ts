@@ -43,6 +43,7 @@ import {
 } from "@shared/models";
 import { ToastService } from "@shared/services";
 import { injectAutoEffect, injectQueryParams, isNotNil, prefix } from "@shared/utils";
+import { plainToInstance } from "class-transformer";
 import { filter, map, Observable, pipe, switchMap, tap } from "rxjs";
 import { injectBookmarkApi } from "./bookmark.provider";
 
@@ -136,8 +137,10 @@ export const BookmarkFacade = signalStore(
             return bookmarkApi.findAll(dto).pipe(
               prefix(() => patchState(store, setPending())),
               tapResponse({
-                next: res =>
-                  patchState(store, setAllEntities(res.result.items), setFulfilled()),
+                next: res => {
+                  const items = plainToInstance(BookmarkVM, res.result.items);
+                  patchState(store, setAllEntities(items), setFulfilled());
+                },
                 error: (err: Error) => patchState(store, setError(err)),
               })
             );
@@ -156,7 +159,7 @@ export const BookmarkFacade = signalStore(
               useAppStatus(),
               tapResponse({
                 next: res => {
-                  const data = res.result.data;
+                  const data = plainToInstance(BookmarkVM, res.result.data);
                   patchState(store, addEntity(data));
 
                   toastService.success(`Bookmark “${data.title}“ was created`);
@@ -181,8 +184,7 @@ export const BookmarkFacade = signalStore(
               useAppStatus(),
               tapResponse({
                 next: res => {
-                  const data = res.result.data;
-
+                  const data = plainToInstance(BookmarkVM, res.result.data);
                   patchState(store, updateEntity({ id: data.id, changes: data }));
 
                   toastService.success(`Bookmark “${data.title}“ was updated`);

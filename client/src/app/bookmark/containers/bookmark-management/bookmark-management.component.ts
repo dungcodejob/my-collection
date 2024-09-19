@@ -23,7 +23,7 @@ import {
   BookmarkFilterVM,
   CreateBookmarkVM,
   TagVM,
-  UpdateBookmarkVM
+  UpdateBookmarkVM,
 } from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService, PaginationComponent } from "@shared/ui";

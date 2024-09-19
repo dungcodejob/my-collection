@@ -21,6 +21,7 @@ import { ToastService } from "@shared/services";
 import { injectAutoEffect, prefix } from "@shared/utils";
 import { EMPTY, catchError, pipe, switchMap, tap } from "rxjs";
 
+import { plainToInstance } from "class-transformer";
 import { injectTagApi } from "./tag.provider";
 
 interface TagState {
@@ -66,8 +67,10 @@ export const TagFacade = signalStore(
               return tagApi.findAll({ collectionId, ...filter, ...pagination }).pipe(
                 prefix(() => patchState(store, setPending())),
                 tap({
-                  next: res =>
-                    patchState(store, setAllEntities(res.result.items), setFulfilled()),
+                  next: res => {
+                    const items = plainToInstance(TagVM, res.result.items);
+                    patchState(store, setAllEntities(items), setFulfilled());
+                  },
                   error: err => patchState(store, setError(err)),
                 }),
                 catchError(() => EMPTY)
@@ -85,7 +88,7 @@ export const TagFacade = signalStore(
               prefix(() => patchState(store, setPending())),
               tap({
                 next: res => {
-                  const data = res.result.data;
+                  const data = plainToInstance(TagVM, res.result.data);
                   patchState(store, { result: data }, setFulfilled());
                   toastService.success(`Tag “${data.title}“ was created`);
                 },

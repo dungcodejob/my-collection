@@ -1,9 +1,8 @@
 import { HttpClient, HttpContext, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { EnvConfig, OnInitConfig } from "@core/config";
-import { Observable, map, pipe } from "rxjs";
+import { Observable } from "rxjs";
 import { ResponseDto } from "./response.dto";
-import { ServerSideError } from "./server-side.error";
 
 interface HttpOptions {
   headers?: HttpHeaders | Record<string, string | string[]>;
@@ -34,40 +33,35 @@ export class HttpService implements OnInitConfig {
     this.baseUrl = config.baseUrl;
   }
 
-  get<T>(url: string, options?: Partial<HttpOptions>): Observable<ResponseDto<T>> {
+  get<T extends ResponseDto>(url: string, options?: Partial<HttpOptions>): Observable<T> {
     const mergedOptions = this._mergeOptions(options);
-    return this.http
-      .get<ResponseDto<T>>(this.baseUrl + url, mergedOptions)
-      .pipe(this._handleResponse());
+    return this.http.get<T>(this.baseUrl + url, mergedOptions);
   }
 
-  put<T, K = unknown>(
+  put<T extends ResponseDto, K = unknown>(
     url: string,
     body: K,
     options?: Partial<HttpOptions>
-  ): Observable<ResponseDto<T>> {
+  ): Observable<T> {
     const mergedOptions = this._mergeOptions(options);
-    return this.http
-      .put<ResponseDto<T>>(this.baseUrl + url, body, mergedOptions)
-      .pipe(this._handleResponse());
+    return this.http.put<T>(this.baseUrl + url, body, mergedOptions);
   }
 
-  post<T, K = unknown>(
+  post<T extends ResponseDto, K = unknown>(
     url: string,
     body: K,
     options?: Partial<HttpOptions>
-  ): Observable<ResponseDto<T>> {
+  ): Observable<T> {
     const mergedOptions = this._mergeOptions(options);
-    return this.http
-      .post<ResponseDto<T>>(this.baseUrl + url, body, mergedOptions)
-      .pipe(this._handleResponse());
+    return this.http.post<T>(this.baseUrl + url, body, mergedOptions);
   }
 
-  delete<T>(url: string, options?: Partial<HttpOptions>): Observable<ResponseDto<T>> {
+  delete<T extends ResponseDto>(
+    url: string,
+    options?: Partial<HttpOptions>
+  ): Observable<T> {
     const mergedOptions = this._mergeOptions(options);
-    return this.http
-      .delete<ResponseDto<T>>(this.baseUrl + url, mergedOptions)
-      .pipe(this._handleResponse());
+    return this.http.delete<T>(this.baseUrl + url, mergedOptions);
   }
 
   private _mergeOptions(options?: HttpOptions) {
@@ -75,17 +69,5 @@ export class HttpService implements OnInitConfig {
       ...this.options,
       ...options,
     };
-  }
-
-  private _handleResponse<T>() {
-    return pipe(
-      map((res: ResponseDto<T>) => {
-        if (res.success) {
-          return res;
-        } else {
-          throw new ServerSideError(res.message);
-        }
-      })
-    );
   }
 }
