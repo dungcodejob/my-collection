@@ -6,10 +6,9 @@ import { I18nService } from "./i18n.service";
 
 @Injectable({ providedIn: "root" })
 export class TranslocoHttpLoader implements TranslocoLoader {
-  private http = inject(HttpClient);
-
+  private _http = inject(HttpClient);
   getTranslation(lang: string) {
-    return this.http.get<Translation>(`/assets/i18n/${lang}.json`);
+    return this._http.get<Translation>(`/assets/i18n/${lang}.json`);
   }
 }
 

@@ -7,10 +7,12 @@ import { Logger } from "./logger";
 
 export class LocalLogger implements Logger {
   log(entry: LogEntry): Observable<boolean> {
+    // eslint-disable-next-line no-console
     console.log(entry.buildLogMessage(), ...entry.extras);
     return of(true);
   }
   clear(): Observable<boolean> {
+    // eslint-disable-next-line no-console
     console.clear();
     return of(true);
   }

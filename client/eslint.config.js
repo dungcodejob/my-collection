@@ -18,6 +18,31 @@ module.exports = tsEslint.config(
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "property",
+          modifiers: ["private"],
+          format: ["camelCase"],
+          leadingUnderscore: "require",
+        },
+        {
+          selector: "typeLike",
+          format: ["PascalCase"],
+        },
+        {
+          selector: "class",
+          format: ["PascalCase"],
+        },
+        // {
+        //   selector: "variable",
+        //   format: ["camelCase"],
+        //   modifiers: ["const"],
+        //   leadingUnderscore: "forbid",
+        //   trailingUnderscore: "forbid",
+        // },
+      ],
+
       // "@angular-eslint/directive-selector": [
       //   "error",
       //   {
@@ -26,6 +51,7 @@ module.exports = tsEslint.config(
       //     style: "camelCase",
       //   },
       // ],
+      "no-console": ["error", { allow: ["warn", "error"] }],
       "@angular-eslint/component-selector": [
         "error",
         {

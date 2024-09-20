@@ -16,6 +16,7 @@ import { AppFacade, setPending, withStatus } from "@shared/data-access";
 import { CollectionVM, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 
+import { LogService } from "@core/log";
 import { tapResponse } from "@ngrx/operators";
 import { getMessage, MessageKeys } from "@shared/constants";
 import { PadDialogService } from "@shared/ui";
@@ -133,6 +134,7 @@ export const CollectionFacade = signalStore(
     const dialogService = inject(PadDialogService);
     const toastService = inject(ToastService);
     const appFacade = inject(AppFacade);
+    const logService = inject(LogService);
 
     const useAppStatus = <T>() => {
       return (source$: Observable<T>) =>
@@ -166,7 +168,7 @@ export const CollectionFacade = signalStore(
                   const items = plainToInstance(CollectionVM, res.result.items);
                   patchState(store, { entities: items });
                 },
-                error: err => console.log(err),
+                error: err => logService.error("CollectionFacade.findAll", err),
               })
             )
           )
@@ -268,7 +270,7 @@ export const CollectionFacade = signalStore(
                           }
                         }
                         // TODO: using logger service
-                        console.log(err);
+                        logService.error("CollectionFacade.delete", err);
                         toastService.error(message);
                       },
                     })
@@ -306,7 +308,7 @@ export const CollectionFacade = signalStore(
                 },
                 error: err => {
                   // TODO: using logger service
-                  console.log(err);
+                  logService.error("CollectionFacade.move", err);
                   patchState(store, moveCollection(toIndex, fromIndex));
                 },
               }),

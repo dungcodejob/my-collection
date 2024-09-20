@@ -14,8 +14,11 @@ export function LogObservable(): PropertyDecorator {
           tap(res => {
             const isArrayOfObjects = Array.isArray(res) && typeof res[0] === "object";
             const logType = isArrayOfObjects ? "table" : "log";
+            // eslint-disable-next-line no-console
             console.groupCollapsed(propertyKey);
+            // eslint-disable-next-line no-console
             console[logType](res);
+            // eslint-disable-next-line no-console
             console.groupEnd();
           })
         );

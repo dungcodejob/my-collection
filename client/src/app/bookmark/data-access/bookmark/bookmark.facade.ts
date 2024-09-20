@@ -262,7 +262,7 @@ export const BookmarkFacade = signalStore(
         autoEffect(() => {
           const pagination = store.$pagination();
           const filter = store.filter();
-          console.log(filter);
+
           router.navigate([], {
             relativeTo: route,
             queryParams: { ...pagination, ...filter, tags: JSON.stringify(filter.tags) },

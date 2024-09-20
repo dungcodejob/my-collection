@@ -65,8 +65,6 @@ export class PaginationComponent {
       endPage = totalPages;
     }
 
-    console.log(startPage, endPage);
-
     return Array.from({ length: endPage - startPage + 1 }, (_, i) => i + startPage);
   });
 

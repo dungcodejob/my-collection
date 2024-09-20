@@ -21,6 +21,7 @@ import { ToastService } from "@shared/services";
 import { injectAutoEffect, prefix } from "@shared/utils";
 import { EMPTY, catchError, pipe, switchMap, tap } from "rxjs";
 
+import { LogService } from "@core/log";
 import { plainToInstance } from "class-transformer";
 import { injectTagApi } from "./tag.provider";
 
@@ -46,7 +47,7 @@ export const TagFacade = signalStore(
   withMethods(store => {
     const tagApi = injectTagApi();
     const toastService = inject(ToastService);
-
+    const logService = inject(LogService);
     return {
       reset: () => patchState(store, { result: null }),
       setCollectionId: rxMethod<string | null>(value$ => {
@@ -95,7 +96,8 @@ export const TagFacade = signalStore(
                 error: err => {
                   const message = "Tag could not be created";
                   // TODO: using logger service
-                  console.log(err);
+
+                  logService.error("TagFacade.create", err);
                   patchState(store, setError(err));
                   toastService.error(message);
                 },

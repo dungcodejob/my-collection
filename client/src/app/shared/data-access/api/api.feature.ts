@@ -85,7 +85,7 @@ export function withApiFeature<TData, Name extends string>(config?: {
   name?: Name;
 }) {
   const { apiKey, errorKey, loadingKey, dataKey, handleKey } = getApiStateKeys(config);
-  console.log(apiKey, errorKey, loadingKey, dataKey);
+
   return signalStoreFeature(
     withState({
       [apiKey]: {
