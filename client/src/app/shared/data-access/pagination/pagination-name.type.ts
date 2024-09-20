@@ -32,6 +32,7 @@ export interface PaginationMethods extends MethodsDictionary {
   nextPage: () => void;
   prevPage: () => void;
   paginationReset: () => void;
+  setPagination: (pagination: PaginationMeta) => void;
 }
 
 export type NamedPaginationState<Name extends string> = {
@@ -52,4 +53,6 @@ export type NamedPaginationMethods<ActionName extends string> = {
   [K in ActionName as `prev${Capitalize<K>}Page`]: PaginationMethods["prevPage"];
 } & {
   [K in ActionName as `pagination${Capitalize<K>}Reset`]: PaginationMethods["paginationReset"];
+} & {
+  [K in ActionName as `set${Capitalize<K>}Pagination`]: PaginationMethods["setPagination"];
 };

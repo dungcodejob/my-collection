@@ -1,11 +1,4 @@
-import { inject } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import {
-  ActivatedRoute,
-  ActivatedRouteSnapshot,
-  NavigationEnd,
-  Router,
-} from "@angular/router";
+import { computed, inject } from "@angular/core";
 import { CollectionDetailDialogComponent } from "@collection/components/collection-detail-dialog/collection-detail-dialog.component";
 import { ServerSideError } from "@core/http";
 import {
@@ -13,32 +6,29 @@ import {
   patchState,
   signalStore,
   withComputed,
+  withHooks,
   withMethods,
   withState,
 } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import {
-  getDeepestChildSnapshot,
-  setError,
-  setFulfilled,
-  setPending,
-  withStatus,
-} from "@shared/data-access";
+import { AppFacade, setPending, withStatus } from "@shared/data-access";
 
 import { CollectionVM, CreateCollectionDto, UpdateCollectionDto } from "@shared/models";
 import { ToastService } from "@shared/services";
 
+import { tapResponse } from "@ngrx/operators";
 import { getMessage, MessageKeys } from "@shared/constants";
 import { PadDialogService } from "@shared/ui";
-import { isNotNil, prefix } from "@shared/utils";
+import { injectParams, isNotNil, prefix } from "@shared/utils";
+import { plainToInstance } from "class-transformer";
 import {
   catchError,
   EMPTY,
   filter,
   map,
+  Observable,
   of,
   pipe,
-  startWith,
   switchMap,
   tap,
 } from "rxjs";
@@ -120,33 +110,40 @@ const moveCollection = (
   };
 };
 
-export const CollectionStore = signalStore(
+export const CollectionFacade = signalStore(
   withStatus(),
   withState<CollectionState>(initialState),
-  withComputed(() => {
-    const router = inject(Router);
-    const route = inject(ActivatedRoute);
+  withComputed(store => {
+    const $params = injectParams();
 
-    const getCollectionIdFromSnapshot = (
-      snapshot: ActivatedRouteSnapshot
-    ): string | null => {
-      return getDeepestChildSnapshot(snapshot).params["collectionId"] ?? null;
-    };
-
-    const collectionId$ = router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      map(() => getCollectionIdFromSnapshot(route.snapshot)),
-      startWith(getCollectionIdFromSnapshot(route.snapshot))
-    );
+    const $selectedId = computed(() => $params()["collectionId"] as string);
 
     return {
-      $selectedCollectionId: toSignal(collectionId$, { requireSync: true }),
+      $selectedId,
+      $selectedEntity: computed(() => {
+        const entities = store.entities();
+        const selectedId = $selectedId();
+
+        return entities.find(entity => entity.id === selectedId);
+      }),
     };
   }),
   withMethods(store => {
     const collectionApi = injectCollectionApi();
     const dialogService = inject(PadDialogService);
     const toastService = inject(ToastService);
+    const appFacade = inject(AppFacade);
+
+    const useAppStatus = <T>() => {
+      return (source$: Observable<T>) =>
+        source$.pipe(
+          prefix(() => appFacade.setStatus("pending")),
+          tap({
+            next: () => appFacade.setStatus("fulfilled"),
+            error: error => appFacade.setStatus({ error: error }),
+          })
+        );
+    };
 
     const openDetailDialog = (data: CollectionVM | null) => {
       return dialogService
@@ -161,22 +158,16 @@ export const CollectionStore = signalStore(
     return {
       findAll: rxMethod<void>(
         pipe(
-          tap(() => {
-            patchState(store, setPending());
-          }),
           switchMap(() =>
             collectionApi.findAll().pipe(
-              tap({
+              useAppStatus(),
+              tapResponse({
                 next: res => {
-                  patchState(store, { entities: res.result.items }, setFulfilled());
+                  const items = plainToInstance(CollectionVM, res.result.items);
+                  patchState(store, { entities: items });
                 },
-                error: err => {
-                  // TODO: using logger service
-                  console.log(err);
-                  patchState(store, setError(err));
-                },
-              }),
-              catchError(() => EMPTY)
+                error: err => console.log(err),
+              })
             )
           )
         )
@@ -188,23 +179,23 @@ export const CollectionStore = signalStore(
               tap(() => patchState(store, setPending())),
               switchMap((result: CreateCollectionDto) =>
                 collectionApi.create(result).pipe(
-                  prefix(() => patchState(store, setPending())),
-                  tap({
+                  useAppStatus(),
+                  tapResponse({
                     next: res => {
-                      const data = res.result.data;
-                      patchState(store, addCollection(data), setFulfilled());
+                      const data = plainToInstance(CollectionVM, res.result.data);
+                      patchState(store, addCollection(data));
 
                       const key = res.message ?? MessageKeys.Bookmark.CreateSuccess;
                       const message = getMessage(key);
-                      toastService.success(message, { params: [data.title] });
+                      toastService.success(message, {
+                        params: [data.title],
+                      });
                     },
-                    error: err => {
+                    error: () => {
                       const message = "Collection could not be created";
-                      patchState(store, setError(err));
                       toastService.error(message);
                     },
-                  }),
-                  catchError(() => EMPTY)
+                  })
                 )
               )
             )
@@ -219,13 +210,13 @@ export const CollectionStore = signalStore(
             openDetailDialog(data).pipe(
               switchMap((result: UpdateCollectionDto) =>
                 collectionApi.update(data.id, result).pipe(
-                  prefix(() => patchState(store, setPending())),
-                  tap({
+                  useAppStatus(),
+                  tapResponse({
                     next: res => {
-                      const data = res.result.data;
+                      const data = plainToInstance(CollectionVM, res.result.data);
 
                       patchState(store, state => ({ entities: state.entities }));
-                      patchState(store, updateCollection(data.id, data), setFulfilled());
+                      patchState(store, updateCollection(data.id, data));
 
                       const key = res.message ?? MessageKeys.Bookmark.CreateSuccess;
                       const message = getMessage(key);
@@ -237,11 +228,8 @@ export const CollectionStore = signalStore(
                         const message = getMessage(key);
                         toastService.error(message);
                       }
-
-                      patchState(store, setError(err));
                     },
-                  }),
-                  catchError(() => EMPTY)
+                  })
                 )
               )
             )
@@ -261,10 +249,10 @@ export const CollectionStore = signalStore(
               .pipe(
                 switchMap(() =>
                   collectionApi.delete(data.id).pipe(
-                    prefix(() => patchState(store, setPending())),
-                    tap({
+                    useAppStatus(),
+                    tapResponse({
                       next: () => {
-                        patchState(store, deleteCollection(data.id), setFulfilled());
+                        patchState(store, deleteCollection(data.id));
                         toastService.success(`Collection “${data.title}“ was deleted`);
                       },
                       error: err => {
@@ -281,11 +269,9 @@ export const CollectionStore = signalStore(
                         }
                         // TODO: using logger service
                         console.log(err);
-                        patchState(store, setError(err));
                         toastService.error(message);
                       },
-                    }),
-                    catchError(() => EMPTY)
+                    })
                   )
                 )
               )
@@ -314,8 +300,10 @@ export const CollectionStore = signalStore(
             return collectionApi.move(entity.id, { prevPosition, nextPosition }).pipe(
               prefix(() => patchState(store, moveCollection(fromIndex, toIndex))),
               tap({
-                next: res =>
-                  patchState(store, updateCollection(entity.id, res.result.data)),
+                next: res => {
+                  const data = plainToInstance(CollectionVM, res.result.data);
+                  patchState(store, updateCollection(entity.id, data));
+                },
                 error: err => {
                   // TODO: using logger service
                   console.log(err);
@@ -327,6 +315,13 @@ export const CollectionStore = signalStore(
           })
         )
       ),
+    };
+  }),
+  withHooks(store => {
+    return {
+      onInit: () => {
+        store.findAll();
+      },
     };
   })
 );

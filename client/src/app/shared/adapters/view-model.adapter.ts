@@ -1,9 +1,9 @@
 export interface ViewModelAdapter<TDto, TViewModel> {
-  fromDto(dto: TDto): TViewModel;
-  fromDto(dto: TDto[]): TViewModel[];
-  fromDto(dto: TDto | TDto[]): TViewModel | TViewModel[];
+  fromEntityDto(dto: TDto): TViewModel;
+  fromEntityDto(dto: TDto[]): TViewModel[];
+  fromEntityDto(dto: TDto | TDto[]): TViewModel | TViewModel[];
 
-  toDto(vm: TViewModel): TDto;
-  toDto(vm: TViewModel[]): TDto[];
-  toDto(vm: TViewModel | TViewModel[]): TDto | TDto[];
+  toEntityDto(vm: TViewModel): TDto;
+  toEntityDto(vm: TViewModel[]): TDto[];
+  toEntityDto(vm: TViewModel | TViewModel[]): TDto | TDto[];
 }

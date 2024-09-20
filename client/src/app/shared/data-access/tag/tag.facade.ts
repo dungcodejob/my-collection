@@ -1,33 +1,126 @@
-import { Injectable, inject, untracked } from "@angular/core";
-import { CollectionFacade } from "@collection/data-access";
-import { injectAutoEffect } from "@shared/utils";
-import { TagStore } from "./tag.store";
+import { inject, untracked } from "@angular/core";
+import {
+  patchState,
+  signalStore,
+  withHooks,
+  withMethods,
+  withState,
+} from "@ngrx/signals";
+import { setAllEntities, withEntities } from "@ngrx/signals/entities";
+import { rxMethod } from "@ngrx/signals/rxjs-interop";
+import {
+  CollectionFacade,
+  setError,
+  setFulfilled,
+  setPending,
+  withPagination,
+  withStatus,
+} from "@shared/data-access";
+import { CreateTagDto, TagFilterDto, TagVM } from "@shared/models";
+import { ToastService } from "@shared/services";
+import { injectAutoEffect, prefix } from "@shared/utils";
+import { EMPTY, catchError, pipe, switchMap, tap } from "rxjs";
 
-@Injectable()
-export class TagFacade {
-  private readonly _autoEffect = injectAutoEffect();
-  private readonly _store = inject(TagStore);
-  private readonly _collectionFacade = inject(CollectionFacade);
+import { plainToInstance } from "class-transformer";
+import { injectTagApi } from "./tag.provider";
 
-  $items = this._store.entities;
-  $tagResult = this._store.result;
-  $filter = this._store.filter;
-
-  enter() {
-    const $collectionSelectedId = this._collectionFacade.$selectedId;
-    this._store.setCollectionId($collectionSelectedId);
-
-    this._autoEffect(() => {
-      this._store.filter();
-      this._store.$pagination();
-      this._store.collectionId();
-
-      untracked(() => this._store.load());
-    });
-  }
-
-  load = this._store.load;
-  setFilter = this._store.setFilter;
-  create = this._store.create;
-  reset = this._store.reset;
+interface TagState {
+  collectionId: string | null;
+  filter: TagFilterDto;
+  result: TagVM | null;
 }
+
+const initialState: TagState = {
+  collectionId: null,
+  filter: {
+    keyword: null,
+  },
+  result: null,
+};
+
+export const TagFacade = signalStore(
+  withState<TagState>(initialState),
+  withEntities<TagVM>(),
+  withStatus(),
+  withPagination(),
+  withMethods(store => {
+    const tagApi = injectTagApi();
+    const toastService = inject(ToastService);
+
+    return {
+      reset: () => patchState(store, { result: null }),
+      setCollectionId: rxMethod<string | null>(value$ => {
+        return value$.pipe(
+          tap(value => {
+            patchState(store, { collectionId: value });
+          })
+        );
+      }),
+      setFilter: (value: TagFilterDto) => patchState(store, { filter: value }),
+      load: rxMethod<void>(
+        pipe(
+          switchMap(() => {
+            const filter = store.filter();
+            const pagination = store.$pagination();
+            const collectionId = store.collectionId();
+            if (filter) {
+              return tagApi.findAll({ collectionId, ...filter, ...pagination }).pipe(
+                prefix(() => patchState(store, setPending())),
+                tap({
+                  next: res => {
+                    const items = plainToInstance(TagVM, res.result.items);
+                    patchState(store, setAllEntities(items), setFulfilled());
+                  },
+                  error: err => patchState(store, setError(err)),
+                }),
+                catchError(() => EMPTY)
+              );
+            }
+
+            return EMPTY;
+          })
+        )
+      ),
+      create: rxMethod<CreateTagDto>(
+        pipe(
+          switchMap(body =>
+            tagApi.create(body).pipe(
+              prefix(() => patchState(store, setPending())),
+              tap({
+                next: res => {
+                  const data = plainToInstance(TagVM, res.result.data);
+                  patchState(store, { result: data }, setFulfilled());
+                  toastService.success(`Tag “${data.title}“ was created`);
+                },
+                error: err => {
+                  const message = "Tag could not be created";
+                  // TODO: using logger service
+                  console.log(err);
+                  patchState(store, setError(err));
+                  toastService.error(message);
+                },
+              }),
+              catchError(() => EMPTY)
+            )
+          )
+        )
+      ),
+    };
+  }),
+  withHooks({
+    onInit: store => {
+      const collectionFacade = inject(CollectionFacade);
+      const autoEffect = injectAutoEffect();
+
+      store.setCollectionId(collectionFacade.$selectedId);
+
+      autoEffect(() => {
+        store.filter();
+        store.$pagination();
+        store.collectionId();
+
+        untracked(() => store.load());
+      });
+    },
+  })
+);

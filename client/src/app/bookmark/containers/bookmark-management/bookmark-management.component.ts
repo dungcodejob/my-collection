@@ -2,7 +2,6 @@ import { NgFor, NgIf, NgTemplateOutlet } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
   ViewContainerRef,
   inject,
 } from "@angular/core";
@@ -15,15 +14,16 @@ import { BookmarkDetailDialogComponent } from "@bookmark/containers/bookmark-det
 import {
   BookmarkFacade,
   BookmarkVisibility,
+  provideBookmark,
   provideBookmarkMockApi,
   provideCrawlApi,
 } from "@bookmark/data-access";
 import { lucideRotateCw } from "@ng-icons/lucide";
 import {
   BookmarkFilterVM,
-  CreateBookmarkDto,
+  CreateBookmarkVM,
   TagVM,
-  UpdateBookmarkDto,
+  UpdateBookmarkVM,
 } from "@shared/models";
 import { FunctionPipe } from "@shared/pipes";
 import { PadDialogService, PaginationComponent } from "@shared/ui";
@@ -66,27 +66,24 @@ const lucideCirclePlus = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2
     BookmarkViewComponent,
   ],
   providers: [
-    // provideBookmarkApi(),
     provideBookmarkMockApi(),
     provideCrawlApi(),
-    // provideTagApi(),
-
+    provideBookmark(),
     provideIcons({
       lucideRotateCw,
       lucideCirclePlus,
     }),
   ],
 })
-export class BookmarkManagementComponent implements OnInit {
+export class BookmarkManagementComponent {
   private readonly _autoEffect = injectAutoEffect();
   private readonly _vcr = inject(ViewContainerRef);
   private readonly _dialogService = inject(PadDialogService);
   private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
 
-  protected readonly facade = inject(BookmarkFacade);
+  private readonly _facade = inject(BookmarkFacade);
 
-  readonly $collectionId = this.facade.$collectionId;
   readonly $keyword = injectQueryParams("keyword");
   readonly $tags = injectQueryParams<TagVM[]>(params => {
     const tags = params["tags"];
@@ -106,44 +103,42 @@ export class BookmarkManagementComponent implements OnInit {
     transform: v => Number(v),
   });
 
-  readonly $filter = this.facade.$filter;
-  readonly $tagItems = this.facade.$tagItems;
-  readonly $bookmarkItems = this.facade.$bookmarkItems;
-  readonly $pagination = this.facade.$pagination;
-  readonly $visibility = this.facade.$visibility;
-
-  ngOnInit(): void {
-    this.initializer();
-    this.syncToUrl();
-  }
+  readonly $filter = this._facade.filter;
+  readonly $tagItems = this._facade.$tagItems;
+  readonly $bookmarkItems = this._facade.entities;
+  readonly $pagination = this._facade.$pagination;
+  readonly $visibility = this._facade.visibility;
+  readonly $title = this._facade.$collectionSelectedTitle;
 
   onAdd(): void {
-    const result$: Observable<CreateBookmarkDto> = this._dialogService
+    const collectionId = this._facade.$collectionSelectedId();
+    const result$: Observable<CreateBookmarkVM> = this._dialogService
       .open(BookmarkDetailDialogComponent, {
         closeOnBackdropClick: false,
         contentClass: "max-w-[40rem]",
         vcr: this._vcr,
-        context: { collectionId: this.$collectionId() },
+        context: { collectionId },
       })
       .closed$.pipe(
         take(1),
         filter(isNotFalsy),
-        map(data => ({ ...data, collectionId: this.$collectionId() }))
+        map(data => ({ ...data, collectionId }))
       );
 
-    this.facade.create(result$);
+    this._facade.create(result$);
   }
 
   onEdit(id: string): void {
-    const data = this.facade.$bookmarkItems().find(b => b.id === id);
+    const collectionId = this._facade.$collectionSelectedId();
+    const data = this._facade.entities().find(b => b.id === id);
 
     if (data) {
-      const result$: Observable<UpdateBookmarkDto> = this._dialogService
+      const result$: Observable<UpdateBookmarkVM> = this._dialogService
         .open(BookmarkDetailDialogComponent, {
           closeOnBackdropClick: false,
           contentClass: "max-w-[40rem]",
           vcr: this._vcr,
-          context: { collectionId: this.$collectionId(), data },
+          context: { collectionId, data },
         })
         .closed$.pipe(
           take(1),
@@ -151,7 +146,7 @@ export class BookmarkManagementComponent implements OnInit {
           map(result => ({ ...result, id }))
         );
 
-      this.facade.edit(result$);
+      this._facade.update(result$);
     }
   }
 
@@ -165,38 +160,22 @@ export class BookmarkManagementComponent implements OnInit {
         filter(isNotFalsy),
         map(() => id)
       );
-    this.facade.delete(id$);
+    this._facade.delete(id$);
   }
 
   onFilterChange(filter: BookmarkFilterVM): void {
-    this.facade.setFilter(filter);
+    this._facade.setFilter(filter);
   }
 
   onNextPage(): void {
-    this.facade.nextPage();
+    this._facade.nextPage();
   }
 
   onPreviousPage(): void {
-    this.facade.previousPage();
+    this._facade.prevPage();
   }
 
   onVisibilityToggle(key: keyof BookmarkVisibility): void {
-    this.facade.visibilityToggle(key);
-  }
-
-  private initializer() {
-    this.facade.enter({ keyword: this.$keyword(), tags: this.$tags() });
-  }
-
-  private syncToUrl() {
-    this._autoEffect(() => {
-      const filter = this.facade.$filter();
-      const pagination = this.facade.$pagination();
-      this._router.navigate([], {
-        relativeTo: this._route,
-        queryParams: { ...filter, tags: JSON.stringify(filter.tags), ...pagination },
-        queryParamsHandling: "merge",
-      });
-    });
+    this._facade.visibilityToggle(key);
   }
 }

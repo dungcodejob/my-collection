@@ -34,6 +34,7 @@ function getPaginationStateKeys(config?: { name: string }) {
     pageSizeKey: name ? `${name}PageSize` : "pageSize",
     setCurrentPageKey: name ? `set${capitalize(name)}CurrentPage` : "setCurrentPage",
     setPageSizeKey: name ? `set${capitalize(name)}PageSize` : "setPageSize",
+    setPaginationKey: name ? `set${capitalize(name)}Pagination` : "setPagination",
     nextPageKey: name ? `next${capitalize(name)}Page` : "nextPage",
     prevPageKey: name ? `prev${capitalize(name)}Page` : "prevPage",
     resetKey: name ? `pagination${capitalize(name)}Reset` : "paginationReset",
@@ -70,10 +71,9 @@ export function withPagination<Name extends string>(config?: {
 }): SignalStoreFeature {
   const {
     paginationKey,
-    currentPageKey,
-    pageSizeKey,
     setCurrentPageKey,
     setPageSizeKey,
+    setPaginationKey,
     nextPageKey,
     prevPageKey,
     resetKey,
@@ -125,6 +125,11 @@ export function withPagination<Name extends string>(config?: {
               ...pagination(),
               pageSize: pageSize,
             },
+          });
+        },
+        [setPaginationKey]: (pagination: PaginationMeta) => {
+          patchState(store as WritableStateSource<object>, {
+            [paginationKey]: pagination,
           });
         },
         [nextPageKey]: () => {

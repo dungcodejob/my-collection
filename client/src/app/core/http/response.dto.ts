@@ -6,11 +6,13 @@ export type ResponseDto<T = unknown> = Readonly<{
   success: boolean;
   message: string;
   description?: string;
-  result: Readonly<T>;
+  result: T;
   timestamp: string;
   url: string;
   method: string;
 }>;
+
+export type UnResponse<T> = T extends ResponseDto<infer S> ? S : never;
 
 export interface SingleResult<T> {
   data: T;

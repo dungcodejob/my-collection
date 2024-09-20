@@ -1,23 +1,19 @@
 import { Injectable } from "@angular/core";
 import { ListResponseDto, SingleResponseDto } from "@core/http";
-import { CollectionAdapter, ResponseAdapter } from "@shared/adapters";
 import { BaseMockApi } from "@shared/data-access";
 import { LocalStorageKeys } from "@shared/enums";
 import {
   CollectionDto,
-  CollectionVM,
   CreateCollectionDto,
   MoveCollectionDto,
   UpdateCollectionDto,
 } from "@shared/models";
-import { Observable, map, of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { CollectionApi } from "./collection.api";
 
 @Injectable()
 export class CollectionMockApi extends BaseMockApi implements CollectionApi {
   private _entities: CollectionDto[] = [];
-  private readonly _responseAdapter = new ResponseAdapter();
-  private readonly _collectionAdapter = new CollectionAdapter();
 
   constructor() {
     super();
@@ -26,15 +22,13 @@ export class CollectionMockApi extends BaseMockApi implements CollectionApi {
       this._loadFromLocal<CollectionDto[]>(LocalStorageKeys.Collection) ?? [];
   }
 
-  findAll(): Observable<ListResponseDto<CollectionVM>> {
+  findAll(): Observable<ListResponseDto<CollectionDto>> {
     const res = this._createListResponse(this._entities, this._entities.length);
 
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromListDto(res, this._collectionAdapter))
-    );
+    return of(res);
   }
 
-  create(body: CreateCollectionDto): Observable<SingleResponseDto<CollectionVM>> {
+  create(body: CreateCollectionDto): Observable<SingleResponseDto<CollectionDto>> {
     const base = this._createBaseDto();
     const entity: CollectionDto = {
       ...body,
@@ -47,15 +41,13 @@ export class CollectionMockApi extends BaseMockApi implements CollectionApi {
 
     const res = this._createSingleResponse(entity);
 
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromSingleDto(res, this._collectionAdapter))
-    );
+    return of(res);
   }
 
   update(
     id: string,
     body: UpdateCollectionDto
-  ): Observable<SingleResponseDto<CollectionVM>> {
+  ): Observable<SingleResponseDto<CollectionDto>> {
     const indexToUpdate = this._entities.findIndex(item => item.id === id);
     if (indexToUpdate === -1) {
       throw Error("entity not found");
@@ -66,9 +58,7 @@ export class CollectionMockApi extends BaseMockApi implements CollectionApi {
     this._syncCollection();
 
     const res = this._createSingleResponse(entityToUpdate);
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromSingleDto(res, this._collectionAdapter))
-    );
+    return of(res);
   }
 
   delete(id: string): Observable<SingleResponseDto<void>> {
@@ -78,7 +68,10 @@ export class CollectionMockApi extends BaseMockApi implements CollectionApi {
     return of(res);
   }
 
-  move(id: string, body: MoveCollectionDto): Observable<SingleResponseDto<CollectionVM>> {
+  move(
+    id: string,
+    body: MoveCollectionDto
+  ): Observable<SingleResponseDto<CollectionDto>> {
     const indexToUpdate = this._entities.findIndex(item => item.id === id);
     if (indexToUpdate === -1) {
       throw Error("entity not found");
@@ -89,9 +82,7 @@ export class CollectionMockApi extends BaseMockApi implements CollectionApi {
     this._syncCollection();
 
     const res = this._createSingleResponse(entityToUpdate);
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromSingleDto(res, this._collectionAdapter))
-    );
+    return of(res);
   }
 
   private _syncCollection() {

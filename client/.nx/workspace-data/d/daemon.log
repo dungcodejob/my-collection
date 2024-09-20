@@ -108,3 +108,80 @@
 [NX Daemon Server] - 2024-09-01T17:36:12.464Z - Closed a connection. Number of open connections: 0
 [NX Daemon Server] - 2024-09-01T17:36:12.465Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
 [NX Daemon Server] - 2024-09-01T17:36:12.465Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-07T13:23:22.101Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-07T13:23:22.119Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-07T13:23:22.131Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-07T13:23:22.133Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-09-07T13:23:22.144Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-07T13:23:22.152Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-07T13:23:22.155Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-07T13:23:22.156Z - Handled FORCE_SHUTDOWN. Handling time: 1. Response time: 4.
+[NX Daemon Server] - 2024-09-07T13:23:22.156Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-07T13:23:22.170Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-07T13:23:22.183Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-07T13:57:20.508Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-07T13:57:20.517Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-07T13:57:20.520Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-07T13:57:20.523Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-07T13:57:20.524Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-07T13:57:20.526Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-07T13:57:20.528Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-07T13:57:20.528Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 2.
+[NX Daemon Server] - 2024-09-07T13:57:20.528Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-07T13:57:20.529Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-07T13:57:20.529Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-07T13:57:20.942Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-07T13:57:20.947Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-07T13:57:20.953Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-07T13:57:20.955Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-07T13:57:20.955Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-07T13:57:20.957Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-07T13:57:20.958Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-07T13:57:20.959Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 2.
+[NX Daemon Server] - 2024-09-07T13:57:20.959Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-07T13:57:20.959Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-07T13:57:20.959Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-08T11:42:52.736Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-08T11:42:52.743Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-08T11:42:52.746Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T11:42:52.746Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-09-08T11:42:52.748Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T11:42:52.750Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-08T11:42:52.752Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-08T11:42:52.753Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 2.
+[NX Daemon Server] - 2024-09-08T11:42:52.753Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-08T11:42:52.753Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-08T11:42:52.753Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-08T16:12:50.470Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-08T16:12:50.480Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-08T16:12:50.482Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T16:12:50.484Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-09-08T16:12:50.486Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T16:12:50.489Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-08T16:12:50.491Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-08T16:12:50.492Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 3.
+[NX Daemon Server] - 2024-09-08T16:12:50.492Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-08T16:12:50.492Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-08T16:12:50.492Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-08T16:12:50.954Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-08T16:12:50.958Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-08T16:12:50.964Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T16:12:50.966Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-08T16:12:50.967Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-08T16:12:50.969Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-08T16:12:50.970Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-08T16:12:50.970Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 1.
+[NX Daemon Server] - 2024-09-08T16:12:50.971Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-08T16:12:50.971Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-08T16:12:50.971Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-09-11T13:21:51.596Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2024-09-11T13:21:51.610Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-09-11T13:21:51.623Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-11T13:21:51.625Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-09-11T13:21:51.632Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-09-11T13:21:51.639Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-09-11T13:21:51.647Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-09-11T13:21:51.648Z - Handled FORCE_SHUTDOWN. Handling time: 1. Response time: 9.
+[NX Daemon Server] - 2024-09-11T13:21:51.648Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-09-11T13:21:51.649Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-09-11T13:21:51.651Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)

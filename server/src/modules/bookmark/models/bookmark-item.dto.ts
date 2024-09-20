@@ -1,4 +1,5 @@
 import { IdentityType } from "@database/identifiable.entity";
+import { CollectionItemDto } from "@modules/collection";
 
 export interface BookmarkItemTagDto {
   readonly id: IdentityType;
@@ -17,6 +18,7 @@ export interface BookmarkItemDto {
   readonly favicon: string;
   readonly note: string;
   readonly tags: BookmarkItemTagDto[];
+  readonly collection: CollectionItemDto;
   readonly createAt: Date;
   readonly updateAt: Date;
 }

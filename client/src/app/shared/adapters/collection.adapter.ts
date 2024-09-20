@@ -5,13 +5,13 @@ import { ViewModelAdapter } from "./view-model.adapter";
 export class CollectionAdapter implements ViewModelAdapter<CollectionDto, CollectionVM> {
   private readonly _baseAdapter = new BaseAdapter();
 
-  fromDto(dto: CollectionDto): CollectionVM;
-  fromDto(dto: CollectionDto[]): CollectionVM[];
-  fromDto(dto: CollectionDto | CollectionDto[]): CollectionVM | CollectionVM[] {
+  fromEntityDto(dto: CollectionDto): CollectionVM;
+  fromEntityDto(dto: CollectionDto[]): CollectionVM[];
+  fromEntityDto(dto: CollectionDto | CollectionDto[]): CollectionVM | CollectionVM[] {
     if (Array.isArray(dto)) {
-      return dto.map(item => this.fromDto(item));
+      return dto.map(item => this.fromEntityDto(item));
     }
-    const baseVM = this._baseAdapter.fromDto(dto);
+    const baseVM = this._baseAdapter.fromEntityDto(dto);
     return {
       ...baseVM,
       icon: dto.icon,
@@ -19,13 +19,13 @@ export class CollectionAdapter implements ViewModelAdapter<CollectionDto, Collec
       position: dto.position,
     };
   }
-  toDto(vm: CollectionVM): CollectionDto;
-  toDto(vm: CollectionVM[]): CollectionDto[];
-  toDto(vm: CollectionVM | CollectionVM[]): CollectionDto | CollectionDto[] {
+  toEntityDto(vm: CollectionVM): CollectionDto;
+  toEntityDto(vm: CollectionVM[]): CollectionDto[];
+  toEntityDto(vm: CollectionVM | CollectionVM[]): CollectionDto | CollectionDto[] {
     if (Array.isArray(vm)) {
-      return vm.map(item => this.toDto(item));
+      return vm.map(item => this.toEntityDto(item));
     }
-    const baseDto = this._baseAdapter.toDto(vm);
+    const baseDto = this._baseAdapter.toEntityDto(vm);
     return {
       ...baseDto,
       icon: vm.icon,

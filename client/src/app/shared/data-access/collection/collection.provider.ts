@@ -4,12 +4,11 @@ import { CollectionImplApi } from "./collection-impl.api";
 import { CollectionMockApi } from "./collection-mock.api";
 import { CollectionApi } from "./collection.api";
 import { CollectionFacade } from "./collection.facade";
-import { CollectionStore } from "./collection.store";
 
 export const [injectCollectionApi, provideCollectionApi, provideCollectionMockApi] =
   createInjectionApiToken<CollectionApi>(CollectionImplApi, CollectionMockApi);
 
 export const provideCollection = (): Provider => {
   const provideApi = isDevMode() ? provideCollectionMockApi : provideCollectionApi;
-  return [provideApi(), CollectionStore, CollectionFacade];
+  return [provideApi(), CollectionFacade];
 };

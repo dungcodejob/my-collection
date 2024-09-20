@@ -1,25 +1,23 @@
 import { Injectable } from "@angular/core";
 import { PaginationMetaDto, PaginationResponseDto, SingleResponseDto } from "@core/http";
-import { BookmarkAdapter, ResponseAdapter } from "@shared/adapters";
 import { BaseMockApi } from "@shared/data-access";
 import { LocalStorageKeys } from "@shared/enums";
 import {
   BookmarkDto,
   BookmarkQueryDto,
-  BookmarkVM,
+  CollectionDto,
   CreateBookmarkDto,
   TagDto,
   UpdateBookmarkDto,
 } from "@shared/models";
-import { Observable, map, of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { BookmarkApi } from "./bookmark.api";
 
 @Injectable()
 export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
   private _bookmarkEntities: BookmarkDto[] = [];
   private _tagEntities: TagDto[] = [];
-  private readonly _responseAdapter = new ResponseAdapter();
-  private readonly _bookmarkAdapter = new BookmarkAdapter();
+  private _collectionEntities: CollectionDto[] = [];
 
   constructor() {
     super();
@@ -27,10 +25,12 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
     this._bookmarkEntities =
       this._loadFromLocal<BookmarkDto[]>(LocalStorageKeys.Bookmark) ?? [];
 
-    this._tagEntities = this._loadFromLocal<BookmarkDto[]>(LocalStorageKeys.Tag) ?? [];
+    this._tagEntities = this._loadFromLocal<TagDto[]>(LocalStorageKeys.Tag) ?? [];
+    this._collectionEntities =
+      this._loadFromLocal<CollectionDto[]>(LocalStorageKeys.Collection) ?? [];
   }
 
-  findAll(query: BookmarkQueryDto): Observable<PaginationResponseDto<BookmarkVM>> {
+  findAll(query: BookmarkQueryDto): Observable<PaginationResponseDto<BookmarkDto>> {
     const pagination: PaginationMetaDto = {
       currentPage: query.currentPage,
       pageSize: query.pageSize,
@@ -41,25 +41,27 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
     };
     let result = structuredClone(this._bookmarkEntities);
     if (query.collectionId) {
-      result = result.filter(item => item.collectionId === query.collectionId);
+      result = result.filter(item => item.collection.id === query.collectionId);
     }
 
     const offset = query.pageSize * (query.currentPage - 1);
     const limit = query.pageSize;
     result = result.splice(offset, offset + limit);
     const res = this._createPaginationResponse(result, pagination);
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromPaginationDto(res, this._bookmarkAdapter))
-    );
+    return of(res);
   }
 
-  create(body: CreateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>> {
+  create(body: CreateBookmarkDto): Observable<SingleResponseDto<BookmarkDto>> {
     const base = this._createBaseDto();
 
     const tags = this._tagEntities.filter(item => body.tagIds.includes(item.id));
+    const collection = this._collectionEntities.find(
+      item => item.id === body.collectionId
+    )!;
     const entity: BookmarkDto = {
       ...body,
       ...base,
+      collection: collection,
       tags,
     };
 
@@ -68,12 +70,13 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
 
     const res = this._createSingleResponse(entity);
 
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromSingleDto(res, this._bookmarkAdapter))
-    );
+    return of(res);
   }
 
-  update(id: string, body: UpdateBookmarkDto): Observable<SingleResponseDto<BookmarkVM>> {
+  update(
+    id: string,
+    body: UpdateBookmarkDto
+  ): Observable<SingleResponseDto<BookmarkDto>> {
     const indexToUpdate = this._bookmarkEntities.findIndex(item => item.id === id);
     if (indexToUpdate === -1) {
       throw Error("entity not found");
@@ -84,9 +87,7 @@ export class BookmarkMockApi extends BaseMockApi implements BookmarkApi {
     this._syncBookmark();
 
     const res = this._createSingleResponse(entityToUpdate);
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromSingleDto(res, this._bookmarkAdapter))
-    );
+    return of(res);
   }
 
   delete(id: string): Observable<SingleResponseDto<void>> {

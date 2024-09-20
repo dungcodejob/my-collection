@@ -1,11 +1,15 @@
 import { BookmarkEntity } from "@common/entities";
+import { CollectionMapper } from "@modules/collection";
 import { TagMapper } from "@modules/tag";
 import { Injectable } from "@nestjs/common";
 import { BookmarkItemDto } from "../models";
 
 @Injectable()
 export class BookmarkMapper {
-  constructor(private readonly tagMapper: TagMapper) {}
+  constructor(
+    private readonly tagMapper: TagMapper,
+    private readonly collectionMapper: CollectionMapper
+  ) {}
 
   toItemDto(domain: BookmarkEntity): BookmarkItemDto;
   toItemDto(domain: BookmarkEntity[]): BookmarkItemDto[];
@@ -27,6 +31,7 @@ export class BookmarkMapper {
       favicon: domain.favicon,
       note: domain.note,
       tags: tags,
+      collection: this.collectionMapper.toItemDto(domain.collection.getEntity()),
       createAt: domain.createAt,
       updateAt: domain.updateAt,
     };

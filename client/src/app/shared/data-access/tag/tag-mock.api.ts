@@ -3,8 +3,8 @@ import { PaginationMetaDto, PaginationResponseDto, SingleResponseDto } from "@co
 import { ResponseAdapter, TagAdapter } from "@shared/adapters";
 import { BaseMockApi } from "@shared/data-access";
 import { LocalStorageKeys } from "@shared/enums";
-import { CreateTagDto, TagDto, TagQueryDto, TagVM } from "@shared/models";
-import { Observable, map, of } from "rxjs";
+import { CreateTagDto, TagDto, TagQueryDto } from "@shared/models";
+import { Observable, of } from "rxjs";
 import { TagApi } from "./tag.api";
 
 type TagEntity = TagDto & { collectionId: string };
@@ -57,7 +57,7 @@ export class TagMockApi extends BaseMockApi implements TagApi {
     this._entities = this._loadFromLocal<TagDto[]>(LocalStorageKeys.Tag) ?? [];
   }
 
-  findAll(query: TagQueryDto): Observable<PaginationResponseDto<TagVM>> {
+  findAll(query: TagQueryDto): Observable<PaginationResponseDto<TagDto>> {
     const pagination: PaginationMetaDto = {
       currentPage: query.currentPage,
       pageSize: query.pageSize,
@@ -81,12 +81,10 @@ export class TagMockApi extends BaseMockApi implements TagApi {
     result = result.splice(offset, offset + limit);
 
     const res = this._createPaginationResponse(result, pagination);
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromPaginationDto(res, this._tagAdapter))
-    );
+    return of(res);
   }
 
-  create(body: CreateTagDto): Observable<SingleResponseDto<TagVM>> {
+  create(body: CreateTagDto): Observable<SingleResponseDto<TagDto>> {
     const base = this._createBaseDto();
     const entity: TagEntity = {
       ...body,
@@ -98,9 +96,7 @@ export class TagMockApi extends BaseMockApi implements TagApi {
 
     const res = this._createSingleResponse(entity);
 
-    return of(res).pipe(
-      map(res => this._responseAdapter.fromSingleDto(res, this._tagAdapter))
-    );
+    return of(res);
   }
 
   private _syncBookmark() {

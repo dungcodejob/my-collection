@@ -66,7 +66,8 @@ export class BookmarkRepositoryImpl implements BookmarkRepository {
     }
 
     return this._em.find(BookmarkEntity, filter, {
-      // populate: ["tags"],
+      populate: ["tags", "collection"],
+
       // groupBy: 'id',
       // having: { 'count(b1.tag_entity_id)': { $gte: tagIds.length } },
     });

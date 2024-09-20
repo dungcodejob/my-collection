@@ -63,7 +63,7 @@ export function withApiFeature<TData>(config: {
   EmptyFeatureResult,
   {
     state: ApiState<TData>;
-    signals: ApiSignals<TData>;
+    computed: ApiSignals<TData>;
     methods: ApiMethods<TData>;
   }
 >;
@@ -75,7 +75,7 @@ export function withApiFeature<TData, Name extends string>(config: {
   EmptyFeatureResult,
   {
     state: NamedApiState<TData, Name>;
-    signals: NamedApiSignals<TData, Name>;
+    computed: NamedApiSignals<TData, Name>;
     methods: NamedApiMethods<TData, Name>;
   }
 >;
