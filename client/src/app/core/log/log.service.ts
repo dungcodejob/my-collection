@@ -1,23 +1,19 @@
 import { Injectable } from "@angular/core";
 import { EnvConfig, OnInitConfig } from "@core/config";
-import { LocalLogger } from "./logger/local-logger";
-import { LogEntry, LogLevel } from "./logger/log-entry";
-import { Logger } from "./logger/logger";
-import { RemoteLogger } from "./logger/remote-logger";
+import { LogEntry, LogLevel } from "./log-entry";
+import { injectLoggingDestination, injectLoggingFormatter } from "./log.provide";
+
 @Injectable({
   providedIn: "root",
 })
 export class LogService implements OnInitConfig {
-  private _logger!: Logger;
-  readonly _level: LogLevel = LogLevel.All;
-  readonly _logWithDate: boolean = true;
+  private readonly _formatter = injectLoggingFormatter();
+  private readonly _destinations = injectLoggingDestination();
+  private readonly _level: LogLevel = LogLevel.All;
 
   configure(config: EnvConfig): void {
     if (config.env != "dev") {
-      this._logger = new LocalLogger();
     }
-
-    this._logger = new RemoteLogger();
   }
 
   debug(msg: string, ...params: unknown[]) {
@@ -45,14 +41,16 @@ export class LogService implements OnInitConfig {
   }
 
   private _write(message: string, level: LogLevel, params: unknown[]): void {
-    if (this._hasPermissionToLog(level) && this._logger != null) {
+    if (this._hasPermissionToLog(level)) {
       const entry = new LogEntry();
-      entry.logWithDate = this._logWithDate;
       entry.level = level;
       entry.message = message;
       entry.extras = params;
 
-      this._logger.log(entry);
+      const str = this._formatter.format(entry);
+      for (const destination of this._destinations) {
+        destination.log(str);
+      }
     }
   }
 
