@@ -15,6 +15,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@nx/web-bookmark-data-access": [
+        "libs/web/bookmark/data-access/src/index.ts"
+      ],
+      "@nx/web-bookmark-feature-list": [
+        "libs/web/bookmark/feature/list/src/index.ts"
+      ],
       "@nx/web-collection-data-access": [
         "libs/web/collection/data-access/src/index.ts"
       ],
@@ -24,23 +30,16 @@
       "@nx/web-collection-feature-list": [
         "libs/web/collection/feature/list/src/index.ts"
       ],
-      "@nx/web-bookmark-feature-list": [
-        "libs/web/bookmark/feature/list/src/index.ts"
-      ],
-      "@nx/web-bookmark-data-access": [
-        "libs/web/bookmark/data-access/src/index.ts"
-      ],
-
-      "@nx/web-shell-ui-nav-bar": ["libs/web/shell/ui/nav-bar/src/index.ts"],
-      "@nx/web-shell-ui-top-bar": ["libs/web/shell/ui/top-bar/src/index.ts"],
-      "@nx/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
-      "@nx/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],
-
       "@nx/web-shared-app-config": ["libs/web/shared/app-config/src/index.ts"],
-      "@nx/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
+      "@nx/web-shared-assets": ["libs/web/shared/assets/src/index.ts"],
       "@nx/web-shared-ui-my-ui-lib": [
         "libs/web/shared/ui/my-ui-lib/src/index.ts"
-      ]
+      ],
+      "@nx/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
+      "@nx/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
+      "@nx/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],
+      "@nx/web-shell-ui-nav-bar": ["libs/web/shell/ui/nav-bar/src/index.ts"],
+      "@nx/web-shell-ui-top-bar": ["libs/web/shell/ui/top-bar/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AppConfigService } from '@nx/web-shared-app-config';
 
 @Component({
   standalone: true,
@@ -8,5 +9,10 @@ import { RouterModule } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  private readonly _configService = inject(AppConfigService);
+
+  ngOnInit(): void {
+    console.log(this._configService.config);
+  }
 }

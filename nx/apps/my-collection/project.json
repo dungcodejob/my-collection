@@ -16,9 +16,15 @@
         "polyfills": ["zone.js"],
         "tsConfig": "apps/my-collection/tsconfig.app.json",
         "assets": [
+          "apps/my-collection/src/assets",
           {
             "glob": "**/*",
             "input": "apps/my-collection/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/web/shared/assets/src/assets",
+            "output": "assets"
           }
         ],
         "styles": ["apps/my-collection/src/styles.css"],
@@ -26,6 +32,13 @@
       },
       "configurations": {
         "production": {
+          "assets": [
+            {
+              "glob": "config.json",
+              "input": "apps/my-collection/src/configurations/production",
+              "output": "configuration/"
+            }
+          ],
           "budgets": [
             {
               "type": "initial",
@@ -41,6 +54,13 @@
           "outputHashing": "all"
         },
         "development": {
+          "assets": [
+            {
+              "glob": "config.json",
+              "input": "apps/my-collection/src/configurations/development",
+              "output": "configuration/"
+            }
+          ],
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
