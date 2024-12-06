@@ -15,15 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@nx/web-bookmark-data-access": [
-        "libs/web/bookmark/data-access/src/index.ts"
-      ],
-      "@nx/web-bookmark-feature-list": [
-        "libs/web/bookmark/feature/list/src/index.ts"
-      ],
-      "@nx/web-collection-data-access": [
-        "libs/web/collection/data-access/src/index.ts"
-      ],
+      "@nx/web-bookmark-data-access": ["libs/web/bookmark/data-access/src/index.ts"],
+      "@nx/web-bookmark-feature-list": ["libs/web/bookmark/feature/list/src/index.ts"],
+      "@nx/web-collection-data-access": ["libs/web/collection/data-access/src/index.ts"],
       "@nx/web-collection-feature-detail-dialog": [
         "libs/web/collection/feature/detail-dialog/src/index.ts"
       ],
@@ -32,9 +26,7 @@
       ],
       "@nx/web-shared-app-config": ["libs/web/shared/app-config/src/index.ts"],
       "@nx/web-shared-assets": ["libs/web/shared/assets/src/index.ts"],
-      "@nx/web-shared-ui-my-ui-lib": [
-        "libs/web/shared/ui/my-ui-lib/src/index.ts"
-      ],
+      "@nx/web-shared-ui-my-ui-lib": ["libs/web/shared/ui/my-ui-lib/src/index.ts"],
       "@nx/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
       "@nx/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
       "@nx/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],

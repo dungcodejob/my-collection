@@ -23,6 +23,30 @@ module.exports = [
           ],
         },
       ],
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'property',
+          modifiers: ['private'],
+          format: ['camelCase'],
+          leadingUnderscore: 'require',
+        },
+        {
+          selector: 'typeLike',
+          format: ['PascalCase'],
+        },
+        {
+          selector: 'class',
+          format: ['PascalCase'],
+        },
+        // {
+        //   selector: "variable",
+        //   format: ["camelCase"],
+        //   modifiers: ["const"],
+        //   leadingUnderscore: "forbid",
+        //   trailingUnderscore: "forbid",
+        // },
+      ],
     },
   },
   {

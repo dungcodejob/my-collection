@@ -273,3 +273,14 @@
 [NX Daemon Server] - 2024-09-23T01:34:35.336Z - Closed a connection. Number of open connections: 0
 [NX Daemon Server] - 2024-09-23T01:34:35.336Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (sources)
 [NX Daemon Server] - 2024-09-23T01:34:35.336Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-12-06T06:56:16.335Z - Started listening on: \\.\pipe\nx\C:\Users\VELA~1.OS0\AppData\Local\Temp\5a86fcfd6e3ed3b6a08c\d.sock
+[NX Daemon Server] - 2024-12-06T06:56:16.343Z - [WATCHER]: Subscribed to changes within: c:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-12-06T06:56:16.345Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-06T06:56:16.345Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-12-06T06:56:16.346Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-06T06:56:16.349Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-12-06T06:56:16.349Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-12-06T06:56:16.349Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 0.
+[NX Daemon Server] - 2024-12-06T06:56:16.350Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-12-06T06:56:16.350Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-12-06T06:56:16.350Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (outputs)
