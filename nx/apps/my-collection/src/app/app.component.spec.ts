@@ -17,6 +17,7 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('h1')?.textContent).toContain(
       'Welcome my-collection'
     );
+    
   });
 
   it(`should have as title 'my-collection'`, () => {

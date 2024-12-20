@@ -284,3 +284,29 @@
 [NX Daemon Server] - 2024-12-06T06:56:16.350Z - Closed a connection. Number of open connections: 0
 [NX Daemon Server] - 2024-12-06T06:56:16.350Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (sources)
 [NX Daemon Server] - 2024-12-06T06:56:16.350Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-12-19T01:49:55.689Z - Started listening on: \\.\pipe\nx\C:\Users\VELA~1.OS0\AppData\Local\Temp\5a86fcfd6e3ed3b6a08c\d.sock
+[NX Daemon Server] - 2024-12-19T01:49:55.696Z - [WATCHER]: Subscribed to changes within: c:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-12-19T01:49:55.702Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-19T01:49:55.707Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-12-19T01:49:55.760Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-19T01:49:55.761Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-12-19T01:49:55.762Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-19T01:49:55.804Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-12-19T01:49:56.348Z - Time taken for 'Load Nx Plugin: C:\Project\my-collection\client\node_modules\.pnpm\nx@20.2.2\node_modules\nx\src\plugins\js' 540.5629ms
+[NX Daemon Server] - 2024-12-19T01:49:56.353Z - Time taken for 'Load Nx Plugin: C:\Project\my-collection\client\node_modules\.pnpm\nx@20.2.2\node_modules\nx\src\plugins\package-json' 541.9902000000001ms
+[NX Daemon Server] - 2024-12-19T01:49:56.374Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-12-19T01:49:56.375Z - [REQUEST]: 
+[NX Daemon Server] - 2024-12-19T01:49:56.375Z - [REQUEST]: 
+[NX Daemon Server] - 2024-12-19T01:49:56.381Z - Time taken for 'loadNxPlugins' 567.9254000000001ms
+[NX Daemon Server] - 2024-12-19T01:49:56.733Z - Time taken for 'build-project-configs' 324.2379000000001ms
+[NX Daemon Server] - 2024-12-19T01:49:57.598Z - [SYNC]: collect registered sync generators
+[NX Daemon Server] - 2024-12-19T01:49:57.599Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-12-19T01:49:57.600Z - Time taken for 'total for creating and serializing project graph' 1795.3952ms
+[NX Daemon Server] - 2024-12-19T01:49:57.601Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-12-19T01:49:57.601Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 1795. Response time: 2.
+[NX Daemon Server] - 2024-12-19T01:49:57.614Z - [REQUEST]: Responding to the client. handleContextFileData
+[NX Daemon Server] - 2024-12-19T01:49:57.614Z - Done responding to the client handleContextFileData
+[NX Daemon Server] - 2024-12-19T01:49:57.615Z - Handled GET_CONTEXT_FILE_DATA. Handling time: 2. Response time: 1.
+[NX Daemon Server] - 2024-12-19T01:49:57.617Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-12-19T04:49:57.766Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-12-19T04:49:57.772Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (outputs)

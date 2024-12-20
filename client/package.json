@@ -3,12 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --configuration development",
-    "build:prod": "ng build --configuration production",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "ng lint --fix"
+    "start": "nx serve --configuration development",
+    "build:prod": "nx build --configuration production",
+    "build": "nx build",
+    "watch": "nx build --watch --configuration development",
+    "test": "nx test",
+    "lint": "nx lint --fix"
   },
   "private": true,
   "dependencies": {
@@ -51,6 +51,8 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.1",
+    "@angular-devkit/core": "^18.2.1",
+    "@angular-devkit/schematics": "^18.2.1",
     "@angular-eslint/builder": "18.3.0",
     "@angular-eslint/eslint-plugin": "18.3.0",
     "@angular-eslint/eslint-plugin-template": "18.3.0",
@@ -58,6 +60,9 @@
     "@angular-eslint/template-parser": "18.3.0",
     "@angular/cli": "^18.2.1",
     "@angular/compiler-cli": "^18.2.1",
+    "@nx/angular": "20.2.2",
+    "@nx/workspace": "20.2.2",
+    "@schematics/angular": "^18.2.1",
     "@spartan-ng/cli": "0.0.1-alpha.361",
     "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "7.11.0",
@@ -73,6 +78,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "nx": "20.2.2",
     "postcss": "^8.4.35",
     "prettier": "^3.3.3",
     "prettier-eslint": "^16.3.0",
