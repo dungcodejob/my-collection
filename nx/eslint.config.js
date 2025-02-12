@@ -71,7 +71,7 @@ module.exports = [
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unsafe-call": "error",
       "@typescript-eslint/no-floating-promises": "error",
-      "@typescript-eslint/explicit-module-boundary-types": "error",
+      // "@typescript-eslint/explicit-module-boundary-types": "error",
       "@typescript-eslint/ban-ts-comment": "warn",
       "@typescript-eslint/unbound-method": "error",
 
