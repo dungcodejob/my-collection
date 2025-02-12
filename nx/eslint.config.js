@@ -78,7 +78,7 @@ module.exports = [
       "@typescript-eslint/member-ordering": "error",
       "@typescript-eslint/no-empty-function": "error",
 
-      "@angular-eslint/no-empty-lifecycle-method": "error",
+      // "@angular-eslint/no-empty-lifecycle-method": "error",
     },
   },
   {

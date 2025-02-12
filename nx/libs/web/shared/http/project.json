@@ -1,16 +1,16 @@
 {
-  "name": "web-bookmark-data-access",
+  "name": "web-shared-http",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/web/bookmark/data-access/src",
+  "sourceRoot": "libs/web/shared/http/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": ["scope:web", "type:data-access", "category:collection"],
+  "tags": [],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/web/bookmark/data-access/jest.config.ts"
+        "jestConfig": "libs/web/shared/http/jest.config.ts"
       }
     },
     "lint": {

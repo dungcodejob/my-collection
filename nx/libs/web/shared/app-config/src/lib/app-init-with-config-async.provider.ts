@@ -1,6 +1,6 @@
 import { InjectionToken, Provider } from "@angular/core";
 import { Observable } from "rxjs";
-import { AppConfig } from "./app-config";
+import { AppConfig } from "./models/app-config";
 
 type FactoryFn = () => (config: AppConfig) => Observable<unknown>;
 

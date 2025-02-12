@@ -1,5 +1,5 @@
 import { InjectionToken, Provider, Type } from "@angular/core";
-import { AppConfig } from './app-config';
+import { AppConfig } from "./models/app-config";
 
 export interface OnInitConfig {
   configure(config: AppConfig): void;
