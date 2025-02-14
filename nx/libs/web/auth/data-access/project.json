@@ -1,10 +1,10 @@
 {
-  "name": "data-access",
+  "name": "web-auth-data-access",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/web/auth/data-access/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": ["scope:web", "type:data-access", "category:collection"],
+  "tags": ["scope:web", "type:data-access", "category:auth"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",

@@ -1,13 +1,13 @@
-import { Routes } from '@angular/router';
-import { LayoutComponent } from '@nx/web-shell-ui-layout';
+import { Routes } from "@angular/router";
+import { LayoutComponent } from "@nx/web-shell-ui-layout";
 export const webShellRoutes: Routes = [
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    path: "",
+    redirectTo: "home",
+    pathMatch: "full",
   },
   {
-    path: 'home',
+    path: "home",
     // canActivate: [authGuard],
     component: LayoutComponent,
     providers: [],
@@ -17,5 +17,10 @@ export const webShellRoutes: Routes = [
     //     loadChildren: () => import('./bookmark').then((m) => m.bookmarkRoutes),
     //   },
     // ],
+  },
+  {
+    path: "auth/login",
+    loadChildren: async () =>
+      (await import("@nx/web-auth-feature-shell")).AuthShellRoutes,
   },
 ];

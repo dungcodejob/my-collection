@@ -10,10 +10,8 @@ import { AppConfigService } from "@nx/web-shared-app-config";
   styleUrl: "./app.component.css",
 })
 export class AppComponent implements OnInit {
-  i: any;
   private readonly _configService = inject(AppConfigService);
   ngOnInit(): void {
     console.log(this._configService.config);
-    console.log(this.i.a());
   }
 }

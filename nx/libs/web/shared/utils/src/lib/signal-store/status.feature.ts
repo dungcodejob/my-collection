@@ -1,13 +1,14 @@
 import { Signal, computed } from "@angular/core";
-import { ServerSideError } from "@core/http";
+
 import {
   EmptyFeatureResult,
   SignalStoreFeature,
+  SignalStoreFeatureResult,
   signalStoreFeature,
   withComputed,
   withState,
 } from "@ngrx/signals";
-import { capitalize } from "@shared/utils";
+
 import {
   NamedStatusSignals,
   NamedStatusState,
@@ -15,6 +16,9 @@ import {
   StatusSignals,
   StatusState,
 } from "./status-name.type";
+import { capitalize } from "../string";
+import { ServerSideError } from "@nx/web-shared-http";
+import { MethodsDictionary } from "@ngrx/signals/src/signal-store-models";
 
 function getStatusStateKeys(config?: { name: string }) {
   const name = config?.name;
@@ -30,8 +34,8 @@ export function withStatus(): SignalStoreFeature<
   EmptyFeatureResult,
   {
     state: StatusState;
-    computed: StatusSignals;
-    methods: {};
+    props: StatusSignals;
+    methods: MethodsDictionary;
   }
 >;
 export function withStatus<Name extends string>(config: {
@@ -40,8 +44,8 @@ export function withStatus<Name extends string>(config: {
   EmptyFeatureResult,
   {
     state: NamedStatusState<Name>;
-    computed: NamedStatusSignals<Name>;
-    methods: {};
+    props: NamedStatusSignals<Name>;
+    methods: MethodsDictionary;
   }
 >;
 export function withStatus<Name extends string>(config?: {

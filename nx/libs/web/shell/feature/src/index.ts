@@ -1,1 +1,1 @@
-export * from './lib/web-shell.routers';
+export * from './lib/web-shell.routes';

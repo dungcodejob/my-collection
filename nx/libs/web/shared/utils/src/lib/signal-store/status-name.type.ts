@@ -1,6 +1,6 @@
 import { Signal } from "@angular/core";
-import { ServerSideError } from "@core/http";
 import { SignalsDictionary } from "@ngrx/signals/src/signal-store-models";
+import { ServerSideError } from "@nx/web-shared-http";
 
 export type Status = "idle" | "pending" | "fulfilled" | { error: ServerSideError };
 

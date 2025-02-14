@@ -16,6 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@nx/web-auth-data-access": ["libs/web/auth/data-access/src/index.ts"],
+      "@nx/web-auth-feature-login": ["libs/web/auth/feature/login/src/index.ts"],
+      "@nx/web-auth-feature-shell": ["libs/web/auth/feature/shell/src/index.ts"],
+      "@nx/web-auth-utils": ["libs/web/auth/utils/src/index.ts"],
       "@nx/web-bookmark-data-access": ["libs/web/bookmark/data-access/src/index.ts"],
       "@nx/web-bookmark-feature-list": ["libs/web/bookmark/feature/list/src/index.ts"],
       "@nx/web-collection-data-access": ["libs/web/collection/data-access/src/index.ts"],
@@ -28,6 +31,7 @@
       "@nx/web-shared-app-config": ["libs/web/shared/app-config/src/index.ts"],
       "@nx/web-shared-assets": ["libs/web/shared/assets/src/index.ts"],
       "@nx/web-shared-http": ["libs/web/shared/http/src/index.ts"],
+      "@nx/web-shared-services": ["libs/web/shared/services/src/index.ts"],
       "@nx/web-shared-models": ["libs/web/shared/data-access/models/src/index.ts"],
       "@nx/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
       "@nx/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
