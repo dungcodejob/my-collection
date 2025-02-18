@@ -1,37 +1,43 @@
+import { HttpStatusCode } from "@angular/common/http";
 import { PaginationMetaDto } from "./pagination-meta.dto";
 import { ValidationMetaDto } from "./validation-meta.dto";
 
-export type ResponseDto<T = unknown> = Readonly<{
+export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+export type BaseResponseDto = Readonly<{
   statusCode: number;
-  success: boolean;
   message: string;
   description?: string;
-  result: T;
   timestamp: string;
   url: string;
-  method: string;
+  method: HttpMethod;
+}>;
+
+export interface ErrorResponseDto extends BaseResponseDto {
+  success: false;
+  errorCode: string;
+}
+
+export interface SuccessResponseDto<T> extends BaseResponseDto {
+  success: true;
+  result: T;
+}
+
+export type ResponseDto<T = unknown> = ErrorResponseDto | SuccessResponseDto<T>;
+
+export interface ValidatorResponseDto extends ErrorResponseDto {
+  readonly errorCode: "BadRequest";
+  readonly result: Readonly<{ meta: { validators: ValidationMetaDto[] } }>;
+}
+
+export type SingleResponseDto<T> = SuccessResponseDto<{ data: T }>;
+export type ListResponseDto<T> = SuccessResponseDto<{
+  items: T[];
+  meta: { count: number };
+}>;
+export type PaginationResponseDto<T> = SuccessResponseDto<{
+  items: T[];
+  meta: { pagination: PaginationMetaDto };
 }>;
 
 export type UnResponse<T> = T extends ResponseDto<infer S> ? S : never;
-
-export interface SingleResult<T> {
-  data: T;
-}
-export type SingleResponseDto<T> = ResponseDto<SingleResult<T>>;
-
-export interface ListResult<T> {
-  items: T[];
-  meta: { count: number };
-}
-export type ListResponseDto<T> = ResponseDto<ListResult<T>>;
-
-export interface PaginationResult<T> {
-  items: T[];
-  meta: { pagination: PaginationMetaDto };
-}
-export type PaginationResponseDto<T> = ResponseDto<PaginationResult<T>>;
-
-export interface ErrorResponseDto extends ResponseDto {}
-export interface ValidatorResponseDto extends ResponseDto {
-  readonly result: Readonly<{ meta: { validators: ValidationMetaDto[] } }>;
-}

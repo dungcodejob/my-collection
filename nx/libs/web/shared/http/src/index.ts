@@ -4,3 +4,7 @@ export * from "./lib/models/pagination-meta.dto";
 export * from "./lib/models/response.dto";
 export * from "./lib/models/validation-meta.dto";
 export * from "./lib/models/server-side.error";
+export * from "./lib/utils/tap-error";
+export * from "./lib/utils/tap-response-failed";
+export * from "./lib/utils/tap-response-success";
+export * from "./lib/utils/tap-validation-errors";

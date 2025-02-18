@@ -5,3 +5,5 @@ export * from "./lib/auth/auth-result.dto";
 export * from "./lib/auth/token.dto";
 export * from "./lib/auth/credentials";
 export * from "./lib/user/user-profile.dto";
+export * from "./lib/collection/collection.dto";
+export * from "./lib/collection/collection.vm";
