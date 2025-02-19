@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { AppConfig } from '../models/app-config';
 
@@ -20,3 +20,5 @@ export class AppConfigService {
     );
   }
 }
+
+

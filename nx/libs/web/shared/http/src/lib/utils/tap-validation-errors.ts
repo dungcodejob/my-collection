@@ -1,7 +1,7 @@
-import { tap } from "rxjs";
-import { ResponseDto, ValidatorResponseDto } from "../models/response.dto";
-import { ValidationMetaDto } from "../models/validation-meta.dto";
-import { HttpStatusCode } from "@angular/common/http";
+
+import { catchError, EMPTY, OperatorFunction } from "rxjs";
+import { HttpErrorResponse, HttpStatusCode } from "@angular/common/http";
+import { HttpClientResponse } from "../models/http-client-response";
 
 /**
  * A custom RxJS operator that taps into the observable stream to handle HTTP validation errors.
@@ -13,14 +13,22 @@ import { HttpStatusCode } from "@angular/common/http";
  *          and then completes the stream to prevent further processing.
  */
 export function tapValidationErrors<T>(
-  callback: (error: ValidatorResponseDto["result"]) => void
-) {
-  return tap((res: ResponseDto<T>) => {
+  callback: (error: HttpErrorResponse) => void
+): OperatorFunction<HttpClientResponse<T>, HttpClientResponse<T>> {
+  return catchError((error: HttpErrorResponse | Error) => {
     // Check if the error is an HttpErrorResponse with status code 400 (Bad Request), which is the format defined by the server
-    if (!res.success && res.errorCode === "BadRequest") {
+    if (
+      error instanceof HttpErrorResponse &&
+      error.status === HttpStatusCode.BadRequest
+    ) {
       // Invoke the callback to handle the validation error
+      callback(error);
 
-      callback((res as ValidatorResponseDto).result);
+      // Return EMPTY to complete the stream and prevent further processing.
+      return EMPTY;
     }
+
+    // Re-throw other errors to be handled elsewhere in the observable chain.
+    throw error;
   });
 }

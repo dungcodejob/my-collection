@@ -1,11 +1,17 @@
-import { Injectable, inject } from "@angular/core"; 
-import {HttpService, ListResponseDto, SingleResponseDto} from '@nx/web-shared-http'
+import { Injectable, inject } from "@angular/core";
+import { HttpService, ListResponseDto, SingleResponseDto } from "@nx/web-shared-http";
 import { Observable } from "rxjs";
-import {CollectionDto, CreateCollectionDto, MoveCollectionDto, UpdateCollectionDto} from '@nx/web-shared-models'
-@Injectable()
-export class CollectionApi  {
-  private readonly _http = inject(HttpService);
+import {
+  CollectionDto,
+  CreateCollectionDto,
+  MoveCollectionDto,
+  UpdateCollectionDto,
+} from "@nx/web-shared-models";
+import { BaseApi } from "./base.api";
+import { HttpEvent } from "@angular/common/http";
 
+@Injectable()
+export class CollectionApi extends BaseApi {
   findAll(): Observable<ListResponseDto<CollectionDto>> {
     return this._http.get<ListResponseDto<CollectionDto>>("/collection");
   }
@@ -32,6 +38,6 @@ export class CollectionApi  {
   }
 
   delete(id: string): Observable<SingleResponseDto<void>> {
-    return this._http.delete(`/collection/${id}/`);
+    return this._http.delete<SingleResponseDto<void>>(`/collection/${id}/`);
   }
 }

@@ -9,7 +9,6 @@ import {
 import {
   addEntities,
   addEntity,
-  entityConfig,
   removeEntity,
   setEntities,
   updateEntity,
@@ -17,7 +16,7 @@ import {
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { CollectionApi } from "@nx/web-shared-api";
-import { tapError, tapResponseFailed, tapResponseSuccess } from "@nx/web-shared-http";
+import { tapError, tapResponseData } from "@nx/web-shared-http";
 import { CollectionMessages } from "@nx/web-shared-messages";
 import {
   CollectionVM,
@@ -55,12 +54,12 @@ export const CollectionStore = signalStore(
           switchMap(() =>
             _collectionApi.findAll().pipe(
               tapPrefix(() => patchState(store, setPending())),
-              tapResponseSuccess(result => {
+              tapResponseData(result => {
                 const items = plainToInstance(CollectionVM, result.items);
                 patchState(store, addEntities(items), setFulfilled());
               }),
-              tapResponseFailed(res => {
-                const error = new Error(res.message);
+              tapError(error => {
+                // const error = new Error(res.message);
                 patchState(store, setError(error));
               }),
               tapError()
@@ -74,15 +73,15 @@ export const CollectionStore = signalStore(
           switchMap(result =>
             _collectionApi.create(result).pipe(
               tapPrefix(() => patchState(store, setPending())),
-              tapResponseSuccess(result => {
+              tapResponseData(result => {
                 const data = plainToInstance(CollectionVM, result.data);
                 patchState(store, addEntity(data), setFulfilled());
                 _toastService.success(CollectionMessages.CreateSuccess, {
                   params: [data.title],
                 });
               }),
-              tapResponseFailed(res => {
-                const error = new Error(res.message);
+              tapError(error => {
+                // const error = new Error(res.message);
                 patchState(store, setError(error));
 
                 _toastService.error(CollectionMessages.CreateFailure);
@@ -98,7 +97,7 @@ export const CollectionStore = signalStore(
           switchMap(dto =>
             _collectionApi.update(dto.id, dto).pipe(
               tapPrefix(() => patchState(store, setPending())),
-              tapResponseSuccess(result => {
+              tapResponseData(result => {
                 const data = plainToInstance(CollectionVM, result.data);
                 patchState(
                   store,
@@ -112,14 +111,14 @@ export const CollectionStore = signalStore(
                   params: [data.title],
                 });
               }),
-              tapResponseFailed(res => {
-                const error = new Error(res.message);
+              tapError(error => {
+                // const error = new Error(res.message);
                 patchState(store, setError(error));
 
-                const errorCode = res.errorCode as keyof typeof CollectionMessages;
-                const message =
-                  CollectionMessages[errorCode] ?? CollectionMessages.UpdateFailure;
-                _toastService.error(message);
+                // const errorCode = res.errorCode as keyof typeof CollectionMessages;
+                // const message =
+                //   CollectionMessages[errorCode] ?? CollectionMessages.UpdateFailure;
+                // _toastService.error(message);
               }),
               tapError()
             )
@@ -134,22 +133,22 @@ export const CollectionStore = signalStore(
           switchMap(data =>
             _collectionApi.delete(data.id).pipe(
               tapPrefix(() => patchState(store, setPending())),
-              tapResponseSuccess(() => {
+              tapResponseData(() => {
                 patchState(store, removeEntity(data.id));
                 _toastService.success(CollectionMessages.DeleteSuccess, {
                   params: [data.title],
                 });
               }),
-              tapResponseFailed(res => {
-                const error = new Error(res.message);
+              tapError(error => {
+                // const error = new Error(res.message);
                 patchState(store, setError(error));
 
-                const errorCode = res.errorCode as keyof typeof CollectionMessages;
-                const message =
-                  CollectionMessages[errorCode] ?? CollectionMessages.DeleteFailure;
-                _toastService.error(message, {
-                  params: [data.title],
-                });
+                // const errorCode = res.errorCode as keyof typeof CollectionMessages;
+                // const message =
+                //   CollectionMessages[errorCode] ?? CollectionMessages.DeleteFailure;
+                // _toastService.error(message, {
+                //   params: [data.title],
+                // });
               }),
               tapError()
             )
@@ -188,7 +187,7 @@ export const CollectionStore = signalStore(
                   patchState(store, setEntities(newEntities));
                 }),
 
-                tapResponseSuccess(result => {
+                tapResponseData(result => {
                   const data = plainToInstance(CollectionVM, result.data);
                   patchState(
                     store,
@@ -199,8 +198,7 @@ export const CollectionStore = signalStore(
                     setFulfilled()
                   );
                 }),
-                tapResponseFailed(res => {
-                  const error = new Error(res.message);
+                tapError(error => {
                   const newEntities = _collectionBusiness.move(
                     entities,
                     fromIndex,
@@ -209,7 +207,7 @@ export const CollectionStore = signalStore(
 
                   patchState(store, setEntities(newEntities), setError(error));
                 }),
-                tapError(),
+                tapError()
               );
           })
         )

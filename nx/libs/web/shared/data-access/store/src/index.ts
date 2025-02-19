@@ -1,1 +1,2 @@
-export * from "./lib/web-shared-store/web-shared-store.component";
+export * from "./lib/collection.store";
+export * from "./lib/collection.business";

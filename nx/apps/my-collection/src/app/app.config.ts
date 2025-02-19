@@ -6,10 +6,7 @@ import {
   provideZoneChangeDetection,
 } from "@angular/core";
 import { provideRouter } from "@angular/router";
-import {
-  provideAppConfigInitializer,
-  provideAppInitWithConfigAsync,
-} from "@nx/web-shared-app-config";
+import { provideAppInitWithConfigAsync, providerConfig } from "@nx/web-shared-app-config";
 import { webShellRoutes } from "@nx/web-shell-feature";
 import { provideAppHttp } from "@nx/web-shared-http";
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
@@ -32,7 +29,7 @@ const provideAuth = (): EnvironmentProviders | Provider => [
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideAppConfigInitializer(),
+    providerConfig(),
     provideAppHttp(),
     provideAuth(),
     provideRouter(webShellRoutes),
