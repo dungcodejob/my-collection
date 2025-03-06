@@ -55,7 +55,9 @@ export const BookmarkViewOption = {
 } as const;
 
 export type BookmarkViewKey = keyof typeof BookmarkViewOption;
-export type BookmarkVisibility = Record<BookmarkViewKey, boolean>;
+export type BookmarkVisibility = {
+  [key in BookmarkViewKey]?: boolean;
+};
 
 interface BookmarkState {
   filter: BookmarkFilterVM;
@@ -67,12 +69,7 @@ const initialState: BookmarkState = {
     tags: [],
     keyword: null,
   },
-  visibility: {
-    [BookmarkViewOption.Description]: true,
-    [BookmarkViewOption.Tags]: true,
-    [BookmarkViewOption.Info]: true,
-    [BookmarkViewOption.Cover]: true,
-  },
+  visibility: {},
 };
 
 export const BookmarkFacade = signalStore(

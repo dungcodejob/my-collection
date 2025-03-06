@@ -1,3 +1,4 @@
+
 import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
@@ -6,9 +7,21 @@ import {
   effect,
   inject,
 } from "@angular/core";
-import { FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
+import { provideIcons } from "@ng-icons/core";
+import { lucideLoaderCircle } from "@ng-icons/lucide";
+import { HlmIconModule } from "@spartan-ng/ui-icon-helm";
+import { HlmInputModule } from "@spartan-ng/ui-input-helm";
+import { HlmLabelModule } from "@spartan-ng/ui-label-helm";
+import { HlmCheckboxModule } from "@spartan-ng/ui-checkbox-helm";
+import { HlmButtonModule } from "@spartan-ng/ui-button-helm";
 import { AuthLoginFacade } from "./auth-login.facade";
-
 type LoginForm = FormGroup<{
   username: FormControl<string>;
   password: FormControl<string>;
@@ -18,8 +31,16 @@ type LoginForm = FormGroup<{
 @Component({
   selector: "app-auth-feature-login",
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  providers: [AuthLoginFacade],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    HlmInputModule,
+    HlmLabelModule,
+    HlmIconModule,
+    HlmCheckboxModule,
+    HlmButtonModule
+  ],
+  providers: [AuthLoginFacade, provideIcons({ lucideLoaderCircle })],
   templateUrl: "./auth-login.component.html",
   styleUrl: "./auth-login.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +64,7 @@ export class AuthLoginComponent {
   }
 
   ngOnInit(): void {
+    console.log("sfdsdfdf");
     this._initForm();
     this._registerLoadingEffect();
   }

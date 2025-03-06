@@ -5,7 +5,7 @@
         <div class="lg:p-6">
           <div class="mx-auto flex w-full flex-col justify-center space-y-4 sm:w-[350px]">
             <div>
-              <img class="w-14 h-14" src="assets/images/logo.png" alt="logo" />
+              <img class="w-14 h-14" src="/assets/images/logo.png" alt="logo" />
             </div>
 
             <div class="flex flex-col gap-1">
@@ -21,7 +21,8 @@
               class="flex flex-col space-y-6"
               autocomplete="off"
               [formGroup]="loginForm"
-              (ngSubmit)="onSubmit()">
+              (ngSubmit)="onSubmit()"
+            >
               <!-- <label for="email">email</label> -->
 
               <div class="space-y-5">
@@ -38,7 +39,8 @@
                     placeholder="name@example.com"
                     autocapitalize="none"
                     autocomplete="off"
-                    autocorrect="off" />
+                    autocorrect="off"
+                  />
                   <div *ngIf="username.invalid && (username.dirty || username.touched)">
                     <div *ngIf="username.errors?.['required']" hlmInputError>
                       Username is required.
@@ -57,7 +59,8 @@
                     type="password"
                     autocapitalize="none"
                     autocomplete="new-password"
-                    autocorrect="off" />
+                    autocorrect="off"
+                  />
                   <div *ngIf="password.invalid && (password.dirty || password.touched)">
                     <div *ngIf="password.errors?.['required']" hlmInputError>
                       Password is required.
@@ -65,13 +68,12 @@
                   </div>
                 </div>
               </div>
-              <!-- <label for="password">password</label>
-    <input formControlName="email" id="password" type="password" />
-    <button type="submit">login</button> -->
+
+
 
               <div class="flex justify-between mb-6">
                 <label hlmLabel for="remember" class="flex items-center">
-                  <!-- <hlm-checkbox id="remember" formControlName="remember" class="mr-2" /> -->
+                  <hlm-checkbox id="remember" formControlName="remember" class="mr-2" />
                   Remember me
                 </label>
                 <p class="text-sm text-gray-500 font-medium underline">
@@ -81,11 +83,13 @@
 
               <button hlmBtn type="submit" size="sm" [disabled]="$isPending()">
                 @if ($isPending()) {
-                  <!-- <hlm-icon
-                    hlmCmdIcon
-                    class="mr-2 animate-spin"
-                    name="lucideLoader2"
-                    size="sm" /> -->
+
+                <ng-icon
+                  hlm
+                  size="sm"
+                  class="mr-2 animate-spin"
+                  name="lucideLoaderCircle"
+                />
                 }
 
                 <span>Login with Email</span>

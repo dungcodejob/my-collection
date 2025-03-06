@@ -47,7 +47,7 @@ export const AuthStore = signalStore(
     _authApi: inject(AuthApi),
     _storageService: inject(LocalStorageService),
     _redirectService: inject(RedirectService),
-    _injector: inject(Injector)
+    _injector: inject(Injector),
   })),
   withComputed(store => ({
     $isLoggedIn: computed(() => !!store.tokens()),
@@ -91,9 +91,9 @@ export const AuthStore = signalStore(
       },
     };
   }),
-  withMethods(({ _redirectService, _authApi, _storageService,_injector, ...store }) => {
-    const localUser = _storageService.useObject<UserProfileDto | null>("user");
-    const localTokens = _storageService.useObject<TokenDto | null>("tokens");
+  withMethods(({ _redirectService, _authApi, _storageService, _injector, ...store }) => {
+    const localUser = _storageService.use<UserProfileDto>("user");
+    const localTokens = _storageService.use<TokenDto>("tokens");
 
     const verifyAuth = () => {
       const user = localUser.get();

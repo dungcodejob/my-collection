@@ -18,8 +18,9 @@
         "assets": [
           "apps/my-collection/src/assets",
           {
-            "glob": "**/*",
-            "input": "apps/my-collection/public"
+            "glob": "_redirects",
+            "input": "apps/my-collection/src",
+            "output": "/"
           },
           {
             "glob": "**/*",

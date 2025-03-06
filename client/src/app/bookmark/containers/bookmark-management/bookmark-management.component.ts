@@ -123,6 +123,9 @@ export class BookmarkManagementComponent {
         take(1),
         filter(isNotFalsy),
         map(data => ({ ...data, collectionId }))
+
+
+        
       );
 
     this._facade.create(result$);

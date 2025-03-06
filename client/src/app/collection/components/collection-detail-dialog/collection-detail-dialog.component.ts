@@ -82,6 +82,8 @@ export class CollectionDetailDialogComponent implements OnInit {
     });
   }
 
+  
+
   private _setValueForControls(): void {
     const data = this._dialogContext.data;
     if (data) {

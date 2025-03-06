@@ -1,1 +1,2 @@
-export * from './lib/detail-dialog/detail-dialog.component';
+
+export * from "./lib/collection-detail.component";

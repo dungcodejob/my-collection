@@ -1,8 +1,8 @@
-import { Injectable } from "@angular/core";
+import { DestroyRef, Injectable, WritableSignal, effect, inject, signal, untracked } from "@angular/core";
 
-type UseObject<TType> = {
+type UseStorageObject<TType> = {
   get: () => TType | null;
-  set: (value: TType) => void;
+  set: (value: TType | null) => void;
   remove: () => void;
 };
 
@@ -11,7 +11,6 @@ export class LocalStorageService {
   // private readonly _logService = inject(LogService);
   private readonly _localStorage!: Storage;
   private readonly _isEnabled: boolean;
-
   constructor() {
     if (!window.localStorage) {
       this._isEnabled = false;
@@ -22,28 +21,24 @@ export class LocalStorageService {
     this._localStorage = window.localStorage;
   }
 
-  set(key: string, value: string): void {
-    if (this._isEnabled) {
-      this._localStorage.setItem(key, value);
-    }
-  }
-
-  get(key: string): string {
-    if (!this._isEnabled) {
-      return "";
-    }
-
-    return this._localStorage.getItem(key) || "";
-  }
-
-  setObject(key: string, value: unknown): void {
+  set<TType = unknown>(key: string, value: TType): void {
     if (!this._isEnabled) {
       return;
     }
-    this._localStorage.setItem(key, JSON.stringify(value));
+
+    const stringified = JSON.stringify(value);
+    const storageEvent = new StorageEvent("storage", {
+      key: key,
+      newValue: stringified,
+      storageArea: this._localStorage,
+    });
+
+    window.dispatchEvent(storageEvent);
+
+    this._localStorage.setItem(key, stringified);
   }
 
-  getObject<TType = unknown>(key: string): TType | null {
+  get<TType = unknown>(key: string): TType | null {
     if (!this._isEnabled) {
       return null;
     }
@@ -56,14 +51,51 @@ export class LocalStorageService {
     return JSON.parse(json);
   }
 
-  useObject<TType = unknown>(key: string): UseObject<TType> {
+  use<TType = unknown>(key: string): UseStorageObject<TType> {
     return {
-      get: () => this.getObject<TType>(key),
-      set: (value: TType) => this.setObject(key, value),
+      get: () => this.get<TType>(key),
+      set: (value: TType) => this.set(key, value),
       remove: () => this.remove(key),
     };
   }
 
+  form = <TValue>(key: string): WritableSignal<TValue | null> => {
+    const initialValue = this.get<TValue>(key);
+
+    const $value = signal<TValue | null>(initialValue);
+
+    const writeToStorageOnUpdateEffect = effect(() => {
+      const updated = $value();
+      untracked(() => {
+        this.set(key, updated);
+      });
+    });
+
+    const storageEventListener = (event: StorageEvent) => {
+      const isWatchedValueTargeted = event.key === key;
+      if (!isWatchedValueTargeted) {
+        return;
+      }
+
+      const currentValue = $value();
+      const newValue = this.get<TValue>(key);
+
+      const hasValueChanged = currentValue !== newValue;
+
+      if (hasValueChanged) {
+        $value.set(newValue);
+      }
+    };
+
+    window.addEventListener("storage", storageEventListener);
+
+    inject(DestroyRef).onDestroy(() => {
+      writeToStorageOnUpdateEffect.destroy();
+      window.removeEventListener("storage", storageEventListener);
+    });
+
+    return $value;
+  };
 
   remove(key: string): void {
     if (!this._isEnabled) {

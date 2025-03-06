@@ -1,7 +1,9 @@
 import { Type } from "class-transformer";
 
+export type Identity = string;
+
 export class BaseVM {
-  readonly id: string;
+  readonly id: Identity;
   @Type(() => Date)
   readonly updateAt: Date;
   @Type(() => Date)

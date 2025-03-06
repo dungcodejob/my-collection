@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { AuthShellRoutes } from "@nx/web-auth-feature-shell";
 import { LayoutComponent } from "@nx/web-shell-ui-layout";
 export const webShellRoutes: Routes = [
   {
@@ -19,8 +20,9 @@ export const webShellRoutes: Routes = [
     // ],
   },
   {
-    path: "auth/login",
-    loadChildren: async () =>
-      (await import("@nx/web-auth-feature-shell")).AuthShellRoutes,
+    path: "auth",
+    children: AuthShellRoutes,
+    // loadChildren: async () =>
+    //   (await import("@nx/web-auth-feature-shell")).AuthShellRoutes,
   },
 ];
