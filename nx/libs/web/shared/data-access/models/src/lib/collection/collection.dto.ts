@@ -1,44 +1,24 @@
-import { plainToClass, plainToInstance } from "class-transformer";
+import { faker } from "@faker-js/faker";
 import { BaseDto } from "../generic/base.dto";
-import { CollectionVM } from "./collection.vm";
+import { Builder } from "../generic/builder";
 
 export class CollectionDto extends BaseDto {
   readonly title: string;
   readonly icon: string;
   readonly position: string;
 
-  constructor(
-    id: string,
-    updateAt: string,
-    createAt: string,
-    title: string,
-    icon: string,
-    position: string
-  ) {
-    super(id, updateAt, createAt);
-    this.title = title;
-    this.icon = icon;
-    this.position = position;
-  }
-
-  static fromVM(data: CollectionVM): CollectionDto;
-  static fromVM(data: CollectionVM[]): CollectionDto[];
-  static fromVM(data: CollectionVM | CollectionVM[]): CollectionDto | CollectionDto[] {
-    if (Array.isArray(data)) {
-      return data.map(item => this.fromVM(item));
-    } else {
-      return plainToInstance(CollectionDto, data);
-    }
-  }
-
-  static toVM(data: CollectionDto): CollectionVM;
-  static toVM(data: CollectionDto[]): CollectionVM[];
-  static toVM(data: CollectionDto | CollectionDto[]): CollectionVM | CollectionVM[] {
-    if (Array.isArray(data)) {
-      return data.map(item => this.toVM(item));
-    } else {
-      return plainToInstance(CollectionVM, data);
-    }
+  constructor(data: {
+    id: string;
+    updateAt: string;
+    createAt: string;
+    title: string;
+    icon: string;
+    position: string;
+  }) {
+    super(data);
+    this.title = data.title;
+    this.icon = data.icon;
+    this.position = data.position;
   }
 }
 
@@ -51,4 +31,17 @@ export type UpdateCollectionDto = Omit<CollectionDto, keyof BaseDto | "position"
 export interface MoveCollectionDto {
   prevPosition: string;
   nextPosition: string;
+}
+
+export class CollectionDtoBuilder extends Builder<CollectionDto> {
+  setDefaults(): Partial<CollectionDto> {
+    return {
+      id: faker.string.uuid(),
+      icon: faker.string.symbol(),
+      createAt: faker.date.anytime().toString(),
+      position: faker.string.symbol(),
+      updateAt: faker.date.anytime().toString(),
+      title: faker.string.symbol(),
+    };
+  }
 }

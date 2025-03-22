@@ -54,7 +54,7 @@ export class LocalStorageService {
   use<TType = unknown>(key: string): UseStorageObject<TType> {
     return {
       get: () => this.get<TType>(key),
-      set: (value: TType) => this.set(key, value),
+      set: (value: TType | null) => this.set(key, value),
       remove: () => this.remove(key),
     };
   }

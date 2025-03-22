@@ -1,12 +1,13 @@
+import { Identity } from "./base.vm";
 
 export class BaseDto {
-  readonly id: string;
+  readonly id: Identity;
   readonly updateAt: string;
   readonly createAt: string;
 
-  constructor(id: string, updateAt: string, createAt: string) {
-    this.id = id;
-    this.updateAt = updateAt;
-    this.createAt = createAt;
+  constructor(data: BaseDto) {
+    this.id = data.id;
+    this.updateAt = data.updateAt;
+    this.createAt = data.createAt;
   }
 }

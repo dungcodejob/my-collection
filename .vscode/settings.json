@@ -4,5 +4,8 @@
         "angular-*": {
             "externalTemplate": true
         }
-    }
+    },
+    "cSpell.words": [
+        "mikro"
+    ]
 }

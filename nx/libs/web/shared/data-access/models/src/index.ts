@@ -7,3 +7,4 @@ export * from "./lib/auth/credentials";
 export * from "./lib/user/user-profile.dto";
 export * from "./lib/collection/collection.dto";
 export * from "./lib/collection/collection.vm";
+export * from "./lib/generic/builder";

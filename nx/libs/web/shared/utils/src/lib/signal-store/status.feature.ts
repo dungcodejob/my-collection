@@ -104,7 +104,7 @@ export function setError<Prop extends string>(
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {
-    return { [`${prop}Status`]: "fulfilled" } as NamedStatusState<Prop>;
+    return { [`${prop}Status`]: { error } } as NamedStatusState<Prop>;
   }
   return { status: { error } };
 }

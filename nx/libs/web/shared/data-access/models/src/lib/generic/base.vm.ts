@@ -9,9 +9,9 @@ export class BaseVM {
   @Type(() => Date)
   readonly createAt: Date;
 
-  constructor(id: string, updateAt: string, createAt: string) {
-    this.id = id;
-    this.updateAt = new Date(updateAt);
-    this.createAt = new Date(createAt);
+  constructor(data: BaseVM) {
+    this.id = data.id;
+    this.updateAt = data.updateAt;
+    this.createAt = data.createAt;
   }
 }

@@ -11,12 +11,11 @@ import { CollectionApi } from "@nx/web-shared-api";
 import { tapError, tapResponseData } from "@nx/web-shared-http";
 import { CollectionMessages } from "@nx/web-shared-messages";
 import {
-  CollectionDto,
   CreateCollectionDto,
   Identity,
   UpdateCollectionDto,
 } from "@nx/web-shared-models";
-import { ToastService } from "@nx/web-shared-services";
+import { CollectionAdapter, ToastService } from "@nx/web-shared-services";
 import { AppStore, CollectionBusiness, CollectionStore } from "@nx/web-shared-store";
 import {
   isNotNil,
@@ -37,10 +36,9 @@ export const CollectionFacade = signalStore(
   withStatus({ name: StatusName.List }),
   withStatus({ name: StatusName.Detail }),
   withProps(() => ({
-    _collectionApi: inject(CollectionApi),
-    _collectionStore: inject(CollectionStore),
-    _collectionBusiness: inject(CollectionBusiness),
-    _appStore: inject(AppStore),
+    
+    
+    
     _toastService: inject(ToastService),
   })),
   withComputed(({ _collectionStore }) => ({
@@ -52,6 +50,7 @@ export const CollectionFacade = signalStore(
       _collectionApi,
       _collectionStore,
       _collectionBusiness,
+      _collectionAdapter,
       _toastService,
       _appStore,
       ...store
@@ -63,7 +62,8 @@ export const CollectionFacade = signalStore(
               _collectionApi.findAll().pipe(
                 tapPrefix(() => patchState(store, setPending(StatusName.List))),
                 tapResponseData(result => {
-                  const items = CollectionDto.toVM(result.items);
+                  const items = _collectionAdapter.toItemVM(result.items);
+
                   _collectionStore.setItems(items);
                   // _toastService.success(CollectionMessages.CreateSuccess, {
                   //   params: [data.title],
@@ -85,7 +85,7 @@ export const CollectionFacade = signalStore(
               _collectionApi.create(collectionToCreate).pipe(
                 tapPrefix(() => patchState(store, setPending(StatusName.Detail))),
                 tapResponseData(result => {
-                  const data = CollectionDto.toVM(result.data);
+                  const data = _collectionAdapter.toItemVM(result.data);
                   _collectionStore.addItem(data);
                   _toastService.success(CollectionMessages.CreateSuccess, {
                     params: [data.title],
@@ -94,7 +94,7 @@ export const CollectionFacade = signalStore(
                   patchState(store, setFulfilled(StatusName.Detail));
                 }),
                 tapError(error => {
-                  _toastService.error(CollectionMessages.CreateFailure);
+                  // _toastService.error(CollectionMessages.CreateFailure);
                   patchState(store, setError(error, StatusName.Detail));
                 })
               )
@@ -108,7 +108,9 @@ export const CollectionFacade = signalStore(
               _collectionApi.update(collectionToUpdate.id, collectionToUpdate).pipe(
                 tapPrefix(() => patchState(store, setPending(StatusName.Detail))),
                 tapResponseData(result => {
-                  const data = CollectionDto.toVM(result.data);
+                  const data = _collectionAdapter.toItemVM(result.data);
+                  
+                 
                   _collectionStore.updateItem(data.id, data);
                   _toastService.success(CollectionMessages.UpdateSuccess, {
                     params: [data.title],

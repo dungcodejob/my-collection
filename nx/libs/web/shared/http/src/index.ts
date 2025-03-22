@@ -1,6 +1,7 @@
 export * from "./lib/http.provider";
 export * from "./lib/models/http-client-response";
 export * from "./lib/models/pagination-meta.dto";
+export * from "./lib/models/response.builder";
 export * from "./lib/models/response.dto";
 export * from "./lib/models/server-side.error";
 export * from "./lib/models/validation-meta.dto";

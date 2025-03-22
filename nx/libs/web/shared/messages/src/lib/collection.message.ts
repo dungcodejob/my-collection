@@ -8,4 +8,5 @@ export const CollectionMessages = {
   DeleteConfirm:
     "This action cannot be undone. It will permanently delete your collection, along with any bookmarks and other collections within it, from our servers",
   NotExist: "Collection {0} to be deleted does not exist",
+  NotFound: "Id cannot be null or undefined",
 };
