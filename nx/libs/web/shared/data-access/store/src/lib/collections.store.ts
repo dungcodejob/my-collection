@@ -7,32 +7,57 @@ import {
   withProps,
   withState,
 } from "@ngrx/signals";
-import { CollectionVM, CreateCollectionDto, Identity } from "@nx/web-shared-models";
-import { clamp, injectParams, isNotNil } from "@nx/web-shared-utils";
+import {
+  CollectionVM,
+  CreateCollectionDto,
+  Identity,
+  UpdateCollectionDto,
+} from "@nx/web-shared-models";
+import {
+  clamp,
+  injectParams,
+  isNotNil,
+  setError,
+  setFulfilled,
+  setPending,
+  tapPrefix,
+  withStatus,
+} from "@nx/web-shared-utils";
 import { CollectionApi } from "@nx/web-shared-api";
-import { CollectionAdapter, ToastService } from "@nx/web-shared-services";
+import { CollectionAdapter, ToastOption, ToastService } from "@nx/web-shared-services";
 import { CollectionBusiness } from "./collection.business";
 import { AppStore } from "./app.store";
 import {
   addEntity,
   entityConfig,
   removeEntity,
+  setEntities,
+  updateEntity,
   withEntities,
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { switchMap } from "rxjs";
+import { filter, finalize, map, switchMap } from "rxjs";
+import { tapResponseData, tapError } from "@nx/web-shared-http";
+import { CollectionMessages } from "@nx/web-shared-messages";
+
+enum StatusName {
+  List = "list",
+  Detail = "detail",
+}
 
 type CollectionState = {
-  items: CollectionVM[];
+  toast: ToastOption | null;
 };
 
 const initialState: CollectionState = {
-  items: [],
+  toast: null,
 };
 
 export const CollectionsStore = signalStore(
   withState(initialState),
   withEntities<CollectionVM>(),
+  withStatus({ name: StatusName.Detail }),
+  withStatus({ name: StatusName.List }),
   withProps(() => ({
     _collectionApi: inject(CollectionApi),
     _collectionBusiness: inject(CollectionBusiness),
@@ -42,7 +67,7 @@ export const CollectionsStore = signalStore(
   })),
   withComputed(store => {
     const $params = injectParams();
-    const $items = computed(() => store.items());
+    const $items = computed(() => store.entities().sort((a, b) => a.index - b.index));
     const $selectedId = computed(() => $params()["id"] as Identity | null);
     const $selectedEntity = computed(() => {
       const selectedId = $selectedId();
@@ -54,83 +79,173 @@ export const CollectionsStore = signalStore(
       $selectedEntity,
     };
   }),
-  withMethods(({ ...store }) => {
-    return {
-      setItems: (items: CollectionVM[]) => {
-        patchState(store, { items });
-      },
-      create: rxMethod<CreateCollectionDto>(collectionToCreate$ =>
-        collectionToCreate$.pipe(
-          switchMap(collectionToCreate =>
-            _collectionApi.create(collectionToCreate).pipe(
-              tapPrefix(() => patchState(store, setPending(StatusName.Detail))),
-              tapResponseData(result => {
-                const data = _collectionAdapter.toItemVM(result.data);
-                _collectionStore.addItem(data);
-                _toastService.success(CollectionMessages.CreateSuccess, {
-                  params: [data.title],
-                });
-
-                patchState(store, setFulfilled(StatusName.Detail));
-              }),
-              tapError(error => {
-                // _toastService.error(CollectionMessages.CreateFailure);
-                patchState(store, setError(error, StatusName.Detail));
-              })
+  withMethods(
+    ({
+      _collectionApi,
+      _collectionBusiness,
+      _collectionAdapter,
+      _toastService,
+      _appStore,
+      ...store
+    }) => {
+      return {
+        findByQuery: rxMethod<void>(trigger$ =>
+          trigger$.pipe(
+            switchMap(() =>
+              _collectionApi.findAll().pipe(
+                tapPrefix(() => patchState(store, setPending(StatusName.List))),
+                tapResponseData(result => {
+                  const items = _collectionAdapter.toItemVM(result.items);
+                  patchState(store, setEntities(items), setFulfilled(StatusName.List));
+                }),
+                tapError(error => {
+                  patchState(store, setError(error, StatusName.List));
+                })
+              )
             )
           )
-        )
-      ),
-      addItem: (itemToAdd: CollectionVM) => {
-        const newItems = [...store.items(), itemToAdd];
-        patchState(store, { items: newItems });
-      },
-      updateItem: (id: Identity, itemToUpdate: Partial<CollectionVM>) => {
-        if (!id) {
-          throw new Error(`Id cannot be null or undefined`);
-        }
+        ),
+        create: rxMethod<CreateCollectionDto>(collectionToCreate$ =>
+          collectionToCreate$.pipe(
+            switchMap(collectionToCreate =>
+              _collectionApi.create(collectionToCreate).pipe(
+                tapPrefix(() => patchState(store, setPending(StatusName.Detail))),
+                tapResponseData(result => {
+                  const data = _collectionAdapter.toItemVM(result.data);
+                  const toast: ToastOption = {
+                    type: "success",
+                    message: CollectionMessages.CreateSuccess,
+                    data: { params: [data.title] },
+                  };
 
-        if (!itemToUpdate) {
-          throw new Error(`Updated item cannot be null or undefined`);
-        }
+                  patchState(
+                    store,
+                    { toast },
+                    addEntity(data),
+                    setFulfilled(StatusName.Detail)
+                  );
+                }),
+                tapError(error => {
+                  const toast: ToastOption = {
+                    type: "error",
+                    message: CollectionMessages.CreateFailure,
+                  };
 
-        const newItems = store.items().map(item => {
-          if (item.id === id) {
-            return { ...item, ...itemToUpdate };
-          }
-          return item;
-        });
-        console.log("newItems", newItems);
-        patchState(store, { items: newItems });
-      },
-      deleteItem: (id: Identity) => {
-        const newItems = store.items().filter(item => item.id !== id);
-        patchState(store, { items: newItems });
-      },
-      move: (fromIndex: number, toIndex: number) => {
-        if (!isNotNil(fromIndex) || !isNotNil(toIndex)) {
-          throw new Error(`Index cannot be null or undefined`);
-        }
+                  patchState(store, { toast }, setError(error, StatusName.Detail));
+                })
+              )
+            )
+          )
+        ),
+        update: rxMethod<UpdateCollectionDto>(collectionToUpdate$ =>
+          collectionToUpdate$.pipe(
+            switchMap(collectionToUpdate =>
+              _collectionApi.update(collectionToUpdate.id, collectionToUpdate).pipe(
+                tapPrefix(() => patchState(store, setPending(StatusName.Detail))),
+                tapResponseData(result => {
+                  const data = _collectionAdapter.toItemVM(result.data);
 
-        const newEntities = [...store.items()];
-        const from = clamp(fromIndex, newEntities.length - 1);
-        const to = clamp(toIndex, newEntities.length - 1);
+                  const toast: ToastOption = {
+                    type: "success",
+                    message: CollectionMessages.UpdateSuccess,
+                    data: { params: [data.title] },
+                  };
 
-        if (from === to) {
-          return;
-        }
+                  patchState(
+                    store,
+                    { toast },
+                    updateEntity({ id: data.id, changes: data }),
+                    setFulfilled(StatusName.Detail)
+                  );
+                }),
+                tapError(error => {
+                  const toast: ToastOption = {
+                    type: "error",
+                    message: CollectionMessages.UpdateFailure,
+                  };
 
-        const target = newEntities[from];
-        const delta = to < from ? -1 : 1;
+                  patchState(store, { toast }, setError(error, StatusName.Detail));
+                })
+              )
+            )
+          )
+        ),
+        delete: rxMethod<Identity>(id$ =>
+          id$.pipe(
+            map(id => store.entities().find(item => item.id === id)),
+            filter(isNotNil),
+            switchMap(itemToDelete =>
+              _collectionApi.delete(itemToDelete.id).pipe(
+                tapPrefix(() => {
+                  _appStore.setLoading(true);
+                  setPending(StatusName.Detail);
+                }),
+                tapResponseData(() => {
+                  const toast: ToastOption = {
+                    type: "success",
+                    message: CollectionMessages.DeleteSuccess,
+                    data: { params: [itemToDelete.title] },
+                  };
 
-        for (let i = from; i !== to; i += delta) {
-          newEntities[i] = newEntities[i + delta];
-        }
+                  patchState(
+                    store,
+                    { toast },
+                    removeEntity(itemToDelete.id),
+                    setFulfilled(StatusName.Detail)
+                  );
+                }),
+                tapError(error => {
+                  const toast: ToastOption = {
+                    type: "error",
+                    message: CollectionMessages.DeleteFailure,
+                  };
+                  patchState(store, { toast }, setError(error, StatusName.Detail));
+                }),
+                finalize(() => _appStore.setLoading(false))
+              )
+            )
+          )
+        ),
+        move: rxMethod<{ fromIndex: number; toIndex: number }>(id$ =>
+          id$.pipe(
+            switchMap(({ fromIndex, toIndex }) => {
+              const items = store.entities();
+              const movedItem = items.find((_, index) => index === fromIndex);
+              if (!movedItem) throw new Error("Item not found");
 
-        newEntities[to] = target;
-
-        patchState(store, { items: newEntities });
-      },
-    };
-  })
+              const positions = _collectionBusiness.getPositionFromIndex(
+                items,
+                fromIndex,
+                toIndex
+              );
+              return _collectionApi
+                .move(movedItem.id, {
+                  prevPosition: positions[0],
+                  nextPosition: positions[1],
+                })
+                .pipe(
+                  tapPrefix(() =>
+                    patchState(
+                      store,
+                      setEntities(_collectionBusiness.move(items, fromIndex, toIndex)),
+                      setPending(StatusName.Detail)
+                    )
+                  ),
+                  tapResponseData(() =>
+                    patchState(store, setFulfilled(StatusName.Detail))
+                  ),
+                  tapError(error =>
+                    patchState(
+                      store,
+                      setEntities(_collectionBusiness.move(items, toIndex, fromIndex)),
+                      setError(error, StatusName.Detail)
+                    )
+                  )
+                );
+            })
+          )
+        ),
+      };
+    }
+  )
 );

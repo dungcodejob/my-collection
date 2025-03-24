@@ -1,8 +1,14 @@
 import { Injectable, Type } from "@angular/core";
-import { ExternalToast, toast } from "ngx-sonner";
+import { ExternalToast, toast, ToastTypes } from "ngx-sonner";
 
 type ExtraToast = ExternalToast & {
   params: (string | number | boolean)[];
+};
+
+export type ToastOption = {
+  type?: "success" | "info" | "warning" | "error" | "loading";
+  message: string | Type<unknown>;
+  data?: ExtraToast;
 };
 
 @Injectable({ providedIn: "root" })
@@ -18,10 +24,13 @@ export class ToastService {
     toast.success(format, { description, ...data });
   }
 
-  show(message: string | Type<unknown>, data?: ExtraToast) {
+  show(options: ToastOption) {
+    const { message, data, type } = options;
     const format = this._format(message, data?.params);
     const description = this._getTimeDescription();
-    toast(format, { description, ...data });
+
+    const fn = type ? toast[type] : toast;
+    fn(format, { description, ...data });
   }
 
   private _format(

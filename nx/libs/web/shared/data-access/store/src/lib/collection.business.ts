@@ -4,26 +4,26 @@ import { clamp } from "@nx/web-shared-utils";
 
 @Injectable({ providedIn: "root" })
 export class CollectionBusiness {
-  move(entities: CollectionVM[], fromIndex: number, toIndex: number): CollectionVM[] {
-    const newEntities = structuredClone(entities);
-
-    const from = clamp(fromIndex, entities.length - 1);
-    const to = clamp(toIndex, entities.length - 1);
-
-    if (from === to) {
-      return newEntities;
+  move(items: CollectionVM[], fromIndex: number, toIndex: number): CollectionVM[] {
+    if (
+      fromIndex < 0 ||
+      fromIndex >= items.length ||
+      toIndex < 0 ||
+      toIndex >= items.length
+    ) {
+      // console.error("Chỉ mục không hợp lệ");
+      return items;
     }
 
-    const target = newEntities[from];
-    const delta = to < from ? -1 : 1;
+    let changedItems = [...items];
+    const todoItem = changedItems.splice(fromIndex, 1)[0];
+    changedItems.splice(toIndex, 0, todoItem);
+    changedItems = changedItems.map((item, index) => ({
+      ...item,
+      index: index,
+    }));
 
-    for (let i = from; i !== to; i += delta) {
-      newEntities[i] = newEntities[i + delta];
-    }
-
-    newEntities[to] = target;
-
-    return newEntities;
+    return changedItems;
   }
 
   getPositionFromIndex(

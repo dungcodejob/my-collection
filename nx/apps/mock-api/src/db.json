@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "18maytinhmoi@gmail.com",
+      "password": "Dungcool102608@",
+      "firstName": "Phạm Văn",
+      "lastName": "Anh Dũng",
+      "updateAt": "2023-10-27T12:00:00Z",
+      "createAt": "2023-10-27T12:00:00Z"
+    },
+    {
+      "id": 2,
+      "email": "hoangyenhuynh18@gmail.com",
+      "password": "hoangyenhuynh18",
+      "firstName": "Huỳnh Nữ",
+      "lastName": "Hoàng Yên",
+      "updateAt": "2023-10-27T12:00:00Z",
+      "createAt": "2023-10-27T12:00:00Z"
+    }
+  ]
+}
