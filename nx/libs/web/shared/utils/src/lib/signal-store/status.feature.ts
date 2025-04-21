@@ -3,12 +3,13 @@ import { Signal, computed } from "@angular/core";
 import {
   EmptyFeatureResult,
   SignalStoreFeature,
-  SignalStoreFeatureResult,
   signalStoreFeature,
   withComputed,
-  withState,
+  withState
 } from "@ngrx/signals";
 
+import { MethodsDictionary } from "@ngrx/signals/src/signal-store-models";
+import { capitalize } from "../string";
 import {
   NamedStatusSignals,
   NamedStatusState,
@@ -16,9 +17,6 @@ import {
   StatusSignals,
   StatusState,
 } from "./status-name.type";
-import { capitalize } from "../string";
-import { ServerSideError } from "@nx/web-shared-http";
-import { MethodsDictionary } from "@ngrx/signals/src/signal-store-models";
 
 function getStatusStateKeys(config?: { name: string }) {
   const name = config?.name;
@@ -94,13 +92,13 @@ export function setFulfilled<Prop extends string>(
   return { status: "fulfilled" };
 }
 
-export function setError(error: ServerSideError): StatusState;
+export function setError(error: any): StatusState;
 export function setError<Prop extends string>(
-  error: ServerSideError,
+  error: any,
   prop: Prop
 ): NamedStatusState<Prop>;
 export function setError<Prop extends string>(
-  error: ServerSideError,
+  error: any,
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {
