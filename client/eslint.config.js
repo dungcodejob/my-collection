@@ -52,6 +52,12 @@ module.exports = tsEslint.config(
       //   },
       // ],
       "no-console": ["error", { allow: ["warn", "error"] }],
+
+      "rxjs/no-implicit-any-catch": "warn",
+      "rxjs/no-nested-subscribe": "warn",
+      "rxjs/throw-error": "warn",
+      "rxjs/no-unsafe-subject-next": "warn",
+
       "@angular-eslint/component-selector": [
         "error",
         {

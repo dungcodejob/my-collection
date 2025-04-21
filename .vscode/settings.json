@@ -1,0 +1,11 @@
+{
+    "nxConsole.nxWorkspacePath": "nx",
+    "angular-schematics.schematicsDefaultOptions": {
+        "angular-*": {
+            "externalTemplate": true
+        }
+    },
+    "cSpell.words": [
+        "mikro"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "web-shared-assets",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/shared/assets/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:web", "type:util", "category:shared"],
+  "targets": {}
+}

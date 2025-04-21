@@ -54,6 +54,7 @@ export const AuthStore = signalStore(
   withStatus({ name: ApiToken.refresh }),
   withMethods(store => {
     const authApi = inject(AuthApi);
+    
 
     const authenticationHandle = (name: ApiToken) => {
       patchState(store, setPending(name));
@@ -65,7 +66,6 @@ export const AuthStore = signalStore(
             {
               user: result.user,
               token: result.tokens,
-              authenticationHandled: true,
             },
             setFulfilled(name)
           )
@@ -84,10 +84,10 @@ export const AuthStore = signalStore(
         })
       );
     };
-    // const syncToLocal = () => {
-    //      storageService.setObject(LocalStorageKeys.User, store.user());
-    //       storageService.setObject(LocalStorageKeys.Token, store.token());
-    // }
+    const syncToLocal = () => {
+      store._storageService.setObject(LocalStorageKeys.User, store.user());
+      store._storageService.setObject(LocalStorageKeys.Token, store.token());
+    };
     return {
       login: rxMethod<Credentials>(
         pipe(
@@ -101,6 +101,13 @@ export const AuthStore = signalStore(
           switchMap(token =>
             authApi.refresh(token).pipe(authenticationHandle(ApiToken.refresh))
           )
+        )
+      ),
+      logout: rxMethod(
+        pipe(
+          tap(() => {
+            patchStore(store);
+          })
         )
       ),
       clear: () => {

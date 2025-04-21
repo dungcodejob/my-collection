@@ -1,0 +1,49 @@
+{
+  "name": "mock-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/mock-api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/mock-api",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/mock-api/src/main.ts",
+        "tsConfig": "apps/mock-api/tsconfig.app.json",
+        "assets": ["apps/mock-api/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "configurations": {
+        "start": {
+          "commands": ["ts-node apps/mock-api/src/main.ts --port 3001"]
+        }
+      }
+    }
+  },
+  "tags": []
+}

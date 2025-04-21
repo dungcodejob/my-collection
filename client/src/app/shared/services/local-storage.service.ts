@@ -50,6 +50,13 @@ export class LocalStorageService {
     return JSON.parse(json);
   }
 
+  useObject<TType = unknown>(key: string): [() => TType | null, (value: TType) => void] {
+    const get = () => this.getObject<TType>(key);
+    const set = (value: TType) => this.setObject(key, value);
+
+    return [get, set];
+  }
+
   remove(key: string): void {
     if (!this._isEnabled) {
       return;

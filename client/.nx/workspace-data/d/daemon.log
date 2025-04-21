@@ -273,3 +273,98 @@
 [NX Daemon Server] - 2024-09-23T01:34:35.336Z - Closed a connection. Number of open connections: 0
 [NX Daemon Server] - 2024-09-23T01:34:35.336Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (sources)
 [NX Daemon Server] - 2024-09-23T01:34:35.336Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-12-06T06:56:16.335Z - Started listening on: \\.\pipe\nx\C:\Users\VELA~1.OS0\AppData\Local\Temp\5a86fcfd6e3ed3b6a08c\d.sock
+[NX Daemon Server] - 2024-12-06T06:56:16.343Z - [WATCHER]: Subscribed to changes within: c:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-12-06T06:56:16.345Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-06T06:56:16.345Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-12-06T06:56:16.346Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-06T06:56:16.349Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX Daemon Server] - 2024-12-06T06:56:16.349Z - Done responding to the client Shutdown initiated
+[NX Daemon Server] - 2024-12-06T06:56:16.349Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 0.
+[NX Daemon Server] - 2024-12-06T06:56:16.350Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-12-06T06:56:16.350Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-12-06T06:56:16.350Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2024-12-19T01:49:55.689Z - Started listening on: \\.\pipe\nx\C:\Users\VELA~1.OS0\AppData\Local\Temp\5a86fcfd6e3ed3b6a08c\d.sock
+[NX Daemon Server] - 2024-12-19T01:49:55.696Z - [WATCHER]: Subscribed to changes within: c:\Project\my-collection\client (native)
+[NX Daemon Server] - 2024-12-19T01:49:55.702Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-19T01:49:55.707Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-12-19T01:49:55.760Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-19T01:49:55.761Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-12-19T01:49:55.762Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-12-19T01:49:55.804Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-12-19T01:49:56.348Z - Time taken for 'Load Nx Plugin: C:\Project\my-collection\client\node_modules\.pnpm\nx@20.2.2\node_modules\nx\src\plugins\js' 540.5629ms
+[NX Daemon Server] - 2024-12-19T01:49:56.353Z - Time taken for 'Load Nx Plugin: C:\Project\my-collection\client\node_modules\.pnpm\nx@20.2.2\node_modules\nx\src\plugins\package-json' 541.9902000000001ms
+[NX Daemon Server] - 2024-12-19T01:49:56.374Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-12-19T01:49:56.375Z - [REQUEST]: 
+[NX Daemon Server] - 2024-12-19T01:49:56.375Z - [REQUEST]: 
+[NX Daemon Server] - 2024-12-19T01:49:56.381Z - Time taken for 'loadNxPlugins' 567.9254000000001ms
+[NX Daemon Server] - 2024-12-19T01:49:56.733Z - Time taken for 'build-project-configs' 324.2379000000001ms
+[NX Daemon Server] - 2024-12-19T01:49:57.598Z - [SYNC]: collect registered sync generators
+[NX Daemon Server] - 2024-12-19T01:49:57.599Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-12-19T01:49:57.600Z - Time taken for 'total for creating and serializing project graph' 1795.3952ms
+[NX Daemon Server] - 2024-12-19T01:49:57.601Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-12-19T01:49:57.601Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 1795. Response time: 2.
+[NX Daemon Server] - 2024-12-19T01:49:57.614Z - [REQUEST]: Responding to the client. handleContextFileData
+[NX Daemon Server] - 2024-12-19T01:49:57.614Z - Done responding to the client handleContextFileData
+[NX Daemon Server] - 2024-12-19T01:49:57.615Z - Handled GET_CONTEXT_FILE_DATA. Handling time: 2. Response time: 1.
+[NX Daemon Server] - 2024-12-19T01:49:57.617Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-12-19T04:49:57.766Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2024-12-19T04:49:57.772Z - [WATCHER]: Stopping the watcher for c:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2025-02-12T12:39:08.842Z - Started listening on: \\.\pipe\nx\C:\Users\18may\AppData\Local\Temp\a39cf094a2adb2b5bd52\d.sock
+[NX Daemon Server] - 2025-02-12T12:39:08.853Z - [WATCHER]: Subscribed to changes within: e:\Project\my-collection\client (native)
+[NX Daemon Server] - 2025-02-12T12:39:08.857Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2025-02-12T12:39:08.868Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2025-02-12T12:39:08.904Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2025-02-12T12:39:08.905Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2025-02-12T12:39:08.905Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2025-02-12T12:39:08.909Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2025-02-12T12:39:09.834Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2025-02-12T12:39:09.835Z - [REQUEST]: 
+[NX Daemon Server] - 2025-02-12T12:39:09.835Z - [REQUEST]: 
+[NX Daemon Server] - 2025-02-12T12:39:09.852Z - Time taken for 'loadNxPlugins' 921.7956000000001ms
+
+ NX   Failed to parse pnpm lockfile
+
+Please open an issue at `https://github.com/nrwl/nx/issues/new?template=1-bug.yml` and provide a reproduction.
+
+Original error: Could not find ".modules.yaml" at "e:\Project\my-collection\client/node_modules/.modules.yaml"
+
+
+Error: Could not find ".modules.yaml" at "e:\Project\my-collection\client/node_modules/.modules.yaml"
+    at loadPnpmHoistedDepsDefinition (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\lock-file\utils\pnpm-normalizer.js:40:15)
+    at getNodes (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\lock-file\pnpm-parser.js:213:77)
+    at getPnpmLockfileNodes (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\lock-file\pnpm-parser.js:32:12)
+    at getLockFileNodes (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\lock-file\lock-file.js:48:59)
+    at exports.createNodes (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\index.js:48:64)
+    at e:\Project\my-collection\client\node_modules\nx\src\project-graph\plugins\utils.js:47:33
+    at Array.map (<anonymous>)
+    at createNodesFromFiles (e:\Project\my-collection\client\node_modules\nx\src\project-graph\plugins\utils.js:45:35)
+    at LoadedNxPlugin.createNodes (e:\Project\my-collection\client\node_modules\nx\src\project-graph\plugins\internal-api.js:27:76)
+    at LoadedNxPlugin.createNodes.<computed> (e:\Project\my-collection\client\node_modules\nx\src\project-graph\plugins\internal-api.js:44:34)
+
+[NX Daemon Server] - 2025-02-12T12:39:11.112Z - Time taken for 'build-project-configs' 1238.0384ms
+[NX Daemon Server] - 2025-02-12T12:39:12.457Z - [REQUEST]: Responding to the client with an error. Error when preparing serialized project graph. Failed to process project graph. Run "nx reset" to fix this. Please report the issue if you keep seeing it.
+Failed to process project graph. Run "nx reset" to fix this. Please report the issue if you keep seeing it.
+      An error occurred while processing files for the nx/js/dependencies-and-lockfile plugin.
+    - pnpm-lock.yaml: Could not find ".modules.yaml" at "e:\Project\my-collection\client/node_modules/.modules.yaml"
+      Error: Could not find ".modules.yaml" at "e:\Project\my-collection\client/node_modules/.modules.yaml"
+          at loadPnpmHoistedDepsDefinition (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\lock-file\utils\pnpm-normalizer.js:40:15)
+          at getNodes (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\lock-file\pnpm-parser.js:213:77)
+          at getPnpmLockfileNodes (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\lock-file\pnpm-parser.js:32:12)
+          at getLockFileNodes (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\lock-file\lock-file.js:48:59)
+          at exports.createNodes (e:\Project\my-collection\client\node_modules\nx\src\plugins\js\index.js:48:64)
+          at e:\Project\my-collection\client\node_modules\nx\src\project-graph\plugins\utils.js:47:33
+          at Array.map (<anonymous>)
+          at createNodesFromFiles (e:\Project\my-collection\client\node_modules\nx\src\project-graph\plugins\utils.js:45:35)
+          at LoadedNxPlugin.createNodes (e:\Project\my-collection\client\node_modules\nx\src\project-graph\plugins\internal-api.js:27:76)
+          at LoadedNxPlugin.createNodes.<computed> (e:\Project\my-collection\client\node_modules\nx\src\project-graph\plugins\internal-api.js:44:34)
+[NX Daemon Server] - 2025-02-12T12:39:12.458Z - Time taken for 'total execution time for createProjectGraph()' 1352.3927000000003ms
+[NX Daemon Server] - 2025-02-12T12:39:12.459Z - Done responding to the client null
+[NX Daemon Server] - 2025-02-12T12:39:12.459Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 3548. Response time: 3.
+[NX Daemon Server] - 2025-02-12T12:39:12.468Z - [REQUEST]: Responding to the client. handleContextFileData
+[NX Daemon Server] - 2025-02-12T12:39:12.469Z - Done responding to the client handleContextFileData
+[NX Daemon Server] - 2025-02-12T12:39:12.469Z - Handled GET_CONTEXT_FILE_DATA. Handling time: 2. Response time: 1.
+[NX Daemon Server] - 2025-02-12T12:39:12.474Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2025-02-12T15:39:12.465Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (sources)
+[NX Daemon Server] - 2025-02-12T15:39:12.470Z - [WATCHER]: Stopping the watcher for e:\Project\my-collection\client (outputs)
+[NX Daemon Server] - 2025-02-12T15:39:12.478Z - Server stopped because: "10800000ms of inactivity"

@@ -1,0 +1,19 @@
+import { InjectionToken, Provider, Type } from "@angular/core";
+import { AppConfig } from "./models/app-config";
+
+export interface OnInitConfig {
+  configure(config: AppConfig): void;
+}
+
+export const APP_INIT_WITH_CONFIG = new InjectionToken<readonly OnInitConfig[]>(
+  "APP_INI_WITH_CONFIG"
+);
+
+type ProviderFn = <T extends OnInitConfig>(impl: Type<T>) => Provider;
+export const provideAppInitWithConfig: ProviderFn = <T extends OnInitConfig>(
+  impl: Type<T>
+): Provider => ({
+  provide: APP_INIT_WITH_CONFIG,
+  multi: true,
+  useExisting: impl,
+});
