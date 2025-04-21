@@ -1,7 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { WebBookmarkFeatureListComponent } from './web-bookmark-feature-list.component';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { WebBookmarkFeatureListComponent } from "./web-bookmark-feature-list.component";
 
-describe('WebBookmarkFeatureListComponent', () => {
+describe("WebBookmarkFeatureListComponent", () => {
   let component: WebBookmarkFeatureListComponent;
   let fixture: ComponentFixture<WebBookmarkFeatureListComponent>;
 
@@ -15,7 +15,7 @@ describe('WebBookmarkFeatureListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

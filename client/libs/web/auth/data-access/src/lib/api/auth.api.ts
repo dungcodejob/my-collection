@@ -5,12 +5,10 @@ import { AuthResultDto, Credentials } from "@nx/web-shared-models";
 import { Observable, of } from "rxjs";
 import { BaseApi } from "@nx/web-shared-api";
 
-
 type AuthResponse = SingleResponseDto<AuthResultDto>;
 
 @Injectable({ providedIn: "root" })
 export class AuthApi extends BaseApi {
-
   login(body: Credentials): Observable<AuthResponse> {
     return this._http.post<AuthResponse>(
       this._config.baseUrl + "/security/login",
@@ -33,5 +31,4 @@ export class AuthApi extends BaseApi {
   logout(): Observable<never> {
     return of();
   }
-
 }

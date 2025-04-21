@@ -68,7 +68,7 @@ describe("CollectionStore", () => {
 
       expect(collectionStore.$items()).toEqual(initialItems);
       expect(collectionStore.$items()).toHaveLength(initialItems.length);
-      
+
       collectionStore.addItem(itemToAdd);
 
       expect(collectionStore.$items()).toEqual(expectedItems);

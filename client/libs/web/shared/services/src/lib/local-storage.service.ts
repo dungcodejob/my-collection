@@ -1,4 +1,12 @@
-import { DestroyRef, Injectable, WritableSignal, effect, inject, signal, untracked } from "@angular/core";
+import {
+  DestroyRef,
+  Injectable,
+  WritableSignal,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from "@angular/core";
 
 type UseStorageObject<TType> = {
   get: () => TType | null;

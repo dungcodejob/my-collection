@@ -5,7 +5,7 @@ import {
   SignalStoreFeature,
   signalStoreFeature,
   withComputed,
-  withState
+  withState,
 } from "@ngrx/signals";
 
 import { MethodsDictionary } from "@ngrx/signals/src/signal-store-models";

@@ -9,10 +9,9 @@ export class CollectionMockApi extends EntityMockApi<CollectionDto> {
     super("collection");
   }
 
-
-//   findByQuery() {
-//     return this._get({
-//         url: ''
-//     })
-//   }
+  //   findByQuery() {
+  //     return this._get({
+  //         url: ''
+  //     })
+  //   }
 }

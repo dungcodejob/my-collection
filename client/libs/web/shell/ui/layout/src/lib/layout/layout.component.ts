@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
 @Component({
-  selector: 'lib-layout',
+  selector: "lib-layout",
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './layout.component.html',
-  styleUrl: './layout.component.css',
+  templateUrl: "./layout.component.html",
+  styleUrl: "./layout.component.css",
 })
 export class LayoutComponent {}

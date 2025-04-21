@@ -9,7 +9,7 @@ import {
 import { inject } from "@angular/core";
 import { toObservable } from "@angular/core/rxjs-interop";
 import { Observable, catchError, filter, switchMap, take, throwError } from "rxjs";
-import {AuthStore} from '@nx/web-auth-data-access'
+import { AuthStore } from "@nx/web-auth-data-access";
 
 export const authInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
@@ -49,7 +49,6 @@ export const authInterceptor: HttpInterceptorFn = (
       switchMap(value => addTokenToRequest(request, next, value.access)),
       catchError(() => throwError(() => error))
     );
-
   };
 
   if (!tokens) {

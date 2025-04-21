@@ -87,10 +87,7 @@ export class CollectionDetailComponent implements OnInit {
 
   private _initForm(): void {
     this.form = this._nonNullFb.group({
-      title: this._nonNullFb.control("", [
-        Validators.required,
-        Validators.minLength(3),
-      ]),
+      title: this._nonNullFb.control("", [Validators.required, Validators.minLength(3)]),
     });
   }
 

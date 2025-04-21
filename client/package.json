@@ -2,7 +2,11 @@
   "name": "@nx/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "nx affected --target=lint --parallel --base=development",
+    "prepare": "cd .. && husky ./client/.husky"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "19.1.5",
@@ -86,5 +90,11 @@
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "8.24.0"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "npm run format",
+      "git add ."
+    ]
   }
 }

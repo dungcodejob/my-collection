@@ -11,7 +11,7 @@ const initialState: AppState = {
 export const AppStore = signalStore(
   { providedIn: "root" },
   withState(initialState),
-  
+
   withMethods(store => {
     return {
       setLoading(loading: boolean) {

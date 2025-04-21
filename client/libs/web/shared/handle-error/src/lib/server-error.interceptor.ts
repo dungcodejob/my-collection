@@ -1,19 +1,15 @@
 import {
-    HttpErrorResponse,
-    HttpEvent,
+  HttpErrorResponse,
+  HttpEvent,
   HttpInterceptorFn,
   HttpResponse,
   HttpStatusCode,
-
 } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { catchError, tap } from "rxjs";
-import {ToastService} from '@nx/web-shared-services';
-import {isPlainObject} from '@nx/web-shared-utils';
-import {AppMessages} from '@nx/web-shared-messages';
-
-
-
+import { ToastService } from "@nx/web-shared-services";
+import { isPlainObject } from "@nx/web-shared-utils";
+import { AppMessages } from "@nx/web-shared-messages";
 
 class HttpResponseBodyFormatError extends Error {
   constructor() {
@@ -29,9 +25,6 @@ class HttpNoNetworkConnectionError extends Error {
     super("No network connection");
   }
 }
-
-
-
 
 /**
  * HTTP interceptor function that intercepts and handles HTTP responses and errors.
@@ -97,7 +90,6 @@ export const serverErrorInterceptor: HttpInterceptorFn = (req, next) => {
   );
 };
 
-
 /**
  * Helper function to check if an error is likely due to a network connection issue.
  *
@@ -105,14 +97,14 @@ export const serverErrorInterceptor: HttpInterceptorFn = (req, next) => {
  * @returns `true` if it's likely a network error, `false` otherwise.
  */
 function checkNoNetworkConnection(error: any): boolean {
-  return(
-    error instanceof HttpErrorResponse
-    && !error.headers.keys().length
-    && !error.ok
-    && !error.status
-    && !error.error.loaded
-    && !error.error.total
-  )
+  return (
+    error instanceof HttpErrorResponse &&
+    !error.headers.keys().length &&
+    !error.ok &&
+    !error.status &&
+    !error.error.loaded &&
+    !error.error.total
+  );
 }
 
 /**
@@ -125,14 +117,13 @@ function checkNoNetworkConnection(error: any): boolean {
 function checkInvalid200Response(httpEvent: HttpEvent<any>): boolean {
   return (
     // Must be an instance of HttpResponse (i.e., a response, not a request or other event)
-    httpEvent instanceof HttpResponse
+    httpEvent instanceof HttpResponse &&
     // Must have a successful status code (200 OK)
-    && httpEvent.status === HttpStatusCode.Ok
+    httpEvent.status === HttpStatusCode.Ok &&
     // But the body format must be invalid
-    && !check200ResponseBodyFormat(httpEvent)
-  )
+    !check200ResponseBodyFormat(httpEvent)
+  );
 }
-
 
 /**
  * Verifies if the response body adheres to the expected format for a successful (200 OK) response.
@@ -142,11 +133,12 @@ function checkInvalid200Response(httpEvent: HttpEvent<any>): boolean {
  * @returns True if the response body matches the expected format, false otherwise.
  */
 function check200ResponseBodyFormat(response: HttpResponse<any>): boolean {
-  return isPlainObject(response.body)
-    && response.body.status === 'ok'
-    && response.body.data !== undefined
+  return (
+    isPlainObject(response.body) &&
+    response.body.status === "ok" &&
+    response.body.data !== undefined
+  );
 }
-
 
 /**
  * Checks if the given error is a 400 Bad Request error from the server.
@@ -155,5 +147,5 @@ function check200ResponseBodyFormat(response: HttpResponse<any>): boolean {
  * @returns True if the error is an HttpErrorResponse with status code 400 (Bad Request), false otherwise.
  */
 function is400ResponseError(error: any) {
-  return (error instanceof HttpErrorResponse && error.status === HttpStatusCode.BadRequest);
+  return error instanceof HttpErrorResponse && error.status === HttpStatusCode.BadRequest;
 }

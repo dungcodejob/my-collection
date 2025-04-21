@@ -1,4 +1,3 @@
-
 import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
@@ -38,7 +37,7 @@ type LoginForm = FormGroup<{
     HlmLabelModule,
     HlmIconModule,
     HlmCheckboxModule,
-    HlmButtonModule
+    HlmButtonModule,
   ],
   providers: [AuthLoginFacade, provideIcons({ lucideLoaderCircle })],
   templateUrl: "./auth-login.component.html",

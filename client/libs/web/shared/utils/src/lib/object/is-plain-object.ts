@@ -1,7 +1,5 @@
-
-
 function isObject(o: any): boolean {
-  return Object.prototype.toString.call(o) === '[object Object]';
+  return Object.prototype.toString.call(o) === "[object Object]";
 }
 
 export function isPlainObject(o: any): boolean {
@@ -24,4 +22,4 @@ export function isPlainObject(o: any): boolean {
 
   // Most likely a plain Object
   return true;
-};
+}

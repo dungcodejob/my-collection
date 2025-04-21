@@ -12,7 +12,7 @@ import { HttpClientResponse } from "../models/http-client-response";
  * @returns An RxJS operator function that taps into the observable stream,
  *          extracts upload progress events, and invokes the provided callback with the calculated progress.
  */
-export function tapUploadProgress<T>( callback: ( progress: number ) => void ) {
+export function tapUploadProgress<T>(callback: (progress: number) => void) {
   /**
    * Tap into the observable stream to process HttpEvent objects.
    * The generic type parameter "T" allows this operator to work with any type of HTTP response data.
@@ -22,9 +22,11 @@ export function tapUploadProgress<T>( callback: ( progress: number ) => void ) {
   return tap((value: HttpClientResponse<T>) => {
     const event = value as HttpEvent<T>;
 
-    if (isPlainObject(event)
-      && event.type === HttpEventType.UploadProgress
-      && event.total) {
+    if (
+      isPlainObject(event) &&
+      event.type === HttpEventType.UploadProgress &&
+      event.total
+    ) {
       // Calculate and emit the upload progress percentage
       const progress = Math.round((100 * event.loaded) / event.total);
 

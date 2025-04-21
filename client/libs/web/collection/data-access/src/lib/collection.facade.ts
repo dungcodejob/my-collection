@@ -36,9 +36,6 @@ export const CollectionFacade = signalStore(
   withStatus({ name: StatusName.List }),
   withStatus({ name: StatusName.Detail }),
   withProps(() => ({
-    
-    
-    
     _toastService: inject(ToastService),
   })),
   withComputed(({ _collectionStore }) => ({
@@ -109,8 +106,7 @@ export const CollectionFacade = signalStore(
                 tapPrefix(() => patchState(store, setPending(StatusName.Detail))),
                 tapResponseData(result => {
                   const data = _collectionAdapter.toItemVM(result.data);
-                  
-                 
+
                   _collectionStore.updateItem(data.id, data);
                   _toastService.success(CollectionMessages.UpdateSuccess, {
                     params: [data.title],

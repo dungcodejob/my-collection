@@ -26,9 +26,7 @@ describe("CollectionFacade", () => {
     params = new BehaviorSubject<Params>({ id: faker.string.uuid() });
 
     TestBed.configureTestingModule({
-      providers: [dialogService,{
-        
-      }],
+      providers: [dialogService, {}],
     });
 
     vmBuilder = new CollectionVMBuilder();

@@ -14,7 +14,7 @@ server.post("/login", (req, res) => {
   const { username, password } = req.body;
   const users = router.db.get("user").value();
 
-  const userExist = users.find((user) => {
+  const userExist = users.find(user => {
     return user.username === username && user.password === password;
   });
 

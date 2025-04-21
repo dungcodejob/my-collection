@@ -1,4 +1,4 @@
-import {  inject, provideAppInitializer } from "@angular/core";
+import { inject, provideAppInitializer } from "@angular/core";
 import { exhaustMap, mergeAll, tap } from "rxjs";
 import { APP_INIT_WITH_CONFIG_ASYNC } from "./app-init-with-config-async.provider";
 import { APP_INIT_WITH_CONFIG } from "./app-init-with-config.provider";

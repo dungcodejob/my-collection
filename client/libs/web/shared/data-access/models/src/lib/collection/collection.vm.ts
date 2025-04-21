@@ -19,7 +19,7 @@ export class CollectionVM extends BaseVM {
     icon: string;
     position: string;
   }) {
-    super(data)
+    super(data);
     this.title = data.title;
     this.icon = data.icon;
     this.position = data.position;

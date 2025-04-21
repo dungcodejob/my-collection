@@ -9,7 +9,4 @@ export class CollectionMockFacade {
   state = signalState({
     items: [],
   });
-
-
-  
 }

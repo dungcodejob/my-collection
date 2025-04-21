@@ -4,7 +4,7 @@ import {
   signalStore,
   withComputed,
   withMethods,
-  withState
+  withState,
 } from "@ngrx/signals";
 import {
   addEntity,

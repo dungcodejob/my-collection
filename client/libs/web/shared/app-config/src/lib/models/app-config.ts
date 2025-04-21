@@ -3,4 +3,3 @@ export interface AppConfig {
   baseUrl: string;
   defaultLanguage: string;
 }
-

@@ -12,7 +12,7 @@ import {
   removeEntity,
   setEntities,
   updateEntity,
-  withEntities
+  withEntities,
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { CollectionApi } from "@nx/web-shared-api";
@@ -32,7 +32,7 @@ import {
   setFulfilled,
   setPending,
   tapPrefix,
-  withStatus
+  withStatus,
 } from "@nx/web-shared-utils";
 import { filter, finalize, map, switchMap } from "rxjs";
 import { AppStore } from "./app.store";

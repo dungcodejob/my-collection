@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
 @Component({
-  selector: 'lib-nav-bar',
+  selector: "lib-nav-bar",
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './nav-bar.component.html',
-  styleUrl: './nav-bar.component.css',
+  templateUrl: "./nav-bar.component.html",
+  styleUrl: "./nav-bar.component.css",
 })
 export class NavBarComponent {}
