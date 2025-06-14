@@ -1,5 +1,5 @@
 {
-    "nxConsole.nxWorkspacePath": "nx",
+    "nxConsole.nxWorkspacePath": "angular-monorepo",
     "angular-schematics.schematicsDefaultOptions": {
         "angular-*": {
             "externalTemplate": true
