@@ -10,4 +10,5 @@ import { NxWelcome } from "./nx-welcome";
 })
 export class App {
   protected title = "client";
+  private s = 1;
 }
