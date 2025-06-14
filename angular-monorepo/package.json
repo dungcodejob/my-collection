@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
-    "lint": "nx affected --target=lint --parallel --base=development"
+    "lint": "npx nx run-many --target=lint --all=true"
   },
   "private": true,
   "dependencies": {
@@ -53,6 +53,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-preset-angular": "~14.6.0",
+    "lint-staged": "^16.1.0",
     "nx": "21.2.0",
     "prettier": "^2.6.2",
     "ts-jest": "^29.1.0",
@@ -64,7 +65,6 @@
   },
   "lint-staged": {
     "*.ts": [
-      "npm run format",
       "npm run lint",
       "git add ."
     ]

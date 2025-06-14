@@ -1,4 +1,4 @@
-import { createConfig } from '@nx/angular-rspack';
+import { createConfig } from "@nx/angular-rspack";
 
 export default createConfig(
   {
@@ -6,19 +6,19 @@ export default createConfig(
       root: __dirname,
 
       outputPath: {
-        base: '../../dist/apps/client',
+        base: "../../dist/apps/client",
       },
-      index: './src/index.html',
-      browser: './src/main.ts',
-      polyfills: ['zone.js'],
-      tsConfig: './tsconfig.app.json',
+      index: "./src/index.html",
+      browser: "./src/main.ts",
+      polyfills: ["zone.js"],
+      tsConfig: "./tsconfig.app.json",
       assets: [
         {
-          glob: '**/*',
-          input: './public',
+          glob: "**/*",
+          input: "./public",
         },
       ],
-      styles: ['./src/styles.css'],
+      styles: ["./src/styles.css"],
       devServer: {},
     },
   },
@@ -27,17 +27,17 @@ export default createConfig(
       options: {
         budgets: [
           {
-            type: 'initial',
-            maximumWarning: '500kb',
-            maximumError: '1mb',
+            type: "initial",
+            maximumWarning: "500kb",
+            maximumError: "1mb",
           },
           {
-            type: 'anyComponentStyle',
-            maximumWarning: '4kb',
-            maximumError: '8kb',
+            type: "anyComponentStyle",
+            maximumWarning: "4kb",
+            maximumError: "8kb",
           },
         ],
-        outputHashing: 'all',
+        outputHashing: "all",
         devServer: {},
       },
     },
