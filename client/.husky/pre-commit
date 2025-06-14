@@ -1,1 +1,1 @@
-cd client && npm run lint
+cd client && npm run lint && git add .

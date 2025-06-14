@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
-    "lint": "npx nx run-many --target=lint --all=true",
+    "lint": "nx affected --target=lint --parallel --base=development",
     "prepare": "cd .. && husky ./client/.husky"
   },
   "private": true,
