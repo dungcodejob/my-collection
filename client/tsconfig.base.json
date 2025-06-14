@@ -20,11 +20,13 @@
       "@client/web-auth-feature-shell": ["libs/web/auth/feature/shell/src/index.ts"],
       "@client/web-auth-utils": ["libs/web/auth/utils/src/index.ts"],
       "@client/web-shared-constants": ["libs/web/shared/constants/src/index.ts"],
+      "@client/web-shared-services": ["libs/web/shared/services/src/index.ts"],
       "@client/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
       "@client/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
       "@client/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],
       "@client/web-shell-ui-nav-bar": ["libs/web/shell/ui/nav-bar/src/index.ts"],
-      "@client/web-shell-ui-top-bar": ["libs/web/shell/ui/top-bar/src/index.ts"]
+      "@client/web-shell-ui-top-bar": ["libs/web/shell/ui/top-bar/src/index.ts"],
+      "@my-collection/web/shared/utils": ["libs/web/shared/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
