@@ -1,9 +1,9 @@
 import { Component } from "@angular/core";
 import { RouterModule } from "@angular/router";
-import { WebAuthFeatureLogin } from "@client/web-auth-feature-login";
+import { ButtonModule } from "primeng/button";
 
 @Component({
-  imports: [RouterModule, WebAuthFeatureLogin],
+  imports: [RouterModule, ButtonModule],
   selector: "app-root",
   templateUrl: "./app.html",
   styleUrl: "./app.css",
