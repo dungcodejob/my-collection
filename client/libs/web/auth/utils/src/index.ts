@@ -1,1 +1,2 @@
-export * from "./lib/web-auth-utils/web-auth-utils";
+export * from "./lib/guards/auth.guard";
+export * from "./lib/interceptors/auth.interceptor";

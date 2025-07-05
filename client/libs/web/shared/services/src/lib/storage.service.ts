@@ -24,7 +24,7 @@ type UseStorageObject<TType> = {
   providedIn: "root",
 })
 export class StorageService {
-  private readonly _prefix = "app-client";
+  private readonly _prefix = "app_client";
   private readonly _storage = inject(BROWSER_STORAGE_TOKEN);
   private readonly _isEnabled = this._storage !== null;
 

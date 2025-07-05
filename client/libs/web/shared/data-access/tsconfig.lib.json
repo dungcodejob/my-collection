@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../../dist/out-tsc",
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "types": []
+  },
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/test-setup.ts",
+    "jest.config.ts",
+    "src/**/*.test.ts"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "../../auth/data-access/src/lib/auth.event.ts",
+    "../../auth/data-access/src/lib/auth.guard.ts",
+    "../../auth/data-access/src/lib/auth.interceptor.ts",
+    "../../auth/data-access/src/lib/auth.service.ts",
+    "../../auth/data-access/src/lib/auth.store.ts"
+  ]
+}

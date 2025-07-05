@@ -17,7 +17,7 @@ export enum ThemeMode {
   Light = "light",
   Dark = "dark",
   System = "system",
-  default = ThemeMode.Light,
+  Default = ThemeMode.System,
 }
 
 export enum ThemePreset {
@@ -80,7 +80,7 @@ export class ThemeService {
   private readonly _storageService = inject(StorageService);
   private readonly _storedMode = this._storageService.form<ThemeMode>(
     THEME_MODE_KEY,
-    ThemeMode.default
+    ThemeMode.Default
   );
   private readonly _preferredMode = inject(PREFERRED_THEME_MODE_TOKEN);
   private readonly _storedPreset = this._storageService.form<ThemePreset>(
