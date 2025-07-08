@@ -1,7 +1,7 @@
 {
-  "name": "web-core-http",
+  "name": "web-core-config",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/web/core/http/src",
+  "sourceRoot": "libs/web/core/config/src",
   "prefix": "lib",
   "projectType": "library",
   "tags": ["scope:web", "type:feature", "category:core"],
@@ -10,7 +10,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/web/core/http/jest.config.ts"
+        "jestConfig": "libs/web/core/config/jest.config.ts"
       }
     },
     "lint": {

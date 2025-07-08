@@ -24,6 +24,13 @@
       },
       "configurations": {
         "production": {
+          "assets": [
+            {
+              "glob": "config.json",
+              "input": "apps/client/src/configurations/production",
+              "output": "configuration/"
+            }
+          ],
           "budgets": [
             {
               "type": "initial",
@@ -32,13 +39,20 @@
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
-              "maximumError": "8kb"
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
             }
           ],
           "outputHashing": "all"
         },
         "development": {
+          "assets": [
+            {
+              "glob": "config.json",
+              "input": "apps/client/src/configurations/development",
+              "output": "configuration/"
+            }
+          ],
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
