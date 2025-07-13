@@ -77,7 +77,7 @@ export function setPending<Prop extends string>(
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {
-    return { [`${prop}Status`]: "pending" } as NamedStatusState<Prop>;
+    return { [`${prop}Status`]: "pending" } as unknown as NamedStatusState<Prop>;
   }
 
   return { status: "pending" };
@@ -89,7 +89,7 @@ export function setFulfilled<Prop extends string>(
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {
-    return { [`${prop}Status`]: "fulfilled" } as NamedStatusState<Prop>;
+    return { [`${prop}Status`]: "fulfilled" } as unknown as NamedStatusState<Prop>;
   }
   return { status: "fulfilled" };
 }
@@ -104,7 +104,7 @@ export function setError<Prop extends string>(
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {
-    return { [`${prop}Status`]: { error } } as NamedStatusState<Prop>;
+    return { [`${prop}Status`]: { error } } as unknown as NamedStatusState<Prop>;
   }
   return { status: { error } };
 }

@@ -6,6 +6,7 @@ import {
   inject,
   Injectable,
   InjectionToken,
+  Injector,
   Renderer2,
   RendererFactory2,
   signal,
@@ -77,6 +78,7 @@ export const injectRenderer2 = (): Renderer2 =>
 export class ThemeService {
   private readonly _document = inject(DOCUMENT);
   private readonly _render = injectRenderer2();
+  private readonly _injector = inject(Injector);
   private readonly _storageService = inject(StorageService);
   private readonly _storedMode = this._storageService.form<ThemeMode>(
     THEME_MODE_KEY,
@@ -102,10 +104,6 @@ export class ThemeService {
   readonly isDarkMode = computed(() => this.mode() === ThemeMode.Dark);
   readonly preset = computed(() => this._storedPreset());
 
-  constructor() {
-    this.applyMode();
-  }
-
   setMode(mode: ThemeMode): void {
     this._storedMode.set(mode);
   }
@@ -120,7 +118,7 @@ export class ThemeService {
     this.setMode(next);
   }
 
-  private applyMode(): void {
+  initialize(): void {
     effect(() => {
       const isDarkMode = this.isDarkMode();
       if (isDarkMode) {
