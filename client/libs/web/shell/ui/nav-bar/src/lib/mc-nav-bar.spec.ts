@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { WebShellUiNavBar } from "./web-shell-ui-nav-bar";
+import { McNavBar } from "./mc-nav-bar";
 
-describe("WebShellUiNavBar", () => {
-  let component: WebShellUiNavBar;
-  let fixture: ComponentFixture<WebShellUiNavBar>;
+describe("McNavBar", () => {
+  let component: McNavBar;
+  let fixture: ComponentFixture<McNavBar>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WebShellUiNavBar],
+      imports: [McNavBar],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(WebShellUiNavBar);
+    fixture = TestBed.createComponent(McNavBar);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

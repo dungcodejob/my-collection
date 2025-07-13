@@ -1,0 +1,67 @@
+<div
+  class="sidebar-container h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out"
+  [class]="{ collapsed: isCollapsed() }"
+  role="navigation"
+  [attr.aria-expanded]="!isCollapsed()"
+  aria-label="Main navigation"
+>
+  <!-- Header with toggle button -->
+  <div
+    class="sidebar-header p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between"
+  >
+    @if (!isCollapsed()) {
+    <div class="logo-section flex items-center">
+      <ng-icon name="lucideBookmark" size="24" class="text-blue-600 mr-2" />
+      <span class="text-lg font-semibold text-gray-800 dark:text-white"
+        >MyCollection</span
+      >
+    </div>
+    }
+
+    <p-button
+      [text]="true"
+      [rounded]="true"
+      size="small"
+      severity="secondary"
+      (onClick)="toggleSidebar()"
+      [pTooltip]="isCollapsed() ? 'Mở rộng sidebar' : 'Thu nhỏ sidebar'"
+      tooltipPosition="right"
+      [attr.aria-label]="isCollapsed() ? 'Mở rộng sidebar' : 'Thu nhỏ sidebar'"
+    >
+      <ng-icon [name]="isCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'" size="16" />
+    </p-button>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="sidebar-nav p-2" aria-label="Sidebar navigation">
+    <ul class="space-y-1" role="list">
+      @for (item of menuItems; track item.url) {
+      <li class="nav-item relative" role="listitem">
+        <mc-nav-item [item]="item" [isCollapsed]="isCollapsed()" [isActive]="false">
+        </mc-nav-item>
+
+        @if (item.badge && !isCollapsed()) {
+        <!-- Badge for notifications when expanded -->
+        <span
+          class="absolute top-2 right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full"
+        >
+          {{ item.badge }}
+        </span>
+        } @if (item.badge && isCollapsed()) {
+        <!-- Badge dot when collapsed -->
+        <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+        }
+      </li>
+      }
+    </ul>
+  </nav>
+
+  @if (!isCollapsed()) {
+  <!-- Footer section -->
+  <div class="sidebar-footer mt-auto p-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="text-xs text-gray-500 dark:text-gray-400 text-center">
+      <p>MyCollection v1.0</p>
+    </div>
+  </div>
+  }
+</div>

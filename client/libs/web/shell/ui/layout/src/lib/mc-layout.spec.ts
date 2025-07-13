@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { WebShellFeature } from "./web-shell-feature";
+import { McLayout } from "./mc-layout";
 
-describe("WebShellFeature", () => {
-  let component: WebShellFeature;
-  let fixture: ComponentFixture<WebShellFeature>;
+describe("McLayout", () => {
+  let component: McLayout;
+  let fixture: ComponentFixture<McLayout>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WebShellFeature],
+      imports: [McLayout],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(WebShellFeature);
+    fixture = TestBed.createComponent(McLayout);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

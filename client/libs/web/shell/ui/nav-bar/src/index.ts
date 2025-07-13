@@ -1,1 +1,1 @@
-export * from "./lib/web-shell-ui-nav-bar/web-shell-ui-nav-bar";
+export * from "./lib/mc-nav-bar";
