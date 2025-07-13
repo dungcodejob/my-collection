@@ -1,6 +1,6 @@
-import { MCConfig } from "@client/web-core-config";
+import { MCConfig as MCLocalConfig } from "@client/web-core-config";
 
-export const environment: MCConfig = {
+export const environment: MCLocalConfig = {
   mode: "dev",
   development: true,
   apiBaseUrl: "http://localhost:3000/api",

@@ -1,16 +1,42 @@
-import { Component, inject } from "@angular/core";
-import { RouterModule } from "@angular/router";
-import { ThemeService } from "@client/web-shared-services";
-import { ThemeToggleComponent } from "@client/web-shell-ui-top-bar";
-import { ButtonModule } from "primeng/button";
+import {
+  Component,
+  DOCUMENT,
+  effect,
+  inject,
+  Injector,
+  OnInit,
+  Renderer2,
+} from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { THEME_DARK_MODE_CLASS, ThemeService } from "@client/web-shared-services";
 
 @Component({
-  imports: [RouterModule, ButtonModule, ThemeToggleComponent],
   selector: "app-root",
-  templateUrl: "./app.html",
+  imports: [RouterOutlet],
+  template: `<router-outlet></router-outlet>`,
   styleUrl: "./app.css",
 })
-export class App {
+export class App implements OnInit {
   private readonly _themeService = inject(ThemeService);
-  protected title = "client";
+  private readonly _render = inject(Renderer2);
+  private readonly _document = inject(DOCUMENT);
+  private readonly _injector = inject(Injector);
+
+  constructor() {
+    // this.themeService.initializeTheme();
+  }
+
+  ngOnInit(): void {
+    effect(
+      () => {
+        const isDarkMode = this._themeService.isDarkMode();
+        if (isDarkMode) {
+          this._render.addClass(this._document.body, THEME_DARK_MODE_CLASS);
+        } else {
+          this._render.removeClass(this._document.body, THEME_DARK_MODE_CLASS);
+        }
+      },
+      { injector: this._injector }
+    );
+  }
 }
