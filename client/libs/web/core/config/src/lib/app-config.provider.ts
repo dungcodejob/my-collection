@@ -6,8 +6,7 @@ import {
   Signal,
 } from "@angular/core";
 import { provideAppConfigInitializer } from "./app-config-initializer.provider";
-import { AppConfigService } from "./app-config.service";
-import { MCConfig } from "./config";
+import { AppConfigService, MCConfig } from "./app-config.service";
 
 const APP_CONFIG = new InjectionToken<Signal<MCConfig>>("my-collection.app-config");
 

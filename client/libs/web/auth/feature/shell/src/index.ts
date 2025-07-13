@@ -1,1 +1,1 @@
-export * from './lib/auth-shell.routes';
+export * from "./lib/auth-shell.routes";

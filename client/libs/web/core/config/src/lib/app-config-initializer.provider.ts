@@ -1,9 +1,8 @@
 import { inject, provideAppInitializer } from "@angular/core";
 import { exhaustMap, mergeAll, tap } from "rxjs";
-import { AppConfigService } from "./app-config.service";
+import { AppConfigService, MCConfig } from "./app-config.service";
 import { APP_INIT_WITH_CONFIG_ASYNC } from "./app-init-with-config-async.provider";
 import { APP_INIT_WITH_CONFIG } from "./app-init-with-config.provider";
-import { MCConfig } from "./config";
 
 export function provideAppConfigInitializer(
   defaultConfig: MCConfig

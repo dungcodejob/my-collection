@@ -1,7 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { map, Observable } from "rxjs";
-import { MCConfig } from "./config";
+import { MCLocalConfig } from "./local-config";
+import { MCRemoteConfig } from "./remote-config";
+
+export type MCConfig = MCLocalConfig & MCRemoteConfig;
 
 @Injectable({ providedIn: "root" })
 export class AppConfigService {

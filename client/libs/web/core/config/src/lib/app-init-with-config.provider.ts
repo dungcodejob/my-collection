@@ -1,8 +1,8 @@
 import { InjectionToken, Provider, Type } from "@angular/core";
-import { MCConfig } from "./config";
+import { MCLocalConfig } from "./local-config";
 
 export type OnInitConfig = {
-  configure(config: MCConfig): void;
+  configure(config: MCLocalConfig): void;
 };
 
 export const APP_INIT_WITH_CONFIG = new InjectionToken<readonly OnInitConfig[]>(
