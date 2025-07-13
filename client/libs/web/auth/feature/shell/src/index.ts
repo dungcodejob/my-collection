@@ -1,1 +1,1 @@
-export * from "./lib/web-auth-feature-shell/web-auth-feature-shell";
+export * from './lib/auth-shell.routes';

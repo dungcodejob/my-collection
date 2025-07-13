@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+/* Custom styling for PrimeNG components */
+.p-card {
+  border-radius: 12px;
+}
+
+.p-inputtext {
+  width: 100%;
+}
+
+.p-password {
+  width: 100%;
+}
+
+.p-password .p-inputtext {
+  width: 100%;
+}
+
+.p-button {
+  justify-content: center;
+}
+
+.p-checkbox {
+  margin-right: 8px;
+}
+
+.p-message {
+  margin-bottom: 1rem;
+}
+
+/* Error state styling */
+.ng-invalid.ng-touched .p-inputtext {
+  border-color: #e24c4c;
+}
+
+.p-error {
+  color: #e24c4c;
+  font-size: 0.875rem;
+}

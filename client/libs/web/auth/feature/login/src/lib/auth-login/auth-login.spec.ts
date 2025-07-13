@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { WebAuthFeatureShell } from "./web-auth-feature-shell";
+import { AuthLogin } from "./auth-login";
 
-describe("WebAuthFeatureShell", () => {
-  let component: WebAuthFeatureShell;
-  let fixture: ComponentFixture<WebAuthFeatureShell>;
+describe("AuthLogin", () => {
+  let component: AuthLogin;
+  let fixture: ComponentFixture<AuthLogin>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WebAuthFeatureShell],
+      imports: [AuthLogin],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(WebAuthFeatureShell);
+    fixture = TestBed.createComponent(AuthLogin);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

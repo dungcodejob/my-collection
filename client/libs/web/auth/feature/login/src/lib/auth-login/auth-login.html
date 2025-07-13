@@ -1,0 +1,109 @@
+<div class="w-screen h-screen bg-[#151521]">
+  <div class="flex w-full h-full justify-center items-center">
+    <p-card class="w-[400px]" styleClass="shadow-xl">
+      <ng-template pTemplate="header">
+        <div class="flex justify-center pt-4">
+          <img alt="logo" class="w-14 h-14" ngSrc="/assets/images/logo.png" />
+        </div>
+      </ng-template>
+
+      <div class="flex flex-col space-y-4">
+        <div class="text-center">
+          <h1 class="text-2xl font-semibold tracking-tight mb-2">Welcome back!</h1>
+          <p class="text-sm text-gray-600">Enter your username below to login</p>
+        </div>
+
+        <form
+          autocomplete="off"
+          class="flex flex-col space-y-6"
+          [formGroup]="loginForm"
+          (ngSubmit)="onSubmit()"
+        >
+          <div class="space-y-4">
+            @if ($error()) {
+            <p-message severity="error" styleClass="w-full" [text]="$error()!" />
+            }
+
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700" for="username"
+                >Username</label
+              >
+              <input
+                autocapitalize="none"
+                autocomplete="off"
+                autocorrect="off"
+                class="w-full"
+                formControlName="username"
+                id="username"
+                pInputText
+                placeholder="name@example.com"
+                type="text"
+                [class.ng-invalid]="username.invalid && (username.dirty || username.touched)"
+              />
+              @if (username.invalid && (username.dirty || username.touched) &&
+              username.errors?.['required']) {
+              <small class="p-error block"> Username is required. </small>
+              }
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700" for="password"
+                >Password</label
+              >
+              <p-password
+                autocomplete="new-password"
+                formControlName="password"
+                id="password"
+                inputStyleClass="w-full"
+                placeholder="Enter your password"
+                styleClass="w-full"
+                [class.ng-invalid]="password.invalid && (password.dirty || password.touched)"
+                [feedback]="false"
+                [toggleMask]="true"
+              />
+              @if (password.invalid && (password.dirty || password.touched) &&
+              password.errors?.['required']) {
+              <small class="p-error block"> Password is required. </small>
+              }
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <p-checkbox
+                binary="true"
+                formControlName="remember"
+                id="remember"
+                styleClass="mr-2"
+              />
+              <label class="text-sm text-gray-700 cursor-pointer" for="remember"
+                >Remember me</label
+              >
+            </div>
+            <a class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
+              Forgot password?
+            </a>
+          </div>
+
+          <p-button
+            label="Login with Email"
+            styleClass="w-full"
+            type="submit"
+            [disabled]="$isPending()"
+            [loading]="$isPending()"
+          />
+        </form>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="flex items-center justify-center gap-1 pt-4">
+          <p class="text-sm text-gray-500">Don't have an account?</p>
+          <a
+            class="text-sm text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
+            >Sign up</a
+          >
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>
