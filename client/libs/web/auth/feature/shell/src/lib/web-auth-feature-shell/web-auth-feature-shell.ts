@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { AuthHeaderComponent } from '../auth-header/auth-header.component';
+import { AuthHeaderComponent } from "../auth-header/auth-header.component";
 
 @Component({
   selector: "lib-web-auth-feature-shell",

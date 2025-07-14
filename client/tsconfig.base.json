@@ -36,6 +36,59 @@
       "@my-collection/web/shared/utils": ["libs/web/shared/utils/src/index.ts"],
       "@my-collection/web/shell/ui/theme-toggle": [
         "libs/web/shell/ui/theme-toggle/src/index.ts"
+      ],
+      "@spartan-ng/helm/alert": ["libs/web/shared/ui/spartan/ui-alert-helm/src/index.ts"],
+      "@spartan-ng/helm/alert-dialog": [
+        "libs/web/shared/ui/spartan/ui-alert-dialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/avatar": [
+        "libs/web/shared/ui/spartan/ui-avatar-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/badge": ["libs/web/shared/ui/spartan/ui-badge-helm/src/index.ts"],
+      "@spartan-ng/helm/button": [
+        "libs/web/shared/ui/spartan/ui-button-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/card": ["libs/web/shared/ui/spartan/ui-card-helm/src/index.ts"],
+      "@spartan-ng/helm/checkbox": [
+        "libs/web/shared/ui/spartan/ui-checkbox-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/command": [
+        "libs/web/shared/ui/spartan/ui-command-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/date-picker": [
+        "libs/web/shared/ui/spartan/ui-date-picker-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/dialog": [
+        "libs/web/shared/ui/spartan/ui-dialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/form-field": [
+        "libs/web/shared/ui/spartan/ui-form-field-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/icon": ["libs/web/shared/ui/spartan/ui-icon-helm/src/index.ts"],
+      "@spartan-ng/helm/input": ["libs/web/shared/ui/spartan/ui-input-helm/src/index.ts"],
+      "@spartan-ng/helm/input-otp": [
+        "libs/web/shared/ui/spartan/ui-input-otp-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/label": ["libs/web/shared/ui/spartan/ui-label-helm/src/index.ts"],
+      "@spartan-ng/helm/menu": ["libs/web/shared/ui/spartan/ui-menu-helm/src/index.ts"],
+      "@spartan-ng/helm/pagination": [
+        "libs/web/shared/ui/spartan/ui-pagination-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/select": [
+        "libs/web/shared/ui/spartan/ui-select-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/separator": [
+        "libs/web/shared/ui/spartan/ui-separator-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/sonner": [
+        "libs/web/shared/ui/spartan/ui-sonner-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/table": ["libs/web/shared/ui/spartan/ui-table-helm/src/index.ts"],
+      "@spartan-ng/helm/toggle": [
+        "libs/web/shared/ui/spartan/ui-toggle-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/tooltip": [
+        "libs/web/shared/ui/spartan/ui-tooltip-helm/src/index.ts"
       ]
     }
   },

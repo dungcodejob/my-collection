@@ -2,10 +2,9 @@ import { Component, inject } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { ThemeService } from "@client/web-shared-services";
 import { ThemeToggleComponent } from "@client/web-shell-ui-top-bar";
-import { ButtonModule } from "primeng/button";
-
+import { HlmButtonDirective } from "@spartan-ng/helm/button";
 @Component({
-  imports: [RouterModule, ButtonModule, ThemeToggleComponent],
+  imports: [RouterModule, HlmButtonDirective, ThemeToggleComponent],
   selector: "app-root",
   templateUrl: "./app.html",
   styleUrl: "./app.css",

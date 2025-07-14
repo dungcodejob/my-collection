@@ -14,7 +14,6 @@ import {
 
 const NOOP = () => void true;
 
-
 type WithStorageSyncFeatureResult = EmptyFeatureResult & {
   methods: {
     clearStorage(): void;

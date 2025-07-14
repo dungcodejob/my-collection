@@ -5,6 +5,7 @@ Hệ thống xác thực hoàn chỉnh sử dụng Angular và NgRx Signals đ�
 ## Tính năng chính
 
 ### 🔐 AuthStore (NgRx Signals)
+
 - **State Management**: Quản lý trạng thái authentication bằng NgRx signals
 - **Reactive**: Sử dụng signals để cập nhật UI tự động
 - **Type-safe**: TypeScript interfaces cho tất cả data structures
@@ -12,21 +13,25 @@ Hệ thống xác thực hoàn chỉnh sử dụng Angular và NgRx Signals đ�
 - **Error Handling**: Xử lý lỗi HTTP một cách thông minh
 
 ### 🛡️ AuthService
+
 - **Wrapper**: Cung cấp API đơn giản để tương tác với AuthStore
 - **Backward Compatibility**: Duy trì interface tương thích với code cũ
 - **Signal Exposure**: Expose store signals cho reactive programming
 
 ### 🔄 AuthInterceptor
+
 - **Auto Token Attachment**: Tự động gắn JWT token vào API requests
 - **Smart Refresh**: Tự động refresh token khi gặp lỗi 401
 - **Endpoint Filtering**: Bỏ qua auth endpoints
 
 ### 🛣️ Route Guards
+
 - **authGuard**: Bảo vệ routes cần authentication
 - **guestGuard**: Ngăn user đã login truy cập login page
 - **Redirect Support**: Lưu returnUrl để redirect sau khi login
 
 ### 🎨 UI Components
+
 - **LoginComponent**: Form đăng nhập với validation và error handling
 - **AuthHeaderComponent**: Header hiển thị thông tin user và menu
 - **AuthShellComponent**: Layout wrapper cho authenticated pages
@@ -52,8 +57,8 @@ libs/web/auth/
 ### 1. Cấu hình trong app.config.ts
 
 ```typescript
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { authInterceptor } from '@client/web/auth/data-access';
+import { provideHttpClient, withInterceptors } from "@angular/common/http";
+import { authInterceptor } from "@client/web/auth/data-access";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -66,19 +71,21 @@ export const appConfig: ApplicationConfig = {
 ### 2. Cấu hình routes trong app.routes.ts
 
 ```typescript
-import { authGuard, guestGuard } from '@client/web/auth/data-access';
+import { authGuard, guestGuard } from "@client/web/auth/data-access";
 
 export const appRoutes: Route[] = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: "", redirectTo: "/dashboard", pathMatch: "full" },
   {
-    path: 'login',
-    loadComponent: () => import('@client/web/auth/feature/login').then(m => m.WebAuthFeatureLogin),
-    canActivate: [guestGuard]
+    path: "login",
+    loadComponent: () =>
+      import("@client/web/auth/feature/login").then(m => m.WebAuthFeatureLogin),
+    canActivate: [guestGuard],
   },
   {
-    path: 'dashboard',
-    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
-    canActivate: [authGuard]
+    path: "dashboard",
+    loadComponent: () =>
+      import("./dashboard/dashboard.component").then(m => m.DashboardComponent),
+    canActivate: [authGuard],
   },
 ];
 ```
@@ -86,21 +93,19 @@ export const appRoutes: Route[] = [
 ### 3. Sử dụng AuthStore trong components
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { AuthStore } from '@client/web/auth/data-access';
+import { Component, inject } from "@angular/core";
+import { AuthStore } from "@client/web/auth/data-access";
 
 @Component({
   template: `
     @if (authStore.isAuthenticated()) {
-      <p>Xin chào {{ authStore.user()?.name }}!</p>
-      @if (authStore.isLoading()) {
-        <p>Đang tải...</p>
-      }
-      @if (authStore.error()) {
-        <p class="error">{{ authStore.error() }}</p>
-      }
-    }
-  `
+    <p>Xin chào {{ authStore.user()?.name }}!</p>
+    @if (authStore.isLoading()) {
+    <p>Đang tải...</p>
+    } @if (authStore.error()) {
+    <p class="error">{{ authStore.error() }}</p>
+    } }
+  `,
 })
 export class MyComponent {
   readonly authStore = inject(AuthStore);
@@ -110,21 +115,21 @@ export class MyComponent {
 ### 4. Sử dụng AuthService (Backward Compatible)
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { AuthService } from '@client/web/auth/data-access';
+import { Component, inject } from "@angular/core";
+import { AuthService } from "@client/web/auth/data-access";
 
 @Component({})
 export class MyComponent {
   private readonly authService = inject(AuthService);
-  
+
   login() {
-    this.authService.login({ email: 'user@example.com', password: 'password' });
+    this.authService.login({ email: "user@example.com", password: "password" });
   }
-  
+
   logout() {
     this.authService.logout();
   }
-  
+
   // Sử dụng signals
   readonly user = this.authService.user;
   readonly isLoading = this.authService.isLoadingSignal;
@@ -134,15 +139,15 @@ export class MyComponent {
 ### 5. Gọi API với token tự động
 
 ```typescript
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from "@angular/common/http";
 
 @Injectable()
 export class UserService {
   private readonly http = inject(HttpClient);
-  
+
   getUsers() {
     // Token sẽ tự động được gắn vào header
-    return this.http.get('/api/users');
+    return this.http.get("/api/users");
   }
 }
 ```
@@ -185,22 +190,22 @@ Hệ thống mong đợi các API endpoints sau:
 const authStore = inject(AuthStore);
 
 // State signals
-const user = authStore.user();                    // User | null
-const accessToken = authStore.accessToken();      // string | null
-const refreshToken = authStore.refreshToken();    // string | null
-const isLoading = authStore.isLoading();          // boolean
-const error = authStore.error();                  // string | null
+const user = authStore.user(); // User | null
+const accessToken = authStore.accessToken(); // string | null
+const refreshToken = authStore.refreshToken(); // string | null
+const isLoading = authStore.isLoading(); // boolean
+const error = authStore.error(); // string | null
 
 // Computed signals
 const isAuthenticated = authStore.isAuthenticated(); // boolean
-const currentUser = authStore.currentUser();         // User | null
+const currentUser = authStore.currentUser(); // User | null
 ```
 
 ### Methods
 
 ```typescript
 // Login (rxMethod)
-authStore.login({ email: 'user@example.com', password: 'password' });
+authStore.login({ email: "user@example.com", password: "password" });
 
 // Logout
 authStore.logout();
@@ -211,7 +216,7 @@ authStore.refreshToken();
 // Utility methods
 authStore.clearError();
 authStore.setLoading(true);
-authStore.updateAccessToken('new-token');
+authStore.updateAccessToken("new-token");
 ```
 
 ## Bảo mật
@@ -237,6 +242,7 @@ authStore.updateAccessToken('new-token');
 Hệ thống đã được migrate từ BehaviorSubject sang NgRx Signals:
 
 ### Trước (BehaviorSubject)
+
 ```typescript
 // Observable-based
 authService.authState$.subscribe(state => {
@@ -247,6 +253,7 @@ authService.authState$.subscribe(state => {
 ```
 
 ### Sau (NgRx Signals)
+
 ```typescript
 // Signal-based
 effect(() => {
