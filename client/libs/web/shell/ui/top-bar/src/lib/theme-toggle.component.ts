@@ -1,41 +1,80 @@
-import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ThemeMode, ThemePreset, ThemeService } from "@client/web-shared-services";
-import { MenuItem } from "primeng/api";
-import { ButtonModule } from "primeng/button";
-import { MenuModule } from "primeng/menu";
-import { TooltipModule } from "primeng/tooltip";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import {
+  lucideCircle,
+  lucideMonitor,
+  lucideMoon,
+  lucidePalette,
+  lucideSun,
+} from "@ng-icons/lucide";
+import { HlmButtonDirective } from "@spartan-ng/helm/button";
+import { HlmIconDirective } from "@spartan-ng/helm/icon";
+import { HlmMenuComponent, HlmMenuItemDirective } from "@spartan-ng/helm/menu";
+import {
+  HlmTooltipComponent,
+  HlmTooltipTriggerDirective,
+} from "@spartan-ng/helm/tooltip";
 
 @Component({
   selector: "lib-theme-toggle",
-  standalone: true,
-  imports: [CommonModule, ButtonModule, MenuModule, TooltipModule],
+  imports: [
+    HlmButtonDirective,
+    HlmMenuComponent,
+    HlmMenuItemDirective,
+    HlmTooltipComponent,
+    HlmTooltipTriggerDirective,
+    HlmIconDirective,
+    NgIcon,
+  ],
+  providers: [
+    provideIcons({ lucideSun, lucideMoon, lucideMonitor, lucidePalette, lucideCircle }),
+  ],
   template: `
     <div class="theme-toggle-container">
       <!-- Theme Mode Toggle -->
-      <p-button
-        class="mr-2"
-        severity="secondary"
-        tooltipPosition="bottom"
-        [icon]="getThemeModeIcon()"
-        [label]="getThemeModeLabel()"
-        [pTooltip]="'Chuyển đổi chế độ: ' + getThemeModeLabel()"
-        [text]="true"
-        (onClick)="toggleThemeMode()"
-      />
+      <hlm-tooltip>
+        <button
+          class="mr-2"
+          hlmBtn
+          hlmTooltipTrigger
+          size="sm"
+          type="button"
+          variant="ghost"
+          [hlmTooltipTrigger]="'Chuyển đổi chế độ: ' + getThemeModeLabel()"
+          (click)="toggleThemeMode()"
+        >
+          <ng-icon class="mr-2" hlm [name]="getThemeModeIcon()" />
+          {{ getThemeModeLabel() }}
+        </button>
+      </hlm-tooltip>
 
       <!-- Theme Preset Menu -->
-      <p-button
-        icon="pi pi-palette"
-        severity="secondary"
-        tooltipPosition="bottom"
-        [label]="'Theme: ' + getCurrentPresetLabel()"
-        [pTooltip]="'Chọn giao diện'"
-        [text]="true"
-        (onClick)="menu.toggle($event)"
-      />
+      <hlm-tooltip>
+        <button
+          hlmBtn
+          hlmTooltipTrigger
+          size="sm"
+          type="button"
+          variant="ghost"
+          [hlmTooltipTrigger]="'Chọn giao diện'"
+          (click)="togglePresetMenu()"
+        >
+          <ng-icon class="mr-2" hlm name="lucidePalette" />
+          Theme: {{ getCurrentPresetLabel() }}
+        </button>
+      </hlm-tooltip>
 
-      <p-menu #menu [model]="themePresetItems" [popup]="true" />
+      @if (showPresetMenu) {
+        <hlm-menu class="absolute top-full right-0 mt-1 z-50">
+          @for (item of themePresetItems; track item.label) {
+            <button hlmMenuItem type="button" (click)="selectPreset(item.preset)">
+              <ng-icon class="mr-2" hlm name="lucideCircle" />
+              {{ item.label }}
+            </button>
+          }
+        </hlm-menu>
+      }
     </div>
   `,
   styles: [
@@ -70,26 +109,24 @@ export class ThemeToggleComponent {
   protected readonly themePreset = this._themeService.preset;
   protected readonly isDarkMode = this._themeService.isDarkMode;
 
-  protected readonly themePresetItems: MenuItem[] = [
+  protected showPresetMenu = false;
+
+  protected readonly themePresetItems = [
     {
       label: "Aura",
-      icon: "pi pi-circle",
-      command: () => this.setThemePreset(ThemePreset.Aura),
+      preset: ThemePreset.Aura,
     },
     {
       label: "Lara",
-      icon: "pi pi-circle",
-      command: () => this.setThemePreset(ThemePreset.Lara),
+      preset: ThemePreset.Lara,
     },
     {
       label: "Nora",
-      icon: "pi pi-circle",
-      command: () => this.setThemePreset(ThemePreset.Nora),
+      preset: ThemePreset.Nora,
     },
     {
       label: "Material",
-      icon: "pi pi-circle",
-      command: () => this.setThemePreset(ThemePreset.Material),
+      preset: ThemePreset.Material,
     },
   ];
 
@@ -101,17 +138,26 @@ export class ThemeToggleComponent {
     this._themeService.setPreset(preset);
   }
 
+  protected togglePresetMenu(): void {
+    this.showPresetMenu = !this.showPresetMenu;
+  }
+
+  protected selectPreset(preset: ThemePreset): void {
+    this.setThemePreset(preset);
+    this.showPresetMenu = false;
+  }
+
   protected getThemeModeIcon(): string {
     const mode = this.themeMode();
     switch (mode) {
       case ThemeMode.Light:
-        return "pi pi-sun";
+        return "lucideSun";
       case ThemeMode.Dark:
-        return "pi pi-moon";
+        return "lucideMoon";
       case ThemeMode.System:
-        return "pi pi-desktop";
+        return "lucideMonitor";
       default:
-        return "pi pi-desktop";
+        return "lucideMonitor";
     }
   }
 

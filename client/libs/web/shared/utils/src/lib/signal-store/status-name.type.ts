@@ -1,6 +1,6 @@
 import { Signal } from "@angular/core";
 
-export type Status = "idle" | "pending" | "fulfilled" | { error: any };
+export type Status = "idle" | "pending" | "fulfilled" | { error: unknown };
 
 export type StatusState = {
   status: Status;
@@ -9,7 +9,7 @@ export type StatusState = {
 export type StatusSignals = {
   $isPending: Signal<boolean>;
   $isFulfilled: Signal<boolean>;
-  $error: Signal<any>;
+  $error: Signal<unknown>;
 };
 
 export type NamedStatusState<Prop extends string> = {
@@ -23,5 +23,5 @@ export type NamedStatusSignals<Name extends string> = {
 } & {
   [K in keyof StatusSignals as `$is${Capitalize<Name>}Fulfilled`]: Signal<boolean>;
 } & {
-  [K in keyof StatusSignals as `$${Name}Error`]: Signal<any>;
+  [K in keyof StatusSignals as `$${Name}Error`]: Signal<unknown>;
 };

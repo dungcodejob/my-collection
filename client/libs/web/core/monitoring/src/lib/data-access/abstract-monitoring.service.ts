@@ -33,13 +33,13 @@ export abstract class AbstractMonitoringService {
   private systemMetricsSubject = new BehaviorSubject<SystemMetrics | null>(null);
   private errorLogsSubject = new BehaviorSubject<ErrorLog[]>([]);
 
-  public readonly errors$ = this.errorsSubject.asObservable();
-  public readonly performance$ = this.performanceSubject.asObservable();
-  public readonly status$ = this.statusSubject.asObservable();
-  public readonly systemMetrics$ = this.systemMetricsSubject.asObservable();
-  public readonly errorLogs$ = this.errorLogsSubject.asObservable();
+  readonly errors$ = this.errorsSubject.asObservable();
+  readonly performance$ = this.performanceSubject.asObservable();
+  readonly status$ = this.statusSubject.asObservable();
+  readonly systemMetrics$ = this.systemMetricsSubject.asObservable();
+  readonly errorLogs$ = this.errorLogsSubject.asObservable();
   // Alias for backward compatibility
-  public readonly performanceMetrics$ = this.performanceSubject.asObservable();
+  readonly performanceMetrics$ = this.performanceSubject.asObservable();
 
   /**
    * Initialize monitoring with configuration

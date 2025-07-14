@@ -99,12 +99,14 @@ import { AuthStore } from "@client/web/auth/data-access";
 @Component({
   template: `
     @if (authStore.isAuthenticated()) {
-    <p>Xin chào {{ authStore.user()?.name }}!</p>
-    @if (authStore.isLoading()) {
-    <p>Đang tải...</p>
-    } @if (authStore.error()) {
-    <p class="error">{{ authStore.error() }}</p>
-    } }
+      <p>Xin chào {{ authStore.user()?.name }}!</p>
+      @if (authStore.isLoading()) {
+        <p>Đang tải...</p>
+      }
+      @if (authStore.error()) {
+        <p class="error">{{ authStore.error() }}</p>
+      }
+    }
   `,
 })
 export class MyComponent {

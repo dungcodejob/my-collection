@@ -1,6 +1,6 @@
 import { ErrorHandler, Injectable, inject } from "@angular/core";
 import { UnifiedMonitoringService } from "../data-access/unified-monitoring.service";
-import { MonitoringErrorLevel } from "../models";
+import { MonitoringErrorContext, MonitoringErrorLevel } from "../models";
 
 /**
  * Enhanced Unified Error Handler với throttling và advanced features
@@ -41,7 +41,10 @@ export class EnhancedUnifiedErrorHandler implements ErrorHandler {
     const originalCaptureException = this.monitoring.captureException.bind(
       this.monitoring
     );
-    this.monitoring.captureException = (exception: Error, context?: any) => {
+    this.monitoring.captureException = (
+      exception: Error,
+      context?: MonitoringErrorContext
+    ): Promise<void> => {
       return originalCaptureException(exception, {
         ...context,
         extra: {

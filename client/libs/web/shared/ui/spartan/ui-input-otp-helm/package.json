@@ -1,0 +1,8 @@
+{
+  "name": "@spartan-ng/helm/input-otp",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@spartan-ng/helm/icon": "0.0.1"
+  },
+  "sideEffects": false
+}

@@ -11,7 +11,7 @@ import { pipe, tap } from "rxjs";
 import { ErrorLog, MonitoringPerformanceData, SystemMetrics } from "../models";
 import { MonitoringService } from "./monitoring.service";
 
-export interface MonitoringState {
+export type MonitoringState = {
   metrics: SystemMetrics | null;
   errors: ErrorLog[];
   performance: MonitoringPerformanceData[];
@@ -35,7 +35,7 @@ export const MonitoringStore = signalStore(
   withComputed((store, monitoringService = inject(MonitoringService)) => ({
     healthStatus: computed(() => {
       const metrics = store.metrics();
-      if (!metrics) return "unknown";
+      if (!metrics) {return "unknown";}
 
       if (metrics.cpuUsage > 90 || metrics.memoryUsage > 90 || metrics.errorCount > 10) {
         return "critical";
@@ -60,7 +60,7 @@ export const MonitoringStore = signalStore(
 
     systemLoad: computed(() => {
       const metrics = store.metrics();
-      if (!metrics) return 0;
+      if (!metrics) {return 0;}
       return (metrics.cpuUsage + metrics.memoryUsage) / 2;
     }),
   })),

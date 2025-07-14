@@ -2,7 +2,7 @@
  * Error monitoring related interfaces and types
  */
 
-export interface MonitoringErrorData {
+export type MonitoringErrorData = {
   message: string;
   level: MonitoringErrorLevel;
   timestamp: Date;
@@ -13,7 +13,7 @@ export interface MonitoringErrorData {
   metadata?: Record<string, any>;
 }
 
-export interface MonitoringErrorContext {
+export type MonitoringErrorContext = {
   component?: string;
   userId?: string;
   sessionId?: string;

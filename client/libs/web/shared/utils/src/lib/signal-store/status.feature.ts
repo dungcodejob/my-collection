@@ -94,13 +94,13 @@ export function setFulfilled<Prop extends string>(
   return { status: "fulfilled" };
 }
 
-export function setError(error: any): StatusState;
+export function setError(error: unknown): StatusState;
 export function setError<Prop extends string>(
-  error: any,
+  error: unknown,
   prop: Prop
 ): NamedStatusState<Prop>;
 export function setError<Prop extends string>(
-  error: any,
+  error: unknown,
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {

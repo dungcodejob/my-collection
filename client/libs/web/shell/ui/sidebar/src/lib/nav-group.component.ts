@@ -8,35 +8,37 @@ import { MenuItem, NavItemComponent } from "./nav-item.component";
   imports: [NavItemComponent, NavItemCollapseComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div 
-      class="group flex flex-col gap-4 py-2" 
+    <div
+      class="group flex flex-col gap-4 py-2"
       [attr.data-collapsed]="isCollapsed()"
       [class]="{
-        'group-data-[collapsed=true]:py-2': isCollapsed()
+        'group-data-[collapsed=true]:py-2': isCollapsed(),
       }"
     >
-      <nav class="flex flex-col gap-1 px-2 group-data-[collapsed=true]:justify-center group-data-[collapsed=true]:px-2">
+      <nav
+        class="flex flex-col gap-1 px-2 group-data-[collapsed=true]:justify-center group-data-[collapsed=true]:px-2"
+      >
         @if (!isCollapsed()) {
-        <div
-          class="relative flex w-full items-center px-2 py-1 text-xs font-medium text-sidebar-foreground/70"
-        >
-          {{ title() }}
-        </div>
-        } 
-        @for (item of items(); track item.id) { 
+          <div
+            class="relative flex w-full items-center px-2 py-1 text-xs font-medium text-sidebar-foreground/70"
+          >
+            {{ title() }}
+          </div>
+        }
+        @for (item of items(); track item.id) {
           @if (item.children && item.children.length > 0) {
             <mc-nav-item-collapse
-              [item]="item"
               [isCollapsed]="isCollapsed()"
               [isOpen]="isOpen()"
+              [item]="item"
             />
           } @else {
             <mc-nav-item
-              [item]="item"
-              [isCollapsed]="isCollapsed()"
               [isActive]="isItemActive(item)"
+              [isCollapsed]="isCollapsed()"
+              [item]="item"
             />
-          } 
+          }
         }
       </nav>
     </div>
@@ -62,7 +64,7 @@ export class NavGroupComponent {
   constructor(private router: Router) {}
 
   protected isItemActive(item: MenuItem): boolean {
-    if (!item.url) return false;
+    if (!item.url) {return false;}
     return this.router.url.startsWith(item.url);
   }
 }

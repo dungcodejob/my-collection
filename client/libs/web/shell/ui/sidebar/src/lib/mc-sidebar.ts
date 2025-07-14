@@ -3,8 +3,8 @@ import { ButtonModule } from "primeng/button";
 import { RippleModule } from "primeng/ripple";
 import { TooltipModule } from "primeng/tooltip";
 import { MenuItem, NavItemComponent } from "./nav-item.component";
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideBookmark, lucideChevronRight, lucideChevronLeft } from '@ng-icons/lucide';
+import { NgIconComponent, provideIcons } from "@ng-icons/core";
+import { lucideBookmark, lucideChevronRight, lucideChevronLeft } from "@ng-icons/lucide";
 
 @Component({
   selector: "mc-sidebar",

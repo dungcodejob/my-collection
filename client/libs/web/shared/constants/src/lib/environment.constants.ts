@@ -6,7 +6,7 @@ export enum Environment {
 }
 
 // Environment Configuration Interface
-export interface EnvironmentConfig {
+export type EnvironmentConfig = {
   production: boolean;
   environment: Environment;
   apiUrl: string;

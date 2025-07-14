@@ -80,7 +80,7 @@ export function withStorageSync<Input extends SignalStoreFeatureResult>(
 ): SignalStoreFeature<Input, WithStorageSyncFeatureResult>;
 export function withStorageSync<
   State extends object,
-  Input extends SignalStoreFeatureResult
+  Input extends SignalStoreFeatureResult,
 >(
   configOrKey: SyncConfig<Input["state"]> | string
 ): SignalStoreFeature<Input, WithStorageSyncFeatureResult> {

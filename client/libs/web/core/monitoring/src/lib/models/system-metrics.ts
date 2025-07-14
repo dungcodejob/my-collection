@@ -5,7 +5,7 @@
 /**
  * Interface cho dữ liệu metrics hệ thống
  */
-export interface SystemMetrics {
+export type SystemMetrics = {
   cpuUsage: number; // %
   memoryUsage: number; // %
   networkLatency: number; // ms
@@ -18,7 +18,7 @@ export interface SystemMetrics {
 /**
  * Interface cho log lỗi
  */
-export interface ErrorLog {
+export type ErrorLog = {
   id: string;
   message: string;
   severity: "low" | "medium" | "high" | "critical";

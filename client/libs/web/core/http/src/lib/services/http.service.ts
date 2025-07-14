@@ -4,7 +4,7 @@ import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import { ResponseDto } from "../models/response.dto";
 
-interface HttpOptions {
+type HttpOptions = {
   headers?: HttpHeaders | Record<string, string | string[]>;
   context?: HttpContext;
   observe?: "body";

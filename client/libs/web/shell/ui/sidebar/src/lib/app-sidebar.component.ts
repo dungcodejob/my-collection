@@ -54,20 +54,20 @@ import { Team, TeamSwitcherComponent } from "./team-switcher.component";
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
+      aria-label="Main navigation"
       class="group/sidebar relative flex h-full w-full flex-col bg-sidebar text-sidebar-foreground transition-all duration-300 ease-in-out"
-      [class]="{
-        'w-16': isCollapsed(),
-        'w-64': !isCollapsed()
-      }"
       role="navigation"
       [attr.aria-expanded]="!isCollapsed()"
-      aria-label="Main navigation"
       [attr.data-collapsible]="'icon'"
       [attr.data-state]="isCollapsed() ? 'collapsed' : 'expanded'"
+      [class]="{
+        'w-16': isCollapsed(),
+        'w-64': !isCollapsed(),
+      }"
     >
       <!-- Sidebar Header -->
       <div class="flex h-14 items-center border-b border-sidebar-border px-4">
-        <mc-team-switcher [teams]="teams" [isCollapsed]="isCollapsed()" />
+        <mc-team-switcher [isCollapsed]="isCollapsed()" [teams]="teams" />
       </div>
 
       <!-- Separator -->
@@ -75,8 +75,8 @@ import { Team, TeamSwitcherComponent } from "./team-switcher.component";
 
       <!-- Sidebar Content -->
       <div class="flex flex-1 flex-col gap-2 overflow-y-auto p-2">
-        <mc-nav-group title="Main" [items]="navMain" [isCollapsed]="isCollapsed()" />
-        <mc-nav-group title="Other" [items]="navOthers" [isCollapsed]="isCollapsed()" />
+        <mc-nav-group title="Main" [isCollapsed]="isCollapsed()" [items]="navMain" />
+        <mc-nav-group title="Other" [isCollapsed]="isCollapsed()" [items]="navOthers" />
       </div>
 
       <!-- Separator -->
@@ -84,25 +84,27 @@ import { Team, TeamSwitcherComponent } from "./team-switcher.component";
 
       <!-- Sidebar Footer -->
       <div class="border-t border-sidebar-border p-2">
-        <mc-nav-user [user]="user" [isCollapsed]="isCollapsed()" />
+        <mc-nav-user [isCollapsed]="isCollapsed()" [user]="user" />
       </div>
 
       <!-- Sidebar Rail (Toggle button) -->
-      <div class="absolute inset-y-0 -right-4 z-20 hidden w-4 translate-x-1/2 transition-all group-data-[collapsible=offcanvas]:translate-x-0 group-data-[side=left]:right-0 group-data-[side=right]:left-0 sm:flex">
+      <div
+        class="absolute inset-y-0 -right-4 z-20 hidden w-4 translate-x-1/2 transition-all group-data-[collapsible=offcanvas]:translate-x-0 group-data-[side=left]:right-0 group-data-[side=right]:left-0 sm:flex"
+      >
         <p-button
-          [rounded]="true"
-          size="small"
+          class="absolute top-1/2 h-6 w-6 -translate-y-1/2 rounded-full border border-sidebar-border bg-sidebar shadow-sm transition-all hover:bg-sidebar-accent"
           severity="secondary"
-          (onClick)="toggleSidebar()"
-          [pTooltip]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+          size="small"
           tooltipPosition="right"
           [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
-          class="absolute top-1/2 h-6 w-6 -translate-y-1/2 rounded-full border border-sidebar-border bg-sidebar shadow-sm transition-all hover:bg-sidebar-accent"
+          [pTooltip]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+          [rounded]="true"
+          (onClick)="toggleSidebar()"
         >
           <ng-icon
-            [name]="isCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'"
-            size="12"
             class="text-sidebar-foreground"
+            size="12"
+            [name]="isCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'"
           />
         </p-button>
       </div>

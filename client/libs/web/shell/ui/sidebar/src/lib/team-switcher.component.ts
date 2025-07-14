@@ -11,10 +11,10 @@ import { ButtonModule } from "primeng/button";
 import { DropdownModule } from "primeng/dropdown";
 import { MenuModule } from "primeng/menu";
 import { TooltipModule } from "primeng/tooltip";
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideChevronDown, lucideBuilding, lucidePlus } from '@ng-icons/lucide';
+import { NgIconComponent, provideIcons } from "@ng-icons/core";
+import { lucideChevronDown, lucideBuilding, lucidePlus } from "@ng-icons/lucide";
 
-export interface Team {
+export type Team = {
   name: string;
   logo: string;
   plan: string;
@@ -22,53 +22,68 @@ export interface Team {
 
 @Component({
   selector: "mc-team-switcher",
-  imports: [ButtonModule, DropdownModule, TooltipModule, AvatarModule, MenuModule, NgIconComponent],
+  imports: [
+    ButtonModule,
+    DropdownModule,
+    TooltipModule,
+    AvatarModule,
+    MenuModule,
+    NgIconComponent,
+  ],
   providers: [provideIcons({ lucideChevronDown, lucideBuilding, lucidePlus })],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex items-center gap-1.5 px-2 py-1.5">
       @if (!isCollapsed()) {
-      <div class="flex items-center gap-1.5 flex-1 min-w-0">
-        <div class="flex aspect-square size-5 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground">
-          <p-avatar
-            [image]="activeTeam().logo"
-            size="normal"
-            shape="square"
-            class="size-4"
+        <div class="flex items-center gap-1.5 flex-1 min-w-0">
+          <div
+            class="flex aspect-square size-5 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground"
+          >
+            <p-avatar
+              class="size-4"
+              shape="square"
+              size="normal"
+              [image]="activeTeam().logo"
+            />
+          </div>
+          <div class="grid flex-1 text-left text-sm leading-tight">
+            <span class="truncate font-semibold text-sidebar-foreground">
+              {{ activeTeam().name }}
+            </span>
+            <span class="truncate text-xs text-sidebar-muted-foreground">
+              {{ activeTeam().plan }}
+            </span>
+          </div>
+        </div>
+
+        <button
+          class="ml-auto flex size-4 shrink-0 items-center justify-center rounded-sm text-sidebar-muted-foreground outline-none ring-sidebar-ring transition-[margin,opa] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 group-data-[collapsible=icon]:hidden"
+          type="button"
+          (click)="menu.toggle($event)"
+        >
+          <ng-icon
+            class="transition-transform group-data-[state=open]:rotate-180"
+            name="lucideChevronDown"
+            size="12"
           />
-        </div>
-        <div class="grid flex-1 text-left text-sm leading-tight">
-          <span class="truncate font-semibold text-sidebar-foreground">
-            {{ activeTeam().name }}
-          </span>
-          <span class="truncate text-xs text-sidebar-muted-foreground">
-            {{ activeTeam().plan }}
-          </span>
-        </div>
-      </div>
+        </button>
 
-      <button
-        type="button"
-        class="ml-auto flex size-4 shrink-0 items-center justify-center rounded-sm text-sidebar-muted-foreground outline-none ring-sidebar-ring transition-[margin,opa] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 group-data-[collapsible=icon]:hidden"
-        (click)="menu.toggle($event)"
-      >
-        <ng-icon name="lucideChevronDown" size="12" class="transition-transform group-data-[state=open]:rotate-180" />
-      </button>
-
-      <p-menu #menu [model]="menuItems()" [popup]="true" />
+        <p-menu #menu [model]="menuItems()" [popup]="true" />
       } @else {
-      <div class="flex size-8 items-center justify-center rounded-sm">
-        <div class="flex aspect-square size-5 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground">
-          <p-avatar
-            [image]="activeTeam().logo"
-            size="normal"
-            shape="square"
-            class="size-4"
-            [pTooltip]="activeTeam().name"
-            tooltipPosition="right"
-          />
+        <div class="flex size-8 items-center justify-center rounded-sm">
+          <div
+            class="flex aspect-square size-5 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground"
+          >
+            <p-avatar
+              class="size-4"
+              shape="square"
+              size="normal"
+              tooltipPosition="right"
+              [image]="activeTeam().logo"
+              [pTooltip]="activeTeam().name"
+            />
+          </div>
         </div>
-      </div>
       }
     </div>
   `,

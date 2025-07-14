@@ -1,9 +1,9 @@
 <div
+  aria-label="Main navigation"
   class="sidebar-container h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out"
-  [class]="{ collapsed: isCollapsed() }"
   role="navigation"
   [attr.aria-expanded]="!isCollapsed()"
-  aria-label="Main navigation"
+  [class]="{ collapsed: isCollapsed() }"
 >
   <!-- Header with toggle button -->
   <div
@@ -11,7 +11,7 @@
   >
     @if (!isCollapsed()) {
     <div class="logo-section flex items-center">
-      <ng-icon name="lucideBookmark" size="24" class="text-blue-600 mr-2" />
+      <ng-icon class="text-blue-600 mr-2" name="lucideBookmark" size="24" />
       <span class="text-lg font-semibold text-gray-800 dark:text-white"
         >MyCollection</span
       >
@@ -19,26 +19,28 @@
     }
 
     <p-button
-      [text]="true"
-      [rounded]="true"
-      size="small"
       severity="secondary"
-      (onClick)="toggleSidebar()"
-      [pTooltip]="isCollapsed() ? 'Mở rộng sidebar' : 'Thu nhỏ sidebar'"
+      size="small"
       tooltipPosition="right"
       [attr.aria-label]="isCollapsed() ? 'Mở rộng sidebar' : 'Thu nhỏ sidebar'"
+      [pTooltip]="isCollapsed() ? 'Mở rộng sidebar' : 'Thu nhỏ sidebar'"
+      [rounded]="true"
+      [text]="true"
+      (onClick)="toggleSidebar()"
     >
-      <ng-icon [name]="isCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'" size="16" />
+      <ng-icon
+        size="16"
+        [name]="isCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'"
+      />
     </p-button>
   </div>
 
   <!-- Navigation Menu -->
-  <nav class="sidebar-nav p-2" aria-label="Sidebar navigation">
+  <nav aria-label="Sidebar navigation" class="sidebar-nav p-2">
     <ul class="space-y-1" role="list">
       @for (item of menuItems; track item.url) {
       <li class="nav-item relative" role="listitem">
-        <mc-nav-item [item]="item" [isCollapsed]="isCollapsed()" [isActive]="false">
-        </mc-nav-item>
+        <mc-nav-item [isActive]="false" [isCollapsed]="isCollapsed()" [item]="item" />
 
         @if (item.badge && !isCollapsed()) {
         <!-- Badge for notifications when expanded -->

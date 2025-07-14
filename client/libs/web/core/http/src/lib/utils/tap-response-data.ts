@@ -21,13 +21,14 @@ import { MCApiResponse, ResponseDto, SuccessResponseDto } from "../models/respon
 //   });
 // }
 
-type UnHttpClientResponse<T> = T extends ResponseDto<infer S>
-  ? SuccessResponseDto<S>
-  : T extends HttpResponse<ResponseDto<infer D>>
-  ? SuccessResponseDto<D>
-  : T extends HttpEvent<ResponseDto<infer F>>
-  ? SuccessResponseDto<F>
-  : never;
+type UnHttpClientResponse<T> =
+  T extends ResponseDto<infer S>
+    ? SuccessResponseDto<S>
+    : T extends HttpResponse<ResponseDto<infer D>>
+      ? SuccessResponseDto<D>
+      : T extends HttpEvent<ResponseDto<infer F>>
+        ? SuccessResponseDto<F>
+        : never;
 
 export function tapResponseData<T>(
   callback: (data: UnHttpClientResponse<T>["result"]) => void

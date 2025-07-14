@@ -1,4 +1,4 @@
-export interface ValidationMetaDto {
+export type ValidationMetaDto = {
   property: string;
   constraints: Record<string, string>;
 }

@@ -39,7 +39,7 @@ export class MonitoringService {
    * Bắt đầu giám sát hệ thống
    * @param refreshInterval Thời gian làm mới (ms)
    */
-  startMonitoring(refreshInterval: number = 5000): void {
+  startMonitoring(refreshInterval = 5000): void {
     // Dừng bất kỳ giám sát nào đang chạy
     this.stopMonitoring();
 

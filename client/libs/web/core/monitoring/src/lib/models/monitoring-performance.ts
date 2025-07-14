@@ -2,7 +2,7 @@
  * Performance monitoring related interfaces and types
  */
 
-export interface MonitoringPerformanceData {
+export type MonitoringPerformanceData = {
   id?: string; // Optional for new monitoring system, required for legacy
   name: string;
   value: number;

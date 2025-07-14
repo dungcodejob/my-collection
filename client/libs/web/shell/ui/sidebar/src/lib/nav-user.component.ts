@@ -13,7 +13,7 @@ import { ButtonModule } from "primeng/button";
 import { MenuModule } from "primeng/menu";
 import { TooltipModule } from "primeng/tooltip";
 
-export interface User {
+export type User = {
   name: string;
   email: string;
   avatar: string;
@@ -35,48 +35,48 @@ export interface User {
   template: `
     <div class="flex items-center gap-2 px-1 py-1.5">
       @if (!isCollapsed()) {
-      <div class="flex items-center gap-2 flex-1 min-w-0">
-        <p-avatar
-          [image]="user().avatar"
-          [label]="getInitials(user().name)"
-          size="normal"
-          shape="circle"
-          class="size-8 rounded-lg"
-        />
-        <div class="grid flex-1 text-left text-sm leading-tight">
-          <span class="truncate font-semibold text-sidebar-foreground">
-            {{ user().name }}
-          </span>
-          <span class="truncate text-xs text-sidebar-muted-foreground">
-            {{ user().email }}
-          </span>
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+          <p-avatar
+            class="size-8 rounded-lg"
+            shape="circle"
+            size="normal"
+            [image]="user().avatar"
+            [label]="getInitials(user().name)"
+          />
+          <div class="grid flex-1 text-left text-sm leading-tight">
+            <span class="truncate font-semibold text-sidebar-foreground">
+              {{ user().name }}
+            </span>
+            <span class="truncate text-xs text-sidebar-muted-foreground">
+              {{ user().email }}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <button
-        type="button"
-        class="ml-auto flex size-4 shrink-0 items-center justify-center rounded-sm text-sidebar-muted-foreground outline-none ring-sidebar-ring transition-[margin,opa] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 group-data-[collapsible=icon]:hidden"
-        (click)="menu.toggle($event)"
-      >
-        <ng-icon name="lucideMoveVertical" size="12" />
-      </button>
-
-      <p-menu #menu [model]="menuItems" [popup]="true" />
-      } @else {
-      <div class="flex size-8 items-center justify-center rounded-sm">
-        <p-avatar
-          [image]="user().avatar"
-          [label]="getInitials(user().name)"
-          size="normal"
-          shape="circle"
-          class="size-8 rounded-lg cursor-pointer"
-          [pTooltip]="user().name"
-          tooltipPosition="right"
+        <button
+          class="ml-auto flex size-4 shrink-0 items-center justify-center rounded-sm text-sidebar-muted-foreground outline-none ring-sidebar-ring transition-[margin,opa] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 group-data-[collapsible=icon]:hidden"
+          type="button"
           (click)="menu.toggle($event)"
-        />
+        >
+          <ng-icon name="lucideMoveVertical" size="12" />
+        </button>
 
         <p-menu #menu [model]="menuItems" [popup]="true" />
-      </div>
+      } @else {
+        <div class="flex size-8 items-center justify-center rounded-sm">
+          <p-avatar
+            class="size-8 rounded-lg cursor-pointer"
+            shape="circle"
+            size="normal"
+            tooltipPosition="right"
+            [image]="user().avatar"
+            [label]="getInitials(user().name)"
+            [pTooltip]="user().name"
+            (click)="menu.toggle($event)"
+          />
+
+          <p-menu #menu [model]="menuItems" [popup]="true" />
+        </div>
       }
     </div>
   `,

@@ -128,7 +128,7 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
    */
   trackUserAction(
     action: string,
-    category: string = "user",
+    category = "user",
     data?: Record<string, any>
   ): void {
     const breadcrumb: MonitoringBreadcrumb = {
@@ -203,7 +203,7 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
   /**
    * Handle unhandled errors
    */
-  handleUnhandledError(error: Error, source: string = "unknown"): void {
+  handleUnhandledError(error: Error, source = "unknown"): void {
     this.captureException(error, {
       component: "global-error-handler",
       extra: {
@@ -239,7 +239,7 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
    */
   getHealthStatus(): {
     status: string;
-    providers: Array<{ name: string; initialized: boolean }>;
+    providers: { name: string; initialized: boolean }[];
     errorCount: number;
     performanceCount: number;
   } {

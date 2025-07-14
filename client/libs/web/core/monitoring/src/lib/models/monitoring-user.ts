@@ -2,7 +2,7 @@
  * User context interface for monitoring
  */
 
-export interface MonitoringUserContext {
+export type MonitoringUserContext = {
   id: string;
   email?: string;
   username?: string;
