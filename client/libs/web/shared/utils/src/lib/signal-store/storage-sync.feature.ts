@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { isPlatformServer } from "@angular/common";
 import { PLATFORM_ID, effect, inject } from "@angular/core";
 import {
@@ -79,7 +80,7 @@ export function withStorageSync<Input extends SignalStoreFeatureResult>(
 ): SignalStoreFeature<Input, WithStorageSyncFeatureResult>;
 export function withStorageSync<
   State extends object,
-  Input extends SignalStoreFeatureResult
+  Input extends SignalStoreFeatureResult,
 >(
   configOrKey: SyncConfig<Input["state"]> | string
 ): SignalStoreFeature<Input, WithStorageSyncFeatureResult> {
@@ -89,7 +90,7 @@ export function withStorageSync<
     select = (state: State) => state,
     parse = JSON.parse,
     stringify = JSON.stringify,
-    storage: storageFactory = () => localStorage,
+    storage: storageFactory = (): Storage => localStorage,
   } = typeof configOrKey === "string" ? { key: configOrKey } : configOrKey;
 
   return signalStoreFeature(

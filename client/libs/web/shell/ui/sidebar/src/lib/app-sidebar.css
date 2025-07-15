@@ -1,0 +1,144 @@
+/* Sidebar CSS Variables - matching shadcn/ui sidebar */
+:root {
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  --sidebar-muted-foreground: 240 3.8% 46.1%;
+}
+
+.dark {
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 0 0% 98%;
+  --sidebar-primary-foreground: 240 5.9% 10%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  --sidebar-muted-foreground: 240 5% 64.9%;
+}
+
+/* Sidebar utility classes */
+.bg-sidebar {
+  background-color: hsl(var(--sidebar-background));
+}
+
+.text-sidebar-foreground {
+  color: hsl(var(--sidebar-foreground));
+}
+
+.border-sidebar-border {
+  border-color: hsl(var(--sidebar-border));
+}
+
+.bg-sidebar-accent {
+  background-color: hsl(var(--sidebar-accent));
+}
+
+.text-sidebar-foreground\/70 {
+  color: hsl(var(--sidebar-foreground) / 0.7);
+}
+
+.text-sidebar-accent-foreground {
+  color: hsl(var(--sidebar-accent-foreground));
+}
+
+.text-sidebar-muted-foreground {
+  color: hsl(var(--sidebar-muted-foreground));
+}
+
+.bg-sidebar-primary {
+  background-color: hsl(var(--sidebar-primary));
+}
+
+.text-sidebar-primary-foreground {
+  color: hsl(var(--sidebar-primary-foreground));
+}
+
+.ring-sidebar-ring {
+  --tw-ring-color: hsl(var(--sidebar-ring));
+}
+
+/* Line clamp utility */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+/* Transition utilities */
+.transition-\[margin\,opa\] {
+  transition-property: margin, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Shrink utility */
+.shrink-0 {
+  flex-shrink: 0;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: hsl(var(--sidebar-accent));
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--sidebar-border));
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--sidebar-foreground) / 0.3);
+}
+
+/* Group data attribute support */
+.group-data-\[collapsed\=true\]\:py-2[data-collapsed="true"] {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.group-data-\[collapsed\=true\]\:justify-center[data-collapsed="true"] {
+  justify-content: center;
+}
+
+.group-data-\[collapsed\=true\]\:px-2[data-collapsed="true"] {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .group\/sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    transform: translateX(-100%);
+  }
+
+  .group\/sidebar[data-state="expanded"] {
+    transform: translateX(0);
+  }
+}
+
+/* Focus states */
+.group\/sidebar button:focus {
+  outline: 2px solid hsl(var(--sidebar-ring));
+  outline-offset: 2px;
+}
+
+/* Hover effects */
+.group\/sidebar .p-button:hover {
+  background-color: hsl(var(--sidebar-accent));
+}

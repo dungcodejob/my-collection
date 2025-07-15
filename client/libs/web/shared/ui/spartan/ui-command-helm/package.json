@@ -1,0 +1,9 @@
+{
+  "name": "@spartan-ng/helm/command",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@spartan-ng/helm/button": "0.0.1",
+    "@spartan-ng/helm/icon": "0.0.1"
+  },
+  "sideEffects": false
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@spartan-ng/helm/pagination",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@spartan-ng/helm/select": "0.0.1",
+    "@spartan-ng/helm/icon": "0.0.1",
+    "@spartan-ng/helm/button": "0.0.1"
+  },
+  "sideEffects": false
+}

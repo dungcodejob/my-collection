@@ -1,1 +1,1 @@
-export * from "./lib/top-bar/top-bar.component";
+export * from "./lib/theme-toggle.component";

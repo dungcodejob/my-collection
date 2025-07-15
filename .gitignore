@@ -23,6 +23,8 @@ node_modules
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.vscode/edge-debug/
+.vscode/chrome-debug/
 
 # misc
 /.sass-cache

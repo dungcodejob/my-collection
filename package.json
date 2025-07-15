@@ -1,0 +1,35 @@
+{
+  "name": "my-collection",
+  "version": "1.0.0",
+  "description": "Multi-tenant application with Angular client and NestJS server",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\"",
+    "start": "concurrently \"npm run client:serve\" \"npm run server:start\"",
+    "client:dev": "cd client && npx nx serve client",
+    "client:serve": "cd client && npx nx serve client --prod",
+    "client:build": "cd client && npx nx build client",
+    "client:test": "cd client && npx nx test client",
+    "client:lint": "cd client && npx nx lint client",
+    "server:dev": "cd server && npm run start:dev",
+    "server:start": "cd server && npm run start:prod",
+    "server:build": "cd server && npm run build",
+    "server:test": "cd server && npm test",
+    "server:lint": "cd server && npm run lint",
+    "install:all": "npm install && cd client && npm install --legacy-peer-deps && cd ../server && npm install",
+    "install:force": "npm install && cd client && npm install --force && cd ../server && npm install",
+    "build:all": "npm run client:build && npm run server:build",
+    "test:all": "npm run client:test && npm run server:test",
+    "lint:all": "npm run client:lint && npm run server:lint",
+    "clean": "rimraf client/node_modules server/node_modules node_modules client/dist server/dist",
+    "fix:deps": "cd client && npm install --legacy-peer-deps"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

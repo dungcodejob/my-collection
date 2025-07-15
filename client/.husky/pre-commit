@@ -1,1 +1,1 @@
-cd client && npx lint-staged
+cd client && npm run lint && git add .

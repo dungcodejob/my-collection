@@ -1,15 +1,17 @@
 import { inject } from "@angular/core";
 import { CanActivateFn } from "@angular/router";
-import { AuthStore } from "@nx/web-auth-data-access";
-import { RedirectService } from "@nx/web-shared-services";
+import { AuthStore } from "@client/web-auth-data-access";
+import { RedirectService } from "@client/web-shared-services";
 
-export const authGuard: CanActivateFn = () => {
-  const redirectService = inject(RedirectService);
+export const authGuard: CanActivateFn = (route, state) => {
   const authStore = inject(AuthStore);
+  const redirectService = inject(RedirectService);
 
-  if (authStore.$isLoggedIn()) {
+  const isAuthenticated = authStore.isAuthenticated();
+
+  if (isAuthenticated) {
     return true;
   }
 
-  return redirectService.createLoginTree();
+  return redirectService.createLoginUrlTree(state.url);
 };

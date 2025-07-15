@@ -8,7 +8,7 @@ export default defineConfig({
   host: process.env.PG_HOST || "localhost",
   port: Number(process.env.PG_PORT) || 5432,
   user: process.env.PG_USERNAME || "postgres",
-  password: process.env.PG_PASSWORD || "dungcool102608",
+  password: process.env.PG_PASSWORD || "Dungcool102608@",
   dbName: process.env.PG_NAME || "my_collection_app",
   extensions: [EntityGenerator, Migrator],
   migrations: {

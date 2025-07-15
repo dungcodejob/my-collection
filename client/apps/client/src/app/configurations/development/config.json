@@ -1,0 +1,24 @@
+{
+  "mode": "dev",
+  "apiBaseUrl": "https://api.mycollection.com",
+  "appVersion": "1.0.0",
+  "apiKey": "prod-key-456",
+  "featureFlags": {
+    "enableBookmarkSync": true,
+    "enableCategories": true
+  },
+  "theme": {
+    "default": "dark",
+    "available": ["light", "dark", "system"]
+  },
+  "loggingLevel": "error",
+  "analytics": {
+    "enabled": true,
+    "trackingId": "UA-123456-1"
+  },
+  "timeout": 15000,
+  "retryPolicies": {
+    "maxRetries": 2,
+    "retryDelay": 500
+  }
+}

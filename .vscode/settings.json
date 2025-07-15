@@ -1,5 +1,5 @@
 {
-    "nxConsole.nxWorkspacePath": "nx",
+    "nxConsole.nxWorkspacePath": "client",
     "angular-schematics.schematicsDefaultOptions": {
         "angular-*": {
             "externalTemplate": true
@@ -7,5 +7,6 @@
     },
     "cSpell.words": [
         "mikro"
-    ]
+    ],
+    "nxConsole.generateAiAgentRules": true
 }

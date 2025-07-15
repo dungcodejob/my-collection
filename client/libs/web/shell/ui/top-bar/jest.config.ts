@@ -1,5 +1,5 @@
 export default {
-  displayName: "top-bar",
+  displayName: "web-shell-ui-top-bar",
   preset: "../../../../../jest.preset.js",
   setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
   coverageDirectory: "../../../../../coverage/libs/web/shell/ui/top-bar",

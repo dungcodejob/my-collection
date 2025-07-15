@@ -1,5 +1,5 @@
 export default {
-  displayName: "feature",
+  displayName: "web-shell-feature",
   preset: "../../../../jest.preset.js",
   setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
   coverageDirectory: "../../../../coverage/libs/web/shell/feature",
