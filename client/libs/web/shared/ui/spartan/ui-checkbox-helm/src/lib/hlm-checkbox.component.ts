@@ -114,7 +114,9 @@ export class HlmCheckboxComponent implements ControlValueAccessor {
   protected _onTouched?: TouchFn;
 
   protected _handleChange(): void {
-    if (this.state().disabled()) {return;}
+    if (this.state().disabled()) {
+      return;
+    }
 
     const previousChecked = this.checked();
     this.checked.set(previousChecked === "indeterminate" ? true : !previousChecked);

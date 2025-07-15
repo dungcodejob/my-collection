@@ -21,7 +21,7 @@ export type HlmDatePickerMultiConfig<T> = {
    * @returns transformed date
    */
   transformDates: (dates: T[]) => T[];
-}
+};
 
 function getDefaultConfig<T>(): HlmDatePickerMultiConfig<T> {
   return {

@@ -1,2 +1,2 @@
 export { ConsoleTransaction } from "./console-transaction";
-export { SentryTransactionImpl } from "./sentry-transaction";
+export { SentryTransaction as SentryTransactionImpl } from "./sentry-transaction";

@@ -21,7 +21,7 @@ export type HlmDatePickerConfig<T> = {
    * @returns transformed date
    */
   transformDate: (date: T) => T;
-}
+};
 
 function getDefaultConfig<T>(): HlmDatePickerConfig<T> {
   return {

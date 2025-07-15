@@ -8,5 +8,5 @@ export type MonitoringConfig = {
   sampleRate?: number;
   enablePerformance?: boolean;
   enableReplay?: boolean;
-  [key: string]: any; // Allow provider-specific config
+  [key: string]: unknown; // Allow provider-specific config
 };

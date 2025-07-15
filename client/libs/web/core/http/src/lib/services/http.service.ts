@@ -19,7 +19,7 @@ type HttpOptions = {
         includeHeaders?: string[];
       }
     | boolean;
-}
+};
 
 @Injectable()
 export class HttpService {

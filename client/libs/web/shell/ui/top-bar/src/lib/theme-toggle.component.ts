@@ -17,7 +17,7 @@ import {
 } from "@spartan-ng/helm/tooltip";
 
 @Component({
-  selector: "lib-theme-toggle",
+  selector: "mc-theme-toggle",
   imports: [
     HlmButtonDirective,
     HlmMenuComponent,

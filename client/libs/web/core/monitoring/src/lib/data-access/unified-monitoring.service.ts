@@ -5,6 +5,7 @@ import {
   MonitoringErrorData,
   MonitoringErrorLevel,
   MonitoringPerformanceData,
+  MonitoringStatus,
   MonitoringUserContext,
 } from "../models";
 import { ConsoleProvider } from "../providers/console-provider";
@@ -67,7 +68,7 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
     message: string,
     level: MonitoringErrorLevel = "error",
     component?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     const errorData: MonitoringErrorData = {
       message,
@@ -129,7 +130,7 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
   trackUserAction(
     action: string,
     category = "user",
-    data?: Record<string, any>
+    data?: Record<string, unknown>
   ): void {
     const breadcrumb: MonitoringBreadcrumb = {
       message: action,
@@ -156,7 +157,9 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
    * Track API calls
    */
   trackApiCall(method: string, url: string, status: number, duration: number): void {
-    const level = status >= 400 ? "error" : status >= 300 ? "warning" : "info";
+    const level: MonitoringErrorLevel =
+      status >= 400 ? "error" : status >= 300 ? "warning" : "info";
+    console.log("API call", method, url, status, duration, level);
 
     this.trackUserAction(`API ${method} ${url} - ${status}`, "http", {
       method,
@@ -206,11 +209,11 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
   handleUnhandledError(error: Error, source = "unknown"): void {
     this.captureException(error, {
       component: "global-error-handler",
-      extra: {
+      timestamp: new Date(),
+      metadata: {
         source,
         url: window.location.href,
         userAgent: navigator.userAgent,
-        timestamp: new Date().toISOString(),
       },
       level: "error",
     });
@@ -219,16 +222,16 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
   /**
    * Handle unhandled promise rejections
    */
-  handleUnhandledRejection(reason: any, promise: Promise<any>): void {
+  handleUnhandledRejection(reason: unknown, _: Promise<unknown>): void {
     const error = reason instanceof Error ? reason : new Error(String(reason));
 
     this.captureException(error, {
       component: "unhandled-promise-rejection",
-      extra: {
+      timestamp: new Date(),
+      metadata: {
         reason: String(reason),
         url: window.location.href,
         userAgent: navigator.userAgent,
-        timestamp: new Date().toISOString(),
       },
       level: "error",
     });
@@ -244,13 +247,13 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
     performanceCount: number;
   } {
     return {
-      status: this.getStatus(),
+      status: this.$status(),
       providers: this.getProviders().map(provider => ({
         name: provider.name,
         initialized: provider.isInitialized(),
       })),
-      errorCount: this.getCurrentErrors().length,
-      performanceCount: this.getCurrentPerformance().length,
+      errorCount: this.$errors().length,
+      performanceCount: this.$performanceMetrics().length,
     };
   }
 
@@ -260,13 +263,13 @@ export class UnifiedMonitoringService extends AbstractMonitoringService {
   exportDebugData(): {
     errors: MonitoringErrorData[];
     performance: MonitoringPerformanceData[];
-    status: string;
+    status: MonitoringStatus;
     providers: string[];
   } {
     return {
-      errors: this.getCurrentErrors(),
-      performance: this.getCurrentPerformance(),
-      status: this.getStatus(),
+      errors: this.$errors(),
+      performance: this.$performanceMetrics(),
+      status: this.$status(),
       providers: this.getProviders().map(p => p.name),
     };
   }

@@ -1,4 +1,4 @@
-import { Injectable, InjectionToken } from "@angular/core";
+import { FactoryProvider, Injectable, InjectionToken } from "@angular/core";
 import { MonitoringConfig, MonitoringProvider } from "../models";
 import { ConsoleProvider } from "../providers/console-provider";
 import { SentryProvider } from "../providers/sentry-provider";
@@ -171,10 +171,10 @@ export function provideMonitoring(
   environment: string,
   config?: Partial<MonitoringConfig>,
   providerNames?: string[]
-) {
+): FactoryProvider {
   return {
     provide: UnifiedMonitoringService,
-    useFactory: async () => {
+    useFactory: async (): Promise<UnifiedMonitoringService> => {
       const factory = new MonitoringFactory();
       return factory.createMonitoringService(environment, config, providerNames);
     },

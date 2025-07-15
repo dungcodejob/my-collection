@@ -4,7 +4,7 @@ import type { ButtonVariants } from "./hlm-button.directive";
 export type BrnButtonConfig = {
   variant: ButtonVariants["variant"];
   size: ButtonVariants["size"];
-}
+};
 
 const defaultConfig: BrnButtonConfig = {
   variant: "default",

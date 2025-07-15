@@ -1,5 +1,4 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { Injectable, signal } from "@angular/core";
 import {
   ErrorLog,
   MonitoringBreadcrumb,
@@ -8,6 +7,8 @@ import {
   MonitoringErrorData,
   MonitoringPerformanceData,
   MonitoringProvider,
+  MonitoringStatus,
+  monitoringStatuses,
   MonitoringTransaction,
   MonitoringTransactionContext,
   MonitoringUserContext,
@@ -26,27 +27,25 @@ export abstract class AbstractMonitoringService {
   protected primaryProvider?: MonitoringProvider;
   protected isInitialized = false;
 
-  // Observables for reactive monitoring
-  private errorsSubject = new BehaviorSubject<MonitoringErrorData[]>([]);
-  private performanceSubject = new BehaviorSubject<MonitoringPerformanceData[]>([]);
-  private statusSubject = new BehaviorSubject<MonitoringStatus>("inactive");
-  private systemMetricsSubject = new BehaviorSubject<SystemMetrics | null>(null);
-  private errorLogsSubject = new BehaviorSubject<ErrorLog[]>([]);
+  private readonly _$errors = signal<MonitoringErrorData[]>([]);
+  private readonly _$performance = signal<MonitoringPerformanceData[]>([]);
+  private readonly _$status = signal<MonitoringStatus>(monitoringStatuses.Initializing);
+  private readonly _$systemMetrics = signal<SystemMetrics | null>(null);
+  private readonly _$errorLogs = signal<ErrorLog[]>([]);
 
-  readonly errors$ = this.errorsSubject.asObservable();
-  readonly performance$ = this.performanceSubject.asObservable();
-  readonly status$ = this.statusSubject.asObservable();
-  readonly systemMetrics$ = this.systemMetricsSubject.asObservable();
-  readonly errorLogs$ = this.errorLogsSubject.asObservable();
-  // Alias for backward compatibility
-  readonly performanceMetrics$ = this.performanceSubject.asObservable();
+  readonly $errors = this._$errors.asReadonly();
+  readonly $performance = this._$performance.asReadonly();
+  readonly $status = this._$status.asReadonly();
+  readonly $systemMetrics = this._$systemMetrics.asReadonly();
+  readonly $errorLogs = this._$errorLogs.asReadonly();
+  readonly $performanceMetrics = this._$performance.asReadonly();
 
   /**
    * Initialize monitoring with configuration
    */
   async initialize(config: MonitoringConfig): Promise<void> {
     try {
-      this.statusSubject.next("initializing");
+      this._$status.set(monitoringStatuses.Initializing);
 
       // Initialize all registered providers
       const initPromises = Array.from(this.providers.values()).map(provider =>
@@ -56,11 +55,11 @@ export abstract class AbstractMonitoringService {
       await Promise.all(initPromises);
 
       this.isInitialized = true;
-      this.statusSubject.next("active");
+      this._$status.set(monitoringStatuses.Active);
 
       console.log(`Monitoring initialized with ${this.providers.size} provider(s)`);
     } catch (error) {
-      this.statusSubject.next("error");
+      this._$status.set(monitoringStatuses.Error);
       console.error("Failed to initialize monitoring:", error);
       throw error;
     }
@@ -119,8 +118,9 @@ export abstract class AbstractMonitoringService {
     }
 
     // Add to local store for reactive updates
-    const currentErrors = this.errorsSubject.value;
-    this.errorsSubject.next([...currentErrors, error]);
+    const currentErrors = this._$errors();
+    const newErrors = [...currentErrors, error];
+    this._$errors.set(newErrors);
 
     // Send to all providers
     const promises = Array.from(this.providers.values()).map(provider =>
@@ -167,8 +167,9 @@ export abstract class AbstractMonitoringService {
     }
 
     // Add to local store for reactive updates
-    const currentMetrics = this.performanceSubject.value;
-    this.performanceSubject.next([...currentMetrics, metric]);
+    const currentMetrics = this._$performance();
+    const newMetrics = [...currentMetrics, metric];
+    this._$performance.set(newMetrics);
 
     // Send to all providers
     const promises = Array.from(this.providers.values()).map(provider =>
@@ -226,7 +227,7 @@ export abstract class AbstractMonitoringService {
   /**
    * Set context for all providers
    */
-  setContext(key: string, value: any): void {
+  setContext<T>(key: string, value: T): void {
     this.providers.forEach(provider => {
       try {
         provider.setContext(key, value);
@@ -236,9 +237,6 @@ export abstract class AbstractMonitoringService {
     });
   }
 
-  /**
-   * Set tag for all providers
-   */
   setTag(key: string, value: string): void {
     this.providers.forEach(provider => {
       try {
@@ -284,70 +282,27 @@ export abstract class AbstractMonitoringService {
 
     const results = await Promise.allSettled(promises);
     this.isInitialized = false;
-    this.statusSubject.next("inactive");
+    this._$status.set("inactive");
 
     return results.every(result => result.status === "fulfilled" && result.value);
   }
 
-  /**
-   * Get current monitoring status
-   */
-  getStatus(): MonitoringStatus {
-    return this.statusSubject.value;
-  }
-
-  /**
-   * Check if monitoring is initialized
-   */
   isMonitoringInitialized(): boolean {
     return this.isInitialized;
   }
 
-  /**
-   * Get current errors
-   */
-  getCurrentErrors(): MonitoringErrorData[] {
-    return this.errorsSubject.value;
-  }
-
-  /**
-   * Get current performance metrics
-   */
-  getCurrentPerformance(): MonitoringPerformanceData[] {
-    return this.performanceSubject.value;
-  }
-
-  /**
-   * Clear all stored errors
-   */
   clearErrors(): void {
-    this.errorsSubject.next([]);
+    this._$errors.set([]);
   }
 
-  /**
-   * Clear all stored performance metrics
-   */
   clearPerformance(): void {
-    this.performanceSubject.next([]);
+    this._$performance.set([]);
   }
 
-  /**
-   * Update system metrics
-   */
   updateSystemMetrics(metrics: SystemMetrics): void {
-    this.systemMetricsSubject.next(metrics);
+    this._$systemMetrics.set(metrics);
   }
 
-  /**
-   * Get current system metrics
-   */
-  getCurrentSystemMetrics(): SystemMetrics | null {
-    return this.systemMetricsSubject.value;
-  }
-
-  /**
-   * Log error with ErrorLog format
-   */
   logErrorLog(error: Partial<ErrorLog>): void {
     const newError: ErrorLog = {
       id: error.id || Date.now().toString(),
@@ -361,25 +316,12 @@ export abstract class AbstractMonitoringService {
       userId: error.userId,
     };
 
-    const currentErrors = this.errorLogsSubject.value;
-    this.errorLogsSubject.next([newError, ...currentErrors].slice(0, 100));
+    const currentErrors = this._$errorLogs();
+    const newErrors = [newError, ...currentErrors].slice(0, 100);
+    this._$errorLogs.set(newErrors);
   }
 
-  /**
-   * Get current error logs
-   */
-  getCurrentErrorLogs(): ErrorLog[] {
-    return this.errorLogsSubject.value;
-  }
-
-  /**
-   * Clear all error logs
-   */
   clearErrorLogs(): void {
-    this.errorLogsSubject.next([]);
+    this._$errorLogs.set([]);
   }
-
-  // Performance metrics methods removed - use recordPerformance, getCurrentPerformance, clearPerformance instead
 }
-
-export type MonitoringStatus = "inactive" | "initializing" | "active" | "error";

@@ -1,33 +1,40 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   input,
   signal,
 } from "@angular/core";
-import { MenuItem } from "primeng/api";
-import { AvatarModule } from "primeng/avatar";
-import { ButtonModule } from "primeng/button";
-import { DropdownModule } from "primeng/dropdown";
-import { MenuModule } from "primeng/menu";
-import { TooltipModule } from "primeng/tooltip";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucideChevronDown, lucideBuilding, lucidePlus } from "@ng-icons/lucide";
+import { HlmAvatarComponent, HlmAvatarImageDirective, HlmAvatarFallbackDirective } from "@spartan-ng/helm/avatar";
+import { HlmButtonDirective } from "@spartan-ng/helm/button";
+import { HlmMenuComponent, HlmMenuItemDirective, HlmMenuLabelComponent, HlmMenuSeparatorComponent, HlmMenuItemIconDirective } from "@spartan-ng/helm/menu";
+import { HlmTooltipComponent, HlmTooltipTriggerDirective } from "@spartan-ng/helm/tooltip";
+import { BrnMenuTriggerDirective } from "@spartan-ng/brain/menu";
+import { BrnTooltipContentDirective } from "@spartan-ng/brain/tooltip";
 
 export type Team = {
   name: string;
   logo: string;
   plan: string;
-}
+};
 
 @Component({
   selector: "mc-team-switcher",
   imports: [
-    ButtonModule,
-    DropdownModule,
-    TooltipModule,
-    AvatarModule,
-    MenuModule,
+    HlmButtonDirective,
+    HlmAvatarComponent,
+    HlmAvatarImageDirective,
+    HlmAvatarFallbackDirective,
+    HlmMenuComponent,
+    HlmMenuItemDirective,
+    HlmMenuLabelComponent,
+    HlmMenuSeparatorComponent,
+    HlmMenuItemIconDirective,
+    HlmTooltipComponent,
+    HlmTooltipTriggerDirective,
+    BrnMenuTriggerDirective,
+    BrnTooltipContentDirective,
     NgIconComponent,
   ],
   providers: [provideIcons({ lucideChevronDown, lucideBuilding, lucidePlus })],
@@ -39,12 +46,10 @@ export type Team = {
           <div
             class="flex aspect-square size-5 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground"
           >
-            <p-avatar
-              class="size-4"
-              shape="square"
-              size="normal"
-              [image]="activeTeam().logo"
-            />
+            <hlm-avatar class="size-4">
+              <img hlmAvatarImage [alt]="activeTeam().name" [src]="activeTeam().logo" />
+              <span hlmAvatarFallback>{{ activeTeam().name.charAt(0) }}</span>
+            </hlm-avatar>
           </div>
           <div class="grid flex-1 text-left text-sm leading-tight">
             <span class="truncate font-semibold text-sidebar-foreground">
@@ -58,8 +63,11 @@ export type Team = {
 
         <button
           class="ml-auto flex size-4 shrink-0 items-center justify-center rounded-sm text-sidebar-muted-foreground outline-none ring-sidebar-ring transition-[margin,opa] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 group-data-[collapsible=icon]:hidden"
+          hlmBtn
+          size="sm"
           type="button"
-          (click)="menu.toggle($event)"
+          variant="ghost"
+          [brnMenuTriggerFor]="menu"
         >
           <ng-icon
             class="transition-transform group-data-[state=open]:rotate-180"
@@ -68,20 +76,34 @@ export type Team = {
           />
         </button>
 
-        <p-menu #menu [model]="menuItems()" [popup]="true" />
+        <ng-template #menu>
+          <hlm-menu class="w-56">
+            <hlm-menu-label>Switch Team</hlm-menu-label>
+            @for (team of teams(); track team.name) {
+              <button hlmMenuItem (click)="switchTeam(team)">
+                <ng-icon hlmMenuItemIcon name="lucideBuilding" size="16" />
+                {{ team.name }}
+              </button>
+            }
+            <hlm-menu-separator />
+            <button hlmMenuItem (click)="addTeam()">
+              <ng-icon hlmMenuItemIcon name="lucidePlus" size="16" />
+              Add Team
+            </button>
+          </hlm-menu>
+        </ng-template>
       } @else {
         <div class="flex size-8 items-center justify-center rounded-sm">
           <div
             class="flex aspect-square size-5 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground"
           >
-            <p-avatar
-              class="size-4"
-              shape="square"
-              size="normal"
-              tooltipPosition="right"
-              [image]="activeTeam().logo"
-              [pTooltip]="activeTeam().name"
-            />
+            <hlm-tooltip>
+              <hlm-avatar class="size-4" hlmTooltipTrigger>
+                <img hlmAvatarImage [alt]="activeTeam().name" [src]="activeTeam().logo" />
+                <span hlmAvatarFallback>{{ activeTeam().name.charAt(0) }}</span>
+              </hlm-avatar>
+              <span *brnTooltipContent>{{ activeTeam().name }}</span>
+            </hlm-tooltip>
           </div>
         </div>
       }
@@ -105,25 +127,6 @@ export class TeamSwitcherComponent {
     logo: "/assets/team-logo.png",
     plan: "Enterprise",
   });
-
-  protected readonly menuItems = computed<MenuItem[]>(() => [
-    {
-      label: "Switch Team",
-      items: this.teams().map(team => ({
-        label: team.name,
-        template: `<ng-icon name="lucideBuilding" size="16" class="mr-2" />${team.name}`,
-        command: () => this.switchTeam(team),
-      })),
-    },
-    {
-      separator: true,
-    },
-    {
-      label: "Add Team",
-      template: '<ng-icon name="lucidePlus" size="16" class="mr-2" />Add Team',
-      command: () => this.addTeam(),
-    },
-  ]);
 
   protected switchTeam(team: Team): void {
     this.activeTeam.set(team);

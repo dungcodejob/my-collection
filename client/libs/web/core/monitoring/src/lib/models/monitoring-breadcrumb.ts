@@ -7,7 +7,15 @@ export type MonitoringBreadcrumb = {
   category?: string;
   level?: MonitoringBreadcrumbLevel;
   timestamp?: Date;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 };
 
-export type MonitoringBreadcrumbLevel = "debug" | "info" | "warning" | "error";
+export const monitoringBreadcrumbLevels = {
+  Debug: "debug",
+  Info: "info",
+  Warning: "warning",
+  Error: "error",
+} as const;
+
+export type MonitoringBreadcrumbLevel =
+  (typeof monitoringBreadcrumbLevels)[keyof typeof monitoringBreadcrumbLevels];

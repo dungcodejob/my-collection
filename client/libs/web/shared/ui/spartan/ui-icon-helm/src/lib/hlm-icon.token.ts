@@ -3,7 +3,7 @@ import type { IconSize } from "./hlm-icon.directive";
 
 export type HlmIconConfig = {
   size: IconSize;
-}
+};
 
 const defaultConfig: HlmIconConfig = {
   size: "base",

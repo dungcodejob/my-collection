@@ -13,7 +13,7 @@ export type SystemMetrics = {
   activeUsers: number;
   errorCount: number;
   timestamp: Date;
-}
+};
 
 /**
  * Interface cho log lỗi
@@ -28,7 +28,7 @@ export type ErrorLog = {
   source?: string;
   stackTrace?: string;
   userId?: string;
-}
+};
 
 // PerformanceMetric has been moved to monitoring-performance.ts to avoid duplication
 // Import it from there: import { PerformanceMetric } from './monitoring-performance';

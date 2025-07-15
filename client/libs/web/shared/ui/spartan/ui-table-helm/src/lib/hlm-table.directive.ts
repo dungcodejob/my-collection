@@ -21,7 +21,7 @@ export type HlmTableVariant = {
   th: string;
   td: string;
   caption: string;
-}
+};
 
 export const HlmTableVariantDefault: HlmTableVariant = {
   table: "w-full caption-bottom text-sm",

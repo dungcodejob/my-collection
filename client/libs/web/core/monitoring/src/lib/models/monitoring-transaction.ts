@@ -5,7 +5,7 @@
 export type MonitoringTransactionContext = {
   description?: string;
   tags?: Record<string, string>;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 };
 
 export type MonitoringTransaction = {
@@ -16,21 +16,25 @@ export type MonitoringTransaction = {
   finish(): void;
 };
 
+export const monitoringTransactionStatuses = {
+  Ok: "ok",
+  Cancelled: "cancelled",
+  Unknown: "unknown",
+  InvalidArgument: "invalid_argument",
+  DeadlineExceeded: "deadline_exceeded",
+  NotFound: "not_found",
+  AlreadyExists: "already_exists",
+  PermissionDenied: "permission_denied",
+  ResourceExhausted: "resource_exhausted",
+  FailedPrecondition: "failed_precondition",
+  Aborted: "aborted",
+  OutOfRange: "out_of_range",
+  Unimplemented: "unimplemented",
+  Internal: "internal",
+  Unavailable: "unavailable",
+  DataLoss: "data_loss",
+  Unauthenticated: "unauthenticated",
+} as const;
+
 export type MonitoringTransactionStatus =
-  | "ok"
-  | "cancelled"
-  | "unknown"
-  | "invalid_argument"
-  | "deadline_exceeded"
-  | "not_found"
-  | "already_exists"
-  | "permission_denied"
-  | "resource_exhausted"
-  | "failed_precondition"
-  | "aborted"
-  | "out_of_range"
-  | "unimplemented"
-  | "internal"
-  | "unavailable"
-  | "data_loss"
-  | "unauthenticated";
+  (typeof monitoringTransactionStatuses)[keyof typeof monitoringTransactionStatuses];

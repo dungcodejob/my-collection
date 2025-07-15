@@ -11,7 +11,7 @@ export class ConsoleTransaction implements MonitoringTransaction {
   private _startTime: number;
   private _name: string;
   private _tags: Record<string, string> = {};
-  private _data: Record<string, any> = {};
+  private _data: Record<string, unknown> = {};
   private _status?: MonitoringTransactionStatus;
 
   constructor(name: string, context?: MonitoringTransactionContext) {
@@ -48,7 +48,7 @@ export class ConsoleTransaction implements MonitoringTransaction {
     console.log(`🏷️ Transaction tag set: ${key} = ${value}`);
   }
 
-  setData(key: string, value: any): void {
+  setData<T>(key: string, value: T): void {
     this._data[key] = value;
     console.log(`📊 Transaction data set: ${key} =`, value);
   }

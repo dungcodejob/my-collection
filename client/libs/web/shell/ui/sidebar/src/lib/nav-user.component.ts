@@ -17,7 +17,7 @@ export type User = {
   name: string;
   email: string;
   avatar: string;
-}
+};
 
 @Component({
   selector: "mc-nav-user",

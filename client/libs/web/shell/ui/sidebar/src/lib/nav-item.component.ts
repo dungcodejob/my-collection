@@ -10,7 +10,7 @@ export type MenuGroup = {
   title: string;
   url?: string;
   items: MenuItem[];
-}
+};
 
 export type MenuItem = {
   id: string;
@@ -25,7 +25,7 @@ export type MenuItem = {
   isHideChildren?: boolean;
   isShowSubSidebar?: boolean;
   isHidden?: boolean;
-}
+};
 
 @Component({
   selector: "mc-nav-item",

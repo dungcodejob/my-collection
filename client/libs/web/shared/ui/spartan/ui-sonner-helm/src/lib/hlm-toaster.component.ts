@@ -40,30 +40,21 @@ export class HlmToasterComponent {
   readonly theme = input<ToasterProps["theme"]>("light");
   readonly position = input<ToasterProps["position"]>("bottom-right");
   readonly hotKey = input<ToasterProps["hotkey"]>(["altKey", "KeyT"]);
-  readonly richColors = input<ToasterProps["richColors"], boolean | string>(
-    false,
-    {
-      transform: booleanAttribute,
-    }
-  );
+  readonly richColors = input<ToasterProps["richColors"], boolean | string>(false, {
+    transform: booleanAttribute,
+  });
   readonly expand = input<ToasterProps["expand"], boolean | string>(false, {
     transform: booleanAttribute,
   });
   readonly duration = input<ToasterProps["duration"], number | string>(4000, {
     transform: numberAttribute,
   });
-  readonly visibleToasts = input<ToasterProps["visibleToasts"], number | string>(
-    3,
-    {
-      transform: numberAttribute,
-    }
-  );
-  readonly closeButton = input<ToasterProps["closeButton"], boolean | string>(
-    false,
-    {
-      transform: booleanAttribute,
-    }
-  );
+  readonly visibleToasts = input<ToasterProps["visibleToasts"], number | string>(3, {
+    transform: numberAttribute,
+  });
+  readonly closeButton = input<ToasterProps["closeButton"], boolean | string>(false, {
+    transform: booleanAttribute,
+  });
   readonly toastOptions = input<ToasterProps["toastOptions"]>({
     classes: {
       toast:

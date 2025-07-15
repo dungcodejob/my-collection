@@ -2,40 +2,52 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
   signal,
 } from "@angular/core";
 import { Router } from "@angular/router";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucideChevronDown } from "@ng-icons/lucide";
-import { ButtonModule } from "primeng/button";
-import { RippleModule } from "primeng/ripple";
-import { TooltipModule } from "primeng/tooltip";
+import { BrnTooltipContentDirective } from "@spartan-ng/brain/tooltip";
+import { HlmButtonDirective } from "@spartan-ng/helm/button";
+import { HlmTooltipComponent, HlmTooltipTriggerDirective } from "@spartan-ng/helm/tooltip";
 import { MenuItem, NavItemComponent } from "./nav-item.component";
 
 @Component({
   selector: "mc-nav-item-collapse",
-  imports: [ButtonModule, TooltipModule, RippleModule, NavItemComponent, NgIconComponent],
+  imports: [
+    HlmButtonDirective,
+    HlmTooltipComponent,
+    HlmTooltipTriggerDirective,
+    BrnTooltipContentDirective,
+    NavItemComponent,
+    NgIconComponent,
+  ],
   providers: [provideIcons({ lucideChevronDown })],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (isCollapsed()) {
       <!-- Collapsed state with dropdown menu -->
       <div class="relative flex w-full items-center">
-        <button
-          class="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground outline-none ring-sidebar-ring transition-[margin,opa] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-data-[collapsible=icon]:!p-0"
-          pRipple
-          tooltipPosition="right"
-          type="button"
-          [class]="{
-            'bg-sidebar-accent text-sidebar-accent-foreground': hasActiveChild(),
-          }"
-          [pTooltip]="item().title"
-          (click)="toggleExpanded()"
-        >
-          <ng-icon size="16" [name]="item().icon" />
-          <span class="sr-only">{{ item().title }}</span>
-        </button>
+        <hlm-tooltip>
+          <button
+            class="flex h-8 w-8 items-center justify-center rounded-md text-sidebar-foreground outline-none ring-sidebar-ring transition-[margin,opa] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-data-[collapsible=icon]:!p-0"
+            hlmBtn
+            hlmTooltipTrigger
+            size="sm"
+            type="button"
+            variant="ghost"
+            [class]="{
+              'bg-sidebar-accent text-sidebar-accent-foreground': hasActiveChild(),
+            }"
+            (click)="toggleExpanded()"
+          >
+            <ng-icon size="16" [name]="item().icon" />
+            <span class="sr-only">{{ item().title }}</span>
+          </button>
+          <span *brnTooltipContent>{{ item().title }}</span>
+        </hlm-tooltip>
 
         @if (isExpanded()) {
           <div
@@ -61,8 +73,9 @@ import { MenuItem, NavItemComponent } from "./nav-item.component";
       <div class="relative flex w-full flex-col">
         <button
           class="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[margin,opa] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-data-[collapsible=icon]:!p-0 group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:justify-center"
-          pRipple
+          hlmBtn
           type="button"
+          variant="ghost"
           [class]="{
             'bg-sidebar-accent text-sidebar-accent-foreground': hasActiveChild(),
           }"
@@ -111,25 +124,28 @@ export class NavItemCollapseComponent {
   readonly isCollapsed = input(false);
   readonly isOpen = input(false);
 
-  private readonly expanded = signal(false);
-
-  constructor(private router: Router) {}
+  private readonly _expanded = signal(false);
+  private readonly _router = inject(Router);
 
   protected readonly isExpanded = computed(() => {
-    return this.isOpen() || this.expanded();
+    return this.isOpen() || this._expanded();
   });
 
   protected toggleExpanded(): void {
-    this.expanded.update(value => !value);
+    this._expanded.update(value => !value);
   }
 
   protected isItemActive(item: MenuItem): boolean {
-    if (!item.url) {return false;}
-    return this.router.url.startsWith(item.url);
+    if (!item.url) {
+      return false;
+    }
+    return this._router.url.startsWith(item.url);
   }
 
   hasActiveChild(): boolean {
-    if (!this.item().children) {return false;}
+    if (!this.item().children) {
+      return false;
+    }
     return this.item().children!.some(child => this.isItemActive(child));
   }
 }

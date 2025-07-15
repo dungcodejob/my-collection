@@ -158,9 +158,13 @@ export class HlmDatePickerMultiComponent<T> implements ControlValueAccessor {
   protected _onTouched?: TouchFn;
 
   protected _handleChange(value: T[] | undefined) {
-    if (value === undefined) {return;}
+    if (value === undefined) {
+      return;
+    }
 
-    if (this.state().disabled()) {return;}
+    if (this.state().disabled()) {
+      return;
+    }
     const transformedDate = this.transformDates()(value);
 
     this.date.set(transformedDate);
@@ -175,7 +179,9 @@ export class HlmDatePickerMultiComponent<T> implements ControlValueAccessor {
   /** CONROL VALUE ACCESSOR */
   writeValue(value: T[] | null): void {
     // optional FormControl is initialized with null value
-    if (value === null) {return;}
+    if (value === null) {
+      return;
+    }
 
     this.date.set(this.transformDates()(value));
   }

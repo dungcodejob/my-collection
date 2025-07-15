@@ -1,49 +1,4 @@
-// import * as Sentry from '@sentry/angular';
-// Note: Uncomment and install @sentry/angular when ready to use
-// For now, we'll use type-safe mocks
-type SentryEvent = any;
-type SentryScope = any;
-type SentryTransactionType = any;
-type SentryLevel = "debug" | "info" | "warning" | "error" | "fatal";
-type SentryBreadcrumbLevel = "debug" | "info" | "warning" | "error" | "fatal";
-
-// Mock Sentry object for development
-const Sentry = {
-  init: (config: any) => console.log("Sentry.init called with:", config),
-  captureException: (error: any, scope?: any) =>
-    console.log("Sentry.captureException:", error),
-  captureMessage: (message: string, level?: any) =>
-    console.log("Sentry.captureMessage:", message, level),
-  withScope: (callback: (scope: any) => void) => {
-    const mockScope = {
-      setContext: (key: string, value: any) =>
-        console.log("Scope.setContext:", key, value),
-      setTag: (key: string, value: string) => console.log("Scope.setTag:", key, value),
-      setLevel: (level: any) => console.log("Scope.setLevel:", level),
-      setUser: (user: any) => console.log("Scope.setUser:", user),
-      setExtra: (key: string, value: any) => console.log("Scope.setExtra:", key, value),
-    };
-    callback(mockScope);
-  },
-  startTransaction: (context: any) => ({
-    setName: (name: string) => console.log("Transaction.setName:", name),
-    setStatus: (status: string) => console.log("Transaction.setStatus:", status),
-    setData: (key: string, value: any) => console.log("Transaction.setData:", key, value),
-    setTag: (key: string, value: string) =>
-      console.log("Transaction.setTag:", key, value),
-    finish: () => console.log("Transaction.finish"),
-  }),
-  setUser: (user: any) => console.log("Sentry.setUser:", user),
-  setContext: (key: string, value: any) => console.log("Sentry.setContext:", key, value),
-  setTag: (key: string, value: string) => console.log("Sentry.setTag:", key, value),
-  addBreadcrumb: (breadcrumb: any) => console.log("Sentry.addBreadcrumb:", breadcrumb),
-  flush: (timeout?: number) => Promise.resolve(true),
-  close: (timeout?: number) => Promise.resolve(true),
-  browserTracingIntegration: () => ({}),
-  replayIntegration: () => ({}),
-};
-
-import { SentryTransactionImpl } from "../data-access/transactions";
+import * as Sentry from "@sentry/angular";
 import {
   MonitoringBreadcrumb,
   MonitoringBreadcrumbLevel,
@@ -56,6 +11,14 @@ import {
   MonitoringTransactionContext,
   MonitoringUserContext,
 } from "../models";
+import { SentryTransaction } from "../transactions/sentry-transaction";
+
+// Type aliases for Sentry types
+type SentryErrorEvent = Sentry.ErrorEvent;
+type SentryEventHint = Sentry.EventHint;
+type SentryScope = Sentry.Scope;
+type SentryLevel = Sentry.SeverityLevel;
+type SentryBreadcrumbLevel = Sentry.SeverityLevel;
 
 /**
  * Sentry implementation of MonitoringProvider
@@ -65,13 +28,13 @@ export class SentryProvider implements MonitoringProvider {
   readonly name = "sentry";
   readonly version = "1.0.0";
 
-  private initialized = false;
-  private config?: MonitoringConfig;
+  private _initialized = false;
+  private _config?: MonitoringConfig;
 
   async initialize(config: MonitoringConfig): Promise<void> {
     try {
-      this.config = config;
-
+      this._config = config;
+      console.log("Initializing Sentry provider with config:", this._config);
       // Initialize Sentry with provided config
       Sentry.init({
         dsn: config.dsn,
@@ -83,15 +46,19 @@ export class SentryProvider implements MonitoringProvider {
           ...(config.enableReplay ? [Sentry.replayIntegration()] : []),
         ],
         replaysSessionSampleRate: config.enableReplay ? 0.1 : 0,
-        beforeSend: (event: any) => {
+        beforeSend: (
+          event: SentryErrorEvent,
+          hint?: SentryEventHint
+        ): Sentry.ErrorEvent | Promise<Sentry.ErrorEvent | null> | null => {
           if (config.debug) {
             console.log("Sentry Event:", event);
+            console.log("Sentry Hint:", hint);
           }
           return event;
         },
       });
 
-      this.initialized = true;
+      this._initialized = true;
       console.log("Sentry provider initialized successfully");
     } catch (error) {
       console.error("Failed to initialize Sentry provider:", error);
@@ -100,17 +67,17 @@ export class SentryProvider implements MonitoringProvider {
   }
 
   isInitialized(): boolean {
-    return this.initialized;
+    return this._initialized;
   }
 
   async captureError(error: MonitoringErrorData): Promise<void> {
-    if (!this.initialized) {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
     Sentry.withScope((scope: SentryScope) => {
       // Set level
-      scope.setLevel(this.mapErrorLevelToSentry(error.level));
+      scope.setLevel(this.mapErrorLevelToSentry(error.level || "error"));
 
       // Set context
       if (error.component) {
@@ -134,10 +101,15 @@ export class SentryProvider implements MonitoringProvider {
       }
 
       // Set timestamp
-      scope.setExtra("timestamp", error.timestamp.toISOString());
+      if (error.timestamp) {
+        scope.setExtra("timestamp", error.timestamp.toISOString());
+      }
 
       // Capture the error
-      Sentry.captureMessage(error.message, this.mapErrorLevelToSentry(error.level));
+      Sentry.captureMessage(
+        error.message,
+        this.mapErrorLevelToSentry(error.level || "error")
+      );
     });
   }
 
@@ -145,7 +117,7 @@ export class SentryProvider implements MonitoringProvider {
     exception: Error,
     context?: MonitoringErrorContext
   ): Promise<void> {
-    if (!this.initialized) {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
@@ -169,8 +141,8 @@ export class SentryProvider implements MonitoringProvider {
         }
 
         // Set extra data
-        if (context.extra) {
-          Object.entries(context.extra).forEach(([key, value]) => {
+        if (context.metadata) {
+          Object.entries(context.metadata).forEach(([key, value]) => {
             scope.setExtra(key, value);
           });
         }
@@ -190,7 +162,7 @@ export class SentryProvider implements MonitoringProvider {
   }
 
   async recordPerformance(metric: MonitoringPerformanceData): Promise<void> {
-    if (!this.initialized) {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
@@ -232,54 +204,85 @@ export class SentryProvider implements MonitoringProvider {
   startTransaction(
     name: string,
     context?: MonitoringTransactionContext
-  ): SentryTransactionImpl {
-    if (!this.initialized) {
+  ): SentryTransaction {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
-    const transaction = Sentry.startTransaction({
-      name,
-      description: context?.description,
-      tags: context?.tags,
-      data: context?.data,
-    });
+    // Prepare attributes with proper typing
+    const attributes: Record<string, string | number | boolean> = {};
+    if (context?.tags) {
+      Object.entries(context.tags).forEach(([key, value]) => {
+        if (
+          typeof value === "string" ||
+          typeof value === "number" ||
+          typeof value === "boolean"
+        ) {
+          attributes[key] = value;
+        }
+      });
+    }
+    if (context?.data) {
+      Object.entries(context.data).forEach(([key, value]) => {
+        if (
+          typeof value === "string" ||
+          typeof value === "number" ||
+          typeof value === "boolean"
+        ) {
+          attributes[key] = value;
+        }
+      });
+    }
 
-    return new SentryTransactionImpl(transaction);
+    const span = Sentry.startSpan(
+      {
+        name,
+        op: context?.description || "custom",
+        attributes,
+      },
+      value => value
+    );
+
+    return new SentryTransaction(span);
   }
 
   setUser(user: MonitoringUserContext): void {
-    if (!this.initialized) {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
-    Sentry.setUser({
-      ...user,
+    const sentryUser: Sentry.User = {
       id: user.id,
       email: user.email,
       username: user.username,
       ip_address: user.ipAddress,
       segment: user.segment,
-    });
+    };
+
+    Sentry.setUser(sentryUser);
   }
 
   clearUser(): void {
-    if (!this.initialized) {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
     Sentry.setUser(null);
   }
 
-  setContext(key: string, value: any): void {
-    if (!this.initialized) {
+  setContext(key: string, value: unknown): void {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
-    Sentry.setContext(key, value);
+    // Ensure value is a valid context object
+    const contextValue =
+      value && typeof value === "object" ? (value as Record<string, unknown>) : { value };
+    Sentry.setContext(key, contextValue);
   }
 
   setTag(key: string, value: string): void {
-    if (!this.initialized) {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
@@ -287,7 +290,7 @@ export class SentryProvider implements MonitoringProvider {
   }
 
   addBreadcrumb(breadcrumb: MonitoringBreadcrumb): void {
-    if (!this.initialized) {
+    if (!this._initialized) {
       throw new Error("Sentry provider not initialized");
     }
 
@@ -303,7 +306,7 @@ export class SentryProvider implements MonitoringProvider {
   }
 
   async flush(timeout = 5000): Promise<boolean> {
-    if (!this.initialized) {
+    if (!this._initialized) {
       return false;
     }
 
@@ -316,13 +319,13 @@ export class SentryProvider implements MonitoringProvider {
   }
 
   async close(timeout = 5000): Promise<boolean> {
-    if (!this.initialized) {
+    if (!this._initialized) {
       return true;
     }
 
     try {
       await Sentry.close(timeout);
-      this.initialized = false;
+      this._initialized = false;
       return true;
     } catch (error) {
       console.error("Failed to close Sentry:", error);

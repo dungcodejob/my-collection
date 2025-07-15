@@ -23,7 +23,7 @@ export class ConsoleProvider implements MonitoringProvider {
   private _initialized = false;
   private _config?: MonitoringConfig;
   private _userContext?: MonitoringUserContext;
-  private _contextData: Record<string, any> = {};
+  private _contextData: Record<string, unknown> = {};
   private _tags: Record<string, string> = {};
   private _breadcrumbs: MonitoringBreadcrumb[] = [];
   private _maxBreadcrumbs = 100;
@@ -51,33 +51,36 @@ export class ConsoleProvider implements MonitoringProvider {
       throw new Error("Console provider not initialized");
     }
 
-    const logLevel = this.getConsoleMethod(error.level);
+    const log = this.getConsoleMethod(error.level);
 
-    console.group(`🚨 Error [${error.level.toUpperCase()}]: ${error.message}`);
-    console.log("Timestamp:", error.timestamp.toISOString());
+    console.group(
+      `🚨 Error [${error.level?.toUpperCase() || "UNKNOWN"}]: ${error.message}`
+    );
+
+    log("Timestamp:", error.timestamp?.toISOString());
 
     if (error.component) {
-      console.log("Component:", error.component);
+      log("Component:", error.component);
     }
     if (error.source) {
-      console.log("Source:", error.source);
+      log("Source:", error.source);
     }
     if (error.userId) {
-      console.log("User ID:", error.userId);
+      log("User ID:", error.userId);
     }
     if (error.sessionId) {
-      console.log("Session ID:", error.sessionId);
+      log("Session ID:", error.sessionId);
     }
     if (error.metadata) {
-      console.log("Metadata:", error.metadata);
+      log("Metadata:", error.metadata);
     }
 
     // Show current context
     if (Object.keys(this._contextData).length > 0) {
-      console.log("Context:", this._contextData);
+      log("Context:", this._contextData);
     }
     if (Object.keys(this._tags).length > 0) {
-      console.log("Tags:", this._tags);
+      log("Tags:", this._tags);
     }
 
     console.groupEnd();
@@ -92,30 +95,30 @@ export class ConsoleProvider implements MonitoringProvider {
     }
 
     const level = context?.level || "error";
-    const logLevel = this.getConsoleMethod(level);
+    const log = this.getConsoleMethod(level);
 
     console.group(`💥 Exception [${level.toUpperCase()}]: ${exception.message}`);
     console.error("Exception:", exception);
 
     if (exception.stack) {
-      console.log("Stack trace:", exception.stack);
+      log("Stack trace:", exception.stack);
     }
 
     if (context) {
       if (context.component) {
-        console.log("Component:", context.component);
+        log("Component:", context.component);
       }
       if (context.userId) {
-        console.log("User ID:", context.userId);
+        log("User ID:", context.userId);
       }
       if (context.sessionId) {
-        console.log("Session ID:", context.sessionId);
+        log("Session ID:", context.sessionId);
       }
       if (context.tags) {
-        console.log("Tags:", context.tags);
+        log("Tags:", context.tags);
       }
-      if (context.extra) {
-        console.log("Extra:", context.extra);
+      if (context.metadata) {
+        log("Metadata:", context.metadata);
       }
     }
 
@@ -190,7 +193,7 @@ export class ConsoleProvider implements MonitoringProvider {
     console.log("👤 User context cleared");
   }
 
-  setContext(key: string, value: any): void {
+  setContext<T>(key: string, value: T): void {
     if (!this._initialized) {
       throw new Error("Console provider not initialized");
     }
@@ -238,7 +241,12 @@ export class ConsoleProvider implements MonitoringProvider {
       return false;
     }
 
-    console.log("🔄 Console provider flush completed (no-op)");
+    console.log(`🔄 Console provider flush completed (timeout: ${timeout}ms)`);
+
+    // Simulate a small delay to respect the timeout parameter
+    // In a real implementation, this would wait for pending operations
+    await new Promise(resolve => setTimeout(resolve, Math.min(10, timeout)));
+
     return true;
   }
 
@@ -247,13 +255,18 @@ export class ConsoleProvider implements MonitoringProvider {
       return true;
     }
 
-    console.log("🔒 Console provider closed");
+    console.log(`🔒 Console provider closing (timeout: ${timeout}ms)`);
+
+    // Simulate cleanup time to respect the timeout parameter
+    await new Promise(resolve => setTimeout(resolve, Math.min(10, timeout)));
+
     this._initialized = false;
     this._userContext = undefined;
     this._contextData = {};
     this._tags = {};
     this._breadcrumbs = [];
 
+    console.log("🔒 Console provider closed");
     return true;
   }
 
@@ -267,7 +280,7 @@ export class ConsoleProvider implements MonitoringProvider {
   /**
    * Get current context for debugging
    */
-  getCurrentContext(): Record<string, any> {
+  getCurrentContext(): Record<string, unknown> {
     return {
       user: this._userContext,
       context: this._contextData,
@@ -276,7 +289,7 @@ export class ConsoleProvider implements MonitoringProvider {
     };
   }
 
-  private getConsoleMethod(level: string): (...args: any[]) => void {
+  private getConsoleMethod(level?: string): (...args: unknown[]) => void {
     switch (level) {
       case "debug":
         return console.debug;

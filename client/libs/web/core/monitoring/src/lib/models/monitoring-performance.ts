@@ -3,23 +3,23 @@
  */
 
 export type MonitoringPerformanceData = {
-  id?: string; // Optional for new monitoring system, required for legacy
+  id?: string;
   name: string;
   value: number;
   unit: string;
   timestamp: Date;
-  type?: MonitoringPerformanceType; // Optional for legacy compatibility
+  type?: MonitoringPerformanceType;
   threshold?: number;
-  component?: string; // From legacy PerformanceMetric
-  metadata?: Record<string, any>;
-}
+  component?: string;
+  metadata?: Record<string, unknown>;
+};
+
+export const monitoringPerformanceTypes = {
+  WebVital: "web-vital",
+  Custom: "custom",
+  Navigation: "navigation",
+  Resource: "resource",
+} as const;
 
 export type MonitoringPerformanceType =
-  | "web-vital"
-  | "custom"
-  | "navigation"
-  | "resource";
-
-// Legacy aliases for backward compatibility
-export type PerformanceData = MonitoringPerformanceData;
-export type PerformanceType = MonitoringPerformanceType;
+  (typeof monitoringPerformanceTypes)[keyof typeof monitoringPerformanceTypes];

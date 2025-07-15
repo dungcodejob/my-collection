@@ -8,6 +8,25 @@ import {
 } from "./monitoring-transaction";
 import { MonitoringUserContext } from "./monitoring-user";
 
+export const monitoringProviderTypes = {
+  Unified: "unified",
+  Sentry: "sentry",
+  Datadog: "datadog",
+} as const;
+
+export type MonitoringProviderType =
+  (typeof monitoringProviderTypes)[keyof typeof monitoringProviderTypes];
+
+export const monitoringStatuses = {
+  Inactive: "inactive",
+  Initializing: "initializing",
+  Active: "active",
+  Error: "error",
+} as const;
+
+export type MonitoringStatus =
+  (typeof monitoringStatuses)[keyof typeof monitoringStatuses];
+
 /**
  * Abstract interface for monitoring providers
  * This allows loose coupling between monitoring logic and specific implementations
@@ -36,7 +55,7 @@ export type MonitoringProvider = {
   clearUser(): void;
 
   // Custom Context
-  setContext(key: string, value: any): void;
+  setContext<T>(key: string, value: T): void;
   setTag(key: string, value: string): void;
   addBreadcrumb(breadcrumb: MonitoringBreadcrumb): void;
 

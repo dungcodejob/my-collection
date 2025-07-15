@@ -14,7 +14,7 @@ export type EnvironmentConfig = {
   version: string;
   enableLogging: boolean;
   enableAnalytics: boolean;
-}
+};
 
 // Default Environment Settings
 export const DEFAULT_ENVIRONMENT_CONFIG: EnvironmentConfig = {

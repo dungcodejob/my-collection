@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, input } from "@angular/core";
 import { Router } from "@angular/router";
 import { NavItemCollapseComponent } from "./nav-item-collapse.component";
 import { MenuItem, NavItemComponent } from "./nav-item.component";
@@ -61,10 +61,13 @@ export class NavGroupComponent {
   readonly isCollapsed = input(false);
   readonly isOpen = input(false);
 
-  constructor(private router: Router) {}
+  private _router = inject(Router);
+
 
   protected isItemActive(item: MenuItem): boolean {
-    if (!item.url) {return false;}
-    return this.router.url.startsWith(item.url);
+    if (!item.url) {
+      return false;
+    }
+    return this._router.url.startsWith(item.url);
   }
 }
