@@ -18,7 +18,7 @@ jobs:
   create-pull-request:
     runs-on: ubuntu-latest
     env:
-      BASE_BRANCH: develop
+      BASE_BRANCH: development
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - name: Check out code
