@@ -1,52 +1,377 @@
-// @ts-check
-const eslint = require("@eslint/js");
-const tsEslint = require("typescript-eslint");
-const angular = require("angular-eslint");
-const eslintConfigPrettier = require("eslint-config-prettier");
-const eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommended");
+const nx = require("@nx/eslint-plugin");
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
 
-module.exports = tsEslint.config(
+module.exports = [
+  ...nx.configs["flat/base"],
+  ...nx.configs["flat/typescript"],
+  ...nx.configs["flat/javascript"],
+
   {
-    files: ["**/*.ts"],
-    extends: [
-      eslint.configs.recommended,
-      ...tsEslint.configs.recommended,
-      ...tsEslint.configs.stylistic,
-      ...angular.configs.tsRecommended,
-      eslintPluginPrettierRecommended,
-      eslintConfigPrettier,
-    ],
-    processor: angular.processInlineTemplates,
+    ignores: ["**/dist"],
+  },
+  {
+    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
     rules: {
-      // "@angular-eslint/directive-selector": [
-      //   "error",
-      //   {
-      //     type: "attribute",
-      //     prefix: "app",
-      //     style: "camelCase",
-      //   },
-      // ],
-      "@angular-eslint/component-selector": [
+      "@nx/enforce-module-boundaries": [
         "error",
         {
-          type: "element",
-          prefix: "app",
-          style: "kebab-case",
+          enforceBuildableLibDependency: true,
+          allow: ["^.*/eslint(\\.base)?\\.config\\.[cm]?js$"],
+          depConstraints: [
+            {
+              sourceTag: "*",
+              onlyDependOnLibsWithTags: ["*"],
+            },
+          ],
         },
       ],
-      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "property",
+          modifiers: ["private"],
+          format: ["camelCase"],
+          leadingUnderscore: "require",
+        },
+        {
+          selector: "typeLike",
+          format: ["PascalCase"],
+        },
+        {
+          selector: "class",
+          format: ["PascalCase"],
+        },
+        // {
+        //   selector: "variable",
+        //   format: ["camelCase"],
+        //   modifiers: ["const"],
+        //   leadingUnderscore: "forbid",
+        //   trailingUnderscore: "forbid",
+        // },
+      ],
     },
   },
   {
-    files: ["**/*.html"],
-    extends: [
-      ...angular.configs.templateRecommended,
-      // ...angular.configs.templateAccessibility,
-    ],
-    rules: {
-      "@angular-eslint/template/click-events-have-key-events": "off",
-      "@angular-eslint/template/interactive-supports-focus": "off",
-      "@angular-eslint/template/label-has-associated-control": "off",
+    files: ["**/*.ts"],
+    // Override or add rules here
+    languageOptions: {
+      parserOptions: {
+        parser: "@typescript-eslint/parser",
+        sourceType: "module",
+        project: ["./tsconfig.base.json"],
+        tsconfigRootDir: __dirname, // or import.meta.dirname for ESM
+      },
     },
-  }
-);
+    plugins: {
+      "@typescript-eslint": tsPlugin,
+    },
+    rules: {
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-unsafe-argument": "error",
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-floating-promises": "error",
+      // "@typescript-eslint/explicit-module-boundary-types": "error",
+      "@typescript-eslint/ban-ts-comment": "warn",
+      "@typescript-eslint/unbound-method": "error",
+
+      "@typescript-eslint/member-ordering": "error",
+      "@typescript-eslint/no-empty-function": "error",
+
+      // "@angular-eslint/no-empty-lifecycle-method": "error",
+    },
+  },
+  {
+    files: ["**/*.json"],
+
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        { ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"] },
+      ],
+    },
+    languageOptions: { parser: require("jsonc-eslint-parser") },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          ignoredFiles: ["{projectRoot}/eslint.config.{js,cjs,mjs}"],
+        },
+      ],
+    },
+    languageOptions: {
+      parser: require("jsonc-eslint-parser"),
+    },
+  },
+  {
+    files: ["**/*.spec.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-call": "off",
+    },
+  },
+];

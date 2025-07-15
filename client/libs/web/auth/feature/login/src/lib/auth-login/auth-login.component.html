@@ -1,0 +1,108 @@
+<div class="w-screen h-screen bg-[#151521]">
+  <div class="flex w-full h-full justify-center items-center">
+    <div class="rounded-xl shadow-xl bg-white p-6 box-content w-[360px]">
+      <div class="flex h-full justify-center items-center">
+        <div class="lg:p-6">
+          <div class="mx-auto flex w-full flex-col justify-center space-y-4 sm:w-[350px]">
+            <div>
+              <img class="w-14 h-14" src="/assets/images/logo.png" alt="logo" />
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <div class="flex flex-col space-y-2">
+                <h1 class="text-2xl font-semibold tracking-tight">Welcome back!</h1>
+                <p class="text-sm text-muted-foreground">
+                  Enter your username below to login
+                </p>
+              </div>
+            </div>
+
+            <form
+              class="flex flex-col space-y-6"
+              autocomplete="off"
+              [formGroup]="loginForm"
+              (ngSubmit)="onSubmit()"
+            >
+              <!-- <label for="email">email</label> -->
+
+              <div class="space-y-5">
+                <p *ngIf="$error()" hlmInputError>{{ $error() }}</p>
+                <div class="space-y-1">
+                  <label hlmLabel for="username">Username</label>
+                  <input
+                    hlmInput
+                    class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+                    size="sm"
+                    formControlName="username"
+                    id="username"
+                    type="username"
+                    placeholder="name@example.com"
+                    autocapitalize="none"
+                    autocomplete="off"
+                    autocorrect="off"
+                  />
+                  <div *ngIf="username.invalid && (username.dirty || username.touched)">
+                    <div *ngIf="username.errors?.['required']" hlmInputError>
+                      Username is required.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-1">
+                  <label hlmLabel for="password">Password</label>
+                  <input
+                    hlmInput
+                    class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+                    size="sm"
+                    formControlName="password"
+                    id="password"
+                    type="password"
+                    autocapitalize="none"
+                    autocomplete="new-password"
+                    autocorrect="off"
+                  />
+                  <div *ngIf="password.invalid && (password.dirty || password.touched)">
+                    <div *ngIf="password.errors?.['required']" hlmInputError>
+                      Password is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-between mb-6">
+                <label hlmLabel for="remember" class="flex items-center">
+                  <hlm-checkbox id="remember" formControlName="remember" class="mr-2" />
+                  Remember me
+                </label>
+                <p class="text-sm text-gray-500 font-medium underline">
+                  Forgot password?
+                </p>
+              </div>
+
+              <button hlmBtn type="submit" size="sm" [disabled]="$isPending()">
+                @if ($isPending()) {
+
+                <ng-icon
+                  hlm
+                  size="sm"
+                  class="mr-2 animate-spin"
+                  name="lucideLoaderCircle"
+                />
+                }
+
+                <span>Login with Email</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4 flex items-center justify-center gap-1">
+        <p class="text-sm text-gray-500 font-medium">Don’t have an account?</p>
+        <p class="text-sm text-gray-800 font-semibold underline">Sign up</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ loginForm.value | json }}
