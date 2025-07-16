@@ -14,12 +14,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { ButtonModule } from "primeng/button";
-import { CardModule } from "primeng/card";
-import { CheckboxModule } from "primeng/checkbox";
-import { InputTextModule } from "primeng/inputtext";
-import { MessageModule } from "primeng/message";
-import { PasswordModule } from "primeng/password";
+import { HlmAlertDirective } from "@spartan-ng/helm/alert";
+import { HlmButtonDirective } from "@spartan-ng/helm/button";
+import {
+  HlmCardContentDirective,
+  HlmCardDirective,
+  HlmCardFooterDirective,
+  HlmCardHeaderDirective,
+} from "@spartan-ng/helm/card";
+import { HlmCheckboxImports } from "@spartan-ng/helm/checkbox";
+import { HlmInputDirective } from "@spartan-ng/helm/input";
+import { HlmLabelDirective } from "@spartan-ng/helm/label";
 import { AuthLoginFacade } from "./auth-login.facade";
 
 type LoginForm = FormGroup<{
@@ -34,12 +39,15 @@ type LoginForm = FormGroup<{
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    ButtonModule,
-    InputTextModule,
-    PasswordModule,
-    CheckboxModule,
-    CardModule,
-    MessageModule,
+    HlmButtonDirective,
+    HlmInputDirective,
+    ...HlmCheckboxImports,
+    HlmCardDirective,
+    HlmCardContentDirective,
+    HlmCardHeaderDirective,
+    HlmCardFooterDirective,
+    HlmAlertDirective,
+    HlmLabelDirective,
   ],
   providers: [AuthLoginFacade],
   templateUrl: "./auth-login.html",
