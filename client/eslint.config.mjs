@@ -4,6 +4,7 @@ import ngParser from "@angular-eslint/template-parser";
 import nx from "@nx/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import eslintConfigPrettier from "eslint-config-prettier";
+import prettier from "eslint-plugin-prettier";
 import tseslint from "typescript-eslint";
 
 export default [
@@ -74,7 +75,6 @@ export default [
       ...tseslint.configs.stylistic.rules,
       ...tseslint.configs.recommended.rules,
       ...ngEslint.configs.recommended.rules,
-      ...eslintConfigPrettier.rules,
       // ...esImport.configs.errors.rules,
       // Angular
       "@angular-eslint/directive-selector": [
@@ -128,6 +128,7 @@ export default [
     rules: {
       ...ngTemplate.configs.recommended.rules,
       ...ngTemplate.configs.accessibility.rules,
+      ...eslintConfigPrettier.rules,
       // Angular template best practices
       "@angular-eslint/template/attributes-order": [
         "error",
@@ -163,7 +164,12 @@ export default [
       "**/*.cjs",
       "**/*.mjs",
     ],
-    // Override or add rules here
-    rules: {},
+    plugins: {
+      prettier,
+    },
+    rules: {
+      ...eslintConfigPrettier.rules,
+      "prettier/prettier": "error",
+    },
   },
 ];
