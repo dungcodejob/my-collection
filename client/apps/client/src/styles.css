@@ -6,110 +6,13 @@
 @import "@angular/cdk/overlay-prebuilt.css";
 /* CSS Variables for Theme System */
 
-:root {
-  --font-sans: "Geist Sans", sans-serif;
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
-  --radius: 0.5rem;
-  color-scheme: light;
-}
-
-.dark {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
-  color-scheme: dark;
-}
+@import url("./styles/theme.css");
+@import url("./styles/tailwind.css");
 
 @layer base {
   * {
     @apply border-border;
   }
-}
-
-:root {
-  /* Light theme variables (default) */
-  --surface-ground: #ffffff;
-  --surface-section: #f8fafc;
-  --surface-card: #ffffff;
-  --surface-overlay: #ffffff;
-  --surface-border: #e5e7eb;
-  --surface-hover: #f3f4f6;
-  --text-color: #1f2937;
-  --text-color-secondary: #6b7280;
-  --primary-color: #3b82f6;
-  --primary-color-text: #ffffff;
-  --surface-0: #ffffff;
-  --surface-50: #f9fafb;
-  --surface-100: #f3f4f6;
-  --surface-200: #e5e7eb;
-  --surface-300: #d1d5db;
-  --surface-400: #9ca3af;
-  --surface-500: #6b7280;
-  --surface-600: #4b5563;
-  --surface-700: #374151;
-  --surface-800: #1f2937;
-  --surface-900: #111827;
-  --surface-950: #030712;
-}
-
-/* Dark theme variables */
-.theme-dark {
-  --surface-ground: #0e1419;
-  --surface-section: #14181c;
-  --surface-card: #1a1d21;
-  --surface-overlay: #1a1d21;
-  --surface-border: #2d3748;
-  --surface-hover: #2d3748;
-  --text-color: #ffffff;
-  --text-color-secondary: #9ca3af;
-  --primary-color: #3b82f6;
-  --primary-color-text: #ffffff;
-  --surface-0: #0e1419;
-  --surface-50: #14181c;
-  --surface-100: #1a1d21;
-  --surface-200: #2d3748;
-  --surface-300: #4a5568;
-  --surface-400: #718096;
-  --surface-500: #9ca3af;
-  --surface-600: #cbd5e0;
-  --surface-700: #e2e8f0;
-  --surface-800: #edf2f7;
-  --surface-900: #f7fafc;
-  --surface-950: #ffffff;
 }
 
 html {
@@ -127,74 +30,4 @@ html {
     "Segoe UI Emoji",
     Segoe UI Symbol;
   line-height: 1.2;
-}
-
-/* Global theme transition */
-* {
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    color 0.3s ease;
-}
-
-/* Utility classes for theme colors */
-.bg-surface-ground {
-  background-color: var(--surface-ground);
-}
-
-.bg-surface-section {
-  background-color: var(--surface-section);
-}
-
-.bg-surface-card {
-  background-color: var(--surface-card);
-}
-
-.bg-surface-overlay {
-  background-color: var(--surface-overlay);
-}
-
-.border-surface-border {
-  border-color: var(--surface-border);
-}
-
-.text-text-color {
-  color: var(--text-color);
-}
-
-.text-text-color-secondary {
-  color: var(--text-color-secondary);
-}
-
-.text-primary-color {
-  color: var(--primary-color);
-}
-
-/* PrimeNG component theme integration */
-:root .p-component {
-  color: var(--text-color);
-}
-
-:root .p-button {
-  transition: all 0.2s ease;
-}
-
-:root .p-card {
-  background: var(--surface-card);
-  border: 1px solid var(--surface-border);
-  color: var(--text-color);
-}
-
-:root .p-menu {
-  background: var(--surface-overlay);
-  border: 1px solid var(--surface-border);
-  color: var(--text-color);
-}
-
-:root .p-menuitem-link {
-  color: var(--text-color);
-}
-
-:root .p-menuitem-link:hover {
-  background: var(--surface-hover);
 }

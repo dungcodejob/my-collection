@@ -67,7 +67,7 @@ export const PREFERRED_THEME_MODE_TOKEN = new InjectionToken<Signal<ThemeMode>>(
 
 export const THEME_MODE_KEY = "theme-mode";
 export const THEME_PRESET_KEY = "theme-preset";
-export const THEME_DARK_MODE_CLASS = "theme-dark";
+export const THEME_DARK_MODE_CLASS = "dark";
 
 export const injectRenderer2 = (): Renderer2 =>
   inject(RendererFactory2).createRenderer(null, null);
