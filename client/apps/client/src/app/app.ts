@@ -4,13 +4,13 @@ import { ThemeService } from "@client/web-shared-services";
 @Component({
   imports: [RouterModule, RouterOutlet],
   selector: "app-root",
-  template: `<router-outlet />`,
+  templateUrl: "./app.html",
   styleUrl: "./app.css",
 })
 export class App {
   private readonly _themeService = inject(ThemeService);
 
   constructor() {
-    // this.themeService.initializeTheme();
+    this._themeService.initialize();
   }
 }
