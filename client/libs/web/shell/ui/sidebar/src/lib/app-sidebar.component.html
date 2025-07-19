@@ -1,0 +1,43 @@
+<aside
+  class="flex h-full w-64 flex-col border-r border-gray-200 bg-background transition-all duration-300 ease-in-out"
+  data-sidebar="sidebar"
+  [class.w-16]="isCollapsed()"
+>
+  <!-- Sidebar Header -->
+  <div class="flex h-16 items-center border-b border-gray-200 px-4 dark:border-gray-800">
+    <mc-team-switcher [isCollapsed]="isCollapsed()" [teams]="teams" />
+  </div>
+
+  <!-- Separator -->
+  <mc-separator orientation="horizontal" />
+
+  <!-- Sidebar Content -->
+  <div class="flex-1 overflow-y-auto">
+    <nav class="space-y-2 p-2">
+      <mc-nav-group title="Main" [isCollapsed]="isCollapsed()" [items]="navMain" />
+      <mc-nav-group title="Other" [isCollapsed]="isCollapsed()" [items]="navOthers" />
+    </nav>
+  </div>
+
+  <!-- Separator -->
+  <mc-separator orientation="horizontal" />
+
+  <!-- Sidebar Footer -->
+  <div class="border-t border-gray-200 p-4 dark:border-gray-800">
+    <mc-nav-user [isCollapsed]="isCollapsed()" [user]="user" />
+  </div>
+
+  <!-- Sidebar Rail (collapse/expand button) -->
+  <button
+    class="absolute -right-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-900"
+    type="button"
+    [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+    (click)="toggleCollapse()"
+  >
+    <ng-icon
+      class="text-gray-500 dark:text-gray-400"
+      size="12"
+      [name]="isCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'"
+    />
+  </button>
+</aside>

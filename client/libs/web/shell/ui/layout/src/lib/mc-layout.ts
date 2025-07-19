@@ -1,9 +1,9 @@
 import { Component } from "@angular/core";
-import { AppSidebarComponent, MCSidebar } from "@client/web-shell-ui-sidebar";
+import { AppSidebarComponent } from "@client/web-shell-ui-sidebar";
 
 @Component({
   selector: "mc-layout",
-  imports: [MCSidebar, AppSidebarComponent],
+  imports: [AppSidebarComponent, AppSidebarComponent],
   templateUrl: "./mc-layout.html",
   styleUrl: "./mc-layout.css",
 })

@@ -1,13 +1,17 @@
 <div class="w-screen h-screen bg-[#151521]">
   <div class="flex w-full h-full justify-center items-center">
-    <p-card class="w-[400px]" styleClass="shadow-xl">
-      <ng-template pTemplate="header">
-        <div class="flex justify-center pt-4">
-          <img alt="logo" class="w-14 h-14" ngSrc="/assets/images/logo.png" />
-        </div>
-      </ng-template>
+    <div class="w-[400px] shadow-xl" hlmCard>
+      <div class="flex justify-center pt-4" hlmCardHeader>
+        <img
+          alt="logo"
+          class="w-14 h-14"
+          height="56"
+          ngSrc="/assets/images/logo.png"
+          width="56"
+        />
+      </div>
 
-      <div class="flex flex-col space-y-4">
+      <div class="flex flex-col space-y-4" hlmCardContent>
         <div class="text-center">
           <h1 class="text-2xl font-semibold tracking-tight mb-2">Welcome back!</h1>
           <p class="text-sm text-gray-600">Enter your username below to login</p>
@@ -21,24 +25,22 @@
         >
           <div class="space-y-4">
             @if ($error()) {
-            <p-message severity="error" styleClass="w-full" [text]="$error()!" />
+            <div class="w-full" hlmAlert variant="destructive">{{ $error() }}</div>
             }
 
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700" for="username"
-                >Username</label
-              >
+              <label for="username" hlmLabel>Username</label>
               <input
                 autocapitalize="none"
                 autocomplete="off"
                 autocorrect="off"
                 class="w-full"
                 formControlName="username"
+                hlmInput
                 id="username"
-                pInputText
                 placeholder="name@example.com"
                 type="text"
-                [class.ng-invalid]="username.invalid && (username.dirty || username.touched)"
+                [class.border-red-500]="username.invalid && (username.dirty || username.touched)"
               />
               @if (username.invalid && (username.dirty || username.touched) &&
               username.errors?.['required']) {
@@ -47,19 +49,16 @@
             </div>
 
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700" for="password"
-                >Password</label
-              >
-              <p-password
+              <label for="password" hlmLabel>Password</label>
+              <input
                 autocomplete="new-password"
+                class="w-full"
                 formControlName="password"
+                hlmInput
                 id="password"
-                inputStyleClass="w-full"
                 placeholder="Enter your password"
-                styleClass="w-full"
-                [class.ng-invalid]="password.invalid && (password.dirty || password.touched)"
-                [feedback]="false"
-                [toggleMask]="true"
+                type="password"
+                [class.border-red-500]="password.invalid && (password.dirty || password.touched)"
               />
               @if (password.invalid && (password.dirty || password.touched) &&
               password.errors?.['required']) {
@@ -69,41 +68,29 @@
           </div>
 
           <div class="flex justify-between items-center">
-            <div class="flex items-center">
-              <p-checkbox
-                binary="true"
-                formControlName="remember"
-                id="remember"
-                styleClass="mr-2"
-              />
-              <label class="text-sm text-gray-700 cursor-pointer" for="remember"
-                >Remember me</label
-              >
+            <div class="flex items-center space-x-2">
+              <brn-checkbox formControlName="remember" hlmCheckbox id="remember" />
+              <label class="cursor-pointer" for="remember" hlmLabel>Remember me</label>
             </div>
             <a class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
               Forgot password?
             </a>
           </div>
 
-          <p-button
-            label="Login with Email"
-            styleClass="w-full"
-            type="submit"
-            [disabled]="$isPending()"
-            [loading]="$isPending()"
-          />
+          <button class="w-full" hlmButton type="submit" [disabled]="$isPending()">
+            @if ($isPending()) {
+            <span class="mr-2">Loading...</span>
+            } Login with Email
+          </button>
         </form>
       </div>
 
-      <ng-template pTemplate="footer">
-        <div class="flex items-center justify-center gap-1 pt-4">
-          <p class="text-sm text-gray-500">Don't have an account?</p>
-          <a
-            class="text-sm text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
-            >Sign up</a
-          >
-        </div>
-      </ng-template>
-    </p-card>
+      <div class="flex items-center justify-center gap-1 pt-4" hlmCardFooter>
+        <p class="text-sm text-gray-500">Don't have an account?</p>
+        <a class="text-sm text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
+          >Sign up</a
+        >
+      </div>
+    </div>
   </div>
 </div>

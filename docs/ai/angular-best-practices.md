@@ -121,7 +121,7 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 - Do NOT use `ngClass`, use `class` bindings instead, for context: https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
 - DO NOT use `ngStyle`, use `style` bindings instead, for context: https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
 - DO NOT use `src`, use `ngSrc` bindings instead, for image
-- Use `readonly` for signals
+- Use `readonly` for signals 
 - **Signal naming**: All signal properties should start with `$` prefix (e.g., `$isLoading`, `$userData`, `$count`)
 - **Private signal naming**: Private signal properties should use `_$` prefix (e.g., `_$internalState`, `_$cache`, `_$config`) 
 
