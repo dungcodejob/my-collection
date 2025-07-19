@@ -12,11 +12,11 @@ import {
   lucideGalleryVerticalEnd,
   lucideSettings2,
 } from "@ng-icons/lucide";
+import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
+import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
 import { NavGroupComponent } from "./nav-group.component";
 import { NavUserComponent } from "./nav-user.component";
-import { SeparatorComponent } from "./separator.component";
 import { TeamSwitcherComponent } from "./team-switcher.component";
-
 export interface MenuItem {
   id: string;
   title: string;
@@ -56,7 +56,8 @@ export interface User {
     TeamSwitcherComponent,
     NavGroupComponent,
     NavUserComponent,
-    SeparatorComponent,
+    BrnSeparatorComponent,
+    HlmSeparatorDirective,
   ],
   providers: [
     provideIcons({

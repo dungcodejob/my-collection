@@ -1,15 +1,15 @@
 <aside
-  class="flex h-full w-64 flex-col border-r border-gray-200 bg-background transition-all duration-300 ease-in-out"
+  class="relative flex h-full w-64 flex-col bg-background transition-all duration-300 ease-in-out"
   data-sidebar="sidebar"
   [class.w-16]="isCollapsed()"
 >
   <!-- Sidebar Header -->
-  <div class="flex h-16 items-center border-b border-gray-200 px-4 dark:border-gray-800">
+  <div class="flex h-16 items-center px-4 dark:border-gray-800">
     <mc-team-switcher [isCollapsed]="isCollapsed()" [teams]="teams" />
   </div>
 
   <!-- Separator -->
-  <mc-separator orientation="horizontal" />
+  <brn-separator class="border-border" hlmSeparator orientation="horizontal" />
 
   <!-- Sidebar Content -->
   <div class="flex-1 overflow-y-auto">
@@ -20,10 +20,10 @@
   </div>
 
   <!-- Separator -->
-  <mc-separator orientation="horizontal" />
+  <brn-separator class="border-border" hlmSeparator orientation="horizontal" />
 
   <!-- Sidebar Footer -->
-  <div class="border-t border-gray-200 p-4 dark:border-gray-800">
+  <div class="p-4 dark:border-gray-800">
     <mc-nav-user [isCollapsed]="isCollapsed()" [user]="user" />
   </div>
 

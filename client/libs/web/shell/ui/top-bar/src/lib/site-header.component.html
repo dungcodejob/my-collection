@@ -1,0 +1,47 @@
+<header
+  class="flex flex-col w-full h-full shrink-0 items-center transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
+>
+  <div class="bg-background flex justify-between items-center w-full h-full">
+    <!-- Left Navigation -->
+    <nav class="flex items-center gap-2 px-4">
+      <!-- Sidebar Trigger -->
+      <button
+        class="-ml-1"
+        hlmBtn
+        size="sm"
+        type="button"
+        variant="ghost"
+        (click)="toggleSidebar()"
+      >
+        <ng-icon hlm name="lucideMenu" size="sm" />
+      </button>
+
+      <!-- Vertical Separator -->
+
+      <brn-separator class="mr-2 !h-4" hlmSeparator orientation="vertical" />
+      <!-- Breadcrumb Navigation -->
+      <nav class="flex items-center space-x-1 text-sm text-muted-foreground">
+        <a class="hidden md:block hover:text-foreground transition-colors" href="#">
+          Building Your Application
+        </a>
+        <ng-icon class="hidden md:block" hlm name="lucideChevronRight" size="sm" />
+        <span class="text-foreground font-medium"> Data Fetching </span>
+      </nav>
+    </nav>
+
+    <!-- Right Navigation -->
+    <nav class="flex items-center gap-0.5 px-4">
+      <!-- Search Button -->
+      <button hlmBtn size="sm" type="button" variant="ghost" (click)="openSearch()">
+        <ng-icon hlm name="lucideSearch" size="sm" />
+      </button>
+
+      <!-- Theme Toggle -->
+      <mc-mode-switcher />
+    </nav>
+  </div>
+
+  <!-- Horizontal Separator -->
+</header>
+
+<brn-separator hlmSeparator orientation="horizontal" />
