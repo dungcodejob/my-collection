@@ -6,7 +6,6 @@ import { HlmButtonDirective } from "@spartan-ng/helm/button";
 import { HlmIconDirective } from "@spartan-ng/helm/icon";
 import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
 import { ModeSwitcherComponent } from "./mode-switcher.component";
-import { ThemeToggleComponent } from "./theme-toggle.component";
 @Component({
   selector: "mc-site-header",
   templateUrl: "./site-header.component.html",
@@ -17,7 +16,6 @@ import { ThemeToggleComponent } from "./theme-toggle.component";
     BrnSeparatorComponent,
     HlmSeparatorDirective,
     NgIcon,
-    ThemeToggleComponent,
     ModeSwitcherComponent,
   ],
   providers: [provideIcons({ lucideMenu, lucideSearch, lucideChevronRight })],

@@ -22,7 +22,9 @@ import type { Team } from "./app-sidebar.component";
             />
           </div>
           <div class="flex flex-1 flex-col">
-            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+            <span
+              class="text-sm font-medium text-gray-900 whitespace-nowrap dark:text-gray-100"
+            >
               {{ teams()[0]?.name || "Select Team" }}
             </span>
             <span class="text-xs text-gray-500 dark:text-gray-400">

@@ -1,10 +1,10 @@
 <aside
-  class="relative flex h-full w-64 flex-col bg-background transition-all duration-300 ease-in-out"
+  class="relative flex h-full flex-col bg-background"
   data-sidebar="sidebar"
-  [class.w-16]="isCollapsed()"
+  [@sidebarCollapse]="getSidebarState()"
 >
   <!-- Sidebar Header -->
-  <div class="flex h-16 items-center px-4 dark:border-gray-800">
+  <div class="sidebar-content flex h-16 items-center px-4 dark:border-gray-800" [@contentFade]="getContentState()">
     <mc-team-switcher [isCollapsed]="isCollapsed()" [teams]="teams" />
   </div>
 
@@ -12,7 +12,7 @@
   <brn-separator class="border-border" hlmSeparator orientation="horizontal" />
 
   <!-- Sidebar Content -->
-  <div class="flex-1 overflow-y-auto">
+  <div class="sidebar-content flex-1 overflow-y-auto" [@contentFade]="getContentState()">
     <nav class="space-y-2 p-2">
       <mc-nav-group title="Main" [isCollapsed]="isCollapsed()" [items]="navMain" />
       <mc-nav-group title="Other" [isCollapsed]="isCollapsed()" [items]="navOthers" />
@@ -23,7 +23,7 @@
   <brn-separator class="border-border" hlmSeparator orientation="horizontal" />
 
   <!-- Sidebar Footer -->
-  <div class="p-4 dark:border-gray-800">
+  <div class="sidebar-content p-4 dark:border-gray-800" [@contentFade]="getContentState()">
     <mc-nav-user [isCollapsed]="isCollapsed()" [user]="user" />
   </div>
 
