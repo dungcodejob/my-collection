@@ -25,6 +25,7 @@
       "@client/web-shared-constants": ["libs/web/shared/constants/src/index.ts"],
       "@client/web-shared-data-access": ["libs/web/shared/data-access/src/index.ts"],
       "@client/web-shared-services": ["libs/web/shared/services/src/index.ts"],
+      "@client/web-shared-ui-select": ["libs/web/shared/ui/base/select/src/index.ts"],
       "@client/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
       "@client/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
       "@client/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],

@@ -1,3 +1,42 @@
-<div>
+<div class="flex h-screen bg-background">
   <mc-app-sidebar />
+  <main class="flex-1 overflow-auto p-6">
+    <!-- Test Select Component -->
+    <div class="mb-6 max-w-md">
+      <h2 class="text-lg font-semibold mb-4">Test Select Component</h2>
+
+      <div class="mb-4">
+        <h3 class="text-sm font-medium mb-2">Basic Select</h3>
+        <mc-select
+          placeholder="Choose an option..."
+          size="md"
+          variant="default"
+          [options]="testOptions.slice(0, 4)"
+          [value]="$selectedValue()"
+          (selectionChange)="onSelectionChange($event)"
+          (valueChange)="onValueChange($event)"
+        />
+      </div>
+
+      <div class="mb-4">
+        <h3 class="text-sm font-medium mb-2">Searchable Select</h3>
+        <mc-select
+          placeholder="Search and select..."
+          size="md"
+          variant="default"
+          [isSearchable]="true"
+          [options]="testOptions"
+          [value]="$selectedValue()"
+          (selectionChange)="onSelectionChange($event)"
+          (valueChange)="onValueChange($event)"
+        />
+      </div>
+
+      @if ($selectedValue()) {
+      <p class="mt-2 text-sm text-muted-foreground">Selected: {{ $selectedValue() }}</p>
+      }
+    </div>
+
+    <ng-content></ng-content>
+  </main>
 </div>

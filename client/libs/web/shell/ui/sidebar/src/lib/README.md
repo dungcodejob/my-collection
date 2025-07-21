@@ -5,14 +5,17 @@ This library provides a complete sidebar navigation system for Angular applicati
 ## Components
 
 ### AppSidebarComponent
+
 The main sidebar component that contains all navigation elements.
 
 **Usage:**
+
 ```html
 <mc-app-sidebar />
 ```
 
 **Features:**
+
 - Collapsible sidebar with smooth animations
 - Dark mode support
 - Responsive design
@@ -20,42 +23,52 @@ The main sidebar component that contains all navigation elements.
 - Accessibility features
 
 ### TeamSwitcherComponent
+
 Displays team information and allows team switching.
 
 **Props:**
+
 - `teams`: Array of team objects
 - `isCollapsed`: Boolean indicating if sidebar is collapsed
 
 ### NavGroupComponent
+
 Renders navigation groups with expandable menu items.
 
 **Props:**
+
 - `title`: Group title (optional)
 - `items`: Array of menu items
 - `isCollapsed`: Boolean indicating if sidebar is collapsed
 
 **Features:**
+
 - Expandable/collapsible menu items
 - Keyboard shortcuts display
 - Icon support
 - Nested navigation
 
 ### NavUserComponent
+
 Displays user information in the sidebar footer.
 
 **Props:**
+
 - `user`: User object with name, email, and avatar
 - `isCollapsed`: Boolean indicating if sidebar is collapsed
 
 ### SeparatorComponent
+
 A simple separator component for visual division.
 
 **Props:**
+
 - `orientation`: 'horizontal' | 'vertical' (default: 'horizontal')
 
 ## Data Interfaces
 
 ### MenuItem
+
 ```typescript
 interface MenuItem {
   id: string;
@@ -73,6 +86,7 @@ interface MenuItem {
 ```
 
 ### Team
+
 ```typescript
 interface Team {
   name: string;
@@ -82,6 +96,7 @@ interface Team {
 ```
 
 ### User
+
 ```typescript
 interface User {
   name: string;
