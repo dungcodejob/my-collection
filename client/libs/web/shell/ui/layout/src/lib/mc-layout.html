@@ -32,8 +32,32 @@
         />
       </div>
 
+      <div class="mb-4">
+        <h3 class="text-sm font-medium mb-2">API Select (with Loading & Pagination)</h3>
+        <mc-select
+          mcExampleSelectApi
+          placeholder="Search users..."
+          size="md"
+          variant="default"
+          [isSearchable]="true"
+          [options]="[]"
+          [value]="$selectedApiValue()"
+          (selectionChange)="onApiSelectionChange($event)"
+          (valueChange)="onApiValueChange($event)"
+        />
+        <p class="mt-1 text-xs text-muted-foreground">
+          Try searching for names like "John", "Jane", "Bob", etc. Scroll to load more.
+        </p>
+      </div>
+
       @if ($selectedValue()) {
-      <p class="mt-2 text-sm text-muted-foreground">Selected: {{ $selectedValue() }}</p>
+      <p class="mt-2 text-sm text-muted-foreground">
+        Basic Selected: {{ $selectedValue() }}
+      </p>
+      } @if ($selectedApiValue()) {
+      <p class="mt-2 text-sm text-muted-foreground">
+        API Selected: {{ $selectedApiValue() }}
+      </p>
       }
     </div>
 

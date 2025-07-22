@@ -55,6 +55,7 @@
     </div>
     } @if ($filteredOptions().length === 0) {
     <div aria-live="polite" class="no-options" role="status">No options found</div>
+    <hlm-option [disabled]="true"></hlm-option>
 
     } @else { @for (option of $filteredOptions(); track trackByValue($index, option); let
     i = $index) {

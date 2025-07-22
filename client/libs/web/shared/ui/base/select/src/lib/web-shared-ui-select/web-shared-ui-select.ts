@@ -4,10 +4,13 @@ import {
   computed,
   effect,
   ElementRef,
+  inject,
   input,
+  linkedSignal,
   model,
   output,
   signal,
+  untracked,
   viewChild,
   ViewEncapsulation,
 } from "@angular/core";
@@ -15,6 +18,7 @@ import { provideIcons } from "@ng-icons/core";
 import { lucideCheck, lucideChevronDown } from "@ng-icons/lucide";
 import { BrnSelectImports } from "@spartan-ng/brain/select";
 import { HlmSelectImports } from "@spartan-ng/helm/select";
+import { MCSelectApiDirective } from "./select-api.directive";
 
 export type SelectOption = {
   value: string;
@@ -32,6 +36,8 @@ export type SelectOption = {
   encapsulation: ViewEncapsulation.None,
 })
 export class WebSharedUiSelectComponent {
+  readonly selectApi = inject(MCSelectApiDirective, { optional: true });
+
   // Inputs
   readonly options = input.required<SelectOption[]>();
   readonly placeholder = input<string>("Select an option...");
@@ -40,9 +46,11 @@ export class WebSharedUiSelectComponent {
   readonly size = input<"sm" | "md" | "lg">("md");
   readonly variant = input<"default" | "outline" | "ghost">("default");
   readonly isSearchable = input<boolean>(false);
+  readonly isLoading = input<boolean>(false);
   // Outputs
   readonly valueChange = output<string>();
   readonly selectionChange = output<SelectOption>();
+  readonly scrollEnd = output<void>();
 
   // Internal state
   readonly $selectedValue = model<string | null>(null);
@@ -57,17 +65,9 @@ export class WebSharedUiSelectComponent {
   readonly $selectContent = viewChild<ElementRef<HTMLElement>>("selectContent");
 
   // Computed properties
-  readonly $filteredOptions = computed(() => {
-    const searchTerm = this.$searchTerm().toLowerCase().trim();
-    if (!searchTerm || !this.isSearchable()) {
-      return this.options();
-    }
-    return this.options().filter(
-      option =>
-        option.label.toLowerCase().includes(searchTerm) ||
-        option.value.toLowerCase().includes(searchTerm)
-    );
-  });
+  protected readonly $filteredOptions = linkedSignal(() => this.options());
+
+  protected readonly $isLoading = linkedSignal(() => this.isLoading());
 
   readonly $selectedOption = computed(() => {
     const currentValue = this.$selectedValue() || this.value();
@@ -97,6 +97,18 @@ export class WebSharedUiSelectComponent {
         this.$selectedValue.set(inputValue);
       }
     });
+
+    if (this.selectApi) {
+      effect(() => {
+        this.selectApi?.setOpen(this.$isOpen());
+        this.selectApi?.setSearchTerm(this.$searchTerm());
+      });
+
+      this.selectApi.connectIsLoading(this.$isLoading);
+      this.selectApi.connectOptions(this.$filteredOptions);
+    } else {
+      this._manualSearch();
+    }
   }
 
   onValueChange(value: string): void {
@@ -119,6 +131,11 @@ export class WebSharedUiSelectComponent {
     if (searchTerm !== previousSearchTerm) {
       this.$focusedIndex.set(-1);
     }
+  }
+
+  onScrollEnd(): void {
+    this.scrollEnd.emit();
+    this.selectApi?.nextPage();
   }
 
   clearSearch(): void {
@@ -224,6 +241,23 @@ export class WebSharedUiSelectComponent {
 
   trackByValue(index: number, option: SelectOption): string {
     return option.value;
+  }
+
+  private _manualSearch(): void {
+    effect(() => {
+      const searchTerm = this.$searchTerm().toLowerCase().trim();
+      if (searchTerm && this.isSearchable()) {
+        const filteredOptions = this.options().filter(
+          option =>
+            option.label.toLowerCase().includes(searchTerm) ||
+            option.value.toLowerCase().includes(searchTerm)
+        );
+
+        untracked(() => {
+          this.$filteredOptions.set(filteredOptions);
+        });
+      }
+    });
   }
 
   // Private methods
