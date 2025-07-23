@@ -1,5 +1,5 @@
 import { HttpEvent, HttpResponse } from "@angular/common/http";
-import { Observable, tap } from "rxjs";
+import { MonoTypeOperatorFunction, Observable, tap } from "rxjs";
 import { HttpClientResponse } from "../models/http-client-response";
 import { MCApiResponse, ResponseDto, SuccessResponseDto } from "../models/response.dto";
 
@@ -30,24 +30,25 @@ type UnHttpClientResponse<T> =
         ? SuccessResponseDto<F>
         : never;
 
-export function tapResponseData<T>(
-  callback: (data: UnHttpClientResponse<T>["result"]) => void
-) {
+export function tapResponseData<T extends SuccessResponseDto<K>, K>(
+  callback: (data: K) => void
+): MonoTypeOperatorFunction<T>;
+export function tapResponseData<T extends HttpResponse<SuccessResponseDto<K>>, K>(
+  callback: (data: K) => void
+): MonoTypeOperatorFunction<T>;
+export function tapResponseData<T extends HttpEvent<SuccessResponseDto<K>>, K>(
+  callback: (data: K) => void
+): MonoTypeOperatorFunction<T>;
+export function tapResponseData<T extends HttpClientResponse<SuccessResponseDto<K>>, K>(
+  callback: (data: K) => void
+): MonoTypeOperatorFunction<T> {
   return (source$: Observable<T>): Observable<T> =>
     source$.pipe(
       tap(res => {
-        if (
-          MCApiResponse.isRaw<UnHttpClientResponse<T>>(
-            res as HttpClientResponse<UnHttpClientResponse<T>>
-          )
-        ) {
-          callback((res as HttpResponse<UnHttpClientResponse<T>>).body!.result);
-        } else if (
-          MCApiResponse.is<UnHttpClientResponse<T>>(
-            res as HttpClientResponse<UnHttpClientResponse<T>>
-          )
-        ) {
-          callback((res as UnHttpClientResponse<T>).result);
+        if (MCApiResponse.isRaw<SuccessResponseDto<K>>(res)) {
+          callback((res).body!.result);
+        } else if (MCApiResponse.is<SuccessResponseDto<K>>(res)) {
+          callback((res).result);
         }
       })
     );
