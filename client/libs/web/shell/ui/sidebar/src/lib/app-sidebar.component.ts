@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from "@angular/animations";
 import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import {
@@ -12,15 +13,15 @@ import {
   lucideGalleryVerticalEnd,
   lucideSettings2,
 } from "@ng-icons/lucide";
+import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
+import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
 import { NavGroupComponent } from "./nav-group.component";
 import { NavUserComponent } from "./nav-user.component";
-import { SeparatorComponent } from "./separator.component";
 import { TeamSwitcherComponent } from "./team-switcher.component";
-
-export interface MenuItem {
+export type MenuItem = {
   id: string;
   title: string;
-  icon?: any;
+  icon?: string;
   url?: string;
   shortcut?: string;
   children?: MenuItem[];
@@ -29,25 +30,25 @@ export interface MenuItem {
   isHideChildren?: boolean;
   isShowSubSidebar?: boolean;
   permissionKey?: string;
-}
+};
 
-export interface MenuGroup {
+export type MenuGroup = {
   id: string;
   title: string;
   items: MenuItem[];
-}
+};
 
-export interface Team {
+export type Team = {
   name: string;
-  logo: any;
+  logo: string;
   plan: string;
-}
+};
 
-export interface User {
+export type User = {
   name: string;
   email: string;
   avatar: string;
-}
+};
 
 @Component({
   selector: "mc-app-sidebar",
@@ -56,7 +57,8 @@ export interface User {
     TeamSwitcherComponent,
     NavGroupComponent,
     NavUserComponent,
-    SeparatorComponent,
+    BrnSeparatorComponent,
+    HlmSeparatorDirective,
   ],
   providers: [
     provideIcons({
@@ -75,6 +77,56 @@ export interface User {
   templateUrl: "./app-sidebar.component.html",
   styleUrl: "./app-sidebar.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger("sidebarCollapse", [
+      state(
+        "expanded",
+        style({
+          width: "16rem",
+          minWidth: "16rem",
+          maxWidth: "16rem",
+          transform: "translateX(0)",
+        })
+      ),
+      state(
+        "collapsed",
+        style({
+          width: "4rem",
+          minWidth: "4rem",
+          maxWidth: "4rem",
+          transform: "translateX(0)",
+        })
+      ),
+      transition("expanded => collapsed", [
+        animate("250ms cubic-bezier(0.4, 0.0, 0.2, 1)"),
+      ]),
+      transition("collapsed => expanded", [
+        animate("300ms cubic-bezier(0.4, 0.0, 0.2, 1)"),
+      ]),
+    ]),
+    trigger("contentFade", [
+      state(
+        "visible",
+        style({
+          opacity: 1,
+          transform: "scale(1) translateX(0)",
+          visibility: "visible",
+        })
+      ),
+      state(
+        "hidden",
+        style({
+          opacity: 1,
+          transform: "scale(1) translateX(0)",
+          visibility: "visible",
+        })
+      ),
+      transition("visible => hidden", [animate("150ms cubic-bezier(0.4, 0.0, 1, 1)")]),
+      transition("hidden => visible", [
+        animate("200ms 100ms cubic-bezier(0.0, 0.0, 0.2, 1)"),
+      ]),
+    ]),
+  ],
 })
 export class AppSidebarComponent {
   protected readonly isCollapsed = signal(false);
@@ -224,5 +276,13 @@ export class AppSidebarComponent {
 
   protected toggleCollapse(): void {
     this.isCollapsed.update(value => !value);
+  }
+
+  protected getSidebarState(): string {
+    return this.isCollapsed() ? "collapsed" : "expanded";
+  }
+
+  protected getContentState(): string {
+    return this.isCollapsed() ? "hidden" : "visible";
   }
 }

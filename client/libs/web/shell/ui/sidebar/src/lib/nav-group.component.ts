@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, input, signal } from "@angular/core";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
@@ -8,12 +9,46 @@ import type { MenuItem } from "./app-sidebar.component";
   selector: "mc-nav-group",
   imports: [CommonModule, NgIconComponent],
   providers: [provideIcons({ lucideChevronDown, lucideChevronRight })],
+  animations: [
+    trigger("expandCollapse", [
+      state(
+        "collapsed",
+        style({
+          height: "0px",
+          opacity: 0,
+          overflow: "hidden",
+        })
+      ),
+      state(
+        "expanded",
+        style({
+          height: "*",
+          opacity: 1,
+          overflow: "visible",
+        })
+      ),
+      transition("collapsed <=> expanded", [animate("200ms ease-in-out")]),
+    ]),
+    trigger("chevronRotate", [
+      state(
+        "collapsed",
+        style({
+          transform: "rotate(0deg)",
+        })
+      ),
+      state(
+        "expanded",
+        style({
+          transform: "rotate(90deg)",
+        })
+      ),
+      transition("collapsed <=> expanded", [animate("200ms ease-in-out")]),
+    ]),
+  ],
   template: `
     <div class="space-y-1">
       @if (!isCollapsed() && title()) {
-        <h3
-          class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
-        >
+        <h3 class="px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">
           {{ title() }}
         </h3>
       }
@@ -37,10 +72,9 @@ import type { MenuItem } from "./app-sidebar.component";
               @if (item.children && item.children.length > 0) {
                 <ng-icon
                   class="shrink-0 text-gray-400"
+                  name="lucideChevronRight"
                   size="16"
-                  [name]="
-                    isExpanded(item.id) ? 'lucideChevronDown' : 'lucideChevronRight'
-                  "
+                  [@chevronRotate]="getSubmenuState(item.id)"
                 />
               }
 
@@ -55,14 +89,10 @@ import type { MenuItem } from "./app-sidebar.component";
           </button>
 
           <!-- Submenu items -->
-          @if (
-            item.children &&
-            item.children.length > 0 &&
-            isExpanded(item.id) &&
-            !isCollapsed()
-          ) {
+          @if (item.children && item.children.length > 0 && !isCollapsed()) {
             <div
               class="ml-6 space-y-1 border-l border-gray-200 pl-3 dark:border-gray-700"
+              [@expandCollapse]="getSubmenuState(item.id)"
             >
               @for (child of item.children; track child.id) {
                 <a
@@ -111,5 +141,9 @@ export class NavGroupComponent {
       }
       return newExpanded;
     });
+  }
+
+  protected getSubmenuState(itemId: string): string {
+    return this.isExpanded(itemId) ? "expanded" : "collapsed";
   }
 }

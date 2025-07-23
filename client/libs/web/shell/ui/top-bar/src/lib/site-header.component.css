@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.breadcrumb-separator {
+  margin: 0 0.5rem;
+  color: var(--muted-foreground);
+}
+
+.breadcrumb-link {
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+  color: var(--foreground);
+}
+
+.breadcrumb-current {
+  color: var(--foreground);
+  font-weight: 500;
+}
