@@ -77,7 +77,7 @@ export class MCApiResponse {
   ): response is T {
     return (
       !!response &&
-      isPlainObject(response) &&
+      isPlainObject(response as Record<string, unknown>) &&
       "result" in response &&
       response.success === true
     );
