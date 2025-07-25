@@ -9,7 +9,7 @@ import {
 import { HlmDialogContentComponent } from "./hlm-dialog-content.component";
 import { hlmDialogOverlayClass } from "./hlm-dialog-overlay.directive";
 
-export type HlmDialogOptions<DialogContext = unknown> = BrnDialogOptions & {
+export type HlmDialogOptions<DialogContext extends Record<string, unknown> = {}> = BrnDialogOptions & {
   contentClass?: string;
   context?: DialogContext;
 };
@@ -32,7 +32,7 @@ export class HlmDialogService {
         `${hlmDialogOverlayClass} ${options?.backdropClass ?? ""}`
       ),
       context: {
-        ...(options?.context ?? {}),
+        ...(options.context ?? {}),
         $component: component,
         $dynamicComponentClass: options?.contentClass,
       },
