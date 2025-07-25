@@ -1,8 +1,6 @@
 {
   "name": "@spartan-ng/helm/date-picker",
   "version": "0.0.1",
-  "peerDependencies": {
-
-  },
+  "peerDependencies": {},
   "sideEffects": false
 }

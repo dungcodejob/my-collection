@@ -1,4 +1,6 @@
+import { signal } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ThemeMode, ThemePreset, ThemeService } from "@client/web-shared-services";
 import { SiteHeaderComponent } from "./site-header.component";
 
 describe("SiteHeaderComponent", () => {
@@ -6,8 +8,20 @@ describe("SiteHeaderComponent", () => {
   let fixture: ComponentFixture<SiteHeaderComponent>;
 
   beforeEach(async () => {
+    // Mock ThemeService
+    const mockThemeService = {
+      mode: signal(ThemeMode.Light),
+      isDarkMode: signal(false),
+      preset: signal(ThemePreset.Aura),
+      setMode: jest.fn(),
+      setPreset: jest.fn(),
+      toggleMode: jest.fn(),
+      initialize: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [SiteHeaderComponent],
+      providers: [{ provide: ThemeService, useValue: mockThemeService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SiteHeaderComponent);
@@ -16,7 +30,7 @@ describe("SiteHeaderComponent", () => {
   });
 
   it("should create", () => {
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
   });
 
   it("should toggle sidebar when sidebar button is clicked", () => {
@@ -44,9 +58,9 @@ describe("SiteHeaderComponent", () => {
     expect(breadcrumb?.textContent).toContain("Data Fetching");
   });
 
-  it("should render theme toggle component", () => {
+  it("should render mode switcher component", () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const themeToggle = compiled.querySelector("mc-theme-toggle");
-    expect(themeToggle).toBeTruthy();
+    const modeSwitcher = compiled.querySelector("mc-mode-switcher");
+    expect(modeSwitcher).toBeTruthy();
   });
 });

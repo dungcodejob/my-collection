@@ -4,7 +4,10 @@
   [@sidebarCollapse]="getSidebarState()"
 >
   <!-- Sidebar Header -->
-  <div class="sidebar-content flex h-16 items-center px-4 dark:border-gray-800" [@contentFade]="getContentState()">
+  <div
+    class="sidebar-content flex h-16 items-center px-4 dark:border-gray-800"
+    [@contentFade]="getContentState()"
+  >
     <mc-team-switcher [isCollapsed]="isCollapsed()" [teams]="teams" />
   </div>
 
@@ -23,7 +26,10 @@
   <brn-separator class="border-border" hlmSeparator orientation="horizontal" />
 
   <!-- Sidebar Footer -->
-  <div class="sidebar-content p-4 dark:border-gray-800" [@contentFade]="getContentState()">
+  <div
+    class="sidebar-content p-4 dark:border-gray-800"
+    [@contentFade]="getContentState()"
+  >
     <mc-nav-user [isCollapsed]="isCollapsed()" [user]="user" />
   </div>
 

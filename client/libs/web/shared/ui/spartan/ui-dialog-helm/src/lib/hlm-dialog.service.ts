@@ -9,10 +9,11 @@ import {
 import { HlmDialogContentComponent } from "./hlm-dialog-content.component";
 import { hlmDialogOverlayClass } from "./hlm-dialog-overlay.directive";
 
-export type HlmDialogOptions<DialogContext extends Record<string, unknown> = {}> = BrnDialogOptions & {
-  contentClass?: string;
-  context?: DialogContext;
-};
+export type HlmDialogOptions<DialogContext extends Record<string, unknown> = {}> =
+  BrnDialogOptions & {
+    contentClass?: string;
+    context?: DialogContext;
+  };
 
 @Injectable({
   providedIn: "root",
