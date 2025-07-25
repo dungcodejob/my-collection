@@ -89,6 +89,11 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup Git branches
+        run: |
+          git fetch origin development:development || echo "Development branch already exists"
+          git branch -a
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
