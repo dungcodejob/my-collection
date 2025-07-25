@@ -1,0 +1,20 @@
+{
+  "name": "web-core-monitoring",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/core/monitoring/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:web", "type:feature", "category:core"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/web/core/monitoring/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

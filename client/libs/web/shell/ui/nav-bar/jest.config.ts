@@ -1,5 +1,5 @@
 export default {
-  displayName: "nav-bar",
+  displayName: "web-shell-ui-nav-bar",
   preset: "../../../../../jest.preset.js",
   setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
   coverageDirectory: "../../../../../coverage/libs/web/shell/ui/nav-bar",

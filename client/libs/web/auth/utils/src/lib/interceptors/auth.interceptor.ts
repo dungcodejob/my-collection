@@ -8,47 +8,55 @@ import {
 } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { toObservable } from "@angular/core/rxjs-interop";
-import { Observable, catchError, filter, switchMap, take, throwError } from "rxjs";
-import { AuthStore } from "@nx/web-auth-data-access";
+import { authEvents, AuthStore } from "@client/web-auth-data-access";
+import { API_ENDPOINTS } from "@client/web-shared-constants";
+import { injectDispatch } from "@ngrx/signals/events";
+import { catchError, filter, Observable, switchMap, take, throwError } from "rxjs";
 
 export const authInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
   next: HttpHandlerFn
 ) => {
   const authStore = inject(AuthStore);
-  const tokens = authStore.$tokens();
-  const exceptions = ["/login", "/refresh-token", "assets"];
+  const dispatch = injectDispatch(authEvents);
+  const tokens = authStore.tokens();
 
-  const addTokenToRequest = (
-    request: HttpRequest<unknown>,
-    next: HttpHandlerFn,
-    accessToken: string
-  ): Observable<HttpEvent<unknown>> => {
-    const headers = request.headers.set("Authorization", `Bearer ${accessToken}`);
-    const requestClone = request.clone({ headers });
-
-    return next(requestClone);
-  };
+  const exceptions = [
+    API_ENDPOINTS.AUTH.LOGIN,
+    API_ENDPOINTS.AUTH.REFRESH,
+    API_ENDPOINTS.ASSETS.BASE,
+  ];
 
   const handle401Error = (
-    request: HttpRequest<unknown>,
-    next: HttpHandlerFn,
+    nextRequest: HttpRequest<unknown>,
+    handler: HttpHandlerFn,
     refreshToken: string,
     error: HttpErrorResponse
-  ) => {
+  ): Observable<HttpEvent<unknown>> => {
     const refreshing = authStore.$isRefreshPending();
 
     if (refreshing) {
-      authStore.refresh(refreshToken);
+      dispatch.refreshToken({ refreshToken });
     }
 
-    return toObservable(authStore.$tokens).pipe(
+    return toObservable(authStore.tokens).pipe(
       filter(Boolean),
       filter(() => !refreshing),
       take(1),
-      switchMap(value => addTokenToRequest(request, next, value.access)),
+      switchMap(value => addTokenToRequest(nextRequest, handler, value.accessToken)),
       catchError(() => throwError(() => error))
     );
+  };
+
+  const addTokenToRequest = (
+    nextRequest: HttpRequest<unknown>,
+    handler: HttpHandlerFn,
+    accessToken: string
+  ): Observable<HttpEvent<unknown>> => {
+    const headers = nextRequest.headers.set("Authorization", `Bearer ${accessToken}`);
+    const requestClone = nextRequest.clone({ headers });
+
+    return handler(requestClone);
   };
 
   if (!tokens) {
@@ -63,18 +71,18 @@ export const authInterceptor: HttpInterceptorFn = (
     return next(request);
   }
 
-  return addTokenToRequest(request, next, tokens.access).pipe(
+  return addTokenToRequest(request, next, tokens.accessToken).pipe(
     catchError(error => {
       if (
         error instanceof HttpErrorResponse &&
         error.status === HttpStatusCode.Unauthorized &&
         !exceptions.some(d => request.url.includes(d))
       ) {
-        if (!tokens.refresh) {
+        if (!tokens.refreshToken) {
           return throwError(() => error);
         }
 
-        return handle401Error(request, next, tokens.refresh, error);
+        return handle401Error(request, next, tokens.refreshToken, error);
       } else {
         return throwError(() => error);
       }

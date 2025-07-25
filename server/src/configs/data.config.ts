@@ -5,7 +5,7 @@ export const databaseConfig = registerAs("database", () => ({
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || 5432,
   username: process.env.DB_USERNAME || "postgres",
-  password: process.env.DB_PASSWORD || "dungcool102608",
+  password: process.env.DB_PASSWORD || "Dungcool102608@",
   dbName: process.env.DB_NAME || "my_collection_app",
 }));
 

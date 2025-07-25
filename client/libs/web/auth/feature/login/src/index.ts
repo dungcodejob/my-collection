@@ -1,1 +1,1 @@
-export * from "./lib/auth-login/auth-login.component";
+export * from "./lib/auth-login/auth-login";

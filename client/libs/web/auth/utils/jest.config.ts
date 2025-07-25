@@ -1,5 +1,5 @@
 export default {
-  displayName: "web-bookmark-utils",
+  displayName: "web-auth-utils",
   preset: "../../../../jest.preset.js",
   setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
   coverageDirectory: "../../../../coverage/libs/web/auth/utils",

@@ -1,0 +1,17 @@
+<div class="flex w-screen h-screen">
+  <mc-app-sidebar />
+  <brn-separator class="border-border" hlmSeparator orientation="vertical" />
+  <main class="bg-background relative grow">
+    <header
+      class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
+    >
+      <mc-site-header class="h-full" />
+    </header>
+
+    <div
+      class="relative z-50 mx-auto flex w-full max-w-[1360px] flex-1 flex-col self-stretch"
+    >
+      <router-outlet />
+    </div>
+  </main>
+</div>

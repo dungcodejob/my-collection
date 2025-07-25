@@ -1,0 +1,65 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@nx/web-auth-data-access": ["libs/web/auth/data-access/src/index.ts"],
+      "@nx/web-auth-feature-login": ["libs/web/auth/feature/login/src/index.ts"],
+      "@nx/web-auth-feature-shell": ["libs/web/auth/feature/shell/src/index.ts"],
+      "@nx/web-auth-utils": ["libs/web/auth/utils/src/index.ts"],
+      "@nx/web-bookmark-data-access": ["libs/web/bookmark/data-access/src/index.ts"],
+      "@nx/web-bookmark-feature-list": ["libs/web/bookmark/feature/list/src/index.ts"],
+      "@nx/web-collection-data-access": ["libs/web/collection/data-access/src/index.ts"],
+      "@nx/web-collection-feature-detail-dialog": [
+        "libs/web/collection/feature/detail-dialog/src/index.ts"
+      ],
+      "@nx/web-collection-feature-list": [
+        "libs/web/collection/feature/list/src/index.ts"
+      ],
+      "@nx/web-shared-api": ["libs/web/shared/data-access/api/src/index.ts"],
+      "@nx/web-shared-app-config": ["libs/web/shared/app-config/src/index.ts"],
+      "@nx/web-shared-assets": ["libs/web/shared/assets/src/index.ts"],
+      "@nx/web-shared-confirm-dialog": ["libs/web/shared/ui/confirm-dialog/src/index.ts"],
+      "@nx/web-shared-constants": ["libs/web/shared/constants/src/index.ts"],
+      "@nx/web-shared-handle-error": ["libs/web/shared/handle-error/src/index.ts"],
+      "@nx/web-shared-http": ["libs/web/shared/http/src/index.ts"],
+      "@nx/web-shared-messages": ["libs/web/shared/messages/src/index.ts"],
+      "@nx/web-shared-models": ["libs/web/shared/data-access/models/src/index.ts"],
+      "@nx/web-shared-services": ["libs/web/shared/services/src/index.ts"],
+      "@nx/web-shared-store": ["libs/web/shared/data-access/store/src/index.ts"],
+      "@nx/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
+      "@nx/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
+      "@nx/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],
+      "@nx/web-shell-ui-nav-bar": ["libs/web/shell/ui/nav-bar/src/index.ts"],
+      "@nx/web-shell-ui-top-bar": ["libs/web/shell/ui/top-bar/src/index.ts"],
+      "@spartan-ng/ui-alertdialog-helm": [
+        "libs/web/shared/ui/ui-alertdialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-button-helm": ["libs/web/shared/ui/ui-button-helm/src/index.ts"],
+      "@spartan-ng/ui-checkbox-helm": [
+        "libs/web/shared/ui/ui-checkbox-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-dialog-helm": ["libs/web/shared/ui/ui-dialog-helm/src/index.ts"],
+      "@spartan-ng/ui-formfield-helm": [
+        "libs/web/shared/ui/ui-formfield-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-icon-helm": ["libs/web/shared/ui/ui-icon-helm/src/index.ts"],
+      "@spartan-ng/ui-input-helm": ["libs/web/shared/ui/ui-input-helm/src/index.ts"],
+      "@spartan-ng/ui-label-helm": ["libs/web/shared/ui/ui-label-helm/src/index.ts"],
+      "@spartan-ng/ui-menu-helm": ["libs/web/shared/ui/ui-menu-helm/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

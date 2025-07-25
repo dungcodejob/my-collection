@@ -8,8 +8,7 @@ import {
   withState,
 } from "@ngrx/signals";
 
-import { MethodsDictionary } from "@ngrx/signals/src/signal-store-models";
-import { capitalize } from "../string";
+import { capitalize } from "../string.utils";
 import {
   NamedStatusSignals,
   NamedStatusState,
@@ -18,6 +17,7 @@ import {
   StatusState,
 } from "./status-name.type";
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function getStatusStateKeys(config?: { name: string }) {
   const name = config?.name;
   return {
@@ -33,7 +33,8 @@ export function withStatus(): SignalStoreFeature<
   {
     state: StatusState;
     props: StatusSignals;
-    methods: MethodsDictionary;
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    methods: {};
   }
 >;
 export function withStatus<Name extends string>(config: {
@@ -43,7 +44,8 @@ export function withStatus<Name extends string>(config: {
   {
     state: NamedStatusState<Name>;
     props: NamedStatusSignals<Name>;
-    methods: MethodsDictionary;
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    methods: {};
   }
 >;
 export function withStatus<Name extends string>(config?: {
@@ -75,7 +77,7 @@ export function setPending<Prop extends string>(
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {
-    return { [`${prop}Status`]: "pending" } as NamedStatusState<Prop>;
+    return { [`${prop}Status`]: "pending" } as unknown as NamedStatusState<Prop>;
   }
 
   return { status: "pending" };
@@ -87,22 +89,22 @@ export function setFulfilled<Prop extends string>(
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {
-    return { [`${prop}Status`]: "fulfilled" } as NamedStatusState<Prop>;
+    return { [`${prop}Status`]: "fulfilled" } as unknown as NamedStatusState<Prop>;
   }
   return { status: "fulfilled" };
 }
 
-export function setError(error: any): StatusState;
+export function setError(error: unknown): StatusState;
 export function setError<Prop extends string>(
-  error: any,
+  error: unknown,
   prop: Prop
 ): NamedStatusState<Prop>;
 export function setError<Prop extends string>(
-  error: any,
+  error: unknown,
   prop?: Prop
 ): StatusState | NamedStatusState<Prop> {
   if (prop) {
-    return { [`${prop}Status`]: { error } } as NamedStatusState<Prop>;
+    return { [`${prop}Status`]: { error } } as unknown as NamedStatusState<Prop>;
   }
   return { status: { error } };
 }

@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+aside {
+  will-change: width, transform;
+  transform-origin: left center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+}
+
+.sidebar-content {
+  will-change: opacity, transform, visibility;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Prevent layout shifts during animation */
+.sidebar-content * {
+  box-sizing: border-box;
+}
+
+/* Smooth scrolling for sidebar content */
+.flex-1.overflow-y-auto {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}

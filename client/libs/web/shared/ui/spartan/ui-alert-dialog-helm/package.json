@@ -1,0 +1,8 @@
+{
+  "name": "@spartan-ng/helm/alert-dialog",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@spartan-ng/helm/button": "0.0.1"
+  },
+  "sideEffects": false
+}

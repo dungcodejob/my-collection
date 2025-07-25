@@ -1,20 +1,21 @@
 import { Signal } from "@angular/core";
-import { SignalsDictionary } from "@ngrx/signals/src/signal-store-models";
 
-export type Status = "idle" | "pending" | "fulfilled" | { error: any };
+export type Status = "idle" | "pending" | "fulfilled" | { error: unknown };
 
-export interface StatusState {
+export type StatusState = {
   status: Status;
-}
+};
 
-export interface StatusSignals extends SignalsDictionary {
+export type StatusSignals = {
   $isPending: Signal<boolean>;
   $isFulfilled: Signal<boolean>;
-  $error: Signal<any>;
-}
+  $error: Signal<unknown>;
+};
 
-export type NamedStatusState<Name extends string> = {
-  [K in keyof StatusState as `${Name}${Capitalize<K>}`]: Status;
+export type NamedStatusState<Prop extends string> = {
+  [K in keyof StatusSignals as Prop extends ""
+    ? `${Prop}${K}`
+    : `${Prop}${Capitalize<K>}`]: StatusSignals[K];
 };
 
 export type NamedStatusSignals<Name extends string> = {
@@ -22,5 +23,5 @@ export type NamedStatusSignals<Name extends string> = {
 } & {
   [K in keyof StatusSignals as `$is${Capitalize<Name>}Fulfilled`]: Signal<boolean>;
 } & {
-  [K in keyof StatusSignals as `$${Name}Error`]: Signal<any>;
+  [K in keyof StatusSignals as `$${Name}Error`]: Signal<unknown>;
 };

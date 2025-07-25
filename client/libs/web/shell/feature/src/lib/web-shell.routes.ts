@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
-import { AuthShellRoutes } from "@nx/web-auth-feature-shell";
-import { LayoutComponent } from "@nx/web-shell-ui-layout";
+import { AuthShellRoutes } from "@client/web-auth-feature-shell";
+import { MCLayout } from "@client/web-shell-ui-layout";
+
 export const webShellRoutes: Routes = [
   {
     path: "",
@@ -10,7 +11,7 @@ export const webShellRoutes: Routes = [
   {
     path: "home",
     // canActivate: [authGuard],
-    component: LayoutComponent,
+    component: MCLayout,
     providers: [],
     // children: [
     //   {

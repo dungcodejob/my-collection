@@ -4,7 +4,7 @@
   "sourceRoot": "libs/web/shared/services/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:web type:feature category:shared"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
