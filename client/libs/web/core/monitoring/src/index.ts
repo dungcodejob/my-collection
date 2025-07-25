@@ -1,7 +1,3 @@
-// Data Access - Legacy (backward compatibility)
-export * from "./lib/data-access/monitoring.service";
-export * from "./lib/data-access/monitoring.store";
-
 // Data Access -/lib New Abstract Architecture
 export * from "./lib/data-access/abstract-monitoring.service";
 export * from "./lib/data-access/monitoring.factory";
