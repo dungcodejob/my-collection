@@ -1,0 +1,402 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ main, development ]
+    paths:
+      - 'client/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches: [ main, development ]
+    paths:
+      - 'client/**'
+  workflow_dispatch:
+    inputs:
+      skip_cache:
+        description: 'Skip cache and run fresh build'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+env:
+  # NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}  # Disabled Nx Cloud for GitHub Actions
+  # Bundle size thresholds (in KB)
+  BUNDLE_SIZE_WARNING_THRESHOLD: '2000'    # 2MB - moderate size warning
+  BUNDLE_SIZE_ERROR_THRESHOLD: '5000'      # 5MB - large size error
+  BUNDLE_SIZE_OPTIMAL_THRESHOLD: '1000'    # 1MB - optimal size
+
+jobs:
+  # Setup and cache dependencies
+  setup:
+    name: Setup Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
+      node-version: ${{ steps.read-node-version.outputs.version }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Read Node.js version from .nvmrc
+        id: read-node-version
+        run: |
+          NODE_VERSION=$(cat .nvmrc | tr -d 'v')
+          echo "version=$NODE_VERSION" >> $GITHUB_OUTPUT
+          echo "Using Node.js version: $NODE_VERSION"
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.read-node-version.outputs.version }}
+          cache: 'npm'
+          cache-dependency-path: 'client/package-lock.json'
+      
+      - name: Cache node modules
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            client/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true' || github.event.inputs.skip_cache == 'true'
+        run: |
+          cd client
+          npm ci --legacy-peer-deps
+      
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: client/.nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('client/nx.json', 'client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
+  # Lint and format check
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Git branches
+        run: |
+          git fetch origin development:development || echo "Development branch already exists"
+          git branch -a
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ needs.setup.outputs.node-version }}
+      
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            client/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+      
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: client/.nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('client/nx.json', 'client/package-lock.json') }}
+      
+      - name: Run ESLint
+        run: |
+          cd client
+          echo "🔍 Running ESLint..."
+          npm run lint
+      
+      - name: Check Prettier formatting
+        run: |
+          cd client
+          echo "✨ Checking Prettier formatting..."
+          npm run format -- --check
+      
+      - name: TypeScript compilation check
+        run: |
+          cd client
+          echo "🔧 Checking TypeScript compilation..."
+          npx tsc --noEmit --project tsconfig.base.json
+
+  # Unit tests
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ needs.setup.outputs.node-version }}
+      
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            client/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+      
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: client/.nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('client/nx.json', 'client/package-lock.json') }}
+      
+      - name: Run unit tests
+        run: |
+          cd client
+          echo "🧪 Running unit tests..."
+          npm run test
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          directory: client/coverage
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false
+      
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              const coverageDir = './client/coverage';
+              if (fs.existsSync(coverageDir)) {
+                const lcovPath = path.join(coverageDir, 'lcov.info');
+                if (fs.existsSync(lcovPath)) {
+                  const coverage = fs.readFileSync(lcovPath, 'utf8');
+                  const lines = coverage.split('\n');
+                  const summary = lines.filter(line => line.startsWith('LF:') || line.startsWith('LH:'));
+                  
+                  let totalLines = 0;
+                  let coveredLines = 0;
+                  
+                  for (let i = 0; i < summary.length; i += 2) {
+                    if (summary[i] && summary[i+1]) {
+                      totalLines += parseInt(summary[i].split(':')[1]);
+                      coveredLines += parseInt(summary[i+1].split(':')[1]);
+                    }
+                  }
+                  
+                  const percentage = totalLines > 0 ? ((coveredLines / totalLines) * 100).toFixed(2) : 0;
+                  
+                  const body = `## 📊 Frontend Test Coverage
+                  
+                  **Coverage**: ${percentage}%
+                  **Lines covered**: ${coveredLines}/${totalLines}
+                  
+                  ${percentage >= 80 ? '✅ Great coverage!' : percentage >= 60 ? '⚠️ Consider adding more tests' : '❌ Low coverage - please add tests'}`;
+                  
+                  await github.rest.issues.createComment({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    body: body
+                  });
+                }
+              }
+            } catch (error) {
+              console.log('Could not generate coverage comment:', error);
+            }
+
+  # Build application
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ needs.setup.outputs.node-version }}
+      
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            client/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+      
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: client/.nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('client/nx.json', 'client/package-lock.json') }}
+      
+      - name: Build applications
+        run: |
+          cd client
+          echo "🏗️ Building applications..."
+          npm run build
+      
+      - name: Check bundle size
+        run: |
+          cd client
+          echo "📦 Checking bundle size..."
+          npm run analyze || echo "Bundle analysis not available"
+      
+      - name: Analyze bundle size
+        env:
+          WARNING_THRESHOLD: ${{ env.BUNDLE_SIZE_WARNING_THRESHOLD }}
+          ERROR_THRESHOLD: ${{ env.BUNDLE_SIZE_ERROR_THRESHOLD }}
+          OPTIMAL_THRESHOLD: ${{ env.BUNDLE_SIZE_OPTIMAL_THRESHOLD }}
+        run: |
+          cd client
+          echo "📦 Analyzing bundle size..."
+          
+          if [ -d "dist/apps/client" ]; then
+            echo "## 📦 Bundle Analysis" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Tính tổng kích thước
+            total_size=$(du -sh dist/apps/client | cut -f1)
+            echo "**Total bundle size**: $total_size" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Chi tiết các file chính
+            echo "### Main files:" >> $GITHUB_STEP_SUMMARY
+            find dist/apps/client -name "*.js" -o -name "*.css" | head -10 | while read file; do
+              size=$(du -sh "$file" | cut -f1)
+              filename=$(basename "$file")
+              echo "- **$filename**: $size" >> $GITHUB_STEP_SUMMARY
+            done
+            
+            # Cảnh báo dựa trên env variables
+            total_kb=$(du -sk dist/apps/client | cut -f1)
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Size Analysis:" >> $GITHUB_STEP_SUMMARY
+            echo "- **Current size**: ${total_kb}KB" >> $GITHUB_STEP_SUMMARY
+            echo "- **Optimal threshold**: ${OPTIMAL_THRESHOLD}KB" >> $GITHUB_STEP_SUMMARY
+            echo "- **Warning threshold**: ${WARNING_THRESHOLD}KB" >> $GITHUB_STEP_SUMMARY
+            echo "- **Error threshold**: ${ERROR_THRESHOLD}KB" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [ $total_kb -gt $ERROR_THRESHOLD ]; then
+              echo "❌ **Error**: Bundle size is too large (>${ERROR_THRESHOLD}KB). Consider code splitting and optimization." >> $GITHUB_STEP_SUMMARY
+              exit 1
+            elif [ $total_kb -gt $WARNING_THRESHOLD ]; then
+              echo "⚠️ **Warning**: Bundle size is moderate (>${WARNING_THRESHOLD}KB). Monitor for growth and consider optimization." >> $GITHUB_STEP_SUMMARY
+            elif [ $total_kb -gt $OPTIMAL_THRESHOLD ]; then
+              echo "📝 **Note**: Bundle size is acceptable (>${OPTIMAL_THRESHOLD}KB). Room for optimization." >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ **Excellent**: Bundle size is optimal (<${OPTIMAL_THRESHOLD}KB)." >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: client/dist/
+          retention-days: 7
+
+  # Nx affected analysis
+  affected:
+    name: Nx Affected Analysis
+    runs-on: ubuntu-latest
+    needs: setup
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ needs.setup.outputs.node-version }}
+      
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            client/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
+      
+      - name: Show affected projects
+        run: |
+          cd client
+          echo "📊 Analyzing affected projects..."
+          npx nx show projects --affected --base=origin/main --head=HEAD
+      
+      - name: Run affected tests
+        run: |
+          cd client
+          echo "🧪 Running tests for affected projects..."
+          npx nx affected --target=test --base=origin/main --head=HEAD --parallel=3 || echo "No affected tests to run"
+      
+      - name: Build affected projects
+        run: |
+          cd client
+          echo "🏗️ Building affected projects..."
+          npx nx affected --target=build --base=origin/main --head=HEAD --parallel=3 || echo "No affected builds to run"
+
+  # CI summary
+  ci-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [lint, test, build]
+    if: always()
+    
+    steps:
+      - name: Check CI status
+        run: |
+          echo "## 📋 Frontend CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint & Format | ${{ needs.lint.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ needs.lint.result }}" == "success" && "${{ needs.test.result }}" == "success" && "${{ needs.build.result }}" == "success" ]]; then
+            echo "🎉 All checks passed! Ready for merge." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          else
+            echo "❌ Some checks failed. Please review and fix the issues." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

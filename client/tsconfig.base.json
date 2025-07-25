@@ -10,47 +10,98 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@client/web-auth-data-access": ["libs/web/auth/data-access/src/index.ts"],
-      "@client/web-auth-feature-login": ["libs/web/auth/feature/login/src/index.ts"],
-      "@client/web-auth-feature-shell": ["libs/web/auth/feature/shell/src/index.ts"],
-      "@client/web-auth-utils": ["libs/web/auth/utils/src/index.ts"],
-      "@client/web-core-config": ["libs/web/core/config/src/index.ts"],
-      "@client/web-core-http": ["libs/web/core/http/src/index.ts"],
-      "@client/web-core-monitoring": ["libs/web/core/monitoring/src/index.ts"],
-      "@client/web-shared-constants": ["libs/web/shared/constants/src/index.ts"],
-      "@client/web-shared-data-access": ["libs/web/shared/data-access/src/index.ts"],
-      "@client/web-shared-services": ["libs/web/shared/services/src/index.ts"],
-      "@client/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
-      "@client/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
-      "@client/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],
-      "@client/web-shell-ui-nav-bar": ["libs/web/shell/ui/nav-bar/src/index.ts"],
-      "@client/web-shell-ui-sidebar": ["libs/web/shell/ui/sidebar/src/index.ts"],
-      "@client/web-shell-ui-top-bar": ["libs/web/shell/ui/top-bar/src/index.ts"],
-      "@client/web/auth/data-access": ["libs/web/auth/data-access/src/index.ts"],
-      "@client/web/auth/feature/login": ["libs/web/auth/feature/login/src/index.ts"],
-      "@client/web/auth/feature/shell": ["libs/web/auth/feature/shell/src/index.ts"],
-      "@client/web/auth/utils": ["libs/web/auth/utils/src/index.ts"],
-      "@my-collection/web/shared/utils": ["libs/web/shared/utils/src/index.ts"],
+      "@client/web-auth-data-access": [
+        "libs/web/auth/data-access/src/index.ts"
+      ],
+      "@client/web-auth-feature-login": [
+        "libs/web/auth/feature/login/src/index.ts"
+      ],
+      "@client/web-auth-feature-shell": [
+        "libs/web/auth/feature/shell/src/index.ts"
+      ],
+      "@client/web-auth-utils": [
+        "libs/web/auth/utils/src/index.ts"
+      ],
+      "@client/web-core-config": [
+        "libs/web/core/config/src/index.ts"
+      ],
+      "@client/web-core-http": [
+        "libs/web/core/http/src/index.ts"
+      ],
+      "@client/web-core-monitoring": [
+        "libs/web/core/monitoring/src/index.ts"
+      ],
+      "@client/web-shared-constants": [
+        "libs/web/shared/constants/src/index.ts"
+      ],
+      "@client/web-shared-data-access": [
+        "libs/web/shared/data-access/src/index.ts"
+      ],
+      "@client/web-shared-services": [
+        "libs/web/shared/services/src/index.ts"
+      ],
+      "@client/web-shared-utils": [
+        "libs/web/shared/utils/src/index.ts"
+      ],
+      "@client/web-shell-feature": [
+        "libs/web/shell/feature/src/index.ts"
+      ],
+      "@client/web-shell-ui-layout": [
+        "libs/web/shell/ui/layout/src/index.ts"
+      ],
+      "@client/web-shell-ui-nav-bar": [
+        "libs/web/shell/ui/nav-bar/src/index.ts"
+      ],
+      "@client/web-shell-ui-sidebar": [
+        "libs/web/shell/ui/sidebar/src/index.ts"
+      ],
+      "@client/web-shell-ui-top-bar": [
+        "libs/web/shell/ui/top-bar/src/index.ts"
+      ],
+      "@client/web/auth/data-access": [
+        "libs/web/auth/data-access/src/index.ts"
+      ],
+      "@client/web/auth/feature/login": [
+        "libs/web/auth/feature/login/src/index.ts"
+      ],
+      "@client/web/auth/feature/shell": [
+        "libs/web/auth/feature/shell/src/index.ts"
+      ],
+      "@client/web/auth/utils": [
+        "libs/web/auth/utils/src/index.ts"
+      ],
+      "@my-collection/web/shared/utils": [
+        "libs/web/shared/utils/src/index.ts"
+      ],
       "@my-collection/web/shell/ui/theme-toggle": [
         "libs/web/shell/ui/theme-toggle/src/index.ts"
       ],
-      "@spartan-ng/helm/alert": ["libs/web/shared/ui/spartan/ui-alert-helm/src/index.ts"],
+      "@spartan-ng/helm/alert": [
+        "libs/web/shared/ui/spartan/ui-alert-helm/src/index.ts"
+      ],
       "@spartan-ng/helm/alert-dialog": [
         "libs/web/shared/ui/spartan/ui-alert-dialog-helm/src/index.ts"
       ],
       "@spartan-ng/helm/avatar": [
         "libs/web/shared/ui/spartan/ui-avatar-helm/src/index.ts"
       ],
-      "@spartan-ng/helm/badge": ["libs/web/shared/ui/spartan/ui-badge-helm/src/index.ts"],
+      "@spartan-ng/helm/badge": [
+        "libs/web/shared/ui/spartan/ui-badge-helm/src/index.ts"
+      ],
       "@spartan-ng/helm/button": [
         "libs/web/shared/ui/spartan/ui-button-helm/src/index.ts"
       ],
-      "@spartan-ng/helm/card": ["libs/web/shared/ui/spartan/ui-card-helm/src/index.ts"],
+      "@spartan-ng/helm/card": [
+        "libs/web/shared/ui/spartan/ui-card-helm/src/index.ts"
+      ],
       "@spartan-ng/helm/checkbox": [
         "libs/web/shared/ui/spartan/ui-checkbox-helm/src/index.ts"
       ],
@@ -66,13 +117,21 @@
       "@spartan-ng/helm/form-field": [
         "libs/web/shared/ui/spartan/ui-form-field-helm/src/index.ts"
       ],
-      "@spartan-ng/helm/icon": ["libs/web/shared/ui/spartan/ui-icon-helm/src/index.ts"],
-      "@spartan-ng/helm/input": ["libs/web/shared/ui/spartan/ui-input-helm/src/index.ts"],
+      "@spartan-ng/helm/icon": [
+        "libs/web/shared/ui/spartan/ui-icon-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/input": [
+        "libs/web/shared/ui/spartan/ui-input-helm/src/index.ts"
+      ],
       "@spartan-ng/helm/input-otp": [
         "libs/web/shared/ui/spartan/ui-input-otp-helm/src/index.ts"
       ],
-      "@spartan-ng/helm/label": ["libs/web/shared/ui/spartan/ui-label-helm/src/index.ts"],
-      "@spartan-ng/helm/menu": ["libs/web/shared/ui/spartan/ui-menu-helm/src/index.ts"],
+      "@spartan-ng/helm/label": [
+        "libs/web/shared/ui/spartan/ui-label-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/menu": [
+        "libs/web/shared/ui/spartan/ui-menu-helm/src/index.ts"
+      ],
       "@spartan-ng/helm/pagination": [
         "libs/web/shared/ui/spartan/ui-pagination-helm/src/index.ts"
       ],
@@ -85,14 +144,25 @@
       "@spartan-ng/helm/sonner": [
         "libs/web/shared/ui/spartan/ui-sonner-helm/src/index.ts"
       ],
-      "@spartan-ng/helm/table": ["libs/web/shared/ui/spartan/ui-table-helm/src/index.ts"],
+      "@spartan-ng/helm/table": [
+        "libs/web/shared/ui/spartan/ui-table-helm/src/index.ts"
+      ],
       "@spartan-ng/helm/toggle": [
         "libs/web/shared/ui/spartan/ui-toggle-helm/src/index.ts"
       ],
       "@spartan-ng/helm/tooltip": [
         "libs/web/shared/ui/spartan/ui-tooltip-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/calendar": [
+        "libs/web/shared/ui/spartan/ui-calendar-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/popover": [
+        "libs/web/shared/ui/spartan/ui-popover-helm/src/index.ts"
       ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }
