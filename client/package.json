@@ -3,12 +3,17 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "format": "prettier --write .",
+    "format": "prettier --write . --check",
     "lint": "nx affected --target=lint --parallel --base=development --exclude=ui-alert-dialog-helm,ui-alert-helm,ui-avatar-helm,ui-badge-helm,ui-button-helm,ui-calendar-helm,ui-card-helm,ui-checkbox-helm,ui-command-helm,ui-date-picker-helm,ui-dialog-helm,ui-form-field-helm,ui-icon-helm,ui-input-helm,ui-input-otp-helm,ui-label-helm,ui-menu-helm,ui-pagination-helm,ui-popover-helm,ui-select-helm,ui-separator-helm,ui-sonner-helm,ui-table-helm,ui-toggle-helm,ui-tooltip-helm",
     "test": "nx run-many --target=test --all --parallel=3 --coverage --watch=false --browsers=ChromeHeadless",
     "build": "nx run-many --target=build --all --parallel=3 --configuration=production",
     "analyze": "nx run-many --target=analyze --all --parallel=3",
-    "prepare": "cd .. && husky ./client/.husky"
+    "prepare": "cd .. && husky ./client/.husky",
+    "affected:show": "nx show projects --affected --base=production --head=HEAD",
+    "affected:test": "nx affected --target=test --base=production --head=HEAD --parallel=3",
+    "affected:build": "nx affected --target=build --base=production --head=HEAD --parallel=3",
+    "affected:lint": "nx affected --target=lint --base=production --head=HEAD --parallel=3",
+    "affected:all": "npm run affected:show && npm run affected:lint && npm run affected:test && npm run affected:build"
   },
   "private": true,
   "dependencies": {

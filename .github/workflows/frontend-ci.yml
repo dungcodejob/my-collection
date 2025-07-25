@@ -343,6 +343,14 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup Git branches
+        run: |
+          echo "🔧 Setting up Git branches for affected analysis..."
+          git fetch origin production:production || echo "Production branch already exists"
+          git branch -a
+          echo "Current branch: $(git branch --show-current)"
+          echo "Available remotes: $(git remote -v)"
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -360,19 +368,38 @@ jobs:
         run: |
           cd client
           echo "📊 Analyzing affected projects..."
-          npx nx show projects --affected --base=origin/main --head=HEAD
+          # Use the base branch from nx.json configuration
+          npx nx show projects --affected --base=origin/production --head=HEAD || {
+            echo "⚠️ Failed with origin/production, trying with production..."
+            npx nx show projects --affected --base=production --head=HEAD || {
+              echo "⚠️ Failed with production, showing all projects..."
+              npx nx show projects
+            }
+          }
       
       - name: Run affected tests
         run: |
           cd client
           echo "🧪 Running tests for affected projects..."
-          npx nx affected --target=test --base=origin/main --head=HEAD --parallel=3 || echo "No affected tests to run"
+          npx nx affected --target=test --base=origin/production --head=HEAD --parallel=3 || {
+            echo "⚠️ Failed with origin/production, trying with production..."
+            npx nx affected --target=test --base=production --head=HEAD --parallel=3 || {
+              echo "⚠️ No affected tests found or base branch issue, running all tests..."
+              npx nx run-many --target=test --parallel=3 || echo "No tests to run"
+            }
+          }
       
       - name: Build affected projects
         run: |
           cd client
           echo "🏗️ Building affected projects..."
-          npx nx affected --target=build --base=origin/main --head=HEAD --parallel=3 || echo "No affected builds to run"
+          npx nx affected --target=build --base=origin/production --head=HEAD --parallel=3 || {
+            echo "⚠️ Failed with origin/production, trying with production..."
+            npx nx affected --target=build --base=production --head=HEAD --parallel=3 || {
+              echo "⚠️ No affected builds found or base branch issue, running all builds..."
+              npx nx run-many --target=build --parallel=3 || echo "No builds to run"
+            }
+          }
 
   # CI summary
   ci-summary:

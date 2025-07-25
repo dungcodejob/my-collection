@@ -2,7 +2,7 @@ function isObject(o: Record<string, unknown>): boolean {
   return Object.prototype.toString.call(o) === "[object Object]";
 }
 
-export function isPlainObject(o: Record<string, unknown>): boolean {
+export function isPlainObject(o: Record<string, any>): boolean {
   if (isObject(o) === false) {
     return false;
   }
