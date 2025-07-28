@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { signal } from "@angular/core";
-import { ThemeService, ThemeMode, ThemePreset } from "@client/web-shared-services";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { provideAnimations } from "@angular/platform-browser/animations";
+import { ThemeMode, ThemePreset, ThemeService } from "@client/web-shared-services";
 import { MCLayout } from "./mc-layout";
 
 describe("MCLayout", () => {
@@ -21,7 +22,10 @@ describe("MCLayout", () => {
 
     await TestBed.configureTestingModule({
       imports: [MCLayout],
-      providers: [{ provide: ThemeService, useValue: mockThemeService }],
+      providers: [
+        provideAnimations(),
+        { provide: ThemeService, useValue: mockThemeService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MCLayout);
