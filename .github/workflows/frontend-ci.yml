@@ -415,7 +415,6 @@ jobs:
           echo "| Passed | ${{ steps.test-results.outputs.passed_tests }} | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| Failed | ${{ steps.test-results.outputs.failed_tests }} | ${{ steps.test-results.outputs.failed_tests > 0 && '❌' || '✅' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Skipped | ${{ steps.test-results.outputs.skipped_tests }} | ${{ steps.test-results.outputs.skipped_tests > 0 && '⏭️' || '✅' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Pass Rate | ${{ steps.test-results.outputs.pass_rate }}% | ${{ steps.test-results.outputs.pass_rate >= env.TEST_PASS_RATE_THRESHOLD && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Failure Rate | ${{ steps.test-results.outputs.failure_rate }}% | |" >> $GITHUB_STEP_SUMMARY
           echo "| Skip Rate | ${{ steps.test-results.outputs.skip_rate }}% | |" >> $GITHUB_STEP_SUMMARY
           echo "| Test Suites | ${{ steps.test-results.outputs.test_suites }} | |" >> $GITHUB_STEP_SUMMARY
@@ -430,9 +429,9 @@ jobs:
           echo "### 🎯 Quality Gates Analysis" >> $GITHUB_STEP_SUMMARY
           echo "| Gate | Current | Threshold | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|------|---------|-----------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Pass Rate | ${pass_rate}% | ${threshold}% | ${{ steps.test-results.outputs.pass_rate >= env.TEST_PASS_RATE_THRESHOLD && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Test Duration | ${{ steps.test-results.outputs.execution_time }}s | ${{ env.MAX_TEST_DURATION }}s | ${{ steps.test-results.outputs.execution_time <= env.MAX_TEST_DURATION && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Min Test Suites | ${{ steps.test-results.outputs.test_suites }} | ${{ env.MIN_TEST_SUITES }} | ${{ steps.test-results.outputs.test_suites >= env.MIN_TEST_SUITES && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pass Rate | ${pass_rate}% | ${threshold}% | $(if (( $(echo "$pass_rate >= $threshold" | bc -l 2>/dev/null || echo "0") )); then echo '✅ Pass'; else echo '❌ Fail'; fi) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Duration | ${{ steps.test-results.outputs.execution_time }}s | ${{ env.MAX_TEST_DURATION }}s | $(if (( $(echo "${{ steps.test-results.outputs.execution_time }} <= ${{ env.MAX_TEST_DURATION }}" | bc -l 2>/dev/null || echo "0") )); then echo '✅ Pass'; else echo '❌ Fail'; fi) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Min Test Suites | ${{ steps.test-results.outputs.test_suites }} | ${{ env.MIN_TEST_SUITES }} | $(if (( ${{ steps.test-results.outputs.test_suites }} >= ${{ env.MIN_TEST_SUITES }} )); then echo '✅ Pass'; else echo '❌ Fail'; fi) |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           echo "### 📈 Performance Metrics" >> $GITHUB_STEP_SUMMARY
@@ -542,7 +541,6 @@ jobs:
               | Passed | ${passedTests} | ✅ |
               | Failed | ${failedTests} | ${failedTests > 0 ? '❌' : '✅'} |
               | Skipped | ${skippedTests} | ${skippedTests > 0 ? '⏭️' : '✅'} |
-              | Pass Rate | ${passRate}% | ${passRateStatus} |
               | Failure Rate | ${failureRate}% | |
               | Skip Rate | ${skipRate}% | |
               | Test Suites | ${testSuites} | ${suitesStatus} |
