@@ -140,6 +140,12 @@ jobs:
           echo "✨ Checking Prettier formatting..."
           npm run format -- --check
       
+      - name: Run Stylelint
+        run: |
+          cd client
+          echo "🎨 Running Stylelint..."
+          npm run stylelint:check
+      
       - name: TypeScript compilation check
         run: |
           cd client
