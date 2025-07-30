@@ -7,23 +7,8 @@ import { HlmIconDirective } from "@spartan-ng/helm/icon";
 
 @Component({
   selector: "mc-mode-switcher",
-  template: `
-    <button
-      class="group/toggle h-8 w-8 px-0"
-      hlmBtn
-      type="button"
-      variant="ghost"
-      [attr.aria-label]="getThemeLabel()"
-      (click)="toggleTheme()"
-    >
-      @if ($isDarkMode()) {
-        <ng-icon hlm name="lucideSun" size="sm" />
-      } @else {
-        <ng-icon hlm name="lucideMoon" size="sm" />
-      }
-      <span class="sr-only">Toggle theme</span>
-    </button>
-  `,
+  templateUrl: "./mode-switcher.component.html",
+  styleUrl: "./mode-switcher.component.css",
   imports: [HlmButtonDirective, HlmIconDirective, NgIcon],
   providers: [provideIcons({ lucideSun, lucideMoon })],
   changeDetection: ChangeDetectionStrategy.OnPush,

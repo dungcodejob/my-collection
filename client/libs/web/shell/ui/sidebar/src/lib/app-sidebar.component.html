@@ -16,10 +16,13 @@
 
   <!-- Sidebar Content -->
   <div class="sidebar-content flex-1 overflow-y-auto" [@contentFade]="getContentState()">
-    <nav class="space-y-2 p-2">
-      <mc-nav-group title="Main" [isCollapsed]="isCollapsed()" [items]="navMain" />
+    <div class="flex flex-col justify-between h-full">
+      <nav class="space-y-2 p-2">
+        <mc-nav-group title="Main" [isCollapsed]="isCollapsed()" [items]="navMain" />
+        <mc-nav-group title="Other" [isCollapsed]="isCollapsed()" [items]="navOthers" />
+      </nav>
       <mc-nav-group title="Other" [isCollapsed]="isCollapsed()" [items]="navOthers" />
-    </nav>
+    </div>
   </div>
 
   <!-- Separator -->
@@ -27,7 +30,7 @@
 
   <!-- Sidebar Footer -->
   <div
-    class="sidebar-content p-4 dark:border-gray-800"
+    class="sidebar-content p-2 dark:border-gray-800"
     [@contentFade]="getContentState()"
   >
     <mc-nav-user [isCollapsed]="isCollapsed()" [user]="user" />

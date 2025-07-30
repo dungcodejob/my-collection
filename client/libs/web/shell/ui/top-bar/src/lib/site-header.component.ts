@@ -5,7 +5,7 @@ import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
 import { HlmButtonDirective } from "@spartan-ng/helm/button";
 import { HlmIconDirective } from "@spartan-ng/helm/icon";
 import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
-import { ModeSwitcherComponent } from "./mode-switcher.component";
+import { ModeSwitcherComponent } from "./mode-switcher/mode-switcher.component";
 @Component({
   selector: "mc-site-header",
   templateUrl: "./site-header.component.html",
