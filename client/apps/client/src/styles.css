@@ -3,9 +3,9 @@
 @import url("./styles/tailwind.css");
 
 /* You can add global styles to this file, and also import other style files */
-@import url("tailwindcss");
-@import url("@spartan-ng/brain/hlm-tailwind-preset.css");
-@import url("@angular/cdk/overlay-prebuilt.css");
+@import "tailwindcss";
+@import "@spartan-ng/brain/hlm-tailwind-preset.css";
+@import "@angular/cdk/overlay-prebuilt.css";
 
 /* CSS Variables for Theme System */
 

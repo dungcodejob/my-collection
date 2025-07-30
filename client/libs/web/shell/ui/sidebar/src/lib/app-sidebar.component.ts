@@ -47,7 +47,7 @@ export type Team = {
 export type User = {
   name: string;
   email: string;
-  avatar: string;
+  avatar?: string;
 };
 
 @Component({
@@ -152,7 +152,6 @@ export class AppSidebarComponent {
   protected readonly user: User = {
     name: "shadcn",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
   };
 
   protected readonly navMain: MenuItem[] = [

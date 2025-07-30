@@ -1,0 +1,45 @@
+<div class="theme-toggle-container">
+  <!-- Theme Mode Toggle -->
+  <hlm-tooltip>
+    <button
+      class="mr-2"
+      hlmBtn
+      hlmTooltipTrigger
+      size="sm"
+      type="button"
+      variant="ghost"
+      [hlmTooltipTrigger]="'Chuyển đổi chế độ: ' + getThemeModeLabel()"
+      (click)="toggleThemeMode()"
+    >
+      <ng-icon class="mr-2" hlm [name]="getThemeModeIcon()" />
+      {{ getThemeModeLabel() }}
+    </button>
+  </hlm-tooltip>
+
+  <!-- Theme Preset Menu -->
+  <hlm-tooltip>
+    <button
+      hlmBtn
+      hlmTooltipTrigger
+      size="sm"
+      type="button"
+      variant="ghost"
+      [hlmTooltipTrigger]="'Chọn giao diện'"
+      (click)="togglePresetMenu()"
+    >
+      <ng-icon class="mr-2" hlm name="lucidePalette" />
+      Theme: {{ getCurrentPresetLabel() }}
+    </button>
+  </hlm-tooltip>
+
+  @if (showPresetMenu) {
+    <hlm-menu class="absolute top-full right-0 mt-1 z-50">
+      @for (item of themePresetItems; track item.label) {
+        <button hlmMenuItem type="button" (click)="selectPreset(item.preset)">
+          <ng-icon class="mr-2" hlm name="lucideCircle" />
+          {{ item.label }}
+        </button>
+      }
+    </hlm-menu>
+  }
+</div>

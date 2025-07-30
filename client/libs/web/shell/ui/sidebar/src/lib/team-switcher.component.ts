@@ -18,17 +18,17 @@ import type { Team } from "./app-sidebar.component";
             <ng-icon
               class="text-gray-600 dark:text-gray-300"
               size="16"
-              [name]="teams()[0]?.logo || 'lucidePlus'"
+              [name]="selectedTeam()?.logo || 'lucidePlus'"
             />
           </div>
           <div class="flex flex-1 flex-col">
             <span
               class="text-sm font-medium text-gray-900 whitespace-nowrap dark:text-gray-100"
             >
-              {{ teams()[0]?.name || "Select Team" }}
+              {{ selectedTeam()?.name || "Select Team" }}
             </span>
             <span class="text-xs text-gray-500 dark:text-gray-400">
-              {{ teams()[0]?.plan || "Free" }}
+              {{ selectedTeam()?.plan || "Free" }}
             </span>
           </div>
           <ng-icon class="text-gray-400" name="lucideChevronDown" size="16" />
@@ -40,7 +40,7 @@ import type { Team } from "./app-sidebar.component";
           <ng-icon
             class="text-gray-600 dark:text-gray-300"
             size="16"
-            [name]="teams()[0]?.logo || 'lucidePlus'"
+            [name]="selectedTeam()?.logo || 'lucidePlus'"
           />
         </div>
       }
@@ -50,5 +50,6 @@ import type { Team } from "./app-sidebar.component";
 })
 export class TeamSwitcherComponent {
   readonly teams = input.required<Team[]>();
+  readonly selectedTeam = input<Team>();
   readonly isCollapsed = input.required<boolean>();
 }

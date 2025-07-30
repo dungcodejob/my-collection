@@ -18,6 +18,8 @@ import {
 
 @Component({
   selector: "mc-theme-toggle",
+  templateUrl: "./theme-toggle.component.html",
+  styleUrl: "./theme-toggle.component.css",
   imports: [
     HlmButtonDirective,
     HlmMenuComponent,
@@ -29,76 +31,6 @@ import {
   ],
   providers: [
     provideIcons({ lucideSun, lucideMoon, lucideMonitor, lucidePalette, lucideCircle }),
-  ],
-  template: `
-    <div class="theme-toggle-container">
-      <!-- Theme Mode Toggle -->
-      <hlm-tooltip>
-        <button
-          class="mr-2"
-          hlmBtn
-          hlmTooltipTrigger
-          size="sm"
-          type="button"
-          variant="ghost"
-          [hlmTooltipTrigger]="'Chuyển đổi chế độ: ' + getThemeModeLabel()"
-          (click)="toggleThemeMode()"
-        >
-          <ng-icon class="mr-2" hlm [name]="getThemeModeIcon()" />
-          {{ getThemeModeLabel() }}
-        </button>
-      </hlm-tooltip>
-
-      <!-- Theme Preset Menu -->
-      <hlm-tooltip>
-        <button
-          hlmBtn
-          hlmTooltipTrigger
-          size="sm"
-          type="button"
-          variant="ghost"
-          [hlmTooltipTrigger]="'Chọn giao diện'"
-          (click)="togglePresetMenu()"
-        >
-          <ng-icon class="mr-2" hlm name="lucidePalette" />
-          Theme: {{ getCurrentPresetLabel() }}
-        </button>
-      </hlm-tooltip>
-
-      @if (showPresetMenu) {
-        <hlm-menu class="absolute top-full right-0 mt-1 z-50">
-          @for (item of themePresetItems; track item.label) {
-            <button hlmMenuItem type="button" (click)="selectPreset(item.preset)">
-              <ng-icon class="mr-2" hlm name="lucideCircle" />
-              {{ item.label }}
-            </button>
-          }
-        </hlm-menu>
-      }
-    </div>
-  `,
-  styles: [
-    `
-      .theme-toggle-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      :host ::ng-deep .p-button {
-        border-radius: 0.5rem;
-        transition: all 0.2s ease;
-      }
-
-      :host ::ng-deep .p-button:hover {
-        background-color: var(--surface-hover);
-      }
-
-      :host ::ng-deep .p-menu {
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      }
-    `,
   ],
 })
 export class ThemeToggleComponent {
