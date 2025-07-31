@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { AuthShellRoutes } from "@client/web-auth-feature-shell";
+import { CollectionStore } from "@client/web-collection-data-access";
 import { MCLayout } from "@client/web-shell-ui-layout";
 
 export const webShellRoutes: Routes = [
@@ -12,7 +13,7 @@ export const webShellRoutes: Routes = [
     path: "home",
     // canActivate: [authGuard],
     component: MCLayout,
-    providers: [],
+    providers: [CollectionStore],
     // children: [
     //   {
     //     path: ':collectionId',

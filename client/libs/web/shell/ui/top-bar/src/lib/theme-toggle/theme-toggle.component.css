@@ -3,17 +3,3 @@
   align-items: center;
   gap: 0.5rem;
 }
-
-:host ::ng-deep .p-button {
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-:host ::ng-deep .p-button:hover {
-  background-color: var(--surface-hover);
-}
-
-:host ::ng-deep .p-menu {
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}

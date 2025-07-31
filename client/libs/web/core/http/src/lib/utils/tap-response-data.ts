@@ -1,7 +1,7 @@
-import { HttpEvent, HttpResponse } from "@angular/common/http";
 import { Observable, tap } from "rxjs";
+import { MCApiError } from "../models/error";
 import { HttpClientResponse } from "../models/http-client-response";
-import { MCApiResponse, ResponseDto, SuccessResponseDto } from "../models/response.dto";
+import { MCApiResponse, ResponseDto } from "../models/response.dto";
 
 /**
  * A custom RxJS operator that taps into an HTTP response observable to extract the data payload.
@@ -21,33 +21,26 @@ import { MCApiResponse, ResponseDto, SuccessResponseDto } from "../models/respon
 //   });
 // }
 
-type UnHttpClientResponse<T> =
-  T extends ResponseDto<infer S>
-    ? SuccessResponseDto<S>
-    : T extends HttpResponse<ResponseDto<infer D>>
-      ? SuccessResponseDto<D>
-      : T extends HttpEvent<ResponseDto<infer F>>
-        ? SuccessResponseDto<F>
-        : never;
-
-export function tapResponseData<T>(
-  callback: (data: UnHttpClientResponse<T>["result"]) => void
+export function tapResponseData<T extends HttpClientResponse<ResponseDto<K>>, K>(
+  callback: (data: K) => void
 ) {
   return (source$: Observable<T>): Observable<T> =>
     source$.pipe(
       tap(res => {
-        if (
-          MCApiResponse.isRaw<UnHttpClientResponse<T>>(
-            res as HttpClientResponse<UnHttpClientResponse<T>>
-          )
-        ) {
-          callback((res as HttpResponse<UnHttpClientResponse<T>>).body!.result);
-        } else if (
-          MCApiResponse.is<UnHttpClientResponse<T>>(
-            res as HttpClientResponse<UnHttpClientResponse<T>>
-          )
-        ) {
-          callback((res as UnHttpClientResponse<T>).result);
+        if (MCApiResponse.isRaw(res)) {
+          const response = res.body as ResponseDto<K>;
+
+          if (response.success) {
+            callback(response.result);
+          } else {
+            throw MCApiError.fromResponse(response);
+          }
+        } else if (MCApiResponse.is(res)) {
+          if (res.success) {
+            callback(res.result);
+          } else {
+            throw MCApiError.fromResponse(res);
+          }
         }
       })
     );

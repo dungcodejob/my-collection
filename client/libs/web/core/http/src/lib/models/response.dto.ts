@@ -1,7 +1,7 @@
 import { HttpResponse } from "@angular/common/http";
 import { isPlainObject } from "@client/web-shared-utils";
 import { HttpClientResponse } from "./http-client-response";
-import { PaginationMetaDto } from "./pagination-meta.dto";
+import { PaginationMetaDto } from "./pagination.dto";
 import { ValidationMetaDto } from "./validation-meta.dto";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -56,7 +56,7 @@ export class MCApiResponse {
    * @param value The emitted value from the HTTP response observable.
    * @returns `true` if the value is an `HttpResponse` containing a successful response body, otherwise `false`.
    */
-  static isRaw<T extends SuccessResponseDto<any>>(
+  static isRaw<T extends ResponseDto<any>>(
     value: HttpClientResponse<T>
   ): value is HttpResponse<T> {
     return value instanceof HttpResponse && MCApiResponse.is<T>(value.body!);
@@ -72,9 +72,7 @@ export class MCApiResponse {
    * @param response The value to check.
    * @returns `true` if the value is a plain object representing a successful API response, otherwise `false`.
    */
-  static is<T extends SuccessResponseDto<any>>(
-    response: HttpClientResponse<T>
-  ): response is T {
+  static is<T extends ResponseDto<any>>(response: HttpClientResponse<T>): response is T {
     return (
       !!response &&
       isPlainObject(response as Record<string, unknown>) &&
