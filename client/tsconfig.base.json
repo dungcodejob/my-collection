@@ -25,6 +25,12 @@
       "@client/web-collection-feature-list": [
         "libs/web/collection/feature/collection-list/src/index.ts"
       ],
+      "@client/web-collection-ui-node": [
+        "libs/web/collection/ui/collection-node/src/index.ts"
+      ],
+      "@client/web-collection-ui-tree": [
+        "libs/web/collection/ui/collection-tree/src/index.ts"
+      ],
       "@client/web-core-config": ["libs/web/core/config/src/index.ts"],
       "@client/web-core-http": ["libs/web/core/http/src/index.ts"],
       "@client/web-core-monitoring": ["libs/web/core/monitoring/src/index.ts"],

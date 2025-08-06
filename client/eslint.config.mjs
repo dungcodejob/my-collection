@@ -92,7 +92,7 @@ export default [
       "@angular-eslint/prefer-signals": "warn",
       "@angular-eslint/prefer-standalone": "warn",
       "@angular-eslint/prefer-on-push-component-change-detection": "off",
-
+      "@angular-eslint/no-input-rename": "off",
       // TS best practices
       "@typescript-eslint/explicit-function-return-type": ["error"],
       "@typescript-eslint/explicit-member-accessibility": [
