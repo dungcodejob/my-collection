@@ -1,23 +1,35 @@
-import { CommonModule } from "@angular/common";
-import { Component, computed, input, output, signal } from "@angular/core";
+import { Component, computed, inject, input, signal } from "@angular/core";
 import { Collection } from "@client/web-collection-data-access";
+import { NgIconComponent, provideIcons } from "@ng-icons/core";
+import { lucideFolder, lucideFolderOpen } from "@ng-icons/lucide";
+import { CollectionTreeService } from "../collection-tree/collection-tree.service";
 
 @Component({
   selector: "mc-collection-node",
-  imports: [CommonModule],
+  imports: [NgIconComponent],
+  providers: [
+    provideIcons({
+      lucideFolder,
+      lucideFolderOpen,
+    }),
+  ],
   templateUrl: "./collection-node.html",
   styleUrl: "./collection-node.css",
 })
 export class MCCollectionNode {
+  private readonly _collectionTreeService = inject(CollectionTreeService);
+
   readonly $node = input.required<Collection>({ alias: "node" });
   readonly $tree = input.required<{ [key: string]: Collection[] }>({ alias: "tree" });
-
-  readonly expand = output<Collection>();
 
   readonly $isExpanded = signal(false);
   readonly $items = computed(() => {
     const node = this.$node();
     const tree = this.$tree();
+
+    console.log(node.path);
+    console.log(tree);
+
     return tree[node.path] || [];
   });
 
@@ -30,7 +42,7 @@ export class MCCollectionNode {
     this.$isExpanded.set(expanded);
 
     if (expanded) {
-      this.expand.emit(this.$node());
+      this._collectionTreeService.expand(this.$node());
     }
   }
 }

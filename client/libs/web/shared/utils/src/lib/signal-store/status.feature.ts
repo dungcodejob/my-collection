@@ -28,37 +28,90 @@ function getStatusStateKeys(config?: { name: string }) {
   };
 }
 
+function getNamesArray(
+  config: { name?: string } | { names?: string[] }
+): string[] | undefined {
+  return "names" in config
+    ? config.names
+    : "name" in config && config.name
+      ? [config.name]
+      : undefined;
+}
+
 export function withStatus(): SignalStoreFeature<
   EmptyFeatureResult,
-  {
+  EmptyFeatureResult & {
     state: StatusState;
     props: StatusSignals;
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    methods: {};
   }
 >;
 export function withStatus<Name extends string>(config: {
   name: Name;
 }): SignalStoreFeature<
   EmptyFeatureResult,
-  {
+  EmptyFeatureResult & {
     state: NamedStatusState<Name>;
     props: NamedStatusSignals<Name>;
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    methods: {};
   }
 >;
-export function withStatus<Name extends string>(config?: {
-  name: Name;
-}): SignalStoreFeature {
-  const { errorKey, isFulfilledKey, isPendingKey, statusKey } =
-    getStatusStateKeys(config);
-
+export function withStatus<Name extends string>(config: {
+  names: Name[];
+}): SignalStoreFeature<
+  EmptyFeatureResult,
+  EmptyFeatureResult & {
+    state: NamedStatusState<Name>;
+    props: NamedStatusSignals<Name>;
+  }
+>;
+export function withStatus<Name extends string>(
+  config?:
+    | {
+        name: Name;
+      }
+    | {
+        names: Name[];
+      }
+): SignalStoreFeature {
   return signalStoreFeature(
-    withState({ [statusKey]: "idle" }),
-    withComputed((store: Record<string, Signal<unknown>>) => {
-      const $status = store[statusKey] as Signal<Status>;
+    withState(() => {
+      if (!config) {
+        return { status: "idle" };
+      }
+      const names = getNamesArray(config);
+      if (names) {
+        return names.reduce(
+          (acc, cur) => ({
+            ...acc,
+            ...{ [cur ? `${cur}Status` : "status"]: "idle" },
+          }),
+          {}
+        );
+      }
 
+      return { status: "idle" };
+    }),
+    withComputed((store: Record<string, Signal<unknown>>) => {
+      if (config) {
+        const names = getNamesArray(config);
+        if (names) {
+          return names.reduce<Record<string, Signal<unknown>>>((acc, cur: string) => {
+            const { errorKey, isFulfilledKey, isPendingKey, statusKey } =
+              getStatusStateKeys({ name: cur });
+            const $status = store[statusKey] as Signal<Status>;
+            return {
+              ...acc,
+              [isPendingKey]: computed(() => $status() === "pending"),
+              [isFulfilledKey]: computed(() => $status() === "fulfilled"),
+              [errorKey]: computed(() => {
+                const status = $status();
+                return typeof status === "object" ? status.error : null;
+              }),
+            };
+          }, {});
+        }
+      }
+      const { errorKey, isFulfilledKey, isPendingKey, statusKey } = getStatusStateKeys();
+      const $status = store[statusKey] as Signal<Status>;
       return {
         [isPendingKey]: computed(() => $status() === "pending"),
         [isFulfilledKey]: computed(() => $status() === "fulfilled"),

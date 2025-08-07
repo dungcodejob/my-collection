@@ -1,7 +1,7 @@
 export type Collection = {
   readonly id: string;
   name: string;
-  icon: string;
+  icon?: string;
   parentId?: string;
   children?: Collection[];
   path: string;

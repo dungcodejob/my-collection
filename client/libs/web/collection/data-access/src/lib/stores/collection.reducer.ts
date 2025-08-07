@@ -2,13 +2,13 @@ import { setError, setFulfilled, setPending } from "@client/web-shared-utils";
 import { signalStoreFeature, type } from "@ngrx/signals";
 import { on, withReducer } from "@ngrx/signals/events";
 import { collectionApiEvents, collectionEvents } from "./collection.event";
-import { CollectionState, collectionStatusNames } from "./collection.store";
+import { CollectionStateWithFeature, collectionStatusNames } from "./collection.store";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function withCollectionReducer() {
   return signalStoreFeature(
     {
-      state: type<CollectionState>(),
+      state: type<CollectionStateWithFeature>(),
     },
     withReducer(
       on(collectionEvents.load, (_, state) => ({
@@ -25,13 +25,15 @@ export function withCollectionReducer() {
           ...setPending(collectionStatusNames.details),
         })
       ),
-      on(collectionApiEvents.loadSuccess, ({ payload }, state) => ({
-        ...setFulfilled(collectionStatusNames.list),
-        collections: {
-          ...state.collections,
-          [payload.path]: payload.collections,
-        },
-      })),
+      on(collectionApiEvents.loadSuccess, ({ payload }, state) => {
+        return {
+          ...setFulfilled(collectionStatusNames.list),
+          collections: {
+            ...state.collections,
+            [payload.path]: payload.collections,
+          },
+        };
+      }),
 
       on(collectionApiEvents.createSuccess, ({ payload }, state) => {
         const collectionsInPath = state.collections[payload.collection.path];

@@ -3,7 +3,7 @@ import baseConfig from "../../../../../eslint.config.mjs";
 
 export default [
   ...baseConfig,
-  ...nx.configs["flat/angular"],
+  // ...nx.configs["flat/angular"],
   ...nx.configs["flat/angular-template"],
   {
     files: ["**/*.ts"],
@@ -12,7 +12,7 @@ export default [
         "error",
         {
           type: "attribute",
-          prefix: "lib",
+          prefix: "mc",
           style: "camelCase",
         },
       ],
@@ -20,7 +20,7 @@ export default [
         "error",
         {
           type: "element",
-          prefix: "lib",
+          prefix: "mc",
           style: "kebab-case",
         },
       ],

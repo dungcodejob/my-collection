@@ -2,7 +2,7 @@ import { signal } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { ThemeMode, ThemePreset, ThemeService } from "@client/web-shared-services";
-import { MCLayout } from "./mc-layout";
+import { MCLayout } from "./layout";
 
 describe("MCLayout", () => {
   let component: MCLayout;

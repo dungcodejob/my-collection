@@ -25,9 +25,6 @@
       "@client/web-collection-feature-list": [
         "libs/web/collection/feature/collection-list/src/index.ts"
       ],
-      "@client/web-collection-ui-node": [
-        "libs/web/collection/ui/collection-node/src/index.ts"
-      ],
       "@client/web-collection-ui-tree": [
         "libs/web/collection/ui/collection-tree/src/index.ts"
       ],

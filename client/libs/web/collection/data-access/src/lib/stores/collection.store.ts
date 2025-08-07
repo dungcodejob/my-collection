@@ -4,6 +4,15 @@ import { Collection } from "../models/collection";
 import { withCollectionEffects } from "./collection.effects";
 import { withCollectionReducer } from "./collection.reducer";
 
+const COLLECTION_ROOT: Collection = {
+  id: "",
+  name: "root",
+  path: "/",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  children: [],
+};
+
 export const collectionStatusNames = {
   list: "list",
   details: "details",
@@ -13,6 +22,7 @@ export type CollectionState = {
   collections: {
     [path: string]: Collection[];
   };
+  root: Collection;
 };
 
 export type CollectionStateWithFeature = CollectionState &
@@ -21,12 +31,16 @@ export type CollectionStateWithFeature = CollectionState &
 
 const initialState: CollectionState = {
   collections: {},
+  root: COLLECTION_ROOT,
 };
 
 export const CollectionStore = signalStore(
   withState(initialState),
-  withStatus(),
+  withStatus({
+    names: [collectionStatusNames.list, collectionStatusNames.details],
+  }),
 
+  // withCallState({ collection: collectionStatusNames.details }),
   withCollectionReducer(),
   withCollectionEffects(),
   withHooks({

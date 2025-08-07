@@ -14,7 +14,74 @@ import {
 export class CollectionService {
   // Placeholder methods for future API integration
 
-  collections: Collection[] = [];
+  collections: Collection[] = [
+    {
+      id: "game",
+      name: "game",
+      path: "/game",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      children: [],
+    },
+    {
+      id: "action",
+      name: "action",
+      path: "/game/action",
+      parentId: "game",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      children: [],
+    },
+    {
+      id: "strategy",
+      name: "strategy",
+      path: "/game/strategy",
+      parentId: "game",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      children: [],
+    },
+    {
+      id: "soul",
+      name: "soul",
+      path: "/game/soul",
+      parentId: "game",
+
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      children: [],
+    },
+    {
+      id: "simulation",
+      name: "simulation",
+      path: "/game/simulation",
+      parentId: "game",
+
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      children: [],
+    },
+    {
+      id: "real-time",
+      name: "real-time",
+      path: "/game/simulation/real-time",
+      parentId: "simulation",
+
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      children: [],
+    },
+    {
+      id: "turn-based",
+      name: "turn-based",
+      path: "/game/simulation/turn-based",
+      parentId: "simulation",
+
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      children: [],
+    },
+  ];
 
   createCollection(
     request: CreateCollectionRequest
@@ -149,9 +216,15 @@ export class CollectionService {
   loadCollections(
     request: CollectionFilter
   ): Observable<PaginationResponseDto<Collection>> {
-    const collections = this.collections.filter(
-      collection => collection.path === request.path
-    );
+    let collections = this.collections;
+
+    const parent = this.collections.find(item => item.path === request.path);
+
+    if (parent) {
+      collections = collections.filter(item => item.parentId === parent.id);
+    } else {
+      collections = collections.filter(item => !!item.parentId);
+    }
 
     const totalCount = collections.length;
     const totalPages = Math.ceil(totalCount / request.pageSize);

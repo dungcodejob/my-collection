@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { MCCollectionTree } from "./collection-tree";
+import { MCCollectionList } from "./collection-list";
 
-describe("MCCollectionTree", () => {
-  let component: MCCollectionTree;
-  let fixture: ComponentFixture<MCCollectionTree>;
+describe("MCCollectionList", () => {
+  let component: MCCollectionList;
+  let fixture: ComponentFixture<MCCollectionList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MCCollectionTree],
+      imports: [MCCollectionList],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MCCollectionTree);
+    fixture = TestBed.createComponent(MCCollectionList);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
