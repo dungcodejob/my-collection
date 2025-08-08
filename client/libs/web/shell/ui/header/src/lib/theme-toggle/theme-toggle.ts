@@ -18,8 +18,8 @@ import {
 
 @Component({
   selector: "mc-theme-toggle",
-  templateUrl: "./theme-toggle.component.html",
-  styleUrl: "./theme-toggle.component.css",
+  templateUrl: "./theme-toggle.html",
+  styleUrl: "./theme-toggle.css",
   imports: [
     HlmButtonDirective,
     HlmMenuComponent,
@@ -33,7 +33,7 @@ import {
     provideIcons({ lucideSun, lucideMoon, lucideMonitor, lucidePalette, lucideCircle }),
   ],
 })
-export class ThemeToggleComponent {
+export class MCThemeToggle {
   private readonly _themeService = inject(ThemeService);
 
   // Reactive signals from theme service

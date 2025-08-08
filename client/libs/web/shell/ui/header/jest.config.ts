@@ -1,9 +1,8 @@
 export default {
-  displayName: "web-shell-ui-top-bar",
+  displayName: "web-shell-ui-header",
   preset: "../../../../../jest.preset.js",
   setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
-  coverageDirectory: "../../../../../coverage/libs/web/shell/ui/top-bar",
-  testEnvironment: "@happy-dom/jest-environment",
+  coverageDirectory: "../../../../../coverage/libs/web/shell/ui/header",
   transform: {
     "^.+\\.(ts|mjs|js|html)$": [
       "jest-preset-angular",

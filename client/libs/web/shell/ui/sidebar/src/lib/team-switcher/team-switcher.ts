@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucideChevronDown, lucidePlus } from "@ng-icons/lucide";
-import type { Team } from "./app-sidebar.component";
+import type { Team } from "../sidebar";
 
 @Component({
   selector: "mc-team-switcher",
@@ -48,7 +48,7 @@ import type { Team } from "./app-sidebar.component";
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TeamSwitcherComponent {
+export class MCTeamSwitcherComponent {
   readonly teams = input.required<Team[]>();
   readonly selectedTeam = input<Team>();
   readonly isCollapsed = input.required<boolean>();

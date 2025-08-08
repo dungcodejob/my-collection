@@ -7,13 +7,13 @@ import { HlmIconDirective } from "@spartan-ng/helm/icon";
 
 @Component({
   selector: "mc-mode-switcher",
-  templateUrl: "./mode-switcher.component.html",
-  styleUrl: "./mode-switcher.component.css",
+  templateUrl: "./mode-switcher.html",
+  styleUrl: "./mode-switcher.css",
   imports: [HlmButtonDirective, HlmIconDirective, NgIcon],
   providers: [provideIcons({ lucideSun, lucideMoon })],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModeSwitcherComponent {
+export class MCModeSwitcher {
   private readonly _themeService = inject(ThemeService);
 
   readonly $isDarkMode = this._themeService.isDarkMode;

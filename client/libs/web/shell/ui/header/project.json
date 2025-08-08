@@ -1,16 +1,16 @@
 {
-  "name": "web-shell-ui-top-bar",
+  "name": "web-shell-ui-header",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/web/shell/ui/top-bar/src",
+  "sourceRoot": "libs/web/shell/ui/header/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": ["scope:web", "type:ui", "category:shell"],
+  "tags": ["scope:web type:ui category:shell"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/web/shell/ui/top-bar/jest.config.ts"
+        "jestConfig": "libs/web/shell/ui/header/jest.config.ts"
       }
     },
     "lint": {

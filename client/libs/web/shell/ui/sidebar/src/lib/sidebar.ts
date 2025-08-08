@@ -15,9 +15,9 @@ import {
 } from "@ng-icons/lucide";
 import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
 import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
-import { NavGroupComponent } from "./nav-group.component";
-import { NavUserComponent } from "./nav-user.component";
-import { TeamSwitcherComponent } from "./team-switcher.component";
+import { MCNavGroupComponent } from "./nav-group/nav-group";
+import { MCNavUserComponent } from "./nav-user/nav-user";
+import { MCTeamSwitcherComponent } from "./team-switcher/team-switcher";
 export type MenuItem = {
   id: string;
   title: string;
@@ -54,9 +54,9 @@ export type User = {
   selector: "mc-app-sidebar",
   imports: [
     NgIconComponent,
-    TeamSwitcherComponent,
-    NavGroupComponent,
-    NavUserComponent,
+    MCTeamSwitcherComponent,
+    MCNavGroupComponent,
+    MCNavUserComponent,
     BrnSeparatorComponent,
     HlmSeparatorDirective,
   ],
@@ -74,8 +74,8 @@ export type User = {
       lucideChevronRight,
     }),
   ],
-  templateUrl: "./app-sidebar.component.html",
-  styleUrl: "./app-sidebar.component.css",
+  templateUrl: "./sidebar.html",
+  styleUrl: "./sidebar.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger("sidebarCollapse", [
@@ -128,7 +128,7 @@ export type User = {
     ]),
   ],
 })
-export class AppSidebarComponent {
+export class MCSidebarComponent {
   protected readonly isCollapsed = signal(false);
 
   protected readonly teams: Team[] = [

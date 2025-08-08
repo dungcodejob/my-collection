@@ -5,23 +5,23 @@ import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
 import { HlmButtonDirective } from "@spartan-ng/helm/button";
 import { HlmIconDirective } from "@spartan-ng/helm/icon";
 import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
-import { ModeSwitcherComponent } from "./mode-switcher/mode-switcher.component";
+import { MCModeSwitcher } from "./mode-switcher/mode-switcher";
 @Component({
   selector: "mc-site-header",
-  templateUrl: "./site-header.component.html",
-  styleUrl: "./site-header.component.css",
+  templateUrl: "./header.html",
+  styleUrl: "./header.css",
   imports: [
     HlmButtonDirective,
     HlmIconDirective,
     BrnSeparatorComponent,
     HlmSeparatorDirective,
     NgIcon,
-    ModeSwitcherComponent,
+    MCModeSwitcher,
   ],
   providers: [provideIcons({ lucideMenu, lucideSearch, lucideChevronRight })],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SiteHeaderComponent {
+export class MCHeader {
   readonly $sidebarOpen = signal(false);
   readonly $searchOpen = signal(false);
 

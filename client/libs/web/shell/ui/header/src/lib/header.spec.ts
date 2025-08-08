@@ -1,11 +1,11 @@
 import { signal } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ThemeMode, ThemePreset, ThemeService } from "@client/web-shared-services";
-import { SiteHeaderComponent } from "./site-header.component";
+import { MCHeader } from "./header";
 
-describe("SiteHeaderComponent", () => {
-  let component: SiteHeaderComponent;
-  let fixture: ComponentFixture<SiteHeaderComponent>;
+describe("MCHeader", () => {
+  let component: MCHeader;
+  let fixture: ComponentFixture<MCHeader>;
 
   beforeEach(async () => {
     // Mock ThemeService
@@ -20,11 +20,11 @@ describe("SiteHeaderComponent", () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [SiteHeaderComponent],
+      imports: [MCHeader],
       providers: [{ provide: ThemeService, useValue: mockThemeService }],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SiteHeaderComponent);
+    fixture = TestBed.createComponent(MCHeader);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
