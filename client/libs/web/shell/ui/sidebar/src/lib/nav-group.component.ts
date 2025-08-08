@@ -47,7 +47,7 @@ import type { MenuItem } from "./app-sidebar.component";
   ],
   template: `
     <div class="space-y-1">
-      @if (!isCollapsed() && title()) {
+      @if (!isSidebarCollapsed() && title()) {
         <h3 class="px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">
           {{ title() }}
         </h3>
@@ -59,14 +59,14 @@ import type { MenuItem } from "./app-sidebar.component";
           <button
             class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
             type="button"
-            [class.justify-center]="isCollapsed()"
+            [class.justify-center]="isSidebarCollapsed()"
             (click)="toggleExpanded(item.id)"
           >
             @if (item.icon) {
               <ng-icon class="shrink-0" size="16" [name]="item.icon" />
             }
 
-            @if (!isCollapsed()) {
+            @if (!isSidebarCollapsed()) {
               <span class="flex-1">{{ item.title }}</span>
 
               @if (item.children && item.children.length > 0) {
@@ -89,7 +89,7 @@ import type { MenuItem } from "./app-sidebar.component";
           </button>
 
           <!-- Submenu items -->
-          @if (item.children && item.children.length > 0 && !isCollapsed()) {
+          @if (item.children && item.children.length > 0 && !isSidebarCollapsed()) {
             <div
               class="ml-6 space-y-1 border-l border-gray-200 pl-3 dark:border-gray-700"
               [@expandCollapse]="getSubmenuState(item.id)"
@@ -123,11 +123,11 @@ import type { MenuItem } from "./app-sidebar.component";
 export class NavGroupComponent {
   readonly title = input<string>();
   readonly items = input.required<MenuItem[]>();
-  readonly isCollapsed = input.required<boolean>();
+  readonly isSidebarCollapsed = input.required<boolean>();
 
   private readonly _expandedItems = signal<Set<string>>(new Set());
 
-  protected isExpanded(itemId: string): boolean {
+  protected isDisplay(itemId: string): boolean {
     return this._expandedItems().has(itemId);
   }
 
@@ -144,6 +144,6 @@ export class NavGroupComponent {
   }
 
   protected getSubmenuState(itemId: string): string {
-    return this.isExpanded(itemId) ? "expanded" : "collapsed";
+    return this.isDisplay(itemId) ? "expanded" : "collapsed";
   }
 }

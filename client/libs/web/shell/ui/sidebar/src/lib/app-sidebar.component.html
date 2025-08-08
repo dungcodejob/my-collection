@@ -18,10 +18,18 @@
   <div class="sidebar-content flex-1 overflow-y-auto" [@contentFade]="getContentState()">
     <div class="flex flex-col justify-between h-full">
       <nav class="space-y-2 p-2">
-        <mc-nav-group title="Main" [isCollapsed]="isCollapsed()" [items]="navMain" />
+        <mc-nav-group
+          title="Main"
+          [isSidebarCollapsed]="isCollapsed()"
+          [items]="navMain"
+        />
         <ng-content />
       </nav>
-      <mc-nav-group title="Other" [isCollapsed]="isCollapsed()" [items]="navOthers" />
+      <mc-nav-group
+        title="Other"
+        [isSidebarCollapsed]="isCollapsed()"
+        [items]="navOthers"
+      />
     </div>
   </div>
 

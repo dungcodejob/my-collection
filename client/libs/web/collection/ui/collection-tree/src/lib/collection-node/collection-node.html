@@ -4,16 +4,21 @@
   <button
     class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
     type="button"
-    [class.justify-center]="$isExpanded()"
-    (click)="onToggleExpand()"
+    [class.justify-center]="$isSidebarCollapsed()"
+    (click)="onToggleCollapse()"
   >
     <ng-icon class="shrink-0" size="16" [name]="node.icon || 'lucideFolder'" />
 
-    @if (!$isExpanded()) {
+    @if (!$isSidebarCollapsed()) {
     <span class="flex-1">{{ node.name }}</span>
 
     @if (items && items.length > 0) {
-    <ng-icon class="shrink-0 text-gray-400" name="lucideChevronRight" size="16" />
+    <ng-icon
+      class="shrink-0 text-gray-400"
+      name="lucideChevronRight"
+      size="16"
+      [@chevronRotate]="$collapseState()"
+    />
     }
     <!-- @if (item.shortcut) {
     <kbd
@@ -28,7 +33,10 @@
 
   <!-- Submenu items -->
   @if ($isDisplayItems()) {
-  <div class="ml-6 space-y-1 border-l border-gray-200 pl-3 dark:border-gray-700">
+  <div
+    class="ml-6 space-y-1 border-l border-gray-200 pl-3 dark:border-gray-700"
+    [@expandCollapse]="$collapseState()"
+  >
     @for (item of items; track item.id) {
     <mc-collection-node [node]="item" [tree]="$tree()" />
     }
