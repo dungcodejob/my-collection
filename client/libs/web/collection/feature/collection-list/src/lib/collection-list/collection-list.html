@@ -22,6 +22,7 @@
     (nodeExpand)="onNodeExpand($event)"
   />
 </div>
+<mc-collection-detail-dialog [isOpen]="facade.$isOpen()" (closed)="onCloseDialog()" />
 <!-- <div class="mt-4 mb-2 px-5 flex justify-between items-center">
   <h4 hlmLarge class="tracking-tight">Collection</h4>
   <button hlmBtn class="w-9 h-9" size="icon" variant="ghost" (click)="onCreate()">

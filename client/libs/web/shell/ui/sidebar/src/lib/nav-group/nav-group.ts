@@ -22,7 +22,7 @@ import type { MenuItem } from "../sidebar";
   templateUrl: "./nav-group.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MCNavGroupComponent {
+export class MCNavGroup {
   readonly title = input<string>();
   readonly items = input.required<MenuItem[]>();
   readonly isSidebarCollapsed = input.required<boolean>();

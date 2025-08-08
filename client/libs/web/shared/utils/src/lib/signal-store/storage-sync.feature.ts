@@ -116,7 +116,7 @@ export function withStorageSync<
       };
 
       const writeToStorage = () => {
-        const slicedState = select(getState(store) as State);
+        const slicedState = select(getState(store) as unknown as State);
         storage.setItem(key, stringify(slicedState));
       };
 

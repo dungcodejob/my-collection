@@ -21,7 +21,6 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-architects/ngrx-toolkit": "^19.2.1",
     "@angular/animations": "20.1.0",
     "@angular/cdk": "^20.1.0",
     "@angular/common": "20.1.0",
@@ -33,7 +32,7 @@
     "@angular/router": "20.1.0",
     "@ng-icons/core": "^29.10.0",
     "@ng-icons/lucide": ">=29.0.0",
-    "@ngrx/signals": "^19.2.1",
+    "@ngrx/signals": "^20.0.0",
     "@sentry/angular": "^9.38.0",
     "@spartan-ng/brain": "0.0.1-alpha.486",
     "@tailwindcss/postcss": "^4.1.10",

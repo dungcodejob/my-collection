@@ -48,7 +48,7 @@ import type { Team } from "../sidebar";
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MCTeamSwitcherComponent {
+export class MCTeamSwitcher {
   readonly teams = input.required<Team[]>();
   readonly selectedTeam = input<Team>();
   readonly isCollapsed = input.required<boolean>();

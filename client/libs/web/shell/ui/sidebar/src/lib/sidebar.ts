@@ -15,9 +15,9 @@ import {
 } from "@ng-icons/lucide";
 import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
 import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
-import { MCNavGroupComponent } from "./nav-group/nav-group";
+import { MCNavGroup } from "./nav-group/nav-group";
 import { MCNavUserComponent } from "./nav-user/nav-user";
-import { MCTeamSwitcherComponent } from "./team-switcher/team-switcher";
+import { MCTeamSwitcher } from "./team-switcher/team-switcher";
 export type MenuItem = {
   id: string;
   title: string;
@@ -54,8 +54,8 @@ export type User = {
   selector: "mc-app-sidebar",
   imports: [
     NgIconComponent,
-    MCTeamSwitcherComponent,
-    MCNavGroupComponent,
+    MCTeamSwitcher,
+    MCNavGroup,
     MCNavUserComponent,
     BrnSeparatorComponent,
     HlmSeparatorDirective,
@@ -128,7 +128,7 @@ export type User = {
     ]),
   ],
 })
-export class MCSidebarComponent {
+export class MCSidebar {
   protected readonly isCollapsed = signal(false);
 
   protected readonly teams: Team[] = [

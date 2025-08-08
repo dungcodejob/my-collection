@@ -1,7 +1,8 @@
 import type { ComponentType } from "@angular/cdk/portal";
-import { Injectable, type TemplateRef, inject } from "@angular/core";
+import { Injectable, type TemplateRef, ViewContainerRef, inject } from "@angular/core";
 import {
   type BrnDialogOptions,
+  BrnDialogRef,
   BrnDialogService,
   DEFAULT_BRN_DIALOG_OPTIONS,
   cssClassesToArray,
@@ -13,6 +14,7 @@ export type HlmDialogOptions<DialogContext extends Record<string, unknown> = {}>
   BrnDialogOptions & {
     contentClass?: string;
     context?: DialogContext;
+    viewContainerRef?: ViewContainerRef;
   };
 
 @Injectable({
@@ -24,7 +26,7 @@ export class HlmDialogService {
   open(
     component: ComponentType<unknown> | TemplateRef<unknown>,
     options?: Partial<HlmDialogOptions>
-  ) {
+  ): BrnDialogRef<any> {
     const mergedOptions = {
       ...DEFAULT_BRN_DIALOG_OPTIONS,
 
@@ -33,7 +35,7 @@ export class HlmDialogService {
         `${hlmDialogOverlayClass} ${options?.backdropClass ?? ""}`
       ),
       context: {
-        ...(options.context ?? {}),
+        ...(options?.context ?? {}),
         $component: component,
         $dynamicComponentClass: options?.contentClass,
       },
@@ -41,7 +43,7 @@ export class HlmDialogService {
 
     return this._brnDialogService.open(
       HlmDialogContentComponent,
-      undefined,
+      options?.viewContainerRef,
       mergedOptions.context,
       mergedOptions
     );

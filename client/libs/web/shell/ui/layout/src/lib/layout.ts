@@ -3,17 +3,17 @@ import { RouterOutlet } from "@angular/router";
 import { CollectionStore } from "@client/web-collection-data-access";
 import { MCCollectionList } from "@client/web-collection-feature-list";
 import { MCHeader } from "@client/web-shell-ui-header";
-import { MCSidebarComponent } from "@client/web-shell-ui-sidebar";
+import { MCSidebar } from "@client/web-shell-ui-sidebar";
 import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
-import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
+import { HlmSeparatorModule } from "@spartan-ng/helm/separator";
 
 @Component({
   selector: "mc-layout",
   imports: [
-    MCSidebarComponent,
+    MCSidebar,
     MCHeader,
     BrnSeparatorComponent,
-    HlmSeparatorDirective,
+    HlmSeparatorModule,
     RouterOutlet,
     MCCollectionList,
   ],

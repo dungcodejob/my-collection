@@ -1,5 +1,5 @@
 // Models
-export * from "./models/collection";
+export * from "./models";
 
 // Stores
 export * from "./stores/collection.effects";
