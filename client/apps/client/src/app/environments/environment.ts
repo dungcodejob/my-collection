@@ -1,9 +1,9 @@
 import { MCConfig as MCLocalConfig } from "@client/web-core-config";
 
 export const environment: MCLocalConfig = {
-  mode: "dev",
-  development: true,
-  apiBaseUrl: "http://localhost:3000/api",
+  mode: "prod",
+  development: false,
+  apiBaseUrl: "https://my-collection-api.herokuapp.com/api",
   appVersion: "1.0.0",
   apiKey: "123",
   loggingLevel: "debug",

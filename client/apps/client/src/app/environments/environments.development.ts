@@ -1,8 +1,8 @@
 import { MCConfig } from "@client/web-core-config";
 
 export const environment: MCConfig = {
-  mode: "prod",
-  development: false,
+  mode: "dev",
+  development: true,
   apiBaseUrl: "http://localhost:3000/api",
   appVersion: "1.0.0",
   apiKey: "123",
