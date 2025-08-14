@@ -1,7 +1,7 @@
+import { HttpResponse } from "@angular/common/http";
 import { Observable, tap } from "rxjs";
+import { MCResponse, ResponseDto } from "../models";
 import { MCApiError } from "../models/error";
-import { HttpClientResponse } from "../models/http-client-response";
-import { MCResponse, ResponseDto } from "../models/response";
 
 /**
  * A custom RxJS operator that taps into an HTTP response observable to extract the data payload.
@@ -21,27 +21,45 @@ import { MCResponse, ResponseDto } from "../models/response";
 //   });
 // }
 
-export function tapResponseData<T extends HttpClientResponse<ResponseDto<K>>, K>(
+export function tapResponseData<T extends ResponseDto<K>, K>(
   callback: (data: K) => void
-) {
+): (source$: Observable<T>) => Observable<T>;
+export function tapResponseData<T extends HttpResponse<ResponseDto<K>>, K>(
+  callback: (data: K) => void,
+  options: {
+    isRaw: true;
+  }
+): (source$: Observable<T>) => Observable<T>;
+export function tapResponseData<
+  T extends HttpResponse<ResponseDto<K>> | ResponseDto<K>,
+  K,
+>(
+  callback: (data: K) => void,
+  options?: {
+    isRaw: true;
+  }
+): (source$: Observable<T>) => Observable<T> {
   return (source$: Observable<T>): Observable<T> =>
     source$.pipe(
       tap(res => {
-        if (MCResponse.isRaw(res)) {
-          const response = res.body as ResponseDto<K>;
+        let response: ResponseDto<K>;
+        if (options?.isRaw) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          response = (res as HttpResponse<ResponseDto<K>>).body!;
+        } else {
+          response = res as ResponseDto<K>;
+        }
 
+        if (MCResponse.is(response)) {
           if (response.success) {
             callback(response.result);
           } else {
             throw MCApiError.fromResponse(response);
           }
-        } else if (MCResponse.is(res)) {
-          if (res.success) {
-            callback(res.result);
-          } else {
-            throw MCApiError.fromResponse(res);
-          }
         }
+
+        // Fallback case - should not happen with proper typing
+        throw new Error("Unsupported response type");
       })
     );
 }

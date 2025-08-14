@@ -48,14 +48,14 @@
         "development": {
           "fileReplacements": [
             {
-              "replace": "src/environments/environment.ts",
-              "with": "src/environments/environment.development.ts"
+              "replace": "apps/client/src/app/environments/environment.ts",
+              "with": "apps/client/src/app/environments/environment.development.ts"
             }
           ],
           "assets": [
             {
               "glob": "config.json",
-              "input": "apps/client/src/configurations/development",
+              "input": "apps/client/src/app/configurations/development",
               "output": "configuration/"
             }
           ],

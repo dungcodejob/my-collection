@@ -1,5 +1,6 @@
-import { Component, inject } from "@angular/core";
+import { Component, effect, inject } from "@angular/core";
 import { RouterModule, RouterOutlet } from "@angular/router";
+import { injectAppConfig } from "@client/web-core-config";
 import { ThemeService } from "@client/web-shared-services";
 @Component({
   imports: [RouterModule, RouterOutlet],
@@ -8,9 +9,13 @@ import { ThemeService } from "@client/web-shared-services";
   styleUrl: "./app.css",
 })
 export class App {
+  private readonly _$config = injectAppConfig();
   private readonly _themeService = inject(ThemeService);
 
   constructor() {
     this._themeService.initialize();
+    effect(() => {
+      console.log(this._$config());
+    });
   }
 }
