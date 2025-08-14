@@ -1,5 +1,5 @@
 import { DEFAULT_ERROR_MESSAGE } from "@client/web-shared-constants";
-import { ErrorResponseDto } from "./response.dto";
+import { ErrorResponseDto } from "./error-response.dto";
 
 export class MCApiError extends Error {
   private constructor(

@@ -1,7 +1,7 @@
 import { Observable, tap } from "rxjs";
 import { MCApiError } from "../models/error";
 import { HttpClientResponse } from "../models/http-client-response";
-import { MCApiResponse, ResponseDto } from "../models/response.dto";
+import { MCResponse, ResponseDto } from "../models/response";
 
 /**
  * A custom RxJS operator that taps into an HTTP response observable to extract the data payload.
@@ -27,7 +27,7 @@ export function tapResponseData<T extends HttpClientResponse<ResponseDto<K>>, K>
   return (source$: Observable<T>): Observable<T> =>
     source$.pipe(
       tap(res => {
-        if (MCApiResponse.isRaw(res)) {
+        if (MCResponse.isRaw(res)) {
           const response = res.body as ResponseDto<K>;
 
           if (response.success) {
@@ -35,7 +35,7 @@ export function tapResponseData<T extends HttpClientResponse<ResponseDto<K>>, K>
           } else {
             throw MCApiError.fromResponse(response);
           }
-        } else if (MCApiResponse.is(res)) {
+        } else if (MCResponse.is(res)) {
           if (res.success) {
             callback(res.result);
           } else {

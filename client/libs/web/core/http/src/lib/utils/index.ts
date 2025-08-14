@@ -1,5 +1,5 @@
 export * from "./map-to-error-action";
-export * from "./map-to-response-data-action";
+export * from "./map-to-success-action";
 export * from "./map-to-upload-progress-action";
 export * from "./map-to-validation-error-action";
 

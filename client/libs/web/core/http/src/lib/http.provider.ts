@@ -1,8 +1,12 @@
-import { provideHttpClient } from "@angular/common/http";
+import { HttpFeature, HttpFeatureKind, provideHttpClient } from "@angular/common/http";
 import { EnvironmentProviders, Provider } from "@angular/core";
+import { provideAppInitWithConfig } from "@client/web-core-config";
+import { HttpService } from "./services/http.service";
 
-export const provideAppHttp = (): (Provider | EnvironmentProviders)[] => [
+export const provideAppHttp = (
+  ...features: HttpFeature<HttpFeatureKind>[]
+): (Provider | EnvironmentProviders)[] => [
+  provideHttpClient(...features),
   provideHttpClient(),
-  // HttpService,
-  // provideAppInitWithConfig(HttpService),
+  provideAppInitWithConfig(HttpService),
 ];
