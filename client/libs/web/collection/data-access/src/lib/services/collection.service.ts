@@ -177,6 +177,7 @@ export class CollectionService {
       url: "/api/collections",
       method: "GET",
       success: true,
+
       result: {
         items: collections,
         meta: {
@@ -223,8 +224,17 @@ export class CollectionService {
     if (parent) {
       collections = collections.filter(item => item.parentId === parent.id);
     } else {
-      collections = collections.filter(item => !!item.parentId);
+      collections = collections.filter(item => !item.parentId);
     }
+
+    collections = collections.map(item => {
+      const children = this.collections.filter(child => child.parentId === item.id);
+
+      return {
+        ...item,
+        isHasChild: children.length > 0,
+      };
+    });
 
     const totalCount = collections.length;
     const totalPages = Math.ceil(totalCount / request.pageSize);

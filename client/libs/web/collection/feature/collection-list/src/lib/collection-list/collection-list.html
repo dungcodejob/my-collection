@@ -17,6 +17,7 @@
   </h3>
 
   <mc-collection-tree
+    [isDisplayRoot]="false"
     [node]="facade.$root()"
     [tree]="facade.$collections()"
     (nodeExpand)="onNodeExpand($event)"

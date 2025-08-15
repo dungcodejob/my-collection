@@ -13,9 +13,11 @@ import { CollectionTreeService } from "./collection-tree.service";
 export class MCCollectionTree {
   private readonly _collectionTreeService = inject(CollectionTreeService);
 
-  readonly $node = input.required<Collection>({ alias: "node" });
+  readonly $root = input.required<Collection>({ alias: "node" });
+  readonly $isDisplayRoot = input(true, { alias: "isDisplayRoot" });
 
   readonly $tree = input.required<{ [key: string]: Collection[] }>({ alias: "tree" });
+  readonly $items = this._collectionTreeService.getNodeChildren(this.$root);
 
   readonly nodeExpand = output<Collection>();
 
@@ -25,6 +27,11 @@ export class MCCollectionTree {
       if (node) {
         this.nodeExpand.emit(node);
       }
+    });
+
+    effect(() => {
+      const tree = this.$tree();
+      this._collectionTreeService.setTree(tree);
     });
   }
 }

@@ -34,19 +34,11 @@ export class MCCollectionNode {
   private readonly _collectionTreeService = inject(CollectionTreeService);
 
   readonly $node = input.required<Collection>({ alias: "node" });
-  readonly $tree = input.required<{ [key: string]: Collection[] }>({ alias: "tree" });
-
+  readonly $items = this._collectionTreeService.getNodeChildren(this.$node);
   readonly $isSidebarCollapsed = signal(false);
   readonly $isCollapsed = signal(true);
-  readonly $items = computed(() => {
-    const node = this.$node();
-    const tree = this.$tree();
-
-    return tree[node.path] || [];
-  });
-
-  readonly $isDisplayItems = linkedSignal(() => {
-    return this.$items().length > 0;
+  readonly $isHasChild = computed(() => {
+    return this.$node().isHasChild;
   });
 
   readonly $collapseState = linkedSignal(() => {
@@ -59,7 +51,7 @@ export class MCCollectionNode {
     const collapsed = !this.$isCollapsed();
     this.$isCollapsed.set(collapsed);
 
-    if (collapsed) {
+    if (!collapsed) {
       this._collectionTreeService.expand(this.$node());
     }
   }

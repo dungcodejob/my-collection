@@ -1,6 +1,7 @@
 <div class="space-y-1">
   <!-- Main menu item -->
-  @let node = $node(); @let items = $items();
+
+  @let node = $node();
   <button
     class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
     type="button"
@@ -12,7 +13,7 @@
     @if (!$isSidebarCollapsed()) {
     <span class="flex-1">{{ node.name }}</span>
 
-    @if (items && items.length > 0) {
+    @if ($isHasChild()) {
     <ng-icon
       class="shrink-0 text-gray-400"
       name="lucideChevronRight"
@@ -32,13 +33,13 @@
   </button>
 
   <!-- Submenu items -->
-  @if ($isDisplayItems()) {
+  @if ($isHasChild()) {
   <div
-    class="ml-6 space-y-1 border-l border-gray-200 pl-3 dark:border-gray-700"
+    class="ml-4 pl-3 border-gray-200 dark:border-gray-700"
     [@expandCollapse]="$collapseState()"
   >
-    @for (item of items; track item.id) {
-    <mc-collection-node [node]="item" [tree]="$tree()" />
+    @for (item of $items(); track item.id) {
+    <mc-collection-node [node]="item" />
     }
   </div>
   }

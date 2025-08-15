@@ -1,1 +1,5 @@
-<mc-collection-node [node]="$node()" [tree]="$tree()" />
+@if ($isDisplayRoot()) {
+<mc-collection-node [node]="$root()" />
+} @else { @for (item of $items(); track item.id) {
+<mc-collection-node [node]="item" />
+} }

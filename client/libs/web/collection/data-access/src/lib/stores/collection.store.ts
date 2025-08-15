@@ -8,6 +8,7 @@ const COLLECTION_ROOT: Collection = {
   id: "",
   name: "root",
   path: "/",
+  isHasChild: true,
   createdAt: new Date(),
   updatedAt: new Date(),
   children: [],
