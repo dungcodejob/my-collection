@@ -123,8 +123,18 @@ export class ThemeService {
       const isDarkMode = this.isDarkMode();
       if (isDarkMode) {
         this._render.addClass(this._document.body, THEME_DARK_MODE_CLASS);
+        this._render.setAttribute(
+          this._document.documentElement,
+          "data-theme",
+          ThemeMode.Dark
+        );
       } else {
         this._render.removeClass(this._document.body, THEME_DARK_MODE_CLASS);
+        this._render.setAttribute(
+          this._document.documentElement,
+          "data-theme",
+          ThemeMode.Light
+        );
       }
     });
   }

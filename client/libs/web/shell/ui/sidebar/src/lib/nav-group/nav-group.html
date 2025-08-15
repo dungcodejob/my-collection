@@ -7,7 +7,7 @@
   <div class="space-y-1">
     <!-- Main menu item -->
     <button
-      class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+      class="dark:text-muted-foreground dark:hover:text-white flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors text-sidebar-foreground hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800"
       type="button"
       [class.justify-center]="isSidebarCollapsed()"
       (click)="toggleExpanded(item.id)"

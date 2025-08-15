@@ -92,6 +92,12 @@
   --week: var(--color-neutral-900);
 }
 
+@theme inline {
+  --color-sidebar-foreground: var(--sidebar-foreground);
+}
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 html {
   font-family: Inter, sans-serif;
   line-height: 1.2;
