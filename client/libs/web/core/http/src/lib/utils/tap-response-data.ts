@@ -43,19 +43,22 @@ type UnwrapResponseHttp<T> =
 export function tapResponseData<T extends ResponseDto<K>, K>(
   callback: (data: UnwrapResponseHttp<T>) => void
 ): (source$: Observable<T>) => Observable<T>;
-export function tapResponseData<T extends ResponseDto<K>, K>(
+export function tapResponseData<T extends HttpResponse<ResponseDto<K>>, K>(
   callback: (data: UnwrapResponseHttp<T>) => void,
   options: {
     isRaw: true;
   }
-): (source$: Observable<HttpResponse<T>>) => Observable<HttpResponse<T>>;
-export function tapResponseData<T extends ResponseDto<K>, K>(
+): (source$: Observable<T>) => Observable<T>;
+export function tapResponseData<
+  T extends ResponseDto<K> | HttpResponse<ResponseDto<K>>,
+  K,
+>(
   callback: (data: UnwrapResponseHttp<T>) => void,
   options?: {
     isRaw: true;
   }
-): (source$: Observable<T | HttpResponse<T>>) => Observable<T | HttpResponse<T>> {
-  return (source$: Observable<T | HttpResponse<T>>): Observable<T | HttpResponse<T>> =>
+): (source$: Observable<T>) => Observable<T> {
+  return (source$: Observable<T>): Observable<T> =>
     source$.pipe(
       tap(res => {
         let response: ResponseDto<K>;
@@ -72,10 +75,11 @@ export function tapResponseData<T extends ResponseDto<K>, K>(
           } else {
             throw MCApiError.fromResponse(response as ErrorResponseDto);
           }
+        } else {
+          throw new Error("Unsupported response type");
         }
-
-        // Fallback case - should not happen with proper typing
-        throw new Error("Unsupported response type");
       })
     );
 }
+
+let i: Observable<HttpResponse<ResponseDto<{ id: number }>>>;

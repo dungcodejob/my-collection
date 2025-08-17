@@ -1,3 +1,4 @@
+import { HttpResponse } from "@angular/common/http";
 import { ErrorResponseDto } from "./error-response.dto";
 import { SuccessResponseDto } from "./success-response.dto";
 
@@ -20,3 +21,6 @@ export type UnwrapResponseData<T> =
       ? S
       : never
     : never;
+
+export type UnwrapResponseHttp<T> =
+  T extends HttpResponse<infer U> ? UnwrapResponseHttp<U> : UnwrapResponseData<T>;

@@ -161,3 +161,18 @@ export function setError<Prop extends string>(
   }
   return { status: { error } };
 }
+export function setStatus(status: Status): StatusState;
+export function setStatus<Prop extends string>(
+  status: Status,
+  prop: Prop
+): NamedStatusState<Prop>;
+export function setStatus<Prop extends string>(
+  status: Status,
+  prop?: Prop
+): StatusState | NamedStatusState<Prop> {
+  console.log("setStatus", status, prop);
+  if (prop) {
+    return { [`${prop}Status`]: status } as NamedStatusState<Prop>;
+  }
+  return { status };
+}

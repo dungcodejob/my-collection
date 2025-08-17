@@ -17,18 +17,22 @@ export type ApiCallSignals<TData = unknown> = {
   $error: Signal<unknown>;
 };
 
-export type NamedApiCallState<TData = unknown, Name extends string = string> = {
+export type NamedApiCallState<Name extends string, TData = unknown> = {
   [K in keyof ApiCallState<TData> as Name extends ""
-    ? `${K}`
-    : `${Name}${Capitalize<string & K>}`]: ApiCallState<TData>[K];
+    ? `${Name}${K}`
+    : `${Name}${Capitalize<K>}`]: ApiCallState<TData>[K];
 };
 
-export type NamedApiCallSignals<TData = unknown, Name extends string = string> = {
-  [K in keyof ApiCallSignals<TData> as Name extends ""
-    ? `${K}`
-    : K extends `$${infer Rest}`
-      ? `$${Name}${Capitalize<Rest>}`
-      : `${Name}${Capitalize<string & K>}`]: ApiCallSignals<TData>[K];
+export type NamedApiCallSignals<Name extends string, TData = unknown> = {
+  [K in keyof ApiCallState<TData> as `$is${Capitalize<Name>}Pending`]: Signal<boolean>;
+} & {
+  [K in keyof ApiCallState<TData> as `$is${Capitalize<Name>}Fulfilled`]: Signal<boolean>;
+} & {
+  [K in keyof ApiCallState<TData> as `$${Name}Error`]: Signal<unknown>;
+} & {
+  [K in keyof ApiCallState<TData> as `$${Name}Data`]: Signal<TData>;
+} & {
+  [K in keyof ApiCallState<TData> as `$${Name}Status`]: Signal<ApiCallStatus>;
 };
 
 export type ApiCallRequestFn<TRequest = unknown, TData = unknown> = (
@@ -43,7 +47,8 @@ export type ApiCallTransformFn<TRaw = unknown, TData = unknown> = (
 export type ApiCallConfig<TRequest = unknown, TRaw = unknown, TData = unknown> = {
   requestFn: ApiCallRequestFn<TRequest, TRaw>;
   transformFn?: ApiCallTransformFn<TRaw, TData>;
-  name?: string;
+  successFn?: (data: TData) => void;
+  errorFn?: (error: unknown) => void;
 };
 
 export type NamedApiCallConfig<
@@ -54,5 +59,7 @@ export type NamedApiCallConfig<
 > = {
   requestFn: ApiCallRequestFn<TRequest, TRaw>;
   transformFn?: ApiCallTransformFn<TRaw, TData>;
+  successFn?: (data: TData) => void;
+  errorFn?: (error: unknown) => void;
   name: Name;
 };
