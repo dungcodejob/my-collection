@@ -14,4 +14,9 @@ export type BaseResponseDto = Readonly<{
 
 export type ResponseDto<T = unknown> = ErrorResponseDto | SuccessResponseDto<T>;
 
-export type UnwrapResponse<T> = T extends ResponseDto<infer S> ? S : never;
+export type UnwrapResponseData<T> =
+  T extends ResponseDto<infer S>
+    ? T extends SuccessResponseDto<infer S>
+      ? S
+      : never
+    : never;

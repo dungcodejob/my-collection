@@ -68,8 +68,6 @@ export function createExpandCollapseAnimation(
   ]);
 }
 
-console.log(createExpandCollapseAnimation());
-
 export const chevronRotateAnimationOptions = {
   name: "chevronRotate",
   duration: ANIMATION_DURATION.NORMAL,

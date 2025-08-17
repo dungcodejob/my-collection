@@ -1,22 +1,22 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { MCCollectionTree } from "./collection-tree";
-describe("MCCollectionTree", () => {
-  let component: MCCollectionTree;
-  let fixture: ComponentFixture<MCCollectionTree>;
+import { CollectionTreeService } from "../collection-tree/collection-tree.service";
+import { MCCollectionNode } from "./collection-node";
+describe("MCCollectionNode", () => {
+  let component: MCCollectionNode;
+  let fixture: ComponentFixture<MCCollectionNode>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MCCollectionTree],
-      providers: [provideAnimationsAsync()],
+      imports: [MCCollectionNode],
+      providers: [provideAnimationsAsync(), CollectionTreeService],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MCCollectionTree);
+    fixture = TestBed.createComponent(MCCollectionNode);
     component = fixture.componentInstance;
 
     const componentRef = fixture.componentRef;
     componentRef.setInput("node", { id: "1", name: "root" });
-    componentRef.setInput("tree", { "1": [{ id: "2", name: "child" }] });
 
     fixture.detectChanges();
   });

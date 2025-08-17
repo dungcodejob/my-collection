@@ -3,6 +3,7 @@ export default {
   preset: "../../../../../jest.preset.js",
   setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
   coverageDirectory: "../../../../../coverage/libs/web/collection/ui/collection-tree",
+  testEnvironment: "@happy-dom/jest-environment",
   transform: {
     "^.+\\.(ts|mjs|js|html)$": [
       "jest-preset-angular",

@@ -34,7 +34,7 @@
         <button hlmBtn type="button" variant="outline" (click)="closed.emit()">
           Close
         </button>
-        <button hlmBtn type="submit" [disabled]="isSaveButtonDisabled" (click)="onSave()">
+        <button hlmBtn type="submit" [disabled]="isSaveButtonDisabled">
           @if ($isPending()) {
 
           <ng-icon class="mr-2 animate-spin" hlm name="lucideLoaderCircle" size="sm" />

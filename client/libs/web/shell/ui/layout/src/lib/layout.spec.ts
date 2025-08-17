@@ -1,6 +1,7 @@
 import { signal } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideAnimations } from "@angular/platform-browser/animations";
+import { CollectionStore } from "@client/web-collection-data-access";
 import { ThemeMode, ThemePreset, ThemeService } from "@client/web-shared-services";
 import { MCLayout } from "./layout";
 
@@ -24,6 +25,7 @@ describe("MCLayout", () => {
       imports: [MCLayout],
       providers: [
         provideAnimations(),
+        CollectionStore,
         { provide: ThemeService, useValue: mockThemeService },
       ],
     }).compileComponents();

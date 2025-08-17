@@ -18,6 +18,7 @@ export function withCollectionEffects() {
             return api.createCollection(payload.request).pipe(
               mapToSuccessAction(res =>
                 collectionApiEvents.createSuccess({
+                  path: payload.request.path,
                   collection: res.data,
                 })
               ),

@@ -86,11 +86,17 @@ export class CollectionService {
   createCollection(
     request: CreateCollectionRequest
   ): Observable<SingleResponseDto<Collection>> {
+    const id = this._generateId();
+    let path = `/${id}`;
+    if (request.parentId) {
+      const parent = this.collections.find(c => c.id === request.parentId);
+      path = parent?.path + "/" + request.name;
+    }
     const newCollection: Collection = {
-      id: this._generateId(),
+      id: id,
       name: request.name,
       icon: request.icon,
-      path: request.path,
+      path: path,
       parentId: request.parentId,
       createdAt: new Date(),
       updatedAt: new Date(),

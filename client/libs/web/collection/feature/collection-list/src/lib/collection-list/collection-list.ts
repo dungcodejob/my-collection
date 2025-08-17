@@ -1,7 +1,12 @@
 import { Component, inject, OnInit, ViewContainerRef } from "@angular/core";
-import { Collection } from "@client/web-collection-data-access";
+import {
+  Collection,
+  CreateCollectionRequest,
+  UpdateCollectionRequest,
+} from "@client/web-collection-data-access";
 import { MCCollectionDetailDialog } from "@client/web-collection-detail-dialog";
 import { MCCollectionTree } from "@client/web-collection-ui-tree";
+import { injectAutoEffect } from "@client/web-shared-utils";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucidePlus } from "@ng-icons/lucide";
 import { HlmButtonDirective } from "@spartan-ng/helm/button";
@@ -23,10 +28,13 @@ export class MCCollectionList implements OnInit {
   protected readonly facade = inject(MCCollectionListFacade);
   private readonly _viewContainerRef = inject(ViewContainerRef);
   private readonly _dialogService = inject(HlmDialogService);
+  private readonly _autoEffect = injectAutoEffect();
 
   ngOnInit(): void {
     const root = this.facade.$root();
     this.facade.load({ filter: { path: root.path, currentPage: 1, pageSize: 10 } });
+
+    this.closeDialogEffect();
   }
 
   onCloseDialog(): void {
@@ -37,7 +45,24 @@ export class MCCollectionList implements OnInit {
     this.facade.open();
   }
 
+  onCreateCollection(request: CreateCollectionRequest): void {
+    this.facade.create({ request });
+  }
+
+  onUpdateCollection(request: UpdateCollectionRequest): void {
+    this.facade.update({ request });
+  }
+
   onNodeExpand(node: Collection): void {
     this.facade.load({ filter: { path: node.path, currentPage: 1, pageSize: 10 } });
+  }
+
+  private closeDialogEffect(): void {
+    this._autoEffect(() => {
+      const isDetailsFulfilled = this.facade.$isDetailsFulfilled();
+      if (isDetailsFulfilled) {
+        this.facade.close();
+      }
+    });
   }
 }

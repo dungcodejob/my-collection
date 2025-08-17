@@ -23,7 +23,7 @@ export const collectionEvents = eventGroup({
 export const collectionApiEvents = eventGroup({
   source: "Collection API",
   events: {
-    createSuccess: type<{ collection: Collection }>(),
+    createSuccess: type<{ path: string; collection: Collection }>(),
     createFailed: type<{ error: unknown }>(),
     updateSuccess: type<{ collection: Collection }>(),
     updateFailed: type<{ error: unknown }>(),

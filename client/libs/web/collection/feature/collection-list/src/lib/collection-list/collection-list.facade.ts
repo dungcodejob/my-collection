@@ -22,6 +22,7 @@ export const MCCollectionListFacade = signalStore(
     $collections: computed(() => _collectionStore.collections()),
     $root: computed(() => _collectionStore.root()),
     $isOpen: computed(() => isOpen()),
+    $isDetailsFulfilled: computed(() => _collectionStore.$isDetailsFulfilled()),
   })),
   withMethods(store => {
     const { _dispatch } = store;

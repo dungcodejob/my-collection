@@ -1,15 +1,31 @@
 import { HttpResponse } from "@angular/common/http";
 import { Observable, tap } from "rxjs";
-import { MCResponse, ResponseDto } from "../models";
+import { ErrorResponseDto, MCResponse, ResponseDto, UnwrapResponseData } from "../models";
 import { MCApiError } from "../models/error";
-
 /**
- * A custom RxJS operator that taps into an HTTP response observable to extract the data payload.
- * It handles different response types ('body', 'response', 'events') and ensures a successful response format.
+ * A custom RxJS operator that taps into an HTTP response observable to extract and process the data payload.
+ * It provides overloaded signatures to handle both direct ResponseDto objects and raw HttpResponse wrappers.
+ * The operator validates the response format and throws MCApiError for unsuccessful responses.
  *
- * @template T The type of the data payload expected in the successful response.
- * @param callback A function that is called with the extracted data payload when a successful response is received.
- * @returns An RxJS operator function that can be applied to an observable of HttpEvent<ApiSuccessResponse<T>>, ApiSuccessResponse<T>, or T.
+ * @template T The ResponseDto type that extends ResponseDto<K>
+ * @template K The type of the actual data payload within the ResponseDto
+ * @param callback A function that is called with the unwrapped data payload when a successful response is received
+ * @param options Optional configuration object with isRaw flag to indicate HttpResponse wrapper handling
+ * @returns An RxJS operator function that can be applied to observables of ResponseDto<K> or HttpResponse<ResponseDto<K>>
+ * @throws {MCApiError} When the response indicates failure (success: false)
+ * @throws {Error} When the response type is not supported
+ *
+ * @example
+ * // For direct ResponseDto
+ * source$.pipe(
+ *   tapResponseData((data) => console.log('Success:', data))
+ * )
+ *
+ * @example
+ * // For HttpResponse<ResponseDto>
+ * source$.pipe(
+ *   tapResponseData((data) => console.log('Success:', data), { isRaw: true })
+ * )
  */
 // export function tapResponseData<T>(
 //   callback: (data: SuccessResponseDto<T>["result"]) => void
@@ -21,25 +37,25 @@ import { MCApiError } from "../models/error";
 //   });
 // }
 
+type UnwrapResponseHttp<T> =
+  T extends HttpResponse<infer U> ? UnwrapResponseHttp<U> : UnwrapResponseData<T>;
+
 export function tapResponseData<T extends ResponseDto<K>, K>(
-  callback: (data: K) => void
+  callback: (data: UnwrapResponseHttp<T>) => void
 ): (source$: Observable<T>) => Observable<T>;
-export function tapResponseData<T extends HttpResponse<ResponseDto<K>>, K>(
-  callback: (data: K) => void,
+export function tapResponseData<T extends ResponseDto<K>, K>(
+  callback: (data: UnwrapResponseHttp<T>) => void,
   options: {
     isRaw: true;
   }
-): (source$: Observable<T>) => Observable<T>;
-export function tapResponseData<
-  T extends HttpResponse<ResponseDto<K>> | ResponseDto<K>,
-  K,
->(
-  callback: (data: K) => void,
+): (source$: Observable<HttpResponse<T>>) => Observable<HttpResponse<T>>;
+export function tapResponseData<T extends ResponseDto<K>, K>(
+  callback: (data: UnwrapResponseHttp<T>) => void,
   options?: {
     isRaw: true;
   }
-): (source$: Observable<T>) => Observable<T> {
-  return (source$: Observable<T>): Observable<T> =>
+): (source$: Observable<T | HttpResponse<T>>) => Observable<T | HttpResponse<T>> {
+  return (source$: Observable<T | HttpResponse<T>>): Observable<T | HttpResponse<T>> =>
     source$.pipe(
       tap(res => {
         let response: ResponseDto<K>;
@@ -52,9 +68,9 @@ export function tapResponseData<
 
         if (MCResponse.is(response)) {
           if (response.success) {
-            callback(response.result);
+            callback(response.result as UnwrapResponseHttp<T>);
           } else {
-            throw MCApiError.fromResponse(response);
+            throw MCApiError.fromResponse(response as ErrorResponseDto);
           }
         }
 

@@ -42,7 +42,7 @@ export class MCCollectionDetailDialog implements OnInit {
 
   readonly $isOpen = input<boolean>(false, { alias: "isOpen" });
   readonly $data = input<Collection | null>(null, { alias: "data" });
-  readonly $parentId = input<string>("", { alias: "parentId" });
+  readonly $parent = input.required<Collection>({ alias: "parent" });
   readonly $isPending = input<boolean>(false, { alias: "isLoading" });
   readonly $error = input<string>("", { alias: "error" });
 
@@ -81,8 +81,8 @@ export class MCCollectionDetailDialog implements OnInit {
       const request: CreateCollectionRequest = {
         ...this.form.getRawValue(),
         icon: "",
-        path: this.$parentId(),
-        parentId: this.$parentId(),
+        path: this.$parent().path,
+        parentId: this.$parent().id,
       };
       this.create.emit(request);
     }

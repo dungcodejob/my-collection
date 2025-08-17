@@ -36,13 +36,13 @@ export function withCollectionReducer() {
       }),
 
       on(collectionApiEvents.createSuccess, ({ payload }, state) => {
-        const collectionsInPath = state.collections[payload.collection.path];
+        const collectionsInPath = state.collections[payload.path];
 
         return {
           ...setFulfilled(collectionStatusNames.details),
           collections: {
             ...state.collections,
-            [payload.collection.path]: collectionsInPath
+            [payload.path]: collectionsInPath
               ? [...collectionsInPath, payload.collection]
               : [payload.collection],
           },

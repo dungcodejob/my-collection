@@ -1,4 +1,4 @@
-import { Component, effect, inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { RouterModule, RouterOutlet } from "@angular/router";
 import { injectAppConfig } from "@client/web-core-config";
 import { ThemeService } from "@client/web-shared-services";
@@ -14,8 +14,5 @@ export class App {
 
   constructor() {
     this._themeService.initialize();
-    effect(() => {
-      console.log(this._$config());
-    });
   }
 }
