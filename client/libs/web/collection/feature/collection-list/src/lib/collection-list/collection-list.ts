@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewContainerRef } from "@angular/core";
+import { Component, inject, OnInit, untracked, ViewContainerRef } from "@angular/core";
 import {
   Collection,
   CreateCollectionRequest,
@@ -11,6 +11,7 @@ import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucidePlus } from "@ng-icons/lucide";
 import { HlmButtonDirective } from "@spartan-ng/helm/button";
 import { HlmDialogService } from "@spartan-ng/helm/dialog";
+import { toast } from "ngx-sonner";
 import { MCCollectionListFacade } from "./collection-list.facade";
 @Component({
   selector: "mc-collection-list",
@@ -32,9 +33,18 @@ export class MCCollectionList implements OnInit {
 
   ngOnInit(): void {
     const root = this.facade.$root();
-    this.facade.load({ filter: { path: root.path, currentPage: 1, pageSize: 10 } });
+    this.facade.load({ path: root.path, currentPage: 1, pageSize: 10 });
+
+    toast("Event has been created", {
+      description: "Sunday, December 03, 2023 at 9:00 AM",
+      action: {
+        label: "Undo",
+        onClick: () => console.log("Undo"),
+      },
+    });
 
     this.closeDialogEffect();
+    this.displayToastEffect();
   }
 
   onCloseDialog(): void {
@@ -46,22 +56,37 @@ export class MCCollectionList implements OnInit {
   }
 
   onCreateCollection(request: CreateCollectionRequest): void {
-    this.facade.create({ request });
+    this.facade.create(request);
   }
 
   onUpdateCollection(request: UpdateCollectionRequest): void {
-    this.facade.update({ request });
+    this.facade.update(request);
   }
 
   onNodeExpand(node: Collection): void {
-    this.facade.load({ filter: { path: node.path, currentPage: 1, pageSize: 10 } });
+    this.facade.load({ path: node.path, currentPage: 1, pageSize: 10 });
   }
 
   private closeDialogEffect(): void {
     this._autoEffect(() => {
-      const isDetailsFulfilled = this.facade.$isDetailsFulfilled();
-      if (isDetailsFulfilled) {
-        this.facade.close();
+      const isCreateFulfilled = this.facade.$isCreateFulfilled();
+      const isUpdateFulfilled = this.facade.$isUpdateFulfilled();
+      if (isCreateFulfilled || isUpdateFulfilled) {
+        untracked(() => this.facade.close());
+      }
+    });
+  }
+
+  private displayToastEffect(): void {
+    this._autoEffect(() => {
+      const isCreateFulfilled = this.facade.$isCreateFulfilled();
+      console.log("isCreateFulfilled", isCreateFulfilled);
+      if (isCreateFulfilled) {
+        untracked(() =>
+          toast("Event has been created", {
+            description: "Sunday, December 03, 2023 at 9:00 AM",
+          })
+        );
       }
     });
   }

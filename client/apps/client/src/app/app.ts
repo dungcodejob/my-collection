@@ -2,8 +2,9 @@ import { Component, inject } from "@angular/core";
 import { RouterModule, RouterOutlet } from "@angular/router";
 import { injectAppConfig } from "@client/web-core-config";
 import { ThemeService } from "@client/web-shared-services";
+import { NgxSonnerToaster } from "ngx-sonner";
 @Component({
-  imports: [RouterModule, RouterOutlet],
+  imports: [RouterModule, RouterOutlet, NgxSonnerToaster],
   selector: "app-root",
   templateUrl: "./app.html",
   styleUrl: "./app.css",
