@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { ThemeService } from "@client/web-shared-services";
+import { MCThemeService } from "@client/web-shared-services";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { lucideMoon, lucideSun } from "@ng-icons/lucide";
 import { HlmButtonDirective } from "@spartan-ng/helm/button";
@@ -14,7 +14,7 @@ import { HlmIconDirective } from "@spartan-ng/helm/icon";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MCModeSwitcher {
-  private readonly _themeService = inject(ThemeService);
+  private readonly _themeService = inject(MCThemeService);
 
   readonly $isDarkMode = this._themeService.isDarkMode;
 

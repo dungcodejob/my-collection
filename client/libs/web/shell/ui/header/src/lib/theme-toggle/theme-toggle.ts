@@ -1,5 +1,5 @@
 import { Component, inject } from "@angular/core";
-import { ThemeMode, ThemePreset, ThemeService } from "@client/web-shared-services";
+import { MCThemeService, ThemeMode, ThemePreset } from "@client/web-shared-services";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import {
   lucideCircle,
@@ -34,7 +34,7 @@ import {
   ],
 })
 export class MCThemeToggle {
-  private readonly _themeService = inject(ThemeService);
+  private readonly _themeService = inject(MCThemeService);
 
   // Reactive signals from theme service
   protected readonly themeMode = this._themeService.mode;

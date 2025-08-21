@@ -75,7 +75,7 @@ export const injectRenderer2 = (): Renderer2 =>
 @Injectable({
   providedIn: "root",
 })
-export class ThemeService {
+export class MCThemeService {
   private readonly _document = inject(DOCUMENT);
   private readonly _render = injectRenderer2();
   private readonly _injector = inject(Injector);

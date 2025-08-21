@@ -6,12 +6,12 @@ import {
 } from "@client/web-collection-data-access";
 import { MCCollectionDetailDialog } from "@client/web-collection-detail-dialog";
 import { MCCollectionTree } from "@client/web-collection-ui-tree";
+import { MCToastService } from "@client/web-shared-services";
 import { injectAutoEffect } from "@client/web-shared-utils";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucidePlus } from "@ng-icons/lucide";
 import { HlmButtonDirective } from "@spartan-ng/helm/button";
 import { HlmDialogService } from "@spartan-ng/helm/dialog";
-import { toast } from "ngx-sonner";
 import { MCCollectionListFacade } from "./collection-list.facade";
 @Component({
   selector: "mc-collection-list",
@@ -30,18 +30,11 @@ export class MCCollectionList implements OnInit {
   private readonly _viewContainerRef = inject(ViewContainerRef);
   private readonly _dialogService = inject(HlmDialogService);
   private readonly _autoEffect = injectAutoEffect();
+  private readonly _toastService = inject(MCToastService);
 
   ngOnInit(): void {
     const root = this.facade.$root();
     this.facade.load({ path: root.path, currentPage: 1, pageSize: 10 });
-
-    toast("Event has been created", {
-      description: "Sunday, December 03, 2023 at 9:00 AM",
-      action: {
-        label: "Undo",
-        onClick: () => console.log("Undo"),
-      },
-    });
 
     this.closeDialogEffect();
     this.displayToastEffect();
@@ -80,13 +73,15 @@ export class MCCollectionList implements OnInit {
   private displayToastEffect(): void {
     this._autoEffect(() => {
       const isCreateFulfilled = this.facade.$isCreateFulfilled();
-      console.log("isCreateFulfilled", isCreateFulfilled);
       if (isCreateFulfilled) {
-        untracked(() =>
-          toast("Event has been created", {
-            description: "Sunday, December 03, 2023 at 9:00 AM",
-          })
-        );
+        untracked(() => this._toastService.success("Collection has been created"));
+      }
+    });
+
+    this._autoEffect(() => {
+      const isUpdateFulfilled = this.facade.$isUpdateFulfilled();
+      if (isUpdateFulfilled) {
+        untracked(() => this._toastService.success("Collection has been updated"));
       }
     });
   }
