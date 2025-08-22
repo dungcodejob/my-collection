@@ -13,9 +13,9 @@ import { EMPTY, OperatorFunction, catchError } from "rxjs";
  *          and then returns EMPTY to complete the stream, preventing subsequent values from being emitted.
  */
 
-export function tapError(
+export function tapError<T>(
   callback?: (error: HttpErrorResponse) => void
-): OperatorFunction<unknown, unknown> {
+): OperatorFunction<T, T> {
   /**
    * Catches errors in the observable stream and handles them gracefully.
    */

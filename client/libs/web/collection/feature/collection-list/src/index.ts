@@ -1,1 +1,1 @@
-export * from "./lib/web-collection-feature-list/web-collection-feature-list";
+export * from "./lib/collection-list/collection-list";

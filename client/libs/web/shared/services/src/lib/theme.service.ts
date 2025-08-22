@@ -75,7 +75,7 @@ export const injectRenderer2 = (): Renderer2 =>
 @Injectable({
   providedIn: "root",
 })
-export class ThemeService {
+export class MCThemeService {
   private readonly _document = inject(DOCUMENT);
   private readonly _render = injectRenderer2();
   private readonly _injector = inject(Injector);
@@ -123,8 +123,18 @@ export class ThemeService {
       const isDarkMode = this.isDarkMode();
       if (isDarkMode) {
         this._render.addClass(this._document.body, THEME_DARK_MODE_CLASS);
+        this._render.setAttribute(
+          this._document.documentElement,
+          "data-theme",
+          ThemeMode.Dark
+        );
       } else {
         this._render.removeClass(this._document.body, THEME_DARK_MODE_CLASS);
+        this._render.setAttribute(
+          this._document.documentElement,
+          "data-theme",
+          ThemeMode.Light
+        );
       }
     });
   }

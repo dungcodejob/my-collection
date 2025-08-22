@@ -13,9 +13,9 @@ export type StatusSignals = {
 };
 
 export type NamedStatusState<Prop extends string> = {
-  [K in keyof StatusSignals as Prop extends ""
+  [K in keyof StatusState as Prop extends ""
     ? `${Prop}${K}`
-    : `${Prop}${Capitalize<K>}`]: StatusSignals[K];
+    : `${Prop}${Capitalize<K>}`]: StatusState[K];
 };
 
 export type NamedStatusSignals<Name extends string> = {
@@ -25,3 +25,7 @@ export type NamedStatusSignals<Name extends string> = {
 } & {
   [K in keyof StatusSignals as `$${Name}Error`]: Signal<unknown>;
 };
+
+export type SetCallState<Prop extends string | undefined> = Prop extends string
+  ? NamedStatusSignals<Prop>
+  : StatusState;

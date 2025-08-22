@@ -1,0 +1,47 @@
+<hlm-dialog [state]="$isOpen() ? 'open' : 'closed'" (closed)="closed.emit()">
+  <hlm-dialog-content *brnDialogContent="let ctx" class="sm:max-w-[425px]">
+    <form class="flex flex-col gap-4" [formGroup]="form" (ngSubmit)="onSave()">
+      <hlm-dialog-header>
+        <h3 hlmDialogTitle>{{ $title() }}</h3>
+        <p hlmDialogDescription>
+          Make create or update to your collection here. Click save when you're done.
+        </p>
+      </hlm-dialog-header>
+      <div class="grid gap-4 py-4">
+        <div class="flex flex-col space-y-1">
+          @let nameControl = form.get('name');
+          <label for="name" hlmLabel>Name</label>
+          <input
+            autocapitalize="none"
+            autocomplete="off"
+            autocorrect="off"
+            class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+            formControlName="name"
+            hlmInput
+            id="name"
+            placeholder="Example: Work"
+            size="sm"
+            type="text"
+          />
+
+          @if (nameControl && nameControl.invalid && (nameControl.dirty ||
+          nameControl.touched)) { @if (nameControl.errors?.['required']) {
+          <div hlmInputError>Name is required.</div>
+          } }
+        </div>
+      </div>
+      <hlm-dialog-footer>
+        <button hlmBtn type="button" variant="outline" (click)="closed.emit()">
+          Close
+        </button>
+        <button hlmBtn type="submit" [disabled]="isSaveButtonDisabled">
+          @if ($isPending()) {
+
+          <ng-icon class="mr-2 animate-spin" hlm name="lucideLoaderCircle" size="sm" />
+          }
+          <span>Save changes</span>
+        </button>
+      </hlm-dialog-footer>
+    </form>
+  </hlm-dialog-content>
+</hlm-dialog>

@@ -22,8 +22,14 @@
       "@client/web-collection-data-access": [
         "libs/web/collection/data-access/src/index.ts"
       ],
+      "@client/web-collection-detail-dialog": [
+        "libs/web/collection/feature/collection-detail-dialog/src/index.ts"
+      ],
       "@client/web-collection-feature-list": [
         "libs/web/collection/feature/collection-list/src/index.ts"
+      ],
+      "@client/web-collection-ui-tree": [
+        "libs/web/collection/ui/collection-tree/src/index.ts"
       ],
       "@client/web-core-config": ["libs/web/core/config/src/index.ts"],
       "@client/web-core-http": ["libs/web/core/http/src/index.ts"],
@@ -31,12 +37,13 @@
       "@client/web-shared-constants": ["libs/web/shared/constants/src/index.ts"],
       "@client/web-shared-data-access": ["libs/web/shared/data-access/src/index.ts"],
       "@client/web-shared-services": ["libs/web/shared/services/src/index.ts"],
+      "@client/web-shared-ui-dialog": ["libs/web/shared/ui/common/dialog/src/index.ts"],
       "@client/web-shared-utils": ["libs/web/shared/utils/src/index.ts"],
       "@client/web-shell-feature": ["libs/web/shell/feature/src/index.ts"],
+      "@client/web-shell-ui-header": ["libs/web/shell/ui/header/src/index.ts"],
       "@client/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],
       "@client/web-shell-ui-nav-bar": ["libs/web/shell/ui/nav-bar/src/index.ts"],
       "@client/web-shell-ui-sidebar": ["libs/web/shell/ui/sidebar/src/index.ts"],
-      "@client/web-shell-ui-top-bar": ["libs/web/shell/ui/top-bar/src/index.ts"],
       "@client/web/auth/data-access": ["libs/web/auth/data-access/src/index.ts"],
       "@client/web/auth/feature/login": ["libs/web/auth/feature/login/src/index.ts"],
       "@client/web/auth/feature/shell": ["libs/web/auth/feature/shell/src/index.ts"],

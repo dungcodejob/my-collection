@@ -1,0 +1,61 @@
+<aside
+  class="relative flex h-full flex-col bg-background"
+  data-sidebar="sidebar"
+  [@sidebarCollapse]="getSidebarState()"
+>
+  <!-- Sidebar Header -->
+  <div
+    class="sidebar-content flex h-16 items-center px-4 dark:border-gray-800"
+    [@contentFade]="getContentState()"
+  >
+    <mc-team-switcher [isCollapsed]="isCollapsed()" [teams]="teams" />
+  </div>
+
+  <!-- Separator -->
+  <brn-separator class="" hlmSeparator orientation="horizontal" />
+
+  <!-- Sidebar Content -->
+  <div class="sidebar-content flex-1 overflow-y-auto" [@contentFade]="getContentState()">
+    <div class="flex flex-col justify-between h-full">
+      <nav class="flex flex-col gap-4 p-2">
+        <mc-nav-group
+          title="Main"
+          [isSidebarCollapsed]="isCollapsed()"
+          [items]="navMain"
+        />
+
+        <ng-content />
+      </nav>
+      <mc-nav-group
+        title="Other"
+        [isSidebarCollapsed]="isCollapsed()"
+        [items]="navOthers"
+      />
+    </div>
+  </div>
+
+  <!-- Separator -->
+  <brn-separator class="" hlmSeparator orientation="horizontal" />
+
+  <!-- Sidebar Footer -->
+  <div
+    class="sidebar-content p-2 dark:border-gray-800"
+    [@contentFade]="getContentState()"
+  >
+    <mc-nav-user [isCollapsed]="isCollapsed()" [user]="user" />
+  </div>
+
+  <!-- Sidebar Rail (collapse/expand button) -->
+  <button
+    class="absolute -right-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-900"
+    type="button"
+    [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+    (click)="toggleCollapse()"
+  >
+    <ng-icon
+      class="text-gray-500 dark:text-gray-400"
+      size="12"
+      [name]="isCollapsed() ? 'lucideChevronRight' : 'lucideChevronLeft'"
+    />
+  </button>
+</aside>

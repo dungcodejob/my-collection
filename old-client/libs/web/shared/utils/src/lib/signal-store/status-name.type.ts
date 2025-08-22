@@ -24,3 +24,5 @@ export type NamedStatusSignals<Name extends string> = {
 } & {
   [K in keyof StatusSignals as `$${Name}Error`]: Signal<any>;
 };
+
+type i = NamedStatusState<"s">;

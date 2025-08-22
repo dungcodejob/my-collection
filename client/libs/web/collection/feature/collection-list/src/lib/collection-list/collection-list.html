@@ -1,0 +1,41 @@
+<div class="space-y-1">
+  <h3
+    class="px-2 py-1 flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400"
+  >
+    Collection
+
+    <button
+      class="w-6 h-6"
+      hlmBtn
+      size="icon"
+      type="button"
+      variant="ghost"
+      (click)="onOpenCreateDialog()"
+    >
+      <ng-icon hlm name="lucidePlus" size="16" />
+    </button>
+  </h3>
+
+  <mc-collection-tree
+    [isDisplayRoot]="false"
+    [node]="facade.$root()"
+    [tree]="facade.$collections()"
+    (nodeExpand)="onNodeExpand($event)"
+    (nodeSelect)="onSelectCollection($event)"
+    (nodeUpdate)="onOpenUpdateDialog($event)"
+  />
+</div>
+<mc-collection-detail-dialog
+  [data]="facade.$collectionDetails()"
+  [isOpen]="facade.$isOpenDialog()"
+  [parent]="facade.$parent()"
+  (closed)="onCloseDialog()"
+  (create)="onCreateCollection($event)"
+  (update)="onUpdateCollection($event)"
+/>
+<!-- <div class="mt-4 mb-2 px-5 flex justify-between items-center">
+  <h4 hlmLarge class="tracking-tight">Collection</h4>
+  <button hlmBtn class="w-9 h-9" size="icon" variant="ghost" (click)="onCreate()">
+    <ng-icon hlm name="lucidePlus" size="base"></ng-icon>
+  </button>
+</div> -->

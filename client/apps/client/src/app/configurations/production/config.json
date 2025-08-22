@@ -1,5 +1,5 @@
 {
-  "mode": "dev",
+  "mode": "prod",
   "apiBaseUrl": "https://api.mycollection.com",
   "appVersion": "1.0.0",
   "apiKey": "prod-key-456",

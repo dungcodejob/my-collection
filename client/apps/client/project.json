@@ -46,10 +46,16 @@
           "outputHashing": "all"
         },
         "development": {
+          "fileReplacements": [
+            {
+              "replace": "apps/client/src/app/environments/environment.ts",
+              "with": "apps/client/src/app/environments/environment.development.ts"
+            }
+          ],
           "assets": [
             {
               "glob": "config.json",
-              "input": "apps/client/src/configurations/development",
+              "input": "apps/client/src/app/configurations/development",
               "output": "configuration/"
             }
           ],

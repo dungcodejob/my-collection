@@ -1,1 +1,1 @@
-export * from "./lib/mc-layout";
+export * from "./lib/layout";
