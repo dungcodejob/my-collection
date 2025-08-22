@@ -15,12 +15,11 @@ export type BaseResponseDto = Readonly<{
 
 export type ResponseDto<T = unknown> = ErrorResponseDto | SuccessResponseDto<T>;
 
-export type UnwrapResponseData<T> =
-  T extends ResponseDto<infer S>
-    ? T extends SuccessResponseDto<infer S>
-      ? S
-      : never
-    : never;
+export type UnwrapResponseData<T> = T extends ResponseDto
+  ? T extends SuccessResponseDto<infer S>
+    ? S
+    : never
+  : never;
 
 export type UnwrapResponseHttp<T> =
   T extends HttpResponse<infer U> ? UnwrapResponseHttp<U> : UnwrapResponseData<T>;

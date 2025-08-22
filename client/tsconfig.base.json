@@ -19,6 +19,12 @@
       "@client/web-auth-feature-login": ["libs/web/auth/feature/login/src/index.ts"],
       "@client/web-auth-feature-shell": ["libs/web/auth/feature/shell/src/index.ts"],
       "@client/web-auth-utils": ["libs/web/auth/utils/src/index.ts"],
+      "@client/web-bookmark-feature-list": [
+        "libs/web/bookmark/feature/bookmark-list/src/index.ts"
+      ],
+      "@client/web-bookmark-feature-shell": [
+        "libs/web/bookmark/feature/shell/src/index.ts"
+      ],
       "@client/web-collection-data-access": [
         "libs/web/collection/data-access/src/index.ts"
       ],

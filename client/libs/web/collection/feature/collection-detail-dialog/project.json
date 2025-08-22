@@ -4,7 +4,7 @@
   "sourceRoot": "libs/web/collection/feature/collection-detail-dialog/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:web", "type:feature", "category:collection", "feature:detail-dialog"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",

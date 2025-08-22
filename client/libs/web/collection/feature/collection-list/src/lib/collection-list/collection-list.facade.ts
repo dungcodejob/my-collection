@@ -35,7 +35,10 @@ export const MCCollectionListFacade = signalStore(
       $parent: computed(() => {
         const parentId = store.parentId();
         const collections = _collectionStore.collections();
-        return _collectionAdapter.getCollectionById(collections, parentId);
+        return (
+          _collectionAdapter.getCollectionById(collections, parentId) ||
+          _collectionStore.root()
+        );
       }),
       $collectionDetails: computed(() => store.collectionDetails()),
       $isOpenDialog: computed(() => store.isOpenDialog()),

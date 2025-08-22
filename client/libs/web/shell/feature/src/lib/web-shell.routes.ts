@@ -14,12 +14,13 @@ export const webShellRoutes: Routes = [
     // canActivate: [authGuard],
     component: MCLayout,
     providers: [CollectionStore],
-    // children: [
-    //   {
-    //     path: ':collectionId',
-    //     loadChildren: () => import('./bookmark').then((m) => m.bookmarkRoutes),
-    //   },
-    // ],
+    children: [
+      {
+        path: ":collectionId",
+        loadChildren: () =>
+          import("@client/web-bookmark-feature-shell").then(m => m.BookmarkShellRoutes),
+      },
+    ],
   },
   {
     path: "auth",

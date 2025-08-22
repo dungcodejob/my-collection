@@ -43,7 +43,7 @@ export class MCCollectionList implements OnInit {
   }
 
   onSelectCollection(collection: Collection): void {
-    this._router.navigate([collection.path]);
+    this._router.navigate(["home", collection.id]);
   }
 
   onCloseDialog(): void {
