@@ -11,7 +11,7 @@ import {
 @Injectable({
   providedIn: "root",
 })
-export class CollectionService {
+export class CollectionApi {
   // Placeholder methods for future API integration
 
   collections: Collection[] = [

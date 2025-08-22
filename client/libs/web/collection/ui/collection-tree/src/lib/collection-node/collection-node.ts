@@ -1,4 +1,3 @@
-import { CommonModule } from "@angular/common";
 import { Component, computed, inject, input, linkedSignal, signal } from "@angular/core";
 import { Collection } from "@client/web-collection-data-access";
 import {
@@ -6,17 +5,27 @@ import {
   createExpandCollapseAnimation,
   expandCollapseState,
 } from "@client/web-shared-constants";
-import { NgIconComponent, provideIcons } from "@ng-icons/core";
-import { lucideFolder, lucideFolderOpen } from "@ng-icons/lucide";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import {
+  lucideEllipsisVertical,
+  lucideFolder,
+  lucideFolderOpen,
+  lucidePencilLine,
+} from "@ng-icons/lucide";
+import { BrnMenuModule } from "@spartan-ng/brain/menu";
+import { HlmButtonModule } from "@spartan-ng/helm/button";
+import { HlmIconModule } from "@spartan-ng/helm/icon";
+import { HlmMenuModule } from "@spartan-ng/helm/menu";
 import { CollectionTreeService } from "../collection-tree/collection-tree.service";
-
 @Component({
   selector: "mc-collection-node",
-  imports: [CommonModule, NgIconComponent],
+  imports: [HlmButtonModule, HlmIconModule, NgIcon, HlmMenuModule, BrnMenuModule],
   providers: [
     provideIcons({
       lucideFolder,
       lucideFolderOpen,
+      lucideEllipsisVertical,
+      lucidePencilLine,
     }),
   ],
   templateUrl: "./collection-node.html",
@@ -54,5 +63,17 @@ export class MCCollectionNode {
     if (!collapsed) {
       this._collectionTreeService.expand(this.$node());
     }
+  }
+
+  onSelect(): void {
+    this._collectionTreeService.select(this.$node());
+  }
+
+  onUpdate(): void {
+    this._collectionTreeService.update(this.$node());
+  }
+
+  onDelete(): void {
+    this._collectionTreeService.delete(this.$node());
   }
 }

@@ -21,11 +21,14 @@
     [node]="facade.$root()"
     [tree]="facade.$collections()"
     (nodeExpand)="onNodeExpand($event)"
+    (nodeSelect)="onSelectCollection($event)"
+    (nodeUpdate)="onOpenUpdateDialog($event)"
   />
 </div>
 <mc-collection-detail-dialog
-  [isOpen]="facade.$isOpen()"
-  [parent]="facade.$root()"
+  [data]="facade.$collectionDetails()"
+  [isOpen]="facade.$isOpenDialog()"
+  [parent]="facade.$parent()"
   (closed)="onCloseDialog()"
   (create)="onCreateCollection($event)"
   (update)="onUpdateCollection($event)"

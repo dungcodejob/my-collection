@@ -52,6 +52,7 @@
   --soft: var(--color-gray-400);
   --soft-foreground: var(--color-gray-300);
   --week: var(--color-neutral-50);
+  color-scheme: light;
 }
 
 .dark {
@@ -90,13 +91,19 @@
   --soft: var(--color-gray-500);
   --soft-foreground: var(--color-gray-600);
   --week: var(--color-neutral-900);
+
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
 }
 
 @theme inline {
   --color-sidebar-foreground: var(--sidebar-foreground);
 }
-
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 html {
   font-family: Inter, sans-serif;

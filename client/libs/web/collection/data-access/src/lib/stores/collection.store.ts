@@ -1,9 +1,15 @@
-import { inject } from "@angular/core";
+import { computed, inject } from "@angular/core";
 import { tapHandleApi } from "@client/web-core-http";
-import { NamedStatusState, setStatus, withStatus } from "@client/web-shared-utils";
+import {
+  injectParams,
+  NamedStatusState,
+  setStatus,
+  withStatus,
+} from "@client/web-shared-utils";
 import {
   patchState,
   signalStore,
+  withComputed,
   withHooks,
   withMethods,
   withState,
@@ -16,8 +22,8 @@ import {
   UpdateCollectionRequest,
 } from "../models";
 import { Collection } from "../models/collection";
-import { CollectionService } from "../services/collection.service";
-import { withCollectionReducer } from "./collection.reducer";
+import { CollectionAdapter } from "../services/collection.adapter";
+import { CollectionApi } from "../services/collection.api";
 const COLLECTION_ROOT: Collection = {
   id: "",
   name: "root",
@@ -62,48 +68,91 @@ export const CollectionStore = signalStore(
       collectionStatusNames.update,
     ],
   }),
-  withCollectionReducer(),
-  withMethods((store, _collectionApi = inject(CollectionService)) => ({
-    load: rxMethod<CollectionFilter>(
-      pipe(
-        switchMap(filter =>
-          _collectionApi.loadCollections(filter).pipe(
-            tapHandleApi({
-              successFn: result => store._setCollections(filter.path, result.items),
-              statusFn: status =>
-                patchState(store, setStatus(status, collectionStatusNames.list)),
-            })
+  withComputed((store, _collectionAdapter = inject(CollectionAdapter)) => {
+    const $params = injectParams();
+    const $selectedId = computed(() => {
+      const params = $params() as { id: string };
+      return params.id;
+    });
+    const $selectedCollection = computed(() => {
+      console.log(store.collections());
+      const selectedId = $selectedId();
+      const collections = store.collections();
+      return _collectionAdapter.getCollectionById(collections, selectedId);
+    });
+    return {
+      $selectedId,
+      $selectedCollection,
+    };
+  }),
+  withMethods(
+    (
+      store,
+      _collectionApi = inject(CollectionApi),
+      _collectionAdapter = inject(CollectionAdapter)
+    ) => ({
+      load: rxMethod<CollectionFilter>(
+        pipe(
+          switchMap(filter =>
+            _collectionApi.loadCollections(filter).pipe(
+              tapHandleApi({
+                successFn: result =>
+                  patchState(store, {
+                    collections: _collectionAdapter.setCollections(
+                      store.collections(),
+                      filter.path,
+                      result.items
+                    ),
+                  }),
+                statusFn: status =>
+                  patchState(store, setStatus(status, collectionStatusNames.list)),
+              })
+            )
           )
         )
-      )
-    ),
-    create: rxMethod<CreateCollectionRequest>(
-      pipe(
-        switchMap(request =>
-          _collectionApi.createCollection(request).pipe(
-            tapHandleApi({
-              successFn: result => store._createCollection(request.path, result.data),
-              statusFn: status =>
-                patchState(store, setStatus(status, collectionStatusNames.create)),
-            })
+      ),
+      create: rxMethod<CreateCollectionRequest>(
+        pipe(
+          switchMap(request =>
+            _collectionApi.createCollection(request).pipe(
+              tapHandleApi({
+                successFn: result =>
+                  patchState(store, {
+                    collections: _collectionAdapter.addCollection(
+                      store.collections(),
+                      request.path,
+                      result.data
+                    ),
+                  }),
+                statusFn: status =>
+                  patchState(store, setStatus(status, collectionStatusNames.create)),
+              })
+            )
           )
         )
-      )
-    ),
-    update: rxMethod<UpdateCollectionRequest>(
-      pipe(
-        switchMap(request =>
-          _collectionApi.updateCollection(request).pipe(
-            tapHandleApi({
-              successFn: result => store._updateCollection(request.path, result.data),
-              statusFn: status =>
-                patchState(store, setStatus(status, collectionStatusNames.update)),
-            })
+      ),
+      update: rxMethod<UpdateCollectionRequest>(
+        pipe(
+          switchMap(request =>
+            _collectionApi.updateCollection(request).pipe(
+              tapHandleApi({
+                successFn: result =>
+                  patchState(store, {
+                    collections: _collectionAdapter.updateCollection(
+                      store.collections(),
+                      request.path,
+                      result.data
+                    ),
+                  }),
+                statusFn: status =>
+                  patchState(store, setStatus(status, collectionStatusNames.update)),
+              })
+            )
           )
         )
-      )
-    ),
-  })),
+      ),
+    })
+  ),
   withHooks({
     onInit: () => {
       console.log("CollectionStore onInit");

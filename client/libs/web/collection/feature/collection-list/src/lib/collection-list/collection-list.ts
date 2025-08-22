@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, untracked, ViewContainerRef } from "@angular/core";
+import { Router } from "@angular/router";
 import {
   Collection,
   CreateCollectionRequest,
@@ -31,6 +32,7 @@ export class MCCollectionList implements OnInit {
   private readonly _dialogService = inject(HlmDialogService);
   private readonly _autoEffect = injectAutoEffect();
   private readonly _toastService = inject(MCToastService);
+  private readonly _router = inject(Router);
 
   ngOnInit(): void {
     const root = this.facade.$root();
@@ -40,12 +42,20 @@ export class MCCollectionList implements OnInit {
     this.displayToastEffect();
   }
 
+  onSelectCollection(collection: Collection): void {
+    this._router.navigate([collection.path]);
+  }
+
   onCloseDialog(): void {
     this.facade.close();
   }
 
   onOpenCreateDialog(): void {
-    this.facade.open();
+    this.facade.openCreateDialog(this.facade.$root().id);
+  }
+
+  onOpenUpdateDialog(collectionDetails: Collection): void {
+    this.facade.openUpdateDialog(collectionDetails);
   }
 
   onCreateCollection(request: CreateCollectionRequest): void {

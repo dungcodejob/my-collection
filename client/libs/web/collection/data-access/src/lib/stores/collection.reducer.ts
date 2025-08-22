@@ -1,9 +1,3 @@
-import { setFulfilled } from "@client/web-shared-utils";
-import { patchState, signalStoreFeature, type, withMethods } from "@ngrx/signals";
-import { Collection } from "../models";
-import { CollectionState, collectionStatusNames } from "./collection.store";
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 // export function withCollectionReducer() {
 //   return signalStoreFeature(
 //     {
@@ -141,61 +135,3 @@ import { CollectionState, collectionStatusNames } from "./collection.store";
 //     )
 //   );
 // }
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function withCollectionReducer() {
-  return signalStoreFeature(
-    {
-      state: type<CollectionState>(),
-    },
-    withMethods(store => ({
-      _setCollections: (path: string, collectionsInPath: Collection[]): void => {
-        const collections = store.collections();
-        patchState(store, {
-          ...setFulfilled(collectionStatusNames.list),
-          collections: {
-            ...collections,
-            [path]: collectionsInPath,
-          },
-        });
-      },
-      _createCollection: (path: string, collection: Collection): void => {
-        const collections = store.collections();
-        const collectionsInPath = store.collections()[path];
-
-        patchState(store, {
-          collections: {
-            ...collections,
-            [path]: collectionsInPath ? [...collectionsInPath, collection] : [collection],
-          },
-        });
-      },
-      _updateCollection: (path: string, collection: Collection): void => {
-        const collectionsInPath = store.collections()[collection.path];
-
-        if (!collectionsInPath) {
-          throw new Error("not exist collections with path: " + collection.path);
-        }
-
-        const collectionToUpdate = collectionsInPath.find(
-          item => item.id === collection.id
-        );
-
-        if (!collectionToUpdate) {
-          throw new Error("not exist collection with id: " + collection.id);
-        }
-
-        patchState(store, {
-          collections: {
-            ...store.collections(),
-            [path]: collectionsInPath.map(item =>
-              item.id === collection.id
-                ? { ...collection, updatedAt: new Date() }
-                : collection
-            ),
-          },
-        });
-      },
-    }))
-  );
-}

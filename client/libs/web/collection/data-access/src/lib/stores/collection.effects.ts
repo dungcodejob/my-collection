@@ -3,14 +3,14 @@ import { mapToErrorAction, mapToSuccessAction } from "@client/web-core-http";
 import { signalStoreFeature, type } from "@ngrx/signals";
 import { Events, withEffects } from "@ngrx/signals/events";
 import { switchMap } from "rxjs";
-import { CollectionService } from "../services/collection.service";
+import { CollectionApi } from "../services/collection.api";
 import { collectionApiEvents, collectionEvents } from "./collection.event";
 import { CollectionState } from "./collection.store";
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function withCollectionEffects() {
   return signalStoreFeature(
     { state: type<CollectionState>() },
-    withEffects((store, events = inject(Events), api = inject(CollectionService)) => {
+    withEffects((store, events = inject(Events), api = inject(CollectionApi)) => {
       return {
         // Create collection effect
         createCollection$: events.on(collectionEvents.create).pipe(
