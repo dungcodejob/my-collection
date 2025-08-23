@@ -5,7 +5,7 @@ export type Collection = {
   parentId?: string;
   children?: Collection[];
   isHasChild?: boolean;
-  path: string;
+  childPath: string;
   createdAt: Date;
   updatedAt: Date;
 };

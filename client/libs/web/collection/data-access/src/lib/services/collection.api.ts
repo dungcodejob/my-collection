@@ -18,7 +18,7 @@ export class CollectionApi {
     {
       id: "game",
       name: "game",
-      path: "/game",
+      childPath: "/game",
       createdAt: new Date(),
       updatedAt: new Date(),
       children: [],
@@ -26,7 +26,7 @@ export class CollectionApi {
     {
       id: "action",
       name: "action",
-      path: "/game/action",
+      childPath: "/game/action",
       parentId: "game",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -35,7 +35,7 @@ export class CollectionApi {
     {
       id: "strategy",
       name: "strategy",
-      path: "/game/strategy",
+      childPath: "/game/strategy",
       parentId: "game",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -44,7 +44,7 @@ export class CollectionApi {
     {
       id: "soul",
       name: "soul",
-      path: "/game/soul",
+      childPath: "/game/soul",
       parentId: "game",
 
       createdAt: new Date(),
@@ -54,7 +54,7 @@ export class CollectionApi {
     {
       id: "simulation",
       name: "simulation",
-      path: "/game/simulation",
+      childPath: "/game/simulation",
       parentId: "game",
 
       createdAt: new Date(),
@@ -64,7 +64,7 @@ export class CollectionApi {
     {
       id: "real-time",
       name: "real-time",
-      path: "/game/simulation/real-time",
+      childPath: "/game/simulation/real-time",
       parentId: "simulation",
 
       createdAt: new Date(),
@@ -74,7 +74,7 @@ export class CollectionApi {
     {
       id: "turn-based",
       name: "turn-based",
-      path: "/game/simulation/turn-based",
+      childPath: "/game/simulation/turn-based",
       parentId: "simulation",
 
       createdAt: new Date(),
@@ -90,13 +90,13 @@ export class CollectionApi {
     let path = `/${id}`;
     if (request.parentId) {
       const parent = this.collections.find(c => c.id === request.parentId);
-      path = parent?.path + "/" + request.name;
+      path = parent?.childPath + "/" + request.name;
     }
     const newCollection: Collection = {
       id: id,
       name: request.name,
       icon: request.icon,
-      path: path,
+      childPath: path,
       parentId: request.parentId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -170,7 +170,9 @@ export class CollectionApi {
   }
 
   getCollectionsByPath(path: string): Observable<PaginationResponseDto<Collection>> {
-    const collections = this.collections.filter(collection => collection.path === path);
+    const collections = this.collections.filter(
+      collection => collection.childPath === path
+    );
     const totalCount = collections.length;
     const totalPages = Math.ceil(totalCount / 10);
     const hasPrevious = false;
@@ -225,7 +227,7 @@ export class CollectionApi {
   ): Observable<PaginationResponseDto<Collection>> {
     let collections = this.collections;
 
-    const parent = this.collections.find(item => item.path === request.path);
+    const parent = this.collections.find(item => item.childPath === request.path);
 
     if (parent) {
       collections = collections.filter(item => item.parentId === parent.id);

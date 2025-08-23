@@ -7,12 +7,9 @@ import {
   output,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Observable, filter, of, switchMap, take } from "rxjs";
-import {
-  ConfirmDialogData,
-  defaultConfirmDialogData,
-} from "./confirm-dialog/confirm-dialog-data";
-import { MCDialogService } from "./dialog.service";
+import { Observable, of, switchMap, take, tap } from "rxjs";
+import { MCDialogService } from "../dialog.service";
+import { ConfirmDialogData, defaultConfirmDialogData } from "./confirm-dialog-data";
 
 /**
  * A reusable directive that shows a confirmation dialog before executing an action.
@@ -121,13 +118,13 @@ export class MCConfirmActionDirective {
    * Whether to prevent the default click behavior.
    * Defaults to true to prevent form submission or navigation.
    */
-  readonly preventDefault = input<boolean>(true);
+  readonly isTriggerPreventDefault = input<boolean>(true);
 
   /**
    * Whether to stop event propagation.
    * Defaults to true to prevent parent click handlers.
    */
-  readonly stopPropagation = input<boolean>(true);
+  readonly isTriggerStopPropagation = input<boolean>(true);
 
   /**
    * Optional API call to check if confirmation is needed.
@@ -151,11 +148,11 @@ export class MCConfirmActionDirective {
 
   @HostListener("click", ["$event"])
   onClick(event: Event): void {
-    if (this.preventDefault()) {
+    if (this.isTriggerPreventDefault()) {
       event.preventDefault();
     }
 
-    if (this.stopPropagation()) {
+    if (this.isTriggerStopPropagation()) {
       event.stopPropagation();
     }
 
@@ -173,32 +170,36 @@ export class MCConfirmActionDirective {
             if (needsConfirmation) {
               return this.showConfirmDialog();
             } else {
+              // Execute immediately if no confirmation needed
               this.confirmed.emit();
-              return of(null);
+              return of(true);
             }
           }),
           takeUntilDestroyed(this._destroyRef)
         )
         .subscribe();
     } else {
-      this.showConfirmDialog().pipe(takeUntilDestroyed(this._destroyRef)).subscribe();
+      this.showConfirmDialog().subscribe();
     }
   }
 
-  private showConfirmDialog(): Observable<void> {
+  private showConfirmDialog(): Observable<boolean> {
     const config = this.getDialogConfig();
 
-    return this._dialogService.openConfirmDialog(config).pipe(
+    // Open dialog immediately and handle result with captured callbacks
+    const dialogRef = this._dialogService.openConfirmDialog(config);
+
+    return dialogRef.closed$.pipe(
       take(1),
-      filter((result): result is boolean => result !== undefined),
-      switchMap((confirmed: boolean) => {
+      tap(confirmed => {
+        // Use captured callbacks that work even if directive is destroyed
         if (confirmed) {
           this.confirmed.emit();
         } else {
           this.cancelled.emit();
         }
-        return of(void 0);
-      })
+      }),
+      takeUntilDestroyed(this._destroyRef)
     );
   }
 

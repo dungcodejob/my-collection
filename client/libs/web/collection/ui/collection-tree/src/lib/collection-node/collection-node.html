@@ -76,11 +76,11 @@
   <ng-template #menu>
     <hlm-menu class="w-40">
       <hlm-menu-group>
-        <button hlmMenuItem type="button">
+        <button hlmMenuItem type="button" (click)="onUpdate()">
           <span>Update</span>
         </button>
 
-        <button hlmMenuItem type="button">
+        <button hlmMenuItem type="button" (click)="onDelete()">
           <span>Delete</span>
         </button>
       </hlm-menu-group>

@@ -48,6 +48,7 @@ export class MCCollectionDetailDialog implements OnInit {
 
   readonly update = output<UpdateCollectionRequest>();
   readonly create = output<CreateCollectionRequest>();
+
   readonly closed = output<void>();
 
   readonly $title = computed(() => {
@@ -65,7 +66,8 @@ export class MCCollectionDetailDialog implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.registerFormDisableEffect();
+    this.formDisableEffect();
+    this.setFormValueEffect();
   }
 
   onSave(): void {
@@ -74,6 +76,8 @@ export class MCCollectionDetailDialog implements OnInit {
       const request: UpdateCollectionRequest = {
         ...data,
         ...this.form.getRawValue(),
+        parentId: this.$parent().id,
+        path: this.$parent().childPath,
         icon: "",
       };
       this.update.emit(request);
@@ -81,7 +85,7 @@ export class MCCollectionDetailDialog implements OnInit {
       const request: CreateCollectionRequest = {
         ...this.form.getRawValue(),
         icon: "",
-        path: this.$parent().path,
+        path: this.$parent().childPath,
         parentId: this.$parent().id,
       };
       this.create.emit(request);
@@ -98,12 +102,25 @@ export class MCCollectionDetailDialog implements OnInit {
     });
   }
 
-  private registerFormDisableEffect(): void {
+  private formDisableEffect(): void {
     this._autoEffect(() => {
       if (this.$isPending()) {
         this.form.disable();
       } else {
         this.form.enable();
+      }
+    });
+  }
+
+  private setFormValueEffect(): void {
+    this._autoEffect(() => {
+      const data = this.$data();
+      if (data) {
+        this.form.patchValue({
+          name: data.name,
+        });
+      } else {
+        this.form.reset();
       }
     });
   }
