@@ -17,8 +17,20 @@
     "paths": {
       "@app/configs": ["src/configs"],
       "@app/configs/*": ["src/configs/*"],
+      "@app/entities": ["src/shared/entities"],
+      "@app/entities/*": ["src/shared/entities/*"],
+      "@app/repositories": ["src/shared/repositories"],
+      "@app/repositories/*": ["src/shared/repositories/*"],
+      "@app/account": ["src/account"],
+      "@app/account/*": ["src/account/*"],
       "@app/constants": ["src/shared/constants"],
-      "@app/constants/*": ["src/shared/constants/*"]
+      "@app/constants/*": ["src/shared/constants/*"],
+      "@app/utils": ["src/shared/utils"],
+      "@app/utils/*": ["src/shared/utils/*"],
+      "@app/errors": ["src/shared/errors"],
+      "@app/errors/*": ["src/shared/errors/*"],
+      "@app/session": ["src/session"],
+      "@app/session/*": ["src/session/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
