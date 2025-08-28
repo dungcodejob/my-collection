@@ -1,4 +1,4 @@
-import { Inject, Injectable, Provider } from '@nestjs/common';
+import { Global, Inject, Injectable, Module, Provider } from '@nestjs/common';
 
 import { AccountEntity, SessionEntity, UserEntity } from '@app/entities';
 import { EntityManager } from '@mikro-orm/postgresql';
@@ -78,3 +78,15 @@ export const provideUnitOfWork = (): Provider => ({
   provide: UNIT_OF_WORK,
   useClass: UnitOfWorkImpl,
 });
+
+@Global()
+@Module({
+  providers: [
+    {
+      provide: UNIT_OF_WORK,
+      useClass: UnitOfWorkImpl,
+    },
+  ],
+  exports: [UNIT_OF_WORK],
+})
+export class UnitOfWorkModule {}

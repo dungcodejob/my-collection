@@ -9,13 +9,17 @@ import {
 } from '@mikro-orm/core';
 import { AccountEntity } from './account.entity';
 import { BaseEntity } from './base.entity';
+import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => SessionRepository })
 @Index({ properties: ['id'] })
 @Index({ properties: ['account', 'isActive'] })
 export class SessionEntity extends BaseEntity {
   @Property()
-  expiresAt: Date;
+  deviceId: string;
+
+  @Property({ nullable: true })
+  expiresAt?: Date;
 
   @Property({ defaultRaw: 'CURRENT_TIMESTAMP' })
   lastAccessedAt: Date = new Date();
@@ -23,8 +27,11 @@ export class SessionEntity extends BaseEntity {
   @Property({ default: true })
   isActive: boolean = true;
 
-  @Property()
-  refreshTokenHash: string;
+  @Property({ nullable: true })
+  refreshTokenHash?: string;
+
+  @Property({ default: 0 })
+  refreshCount: number = 0;
 
   @Property({ nullable: true, length: 45 })
   ipAddress?: string;
@@ -40,6 +47,9 @@ export class SessionEntity extends BaseEntity {
 
   @ManyToOne(() => AccountEntity)
   account: AccountEntity;
+
+  @ManyToOne(() => UserEntity)
+  user: UserEntity;
 
   [EntityRepositoryType]?: SessionRepository;
 
@@ -74,7 +84,7 @@ export class SessionEntity extends BaseEntity {
    * Check if the session is expired
    */
   isExpired(): boolean {
-    return new Date() > this.expiresAt;
+    return this.expiresAt ? new Date() > this.expiresAt : false;
   }
 
   /**
@@ -102,8 +112,9 @@ export class SessionEntity extends BaseEntity {
    * Extend session expiration time
    */
   extendExpiration(additionalMinutes: number): void {
+    const currentExpiresAt = this.expiresAt || new Date();
     this.expiresAt = new Date(
-      this.expiresAt.getTime() + additionalMinutes * MINUTE * SECOND,
+      currentExpiresAt.getTime() + additionalMinutes * MINUTE * SECOND,
     );
   }
 }
