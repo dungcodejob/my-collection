@@ -36,7 +36,11 @@
       "@app/user": ["src/user"],
       "@app/user/*": ["src/user/*"],
       "@app/decorators": ["src/shared/decorators"],
-      "@app/decorators/*": ["src/shared/decorators/*"]
+      "@app/decorators/*": ["src/shared/decorators/*"],
+      "@app/interceptors": ["src/shared/interceptors"],
+      "@app/interceptors/*": ["src/shared/interceptors/*"],
+      "@app/models": ["src/shared/models"],
+      "@app/models/*": ["src/shared/models/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

@@ -2,6 +2,7 @@ import { Origin, Public } from '@app/decorators';
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 
 import { InjectJwtConfig, type JwtConfig } from '@app/configs';
+import { Result } from '@app/models';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import type { Request } from 'express';
 import * as geoip from 'geoip-lite';
@@ -33,12 +34,11 @@ export class AuthController {
   ) {
     const sessionInfo = this.getSessionInfoFromReq(req);
     const result = await this._authService.login(loginDto, sessionInfo, origin);
-    console.log('result', result);
     // this.saveRefreshCookie(res, result.refreshToken)
     //   .status(HttpStatus.OK)
     //   .json(result);
 
-    return result;
+    return Result.toSingle(result);
   }
 
   @Post('register')

@@ -3,7 +3,7 @@ import { SLUG_REGEX } from '@app/constants';
 import { Role, SessionEntity } from '@app/entities';
 import { Errors } from '@app/errors';
 import { SessionService } from '@app/session';
-import { UserService } from '@app/user';
+import { UserMapper, UserService } from '@app/user';
 import { formatName, generatePointSlug } from '@app/utils';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
@@ -25,6 +25,7 @@ export class AuthService {
     private readonly _jwtTokenService: JwtTokenService,
     private readonly _backlistService: BacklistService,
     private readonly _sessionService: SessionService,
+    private readonly _userMapper: UserMapper,
     private readonly _em: EntityManager,
   ) {}
 
@@ -75,7 +76,7 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      user: account.user,
+      user: this._userMapper.toUserInfo(account.user),
     };
   }
 
@@ -138,7 +139,11 @@ export class AuthService {
 
     await this.updateSessionToken(session, newRefreshToken, true);
 
-    return { user: account.user, accessToken, refreshToken: newRefreshToken };
+    return {
+      user: this._userMapper.toUserInfo(account.user),
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
   }
 
   async logout(accessToken: string) {
