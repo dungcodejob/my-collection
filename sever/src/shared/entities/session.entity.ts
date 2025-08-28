@@ -22,7 +22,7 @@ export class SessionEntity extends BaseEntity {
   expiresAt?: Date;
 
   @Property({ defaultRaw: 'CURRENT_TIMESTAMP' })
-  lastAccessedAt: Date = new Date();
+  lastAccessedAt?: Date;
 
   @Property({ default: true })
   isActive: boolean = true;

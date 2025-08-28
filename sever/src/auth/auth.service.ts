@@ -8,7 +8,6 @@ import { formatName, generatePointSlug } from '@app/utils';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { isEmail } from 'class-validator';
-import * as crypto from 'crypto';
 import {
   AuthResultDto,
   LoginDto,
@@ -51,15 +50,9 @@ export class AuthService {
       throw Errors.Authentication.InvalidCredentials;
     }
 
-    const session = this._sessionService.create({
+    const session = await this._sessionService.create({
       ...sessionInfo,
-      deviceId: await this.createDeviceId(
-        sessionInfo.userAgent,
-        sessionInfo.ipAddress,
-      ),
       lastAccessedAt: new Date(),
-      isActive: false,
-      refreshCount: 0,
       account,
       user: account.user,
     });
@@ -123,12 +116,7 @@ export class AuthService {
         TokenTypeEnum.REFRESH,
       );
     await this.validateToken(id, tokenId);
-
-    const session = (await this._sessionService.findOneById(
-      id,
-    )) as SessionEntity;
-    await this.validateSession(session, refreshToken);
-
+    const session = await this.getAndValidateSession(id, refreshToken);
     await this._backlistService.addTokenBlacklist(id, tokenId, exp);
 
     const account = await this._accountService.findOneByCredentials(
@@ -182,10 +170,12 @@ export class AuthService {
     return;
   }
 
-  private async validateSession(
-    session: SessionEntity | null,
+  private async getAndValidateSession(
+    id: string,
     token: string,
-  ): Promise<boolean> {
+  ): Promise<SessionEntity> {
+    const session = await this._sessionService.findOneById(id);
+
     if (!session || !session.isActive) {
       throw Errors.Authentication.InvalidToken;
     }
@@ -199,7 +189,7 @@ export class AuthService {
       throw Errors.Authentication.InvalidToken;
     }
 
-    return true;
+    return session;
   }
 
   private async updateSessionToken(
@@ -259,12 +249,5 @@ export class AuthService {
     }
 
     return pointSlug;
-  }
-
-  private async createDeviceId(userAgent: string, ip: string): Promise<string> {
-    return crypto
-      .createHash('md5')
-      .update(userAgent + ip)
-      .digest('hex');
   }
 }
