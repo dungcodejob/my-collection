@@ -1,6 +1,6 @@
 import { AccountService } from '@app/account';
 import { SLUG_REGEX } from '@app/constants';
-import { Role, SessionEntity } from '@app/entities';
+import { AccountEntity, Role, SessionEntity } from '@app/entities';
 import { Errors } from '@app/errors';
 import { SessionService } from '@app/session';
 import { UserMapper, UserService } from '@app/user';
@@ -11,6 +11,7 @@ import { isEmail } from 'class-validator';
 import {
   AuthResultDto,
   LoginDto,
+  RefreshToken,
   RegisterDto,
   SessionInfo,
   TokenTypeEnum,
@@ -111,55 +112,84 @@ export class AuthService {
     refreshToken: string,
     origin: string,
   ): Promise<AuthResultDto> {
-    const { id, version, tokenId, exp } =
-      await this._jwtTokenService.verifyToken(
-        refreshToken,
-        TokenTypeEnum.REFRESH,
-      );
-    await this.validateToken(id, tokenId);
-    const session = await this.getAndValidateSession(id, refreshToken);
-    await this._backlistService.addTokenBlacklist(id, tokenId, exp);
+    const tokenPayload = await this._jwtTokenService.verifyToken(
+      refreshToken,
+      TokenTypeEnum.REFRESH,
+    );
+    await this.validateToken(tokenPayload.id, tokenPayload.tokenId);
+
+    const session = (await this._sessionService.findOneById(
+      tokenPayload.id,
+    )) as SessionEntity;
+    await this.validateSession(session, refreshToken);
 
     const account = await this._accountService.findOneByCredentials(
       session.account.id,
-      version,
+      tokenPayload.version,
     );
+    await this.validateAccount(account, tokenPayload);
 
+    const authResult = await this.createAuthResult(session, account, origin);
+
+    await this.revokeRefreshToken(session, tokenPayload);
+    await this.updateSessionToken(session, authResult.refreshToken, true);
+
+    return authResult;
+  }
+
+  async logout(refreshToken: string) {
+    const tokenPayload = await this._jwtTokenService.verifyToken(
+      refreshToken,
+      TokenTypeEnum.REFRESH,
+    );
+    await this.validateToken(tokenPayload.id, tokenPayload.tokenId);
+    const session = (await this._sessionService.findOneById(
+      tokenPayload.id,
+    )) as SessionEntity;
+    await this.validateSession(session, refreshToken);
+
+    const account = await this._accountService.findOneByCredentials(
+      session.account.id,
+      tokenPayload.version,
+    );
+    await this.validateAccount(account, tokenPayload);
+    await this.revokeRefreshToken(session, tokenPayload);
+  }
+
+  private async createAuthResult(
+    session: SessionEntity,
+    account: AccountEntity,
+    origin: string,
+  ) {
     const accessToken = await this._jwtTokenService.generateAccessToken(
       session,
       account,
       origin,
     );
-
-    const newRefreshToken = await this._jwtTokenService.generateRefreshToken(
+    const refreshToken = await this._jwtTokenService.generateRefreshToken(
       session,
       account,
       origin,
     );
-
-    await this.updateSessionToken(session, newRefreshToken, true);
-
     return {
-      user: this._userMapper.toUserInfo(account.user),
       accessToken,
-      refreshToken: newRefreshToken,
+      refreshToken,
+      user: this._userMapper.toUserInfo(account.user),
     };
   }
 
-  async logout(accessToken: string) {
-    const { id, tokenId, exp } = await this._jwtTokenService.verifyToken(
-      accessToken,
-      TokenTypeEnum.REFRESH,
+  private async revokeRefreshToken(
+    session: SessionEntity,
+    tokenPayload: RefreshToken,
+  ) {
+    session.isActive = false;
+    await this._em.flush();
+
+    await this._backlistService.addTokenBlacklist(
+      tokenPayload.id,
+      tokenPayload.tokenId,
+      tokenPayload.exp,
     );
-
-    await this._backlistService.addTokenBlacklist(id, tokenId, exp);
-
-    const session = await this._sessionService.findOneById(id);
-
-    if (session) {
-      session.isActive = false;
-      await this._em.flush();
-    }
   }
 
   private async validateToken(sessionId: string, tokenId: string) {
@@ -175,12 +205,10 @@ export class AuthService {
     return;
   }
 
-  private async getAndValidateSession(
-    id: string,
+  private async validateSession(
+    session: SessionEntity | null,
     token: string,
-  ): Promise<SessionEntity> {
-    const session = await this._sessionService.findOneById(id);
-
+  ): Promise<boolean> {
     if (!session || !session.isActive) {
       throw Errors.Authentication.InvalidToken;
     }
@@ -194,7 +222,20 @@ export class AuthService {
       throw Errors.Authentication.InvalidToken;
     }
 
-    return session;
+    return true;
+  }
+
+  private async validateAccount(
+    account: AccountEntity,
+    tokenPayload: RefreshToken,
+  ) {
+    if (!account) {
+      throw Errors.Authentication.InvalidCredentials;
+    }
+
+    if (account.version !== tokenPayload.version) {
+      throw Errors.Authentication.InvalidCredentials;
+    }
   }
 
   private async updateSessionToken(

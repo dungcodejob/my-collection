@@ -1,13 +1,28 @@
-import { Origin, Public } from '@app/decorators';
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
-
 import { InjectJwtConfig, type JwtConfig } from '@app/configs';
+import { COOKIE_KEY } from '@app/constants';
+import { Origin, Public, Session } from '@app/decorators';
+import { Errors } from '@app/errors';
 import { Result } from '@app/models';
+import { isNil } from '@app/utils';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import type { Request } from 'express';
-import * as geoip from 'geoip-lite';
+import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto, SessionInfo } from './models';
+import {
+  LoginDto,
+  RefreshAccessDto,
+  RegisterDto,
+  type SessionInfo,
+} from './models';
 
 @Controller('auth')
 @UseGuards(ThrottlerGuard)
@@ -28,19 +43,18 @@ export class AuthController {
   @Public()
   @Post('login')
   async login(
-    @Req() req: Request,
+    @Session() sessionInfo: SessionInfo,
     @Origin() origin: string | undefined,
     @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const sessionInfo = this.getSessionInfoFromReq(req);
     const result = await this._authService.login(loginDto, sessionInfo, origin);
-    // this.saveRefreshCookie(res, result.refreshToken)
-    //   .status(HttpStatus.OK)
-    //   .json(result);
+    this.saveRefreshCookie(res, result.refreshToken);
 
     return Result.toSingle(result);
   }
 
+  @Public()
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     console.log('body', registerDto);
@@ -52,60 +66,48 @@ export class AuthController {
     }
   }
 
-  private getSessionInfoFromReq(req: Request): SessionInfo {
-    const ipAddress: string =
-      req.ip ||
-      req.connection.remoteAddress ||
-      req.socket.remoteAddress ||
-      (req.connection as any)?.socket?.remoteAddress;
-    const userAgent = req.headers['user-agent'] || 'unknown';
-    const deviceType = this.getDeviceType(userAgent);
-    const location = this.getLocation(ipAddress);
+  @HttpCode(HttpStatus.OK)
+  @Post('logout')
+  async logout(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() refreshAccessDto?: RefreshAccessDto,
+  ) {
+    const token = this.getRefreshFromCookieOrBody(req, refreshAccessDto);
+    await this._authService.logout(token);
 
-    return {
-      ipAddress,
-      userAgent,
-      deviceType,
-      location,
-    };
+    this.clearCookies(res);
   }
 
-  private getDeviceType(userAgent?: string): string {
-    if (!userAgent) return 'unknown';
-
-    const ua = userAgent.toLowerCase();
-
-    // Mobile devices
-    if (/mobile|android|iphone|ipod|blackberry|windows phone/i.test(ua)) {
-      if (/iphone|ipod/i.test(ua)) return 'iPhone';
-      if (/android/i.test(ua)) return 'Android';
-      if (/blackberry/i.test(ua)) return 'BlackBerry';
-      if (/windows phone/i.test(ua)) return 'Windows Phone';
-      return 'Mobile';
+  private getRefreshFromCookieOrBody(
+    req: Request,
+    body?: RefreshAccessDto,
+  ): string {
+    const reqToken = req.signedCookies[COOKIE_KEY.REFRESH_TOKEN];
+    if (!isNil(reqToken)) {
+      return reqToken;
     }
 
-    // Tablets
-    if (/tablet|ipad/i.test(ua)) {
-      if (/ipad/i.test(ua)) return 'iPad';
-      return 'Tablet';
+    if (!isNil(body?.refreshToken)) {
+      return body?.refreshToken;
     }
 
-    // Desktop browsers
-    if (/chrome/i.test(ua)) return 'Desktop Chrome';
-    if (/firefox/i.test(ua)) return 'Desktop Firefox';
-    if (/safari/i.test(ua) && !/chrome/i.test(ua)) return 'Desktop Safari';
-    if (/edge/i.test(ua)) return 'Desktop Edge';
-    if (/opera/i.test(ua)) return 'Desktop Opera';
-
-    return 'Desktop';
+    throw Errors.Authentication.InvalidRefreshToken;
   }
 
-  private getLocation(ipAddress?: string) {
-    if (!ipAddress) return 'unknown';
-    const geo = geoip.lookup(ipAddress);
-    if (geo) {
-      return `${geo.country}, ${geo.region}, ${geo.city}`;
-    }
-    return 'unknown';
+  private saveRefreshCookie(res: Response, refreshToken: string): Response {
+    return res.cookie(COOKIE_KEY.REFRESH_TOKEN, refreshToken, {
+      secure: !this._isTesting,
+      httpOnly: true,
+      signed: true,
+      path: this._cookiePath,
+      expires: new Date(Date.now() + this._refreshTime * 1000),
+    });
+  }
+
+  private clearCookies(res: Response): Response {
+    return res.clearCookie(COOKIE_KEY.REFRESH_TOKEN, {
+      path: this._cookiePath,
+    });
   }
 }

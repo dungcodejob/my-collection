@@ -15,4 +15,6 @@ export class Authentication {
   static InvalidRefreshToken = new UnauthorizedException(
     'Auth.InvalidRefreshToken',
   );
+  static Unauthorized = new UnauthorizedException('Auth.Unauthorized');
+  static AccessDenied = new UnauthorizedException('Auth.AccessDenied');
 }

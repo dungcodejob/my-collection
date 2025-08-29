@@ -1,6 +1,6 @@
 import { SessionEntity } from '@app/entities';
 import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
-import { RequiredEntityData } from '@mikro-orm/core';
+import { FindOneOptions, RequiredEntityData } from '@mikro-orm/core';
 import { Inject, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 type SessionCreateInput = Omit<
@@ -15,10 +15,16 @@ export class SessionService {
     return this.getActiveSessionsForUser(userId);
   }
 
-  async findOneById(id: string) {
-    return this._unitOfWork.session.findOne({
-      id,
-    });
+  async findOneById(
+    id: string,
+    options?: FindOneOptions<SessionEntity, never, '*', never>,
+  ) {
+    return this._unitOfWork.session.findOne(
+      {
+        id,
+      },
+      options,
+    );
   }
 
   async create(session: SessionCreateInput) {
