@@ -5,9 +5,9 @@ import { UserDto } from './models';
 @Injectable()
 export class UserMapper {
   toUserInfo(result: UserEntity): UserDto {
-    return {
+    return new UserDto({
       id: result.id,
       name: result.name,
-    };
+    });
   }
 }

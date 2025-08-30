@@ -10,6 +10,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { BacklistService, BcryptService, JwtTokenService } from './services';
+import { AccessTokenStrategy } from './strategies';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { BacklistService, BcryptService, JwtTokenService } from './services';
     JwtTokenService,
     BacklistService,
     BcryptService,
+    AccessTokenStrategy,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

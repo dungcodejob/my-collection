@@ -1,9 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { appConfig, AppConfig, cookieConfig, CookieConfig } from './configs';
+import {
+  appConfig,
+  AppConfig,
+  configSwagger,
+  cookieConfig,
+  CookieConfig,
+} from './configs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,15 +26,8 @@ async function bootstrap() {
   app.use(cookieParser(cookieConfigValues.secret));
   app.use(helmet());
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('NestJS Pokemon API')
-    .setDescription('An Pokemon API made with NestJS')
-    .setVersion('0.0.1')
-    .addBearerAuth()
-    .addTag('Pokemon API')
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
+  // Configure Swagger API Documentation
+  configSwagger(app);
 
   await app.listen(port, testing ? '127.0.0.1' : '0.0.0.0');
 

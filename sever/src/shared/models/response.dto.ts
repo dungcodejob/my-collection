@@ -3,15 +3,30 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PaginationMetaDto } from './pagination-meta.dto';
 
 export class BaseResponseDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'HTTP status code',
+    example: 200,
+  })
   statusCode: number;
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Response message',
+    example: 'Success',
+  })
   message: string;
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Timestamp of the response',
+    example: '2023-01-01T00:00:00.000Z',
+  })
   timestamp: string;
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Requested URL',
+    example: '/api/endpoint',
+  })
   url: string;
-  @ApiProperty()
+  @ApiProperty({
+    description: 'HTTP method used',
+    example: 'GET',
+  })
   method: string;
 }
 

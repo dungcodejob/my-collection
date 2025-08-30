@@ -16,3 +16,8 @@ export const COOKIE_KEY = {
 export const METADATA_KEY = {
   IS_PUBLIC: 'isPublic',
 } as const;
+
+export const SWAGGER_SCHEME = {
+  AUTH: 'jwt-auth',
+  REFRESH: 'refresh-token',
+} as const;

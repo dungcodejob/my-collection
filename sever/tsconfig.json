@@ -39,6 +39,8 @@
       "@app/decorators/*": ["src/shared/decorators/*"],
       "@app/interceptors": ["src/shared/interceptors"],
       "@app/interceptors/*": ["src/shared/interceptors/*"],
+      "@app/filters": ["src/shared/filters"],
+      "@app/filters/*": ["src/shared/filters/*"],
       "@app/models": ["src/shared/models"],
       "@app/models/*": ["src/shared/models/*"]
     },

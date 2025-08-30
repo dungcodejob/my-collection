@@ -1,10 +1,11 @@
+import { HttpExceptionFilter } from '@app/filters';
 import { TransformInterceptor } from '@app/interceptors';
 import { UnitOfWorkModule } from '@app/repositories';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -15,11 +16,13 @@ import {
   databaseConfig,
   ThrottlerConfig,
 } from './configs';
+import { UserModule } from './user';
 
 @Module({
   imports: [
     UnitOfWorkModule,
     AuthModule,
+    UserModule,
 
     ConfigModule.forRoot({
       load: [appConfig, cookieConfig],
@@ -41,6 +44,10 @@ import {
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
