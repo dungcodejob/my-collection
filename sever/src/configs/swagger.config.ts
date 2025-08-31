@@ -1,12 +1,23 @@
 import { SWAGGER_SCHEME } from '@app/constants';
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerUiOptions } from '@nestjs/swagger/dist/interfaces/swagger-ui-options.interface';
+import { NextFunction, Request, Response } from 'express';
+import { AppConfig } from './app.config';
+
+const apiDocumentationCredentials = {
+  name: 'admin',
+  pass: 'admin',
+};
 
 /**
  * Cấu hình Swagger API Documentation
  * Tách riêng để dễ quản lý và maintain
  */
-export function configSwagger(app: INestApplication): void {
+export async function configSwagger(
+  app: INestApplication,
+  appConfig: AppConfig,
+): Promise<void> {
   const config = new DocumentBuilder()
     .setTitle('My Collection API')
     .setDescription(`## My Collection API Documentation`)
@@ -56,40 +67,19 @@ export function configSwagger(app: INestApplication): void {
     deepScanRoutes: true,
   });
 
-  // Enhanced Swagger UI options
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      // Persist authorization between page refreshes
-      persistAuthorization: true,
-
-      // Display request duration
-      displayRequestDuration: true,
-
-      // Default models expand depth
-      defaultModelsExpandDepth: 2,
-
-      // Default model expand depth
-      defaultModelExpandDepth: 2,
-
-      // Show extensions
-      showExtensions: true,
-
-      // Show common extensions
-      showCommonExtensions: true,
-
-      // Try it out enabled by default
-      tryItOutEnabled: true,
-
-      // Filter
-      filter: true,
-
-      // Syntax highlighting theme
-      syntaxHighlight: {
-        theme: 'arta',
-      },
-
-      // Custom CSS
-      customCss: `
+  const swaggerOptions: SwaggerUiOptions = {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    defaultModelsExpandDepth: 2,
+    defaultModelExpandDepth: 2,
+    showExtensions: true,
+    showCommonExtensions: true,
+    tryItOutEnabled: true,
+    filter: true,
+    syntaxHighlight: {
+      theme: 'arta',
+    },
+    customCss: `
         .swagger-ui .topbar { display: none }
         .swagger-ui .info .title { color: #3b82f6 }
         .swagger-ui .scheme-container { background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0; }
@@ -97,31 +87,66 @@ export function configSwagger(app: INestApplication): void {
         .swagger-ui .btn.authorize { background-color: #10b981; border-color: #10b981; }
         .swagger-ui .btn.authorize:hover { background-color: #059669; border-color: #059669; }
       `,
+    customSiteTitle: 'My Collection API Documentation',
+    customfavIcon: '/favicon.ico',
+  };
 
-      // Custom site title
-      customSiteTitle: 'My Collection API Documentation',
-
-      // Custom favicon
-      customfavIcon: '/favicon.ico',
+  const httpAdapter = app.getHttpAdapter();
+  httpAdapter.use(
+    '/api/docs',
+    (req: Request, res: Response, next: NextFunction) => {
+      swaggerAuthMiddleware(
+        req,
+        res,
+        next,
+        httpAdapter.getType(),
+        appConfig.testing,
+      );
     },
+  );
 
-    // Custom CSS file
-    customCssUrl: undefined,
+  // if (appConfig.testing) {
+  //   try {
+  //     const loginResult = await app.get(AuthService).login(
+  //       {
+  //         emailOrUsername: appConfig.account.username,
+  //         password: appConfig.account.password,
+  //       },
+  //       {
+  //         deviceType: 'Desktop Chrome',
+  //         ipAddress: '127.0.0.1',
+  //         userAgent:
+  //           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+  //         location: 'unknown',
+  //       },
+  //     );
 
-    // Custom JS files
-    customJs: undefined,
+  //     swaggerOptions.authAction = {
+  //       'access-token': {
+  //         name: 'access-token',
+  //         schema: {
+  //           type: 'apiKey',
+  //           in: 'header',
+  //           name: 'authorization',
+  //         },
+  //         value: `Bearer ${loginResult.accessToken}`,
+  //       },
+  //     };
 
-    // Explore enabled
+  //     console.log(
+  //       `✅ Swagger auto-login successful for ${appConfig.account.username}`,
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  // Enhanced Swagger UI options
+  SwaggerModule.setup('api/docs', app, document, {
+    swaggerOptions,
     explorer: true,
-
-    // Custom site title
     customSiteTitle: 'My Collection API Docs',
   });
-
-  // Log Swagger URL
-  const baseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
-  console.log(`📚 Swagger Documentation: ${baseUrl}/api/docs`);
-  console.log(`📄 OpenAPI JSON: ${baseUrl}/api/docs-json`);
 }
 
 /**
@@ -143,4 +168,52 @@ export function setupSwaggerJson(app: INestApplication): void {
     jsonDocumentUrl: 'api/docs-json',
     yamlDocumentUrl: 'api/docs-yaml',
   });
+}
+
+function swaggerAuthMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  type: string,
+  isTesting: boolean,
+) {
+  function parseAuthHeader(input: string): { name: string; pass: string } {
+    const [, encodedPart] = input.split(' ');
+
+    const buff = Buffer.from(encodedPart, 'base64');
+    const text = buff.toString('ascii');
+    const [name, pass] = text.split(':');
+
+    return { name, pass };
+  }
+
+  function unauthorizedResponse(): void {
+    if (type === 'fastify') {
+      res.statusCode = 401;
+      res.setHeader('WWW-Authenticate', 'Basic');
+    } else {
+      res.status(401);
+      res.set('WWW-Authenticate', 'Basic');
+    }
+
+    next();
+  }
+
+  if (!isTesting) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return unauthorizedResponse();
+    }
+
+    const credentials = parseAuthHeader(authHeader);
+
+    if (
+      credentials?.name !== apiDocumentationCredentials.name ||
+      credentials?.pass !== apiDocumentationCredentials.pass
+    ) {
+      return unauthorizedResponse();
+    }
+  }
+
+  next();
 }

@@ -1,7 +1,6 @@
+import { BaseResponseDto } from '@app/models';
 import { Type, applyDecorators } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { BaseResponseDto } from './response.dto';
-
 /**
  * Generic Single Response Decorator
  * Sử dụng applyDecorators và getSchemaPath để tạo response documentation
@@ -20,6 +19,10 @@ export const ApiOkResponseSingle = <GenericType extends Type<unknown>>(
             { $ref: getSchemaPath(BaseResponseDto) },
             {
               properties: {
+                success: {
+                  type: 'boolean',
+                  example: true,
+                },
                 result: {
                   type: 'object',
                   properties: {
@@ -38,7 +41,17 @@ export const ApiOkResponseSingle = <GenericType extends Type<unknown>>(
     ApiOkResponse({
       description,
       schema: {
-        allOf: [{ $ref: getSchemaPath(BaseResponseDto) }],
+        allOf: [
+          { $ref: getSchemaPath(BaseResponseDto) },
+          {
+            properties: {
+              success: {
+                type: 'boolean',
+                example: true,
+              },
+            },
+          },
+        ],
       },
     }),
   );
@@ -60,6 +73,10 @@ export const ApiOkResponseList = <GenericType extends Type<unknown>>(
           { $ref: getSchemaPath(BaseResponseDto) },
           {
             properties: {
+              success: {
+                type: 'boolean',
+                example: true,
+              },
               result: {
                 type: 'object',
                 properties: {
@@ -101,6 +118,10 @@ export const ApiOkResponsePagination = <GenericType extends Type<unknown>>(
           { $ref: getSchemaPath(BaseResponseDto) },
           {
             properties: {
+              success: {
+                type: 'boolean',
+                example: true,
+              },
               result: {
                 type: 'object',
                 properties: {

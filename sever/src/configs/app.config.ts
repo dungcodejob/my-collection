@@ -7,7 +7,7 @@ export const appConfig = registerAs('app', () => {
   const port = Number(process.env.APP_PORT) || 3000;
 
   return {
-    testing: process.env.ENV === 'dev',
+    testing: process.env.NODE_ENV === 'dev',
     appId: process.env.APP_ID || 'app_id',
     client: process.env.APP_CLIENT_DOMAIN || 'http://localhost:4200',
     host,
@@ -15,6 +15,10 @@ export const appConfig = registerAs('app', () => {
     scheme,
     throttlerTtl: Number(process.env.THROTTLER_TTL) || 60,
     throttlerLimit: Number(process.env.THROTTLER_LIMIT) || 20,
+    account: {
+      username: process.env.DEV_LOGIN_USERNAME || 'string',
+      password: process.env.DEV_LOGIN_PASSWORD || 'string',
+    },
     get domain() {
       return `${scheme}://${host}:${port}`;
     },

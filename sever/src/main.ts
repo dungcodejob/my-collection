@@ -27,7 +27,7 @@ async function bootstrap() {
   app.use(helmet());
 
   // Configure Swagger API Documentation
-  configSwagger(app);
+  await configSwagger(app, appConfigValues);
 
   await app.listen(port, testing ? '127.0.0.1' : '0.0.0.0');
 

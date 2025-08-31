@@ -1,8 +1,14 @@
 import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { COOKIE_KEY, SWAGGER_SCHEME } from '@app/constants';
-import { Origin, Public, Session } from '@app/decorators';
+import {
+  ApiAuthErrors,
+  ApiOkResponseSingle,
+  Origin,
+  Public,
+  Session,
+} from '@app/decorators';
 import { Errors } from '@app/errors';
-import { ApiOkResponseSingle, Result } from '@app/models';
+import { Result } from '@app/models';
 import { isNil } from '@app/utils';
 import {
   Body,
@@ -59,21 +65,7 @@ export class AuthController {
     AuthResultDto,
     'Login successful. Returns access token and user information.',
   )
-  @ApiResponse({
-    status: 401,
-    description: 'Invalid credentials',
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean', example: false },
-        error: { type: 'string', example: 'Invalid credentials' },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'Too many requests',
-  })
+  @ApiAuthErrors()
   @Public()
   @Post('login')
   async login(
@@ -95,14 +87,7 @@ export class AuthController {
   })
   @ApiBody({ type: RegisterDto })
   @ApiOkResponseSingle(null, 'Registration successful. User account created.')
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request - validation errors or user already exists',
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'Too many requests',
-  })
+  @ApiAuthErrors()
   @Public()
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
@@ -155,14 +140,7 @@ export class AuthController {
     AuthResultDto,
     'Token refresh successful. Returns new access token.',
   )
-  @ApiResponse({
-    status: 401,
-    description: 'Invalid or expired refresh token',
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'Too many requests',
-  })
+  @ApiAuthErrors()
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
