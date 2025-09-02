@@ -71,6 +71,6 @@ export class BacklistService {
 
   private calculateTTL(exp: number): number {
     const now = Date.now();
-    return (exp - now) * 1000;
+    return exp - now;
   }
 }

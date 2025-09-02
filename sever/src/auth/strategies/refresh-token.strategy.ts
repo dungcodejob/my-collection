@@ -6,10 +6,10 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { COOKIE_KEY } from '@app/constants';
 import { Errors } from '@app/errors';
+import { BcryptService } from '@app/services';
 import { SessionService } from '@app/session';
 import { isNil } from '@app/utils';
 import { RefreshAccessDto, RefreshPayload } from '../models';
-import { BcryptService } from '../services';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(

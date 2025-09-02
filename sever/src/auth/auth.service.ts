@@ -2,6 +2,7 @@ import { AccountService } from '@app/account';
 import { SLUG_REGEX } from '@app/constants';
 import { AccountEntity, Role, SessionEntity } from '@app/entities';
 import { Errors } from '@app/errors';
+import { BcryptService } from '@app/services';
 import { SessionService } from '@app/session';
 import { UserMapper, UserService } from '@app/user';
 import { formatName, generatePointSlug } from '@app/utils';
@@ -16,7 +17,7 @@ import {
   SessionInfo,
   TokenTypeEnum,
 } from './models';
-import { BacklistService, BcryptService, JwtTokenService } from './services';
+import { BacklistService, JwtTokenService } from './services';
 @Injectable()
 export class AuthService {
   constructor(
