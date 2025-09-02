@@ -1,4 +1,5 @@
 import { UserEntity } from '@app/entities';
+import { Errors } from '@app/errors';
 import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -17,6 +18,10 @@ export class UserService {
   }
 
   create(data: UserCreateInput): UserEntity {
+    if (!data) {
+      throw Errors.User.InvalidUserData;
+    }
+
     const user = new UserEntity(data);
     return this._unitOfWork.user.create(user);
   }

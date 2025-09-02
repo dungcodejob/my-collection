@@ -1,18 +1,6 @@
 import { BookmarkEntity } from "@common/entities";
 import { EntityManager, FilterQuery, Ref } from "@mikro-orm/postgresql";
 
-export interface BookmarkRepository {
-  findAll(userId: string, keyword?: string, tagIds?: string[]): Promise<BookmarkEntity[]>;
-  findById(id: string): Promise<BookmarkEntity>;
-  findByCollectionId(
-    collectionId: string,
-    keyword?: string,
-    tagIds?: string[]
-  ): Promise<BookmarkEntity[]>;
-  add(entity: BookmarkEntity): BookmarkEntity;
-  delete(entity: BookmarkEntity | Ref<BookmarkEntity>): void;
-}
-
 export class BookmarkRepositoryImpl implements BookmarkRepository {
   constructor(private readonly _em: EntityManager) {}
 

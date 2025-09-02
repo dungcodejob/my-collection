@@ -42,7 +42,11 @@
       "@app/filters": ["src/shared/filters"],
       "@app/filters/*": ["src/shared/filters/*"],
       "@app/models": ["src/shared/models"],
-      "@app/models/*": ["src/shared/models/*"]
+      "@app/models/*": ["src/shared/models/*"],
+      "@app/tests": ["src/shared/tests"],
+      "@app/tests/*": ["src/shared/tests/*"],
+      "@app/factories": ["src/shared/factories"],
+      "@app/factories/*": ["src/shared/factories/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
