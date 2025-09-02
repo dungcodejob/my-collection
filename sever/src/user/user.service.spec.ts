@@ -1,12 +1,12 @@
 import { Role, UserEntity } from '@app/entities';
 import { Errors } from '@app/errors';
-import { createMockUser } from '@app/factories';
+import { UNIT_OF_WORK } from '@app/repositories';
+import { BcryptService } from '@app/services';
 import {
+  createMockUser,
+  createTestingModule,
   mockUnitOfWork,
-  provideMockUnitOfWork,
-  UNIT_OF_WORK,
-} from '@app/repositories';
-import { Test, TestingModule } from '@nestjs/testing';
+} from '@app/tests';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
@@ -14,9 +14,13 @@ describe('UserService', () => {
   let unitOfWork: typeof mockUnitOfWork;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, ...provideMockUnitOfWork()],
-    }).compile();
+    // const module: TestingModule = await Test.createTestingModule({
+    //   providers: [UserService, BcryptService],
+    // }).compile();
+
+    const module = await createTestingModule({
+      providers: [UserService, BcryptService],
+    });
 
     service = module.get<UserService>(UserService);
     unitOfWork = module.get(UNIT_OF_WORK);

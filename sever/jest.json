@@ -29,10 +29,10 @@
     "^@app/interceptors(.*)$": "<rootDir>/shared/interceptors$1",
     "^@app/filters(.*)$": "<rootDir>/shared/filters$1",
     "^@app/models(.*)$": "<rootDir>/shared/models$1",
-    "^@app/tests(.*)$": "<rootDir>/shared/tests$1",
-    "^@app/shared/tests(.*)$": "<rootDir>/shared/tests$1",
-    "^@app/factories(.*)$": "<rootDir>/shared/factories$1",
-    "^@app/shared/factories(.*)$": "<rootDir>/shared/factories$1"
+    "^@app/tests(.*)$": "<rootDir>/core/tests$1",
+    "^@app/core/tests(.*)$": "<rootDir>/core/tests$1",
+    "^@app/services(.*)$": "<rootDir>/shared/services$1",
+    "^@app/shared/services(.*)$": "<rootDir>/shared/services$1"
   },
   "transformIgnorePatterns": ["node_modules/(?!(.*@faker-js/faker.*))"],
   "extensionsToTreatAsEsm": [".ts"]

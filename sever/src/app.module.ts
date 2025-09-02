@@ -14,6 +14,7 @@ import {
   appConfig,
   cookieConfig,
   databaseConfig,
+  jwtConfig,
   ThrottlerConfig,
 } from './configs';
 import { UserModule } from './user';
@@ -25,7 +26,7 @@ import { UserModule } from './user';
     UserModule,
 
     ConfigModule.forRoot({
-      load: [appConfig, cookieConfig],
+      load: [appConfig, cookieConfig, jwtConfig],
       envFilePath: `./.env.${process.env.NODE_ENV || 'dev'}`,
       isGlobal: true,
     }),

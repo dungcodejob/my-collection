@@ -43,10 +43,12 @@
       "@app/filters/*": ["src/shared/filters/*"],
       "@app/models": ["src/shared/models"],
       "@app/models/*": ["src/shared/models/*"],
-      "@app/tests": ["src/shared/tests"],
-      "@app/tests/*": ["src/shared/tests/*"],
+      "@app/tests": ["src/core/tests"],
+      "@app/tests/*": ["src/core/tests/*"],
       "@app/factories": ["src/shared/factories"],
-      "@app/factories/*": ["src/shared/factories/*"]
+      "@app/factories/*": ["src/shared/factories/*"],
+      "@app/services": ["src/shared/services"],
+      "@app/services/*": ["src/shared/services/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
