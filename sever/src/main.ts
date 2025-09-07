@@ -1,12 +1,15 @@
-import { NestFactory } from '@nestjs/core';
-import cookieParser from 'cookie-parser';
-import helmet from 'helmet';
 import {
   appConfig,
   AppConfig,
   cookieConfig,
   CookieConfig,
-} from './@core/configs';
+  HttpConfig,
+  httpConfig,
+} from '@app/configs';
+import { VersioningType } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { swagger } from './swagger';
 
@@ -15,6 +18,7 @@ async function bootstrap() {
 
   const appConfigValues = app.get<AppConfig>(appConfig.KEY);
   const cookieConfigValues = app.get<CookieConfig>(cookieConfig.KEY);
+  const httpConfigValues = app.get<HttpConfig>(httpConfig.KEY);
 
   const port = appConfigValues.port;
   const domain = appConfigValues.domain;
@@ -25,6 +29,14 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
   app.use(cookieParser(cookieConfigValues.secret));
   app.use(helmet());
+
+  if (httpConfigValues.versioningEnable) {
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: httpConfigValues.version,
+      prefix: httpConfigValues.versioningPrefix,
+    });
+  }
 
   // Configure Swagger API Documentation
   await swagger(app, appConfigValues);

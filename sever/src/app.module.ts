@@ -1,3 +1,11 @@
+import {
+  appConfig,
+  cookieConfig,
+  databaseConfig,
+  httpConfig,
+  jwtConfig,
+  ThrottlerConfig,
+} from '@app/configs';
 import { HttpExceptionFilter } from '@app/filters';
 import { TransformInterceptor } from '@app/interceptors';
 import { RequestMiddlewareModule } from '@app/middlewares';
@@ -8,13 +16,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
-import {
-  appConfig,
-  cookieConfig,
-  databaseConfig,
-  jwtConfig,
-  ThrottlerConfig,
-} from './@core/configs';
 import { AuthModule } from './auth';
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user';
@@ -27,7 +28,7 @@ import { UserModule } from './user';
     UserModule,
     HealthModule,
     ConfigModule.forRoot({
-      load: [appConfig, cookieConfig, jwtConfig],
+      load: [appConfig, cookieConfig, jwtConfig, httpConfig],
       envFilePath: `./.env.${process.env.NODE_ENV || 'dev'}`,
       isGlobal: true,
     }),
