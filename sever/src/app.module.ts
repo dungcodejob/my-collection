@@ -1,5 +1,6 @@
 import { HttpExceptionFilter } from '@app/filters';
 import { TransformInterceptor } from '@app/interceptors';
+import { RequestMiddlewareModule } from '@app/middlewares';
 import { UnitOfWorkModule } from '@app/repositories';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -20,6 +21,7 @@ import { UserModule } from './user';
 
 @Module({
   imports: [
+    RequestMiddlewareModule,
     UnitOfWorkModule,
     AuthModule,
     UserModule,

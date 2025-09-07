@@ -6,6 +6,7 @@ export const REQUEST_KEY = {
   CURRENT_ACCOUNT: 'account',
   CURRENT_SESSION: 'session',
   CURRENT_USER: 'user',
+  REQUEST_ID: 'requestId',
 } as const;
 
 export const COOKIE_KEY = {

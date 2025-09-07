@@ -48,7 +48,9 @@
       "@app/factories": ["src/@shared/factories"],
       "@app/factories/*": ["src/@shared/factories/*"],
       "@app/services": ["src/@shared/services"],
-      "@app/services/*": ["src/@shared/services/*"]
+      "@app/services/*": ["src/@shared/services/*"],
+      "@app/middlewares": ["src/@shared/middlewares"],
+      "@app/middlewares/*": ["src/@shared/middlewares/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
