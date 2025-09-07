@@ -7,16 +7,15 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth';
 import {
   appConfig,
   cookieConfig,
   databaseConfig,
   jwtConfig,
   ThrottlerConfig,
-} from './configs';
+} from './@core/configs';
+import { AuthModule } from './auth';
+import { HealthModule } from './health/health.module';
 import { UserModule } from './user';
 
 @Module({
@@ -24,7 +23,7 @@ import { UserModule } from './user';
     UnitOfWorkModule,
     AuthModule,
     UserModule,
-
+    HealthModule,
     ConfigModule.forRoot({
       load: [appConfig, cookieConfig, jwtConfig],
       envFilePath: `./.env.${process.env.NODE_ENV || 'dev'}`,
@@ -42,9 +41,8 @@ import { UserModule } from './user';
       isGlobal: true,
     }),
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,

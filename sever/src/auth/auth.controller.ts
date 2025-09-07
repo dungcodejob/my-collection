@@ -1,5 +1,4 @@
-import { InjectJwtConfig, type JwtConfig } from '@app/configs';
-import { COOKIE_KEY, SWAGGER_SCHEME } from '@app/constants';
+import { COOKIE_KEY, FEATURE_KEY, SWAGGER_SCHEME } from '@app/constants';
 import {
   ApiAuthErrors,
   ApiOkResponseSingle,
@@ -29,6 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
+import { InjectJwtConfig, type JwtConfig } from 'src/@core/configs';
 import { AuthService } from './auth.service';
 import {
   AuthResultDto,
@@ -38,8 +38,8 @@ import {
   type SessionInfo,
 } from './models';
 
-@ApiTags('Auth')
-@Controller('auth')
+@ApiTags(FEATURE_KEY.AUTH)
+@Controller(FEATURE_KEY.AUTH)
 @UseGuards(ThrottlerGuard)
 export class AuthController {
   private readonly _cookiePath = '/api/auth';
@@ -61,10 +61,10 @@ export class AuthController {
       'Authenticate user with email/username and password. Returns access token and sets refresh token in HTTP-only cookie.',
   })
   @ApiBody({ type: LoginDto })
-  @ApiOkResponseSingle(
-    AuthResultDto,
-    'Login successful. Returns access token and user information.',
-  )
+  @ApiOkResponseSingle({
+    dataType: AuthResultDto,
+    description: 'Login successful. Returns access token and user information.',
+  })
   @ApiAuthErrors()
   @Public()
   @Post('login')
@@ -77,7 +77,7 @@ export class AuthController {
     const result = await this._authService.login(loginDto, sessionInfo, origin);
     this.saveRefreshCookie(res, result.refreshToken);
 
-    return Result.toSingle(result);
+    return Result.toSingle({ data: result });
   }
 
   @ApiOperation({
@@ -86,7 +86,9 @@ export class AuthController {
       'Register a new user account with email, username and password.',
   })
   @ApiBody({ type: RegisterDto })
-  @ApiOkResponseSingle(null, 'Registration successful. User account created.')
+  @ApiOkResponseSingle({
+    description: 'Registration successful. User account created.',
+  })
   @ApiAuthErrors()
   @Public()
   @Post('register')
@@ -108,10 +110,10 @@ export class AuthController {
   // @ApiBearerAuth(SWAGGER_SCHEME.AUTH)
   @ApiCookieAuth(SWAGGER_SCHEME.REFRESH)
   @ApiBody({ type: RefreshAccessDto, required: false })
-  @ApiOkResponseSingle(
-    null,
-    'Logout successful. Refresh token invalidated and cookies cleared.',
-  )
+  @ApiOkResponseSingle({
+    description:
+      'Logout successful. Refresh token invalidated and cookies cleared.',
+  })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized - invalid or missing token',
@@ -136,10 +138,10 @@ export class AuthController {
   })
   @ApiCookieAuth(COOKIE_KEY.REFRESH_TOKEN)
   @ApiBody({ type: RefreshAccessDto, required: false })
-  @ApiOkResponseSingle(
-    AuthResultDto,
-    'Token refresh successful. Returns new access token.',
-  )
+  @ApiOkResponseSingle({
+    dataType: AuthResultDto,
+    description: 'Token refresh successful. Returns new access token.',
+  })
   @ApiAuthErrors()
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -158,7 +160,7 @@ export class AuthController {
 
     this.saveRefreshCookie(res, result.refreshToken);
 
-    return Result.toSingle(result);
+    return Result.toSingle({ data: result });
   }
 
   private getRefreshFromCookieOrBody(
