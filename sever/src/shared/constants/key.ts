@@ -4,6 +4,8 @@ export const RESPONSE_KEY = {
 
 export const REQUEST_KEY = {
   CURRENT_ACCOUNT: 'account',
+  CURRENT_SESSION: 'session',
+  CURRENT_USER: 'user',
 } as const;
 
 export const COOKIE_KEY = {
@@ -13,4 +15,9 @@ export const COOKIE_KEY = {
 
 export const METADATA_KEY = {
   IS_PUBLIC: 'isPublic',
+} as const;
+
+export const SWAGGER_SCHEME = {
+  AUTH: 'jwt-auth',
+  REFRESH: 'refresh-token',
 } as const;
