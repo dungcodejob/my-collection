@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { AppModule } from './app.module';
 import {
   appConfig,
   AppConfig,
-  configSwagger,
   cookieConfig,
   CookieConfig,
-} from './configs';
+} from './@core/configs';
+import { AppModule } from './app.module';
+import { swagger } from './swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,7 +27,7 @@ async function bootstrap() {
   app.use(helmet());
 
   // Configure Swagger API Documentation
-  await configSwagger(app, appConfigValues);
+  await swagger(app, appConfigValues);
 
   await app.listen(port, testing ? '127.0.0.1' : '0.0.0.0');
 

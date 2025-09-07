@@ -1,4 +1,4 @@
-import { AppConfig } from '@app/configs';
+import { AppConfig } from 'src/@core/configs';
 
 /**
  * Mock AppConfig for testing

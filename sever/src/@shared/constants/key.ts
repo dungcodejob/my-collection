@@ -21,3 +21,10 @@ export const SWAGGER_SCHEME = {
   AUTH: 'jwt-auth',
   REFRESH: 'refresh-token',
 } as const;
+
+export const FEATURE_KEY = {
+  AUTH: 'Auth',
+  USER: 'user',
+  COLLECTION: 'collection',
+  HEALTH: 'health',
+} as const;

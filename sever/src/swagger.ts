@@ -1,9 +1,9 @@
-import { SWAGGER_SCHEME } from '@app/constants';
+import { FEATURE_KEY, SWAGGER_SCHEME } from '@app/constants';
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SwaggerUiOptions } from '@nestjs/swagger/dist/interfaces/swagger-ui-options.interface';
 import { NextFunction, Request, Response } from 'express';
-import { AppConfig } from './app.config';
+import { AppConfig } from './@core/configs/app.config';
 
 const apiDocumentationCredentials = {
   name: 'admin',
@@ -14,7 +14,7 @@ const apiDocumentationCredentials = {
  * Cấu hình Swagger API Documentation
  * Tách riêng để dễ quản lý và maintain
  */
-export async function configSwagger(
+export async function swagger(
   app: INestApplication,
   appConfig: AppConfig,
 ): Promise<void> {
@@ -48,12 +48,10 @@ export async function configSwagger(
       description: 'Refresh token stored in HTTP-only cookie',
     })
     // API Tags
-    .addTag('Auth', 'Authentication and authorization endpoints')
-    .addTag('Users', 'User management operations')
-    .addTag('Accounts', 'Account management operations')
-    .addTag('Sessions', 'Session management operations')
-    .addTag('Collections', 'Bookmark collections management')
-    .addTag('Health', 'Health check and system status')
+    .addTag(FEATURE_KEY.AUTH, 'Authentication and authorization endpoints')
+    .addTag(FEATURE_KEY.USER, 'User management operations')
+    .addTag(FEATURE_KEY.COLLECTION, 'Bookmark collections management')
+    .addTag(FEATURE_KEY.HEALTH, 'Health check and system status')
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {

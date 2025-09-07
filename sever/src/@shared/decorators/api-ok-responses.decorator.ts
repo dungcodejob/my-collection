@@ -5,10 +5,16 @@ import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
  * Generic Single Response Decorator
  * Sử dụng applyDecorators và getSchemaPath để tạo response documentation
  */
-export const ApiOkResponseSingle = <GenericType extends Type<unknown>>(
-  dataType: GenericType | null,
-  description: string = `Successful response with ${dataType?.name} data`,
-) => {
+export const ApiOkResponseSingle = <
+  GenericType extends Type<unknown>,
+>(options: {
+  dataType?: GenericType;
+  description: string;
+}) => {
+  const {
+    dataType,
+    description = `Successful response with ${dataType?.name} data`,
+  } = options;
   if (dataType) {
     return applyDecorators(
       ApiExtraModels(BaseResponseDto, dataType),
@@ -60,11 +66,16 @@ export const ApiOkResponseSingle = <GenericType extends Type<unknown>>(
 /**
  * Generic List Response Decorator
  */
-export const ApiOkResponseList = <GenericType extends Type<unknown>>(
-  itemType: GenericType,
-  description: string = `Successful list response with ${itemType.name} items`,
-) =>
-  applyDecorators(
+export const ApiOkResponseList = <GenericType extends Type<unknown>>(options: {
+  itemType: GenericType;
+  description: string;
+}) => {
+  const {
+    itemType,
+    description = `Successful list response with ${itemType.name} items`,
+  } = options;
+
+  return applyDecorators(
     ApiExtraModels(BaseResponseDto, itemType),
     ApiOkResponse({
       description,
@@ -101,15 +112,22 @@ export const ApiOkResponseList = <GenericType extends Type<unknown>>(
       },
     }),
   );
+};
 
 /**
  * Generic Pagination Response Decorator
  */
-export const ApiOkResponsePagination = <GenericType extends Type<unknown>>(
-  itemType: GenericType,
-  description: string = `Successful paginated response with ${itemType.name} items`,
-) =>
-  applyDecorators(
+export const ApiOkResponsePagination = <
+  GenericType extends Type<unknown>,
+>(options: {
+  itemType: GenericType;
+  description: string;
+}) => {
+  const {
+    itemType,
+    description = `Successful paginated response with ${itemType.name} items`,
+  } = options;
+  return applyDecorators(
     ApiExtraModels(BaseResponseDto, itemType),
     ApiOkResponse({
       description,
@@ -163,12 +181,13 @@ export const ApiOkResponsePagination = <GenericType extends Type<unknown>>(
       },
     }),
   );
+};
 
 // Legacy factory functions for backward compatibility
 // Deprecated: Use decorators above instead
 export const createSwaggerResponseDto = <T>(dataType: Type<T>) =>
-  ApiOkResponseSingle(dataType);
+  ApiOkResponseSingle({ dataType, description: '' });
 export const createSwaggerListResponseDto = <T>(itemType: Type<T>) =>
-  ApiOkResponseList(itemType);
+  ApiOkResponseList({ itemType, description: '' });
 export const createSwaggerPaginationResponseDto = <T>(itemType: Type<T>) =>
-  ApiOkResponsePagination(itemType);
+  ApiOkResponsePagination({ itemType, description: '' });

@@ -1,6 +1,6 @@
-import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { Injectable } from '@nestjs/common';
 import { compare, genSalt, hash } from 'bcrypt';
+import { InjectJwtConfig, type JwtConfig } from 'src/@core/configs';
 
 @Injectable()
 export class BcryptService {

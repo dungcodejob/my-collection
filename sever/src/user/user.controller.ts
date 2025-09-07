@@ -1,12 +1,12 @@
-import { SWAGGER_SCHEME } from '@app/constants';
+import { FEATURE_KEY, SWAGGER_SCHEME } from '@app/constants';
 import { ApiCommonErrors } from '@app/decorators';
 import { Result } from '@app/models';
 import { Controller, Get, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserMapper } from './user.mapper';
 
-@ApiTags('Users')
-@Controller('user')
+@ApiTags(FEATURE_KEY.USER)
+@Controller(FEATURE_KEY.USER)
 export class UserController {
   constructor(private readonly _userMapper: UserMapper) {}
 
@@ -14,8 +14,8 @@ export class UserController {
   @ApiCommonErrors()
   @Get('profile')
   getProfile(@Req() req) {
-    console.log(req);
-    throw new Error('test');
-    return Result.toSingle(this._userMapper.toUserInfo(req.user.user));
+    return Result.toSingle({
+      data: this._userMapper.toUserInfo(req.user.user),
+    });
   }
 }
