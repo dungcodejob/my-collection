@@ -18,6 +18,7 @@ export class CollectionApi {
     {
       id: "game",
       name: "game",
+
       path: "/game",
       createdAt: new Date(),
       updatedAt: new Date(),
