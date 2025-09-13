@@ -28,7 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
-import { InjectJwtConfig, type JwtConfig } from 'src/@core/configs';
+import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { AuthService } from './auth.service';
 import {
   AuthResultDto,

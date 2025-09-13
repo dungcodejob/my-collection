@@ -1,8 +1,8 @@
-import { FEATURE_KEY, SWAGGER_SCHEME } from '@app/constants';
-import { ApiCommonErrors } from '@app/decorators';
+import { FEATURE_KEY } from '@app/constants';
+import { ApiAuth } from '@app/decorators';
 import { Result } from '@app/models';
 import { Controller, Get, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { UserMapper } from './user.mapper';
 
 @ApiTags(FEATURE_KEY.USER)
@@ -10,8 +10,11 @@ import { UserMapper } from './user.mapper';
 export class UserController {
   constructor(private readonly _userMapper: UserMapper) {}
 
-  @ApiBearerAuth(SWAGGER_SCHEME.AUTH)
-  @ApiCommonErrors()
+  @ApiAuth({
+    auths: ['jwt'],
+    description: 'Get user profile',
+    summary: 'Get user profile',
+  })
   @Get('profile')
   getProfile(@Req() req) {
     return Result.toSingle({

@@ -6,7 +6,7 @@ import {
   createMockUser,
   createTestingModule,
   mockUnitOfWork,
-} from 'src/@core/tests';
+} from '@app/tests';
 import { UserService } from './user.service';
 
 describe('UserService', () => {

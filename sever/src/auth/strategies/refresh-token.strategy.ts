@@ -8,7 +8,7 @@ import { Errors } from '@app/errors';
 import { BcryptService } from '@app/services';
 import { SessionService } from '@app/session';
 import { isNil } from '@app/utils';
-import { InjectJwtConfig, type JwtConfig } from 'src/@core/configs';
+import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { RefreshAccessDto, RefreshPayload } from '../models';
 
 @Injectable()

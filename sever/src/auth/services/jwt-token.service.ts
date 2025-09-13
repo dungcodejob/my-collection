@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions, JwtVerifyOptions } from '@nestjs/jwt';
 
-import { SECOND } from '@app/constants';
-import { AccountEntity, SessionEntity } from '@app/entities';
 import {
   type AppConfig,
   InjectAppConfig,
   InjectJwtConfig,
   type JwtConfig,
-} from 'src/@core/configs';
+} from '@app/configs';
+import { SECOND } from '@app/constants';
+import { AccountEntity, SessionEntity } from '@app/entities';
 import { v6 } from 'uuid';
 import {
   AccessPayload,

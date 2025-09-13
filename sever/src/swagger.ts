@@ -38,7 +38,7 @@ export async function swagger(
         description: 'Enter JWT token',
         in: 'header',
       },
-      SWAGGER_SCHEME.AUTH, // This name here is important for matching up with @ApiBearerAuth() in your controller!
+      SWAGGER_SCHEME.JWT_AUTH, // This name here is important for matching up with @ApiBearerAuth() in your controller!
     )
     // Cookie Authentication (for refresh tokens)
     .addCookieAuth(SWAGGER_SCHEME.REFRESH, {

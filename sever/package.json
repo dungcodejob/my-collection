@@ -18,11 +18,11 @@
     "test:cov": "jest --config jest.json --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config jest.json --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migration:create": "mikro-orm migration:create --config ./src/configs/database.config.ts",
-    "migration:up": "mikro-orm migration:up --config ./src/configs/database.config.ts",
-    "migration:down": "mikro-orm migration:down --config ./src/configs/database.config.ts",
-    "migration:fresh": "mikro-orm migration:fresh --config ./src/configs/database.config.ts",
-    "schema:drop": "mikro-orm schema:drop --run --config ./src/configs/database.config.ts",
+    "migration:create": "mikro-orm migration:create --config ./src/@core/configs/database.config.ts",
+    "migration:up": "mikro-orm migration:up --config ./src/@core/configs/database.config.ts",
+    "migration:down": "mikro-orm migration:down --config ./src/@core/configs/database.config.ts",
+    "migration:fresh": "mikro-orm migration:fresh --config ./src/@core/configs/database.config.ts",
+    "schema:drop": "mikro-orm schema:drop --run --config ./src/@core/configs/database.config.ts",
     "prepare": "husky"
   },
   "dependencies": {

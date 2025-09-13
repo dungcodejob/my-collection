@@ -3,7 +3,7 @@ import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
 import { FindOneOptions, RequiredEntityData } from '@mikro-orm/core';
 import { Inject, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
-type SessionCreateInput = Omit<
+export type SessionCreateInput = Omit<
   RequiredEntityData<SessionEntity>,
   'deviceId' | 'refreshCount' | 'isActive'
 >;

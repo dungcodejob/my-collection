@@ -17,6 +17,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth';
+import { CollectionModule } from './collection';
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user';
 
@@ -26,6 +27,7 @@ import { UserModule } from './user';
     UnitOfWorkModule,
     AuthModule,
     UserModule,
+    CollectionModule,
     HealthModule,
     ConfigModule.forRoot({
       load: [appConfig, cookieConfig, jwtConfig, httpConfig],
