@@ -1,5 +1,5 @@
 import { AccountEntity } from '@app/entities';
-import { BaseRepositoryFactory } from '../factories';
+import { BaseRepositoryFactory } from '../../database/factories';
 
 export const createAccountRepositoryMock = () => {
   return new BaseRepositoryFactory<AccountEntity>(AccountEntity)

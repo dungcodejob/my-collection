@@ -1,5 +1,8 @@
 import { SessionEntity } from '@app/entities';
-import { BaseRepositoryFactory, MockRepository } from '../factories';
+import {
+  BaseRepositoryFactory,
+  MockRepository,
+} from '../../database/factories';
 
 export const createSessionRepositoryMock =
   (): MockRepository<SessionEntity> => {

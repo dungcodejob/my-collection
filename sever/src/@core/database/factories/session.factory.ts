@@ -1,5 +1,8 @@
-import { SessionEntity } from '@app/entities';
+import { AccountEntity, SessionEntity, UserEntity } from '@app/entities';
+import { SessionCreateInput } from '@app/session';
 import { faker } from '@faker-js/faker';
+import { createMockAccount } from './account.factory';
+import { createMockUser } from './user.factory';
 
 /**
  * Session Entity Factory using Faker.js for realistic test data
@@ -50,6 +53,53 @@ export const createMockSession = (
     deleteFlag: faker.datatype.boolean({ probability: 0.05 }),
     ...overrides,
   }) as SessionEntity;
+
+export const createMockSessionInput = (
+  overrides: Partial<SessionCreateInput> = {},
+): SessionCreateInput => {
+  return {
+    account: createMockAccount(),
+    user: createMockUser(),
+    refreshTokenHash: faker.string.alphanumeric(64),
+    userAgent: faker.internet.userAgent(),
+    ipAddress: faker.internet.ip(),
+    deviceType: faker.helpers.arrayElement([
+      'Desktop',
+      'Mobile',
+      'Tablet',
+      'Smart TV',
+      'Gaming Console',
+    ]),
+    ...overrides,
+  };
+};
+
+export const createMockSessionByInput = (
+  overrides: Partial<SessionCreateInput> = {},
+): SessionEntity => {
+  const input = createMockSessionInput(overrides);
+
+  return createMockSession({
+    expiresAt: overrides.expiresAt as Date,
+    account: createMockAccount(overrides.account as Partial<AccountEntity>),
+    user: createMockUser(overrides.user as Partial<UserEntity>),
+    refreshTokenHash: input.refreshTokenHash || faker.string.alphanumeric(64),
+    userAgent: input.userAgent || faker.internet.userAgent(),
+    ipAddress: input.ipAddress || faker.internet.ip(),
+    deviceType:
+      input.deviceType ||
+      faker.helpers.arrayElement([
+        'Desktop',
+        'Mobile',
+        'Tablet',
+        'Smart TV',
+        'Gaming Console',
+      ]),
+    lastAccessedAt: input.lastAccessedAt
+      ? new Date(input.lastAccessedAt)
+      : faker.date.anytime(),
+  });
+};
 
 /**
  * Create multiple mock sessions

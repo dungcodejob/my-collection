@@ -22,8 +22,8 @@ export const databaseConfig = defineConfig({
   highlighter: new SqlHighlighter(),
   extensions: [Migrator, SeedManager],
   migrations: {
-    path: 'dist/migrations',
-    pathTs: 'migrations',
+    path: 'dist/@core/database/migrations',
+    pathTs: 'src/@core/database/migrations',
   },
 });
 

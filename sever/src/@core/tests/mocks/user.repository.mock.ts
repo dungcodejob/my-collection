@@ -1,5 +1,8 @@
 import { UserEntity } from '@app/entities';
-import { BaseRepositoryFactory, MockRepository } from '../factories';
+import {
+  BaseRepositoryFactory,
+  MockRepository,
+} from '../../database/factories';
 
 export const createUserRepositoryMock = (): MockRepository<UserEntity> => {
   return new BaseRepositoryFactory<UserEntity>(UserEntity)

@@ -1,7 +1,7 @@
 import { ModuleMetadata } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { appConfig, cookieConfig, jwtConfig } from 'src/@core/configs';
+import { appConfig, cookieConfig, jwtConfig } from '@app/configs';
 import { provideMockUnitOfWork } from './mocks';
 
 beforeAll(async () => {

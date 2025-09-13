@@ -2,6 +2,7 @@ import { Provider } from '@nestjs/common';
 
 import { UNIT_OF_WORK } from '@app/repositories';
 import { createAccountRepositoryMock } from './account.repository.mock';
+import { createCollectionRepositoryMock } from './collection.repository.mock';
 import { createSessionRepositoryMock } from './session.repository.mock';
 import { createUserRepositoryMock } from './user.repository.mock';
 
@@ -9,6 +10,7 @@ export const mockUnitOfWork = {
   user: createUserRepositoryMock(),
   account: createAccountRepositoryMock(),
   session: createSessionRepositoryMock(),
+  collection: createCollectionRepositoryMock(),
 
   // Transaction methods
   save: jest.fn(),
@@ -17,7 +19,9 @@ export const mockUnitOfWork = {
   rollback: jest.fn(),
 
   // EntityManager
-  getEntityManager: jest.fn(),
+  getEntityManager: jest.fn().mockReturnValue({
+    flush: jest.fn(),
+  }),
 };
 
 export const provideMockUnitOfWork = (): Provider[] => [
