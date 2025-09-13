@@ -19,7 +19,9 @@ export const METADATA_KEY = {
 } as const;
 
 export const SWAGGER_SCHEME = {
-  AUTH: 'jwt-auth',
+  JWT_AUTH: 'jwt-auth',
+  API_KEY: 'api-key',
+  BASIC_AUTH: 'basic-auth',
   REFRESH: 'refresh-token',
 } as const;
 

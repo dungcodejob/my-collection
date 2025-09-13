@@ -2,7 +2,7 @@ import { DAY, HOUR, MINUTE } from '@app/constants';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcrypt';
-import { jwtConfig, JwtConfig } from 'src/@core/configs';
+import { jwtConfig, JwtConfig } from '@app/configs';
 import { BcryptService } from './bcrypt.service';
 
 jest.mock('bcrypt', () => ({
