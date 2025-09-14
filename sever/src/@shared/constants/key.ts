@@ -30,4 +30,6 @@ export const FEATURE_KEY = {
   USER: 'user',
   COLLECTION: 'collection',
   HEALTH: 'health',
+  CRAWL: 'crawl',
+  BOOKMARK: 'bookmark',
 } as const;

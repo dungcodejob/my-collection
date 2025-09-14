@@ -25,6 +25,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
   constructor(private reflector: Reflector) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
+    console.error('Exception thrown:', exception);
+
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
