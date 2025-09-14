@@ -1,4 +1,10 @@
-import { AccountEntity, SessionEntity, UserEntity } from '@app/entities';
+import {
+  AccountEntity,
+  CollectionEntity,
+  CrawlEntity,
+  SessionEntity,
+  UserEntity,
+} from '@app/entities';
 import { Migrator } from '@mikro-orm/migrations';
 import { PostgreSqlDriver, defineConfig } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
@@ -16,8 +22,20 @@ export const databaseConfig = defineConfig({
   user: process.env.DATABASE_USER || 'postgres',
   password: process.env.DATABASE_PASSWORD || 'password',
   dbName: process.env.DATABASE_NAME || 'pokemon',
-  entities: [AccountEntity, UserEntity, SessionEntity],
-  entitiesTs: [AccountEntity, UserEntity, SessionEntity],
+  entities: [
+    AccountEntity,
+    UserEntity,
+    SessionEntity,
+    CollectionEntity,
+    CrawlEntity,
+  ],
+  entitiesTs: [
+    AccountEntity,
+    UserEntity,
+    SessionEntity,
+    CollectionEntity,
+    CrawlEntity,
+  ],
   debug: NODE_ENV === 'dev',
   highlighter: new SqlHighlighter(),
   extensions: [Migrator, SeedManager],

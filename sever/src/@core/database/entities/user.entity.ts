@@ -30,9 +30,6 @@ export class UserEntity extends BaseEntity {
   @Property()
   name: string;
 
-  @Property()
-  gender: Gender;
-
   @Enum(() => Role)
   role: Role = Role.USER;
 

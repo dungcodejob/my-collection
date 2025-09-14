@@ -1,14 +1,18 @@
-import { Global, Inject, Injectable, Module, Provider } from '@nestjs/common';
+import { Global, Injectable, Module, Provider } from '@nestjs/common';
 
 import {
   AccountEntity,
+  BookmarkEntity,
   CollectionEntity,
+  CrawlEntity,
   SessionEntity,
   UserEntity,
 } from '@app/entities';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { AccountRepository } from './account.repository';
+import { BookmarkRepository } from './bookmark.repository';
 import { CollectionRepository } from './collection.repository';
+import { CrawlRepository } from './crawl.repository';
 import { SessionRepository } from './session.repository';
 import { UserRepository } from './user.repository';
 
@@ -19,6 +23,8 @@ export interface UnitOfWork {
   account: AccountRepository;
   session: SessionRepository;
   collection: CollectionRepository;
+  crawl: CrawlRepository;
+  bookmark: BookmarkRepository;
   save(): Promise<void>;
   start(): Promise<void>;
   commit(): Promise<void>;
@@ -28,14 +34,14 @@ export interface UnitOfWork {
 
 @Injectable()
 export class UnitOfWorkImpl implements UnitOfWork {
-  @Inject()
-  private readonly _em: EntityManager;
   private _user?: UserRepository;
   private _account?: AccountRepository;
   private _session?: SessionRepository;
   private _collection?: CollectionRepository;
+  private _crawl?: CrawlRepository;
+  private _bookmark?: BookmarkRepository;
 
-  constructor() {}
+  constructor(private readonly _em: EntityManager) {}
   getEntityManager(): EntityManager {
     return this._em;
   }
@@ -68,8 +74,21 @@ export class UnitOfWorkImpl implements UnitOfWork {
     if (!this._collection) {
       this._collection = this._em.getRepository(CollectionEntity);
     }
-
     return this._collection;
+  }
+
+  get crawl(): CrawlRepository {
+    if (!this._crawl) {
+      this._crawl = this._em.getRepository(CrawlEntity);
+    }
+    return this._crawl;
+  }
+
+  get bookmark(): BookmarkRepository {
+    if (!this._bookmark) {
+      this._bookmark = this._em.getRepository(BookmarkEntity);
+    }
+    return this._bookmark;
   }
 
   save(): Promise<void> {
