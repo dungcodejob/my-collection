@@ -1,3 +1,4 @@
+import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { REQUEST_KEY } from '@app/constants';
 import { AccountEntity, SessionEntity, UserEntity } from '@app/entities';
 import { Errors } from '@app/errors';
@@ -5,7 +6,6 @@ import { SessionService } from '@app/session';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { AccessPayload } from '../models';
 
 @Injectable()

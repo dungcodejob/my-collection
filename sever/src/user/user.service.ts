@@ -24,7 +24,7 @@ export class UserService {
 
   create(data: UserCreateInput): UserEntity {
     if (!data) {
-      throw Errors.User.InvalidUserData;
+      throw Errors.User.InvalidData;
     }
 
     const user = new UserEntity(data);
