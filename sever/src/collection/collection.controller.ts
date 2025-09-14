@@ -23,8 +23,8 @@ import { CollectionMapper } from './collection.mapper';
 import { CollectionService } from './collection.service';
 import {
   CollectionCreateDto,
+  CollectionDto,
   CollectionMoveDto,
-  CollectionResponseDto,
   CollectionTreeResponseDto,
   CollectionUpdateDto,
   CollectionWithPaginationResponseDto,
@@ -53,7 +53,7 @@ export class CollectionController {
   })
   @ApiQuery({ name: 'limit', required: false, description: 'Pagination limit' })
   @ApiAuth({
-    type: CollectionResponseDto,
+    type: CollectionDto,
     responseType: 'list',
     summary: 'Get all collections for current user',
   })
@@ -64,7 +64,7 @@ export class CollectionController {
     @Query('parentId') parentId?: string,
     @Query('offset') offset?: number,
     @Query('limit') limit?: number,
-  ): Promise<CollectionResponseDto[]> {
+  ): Promise<CollectionDto[]> {
     const collections = await this._collectionService.findByUserId(user.id, {
       search,
       parentId,
@@ -110,7 +110,7 @@ export class CollectionController {
   })
   @ApiQuery({ name: 'limit', required: false, description: 'Pagination limit' })
   @ApiAuth({
-    type: CollectionResponseDto,
+    type: CollectionDto,
     responseType: 'list',
     summary: 'Get root collections (collections without parent)',
   })
@@ -118,7 +118,7 @@ export class CollectionController {
     @CurrentUser() user: UserEntity,
     @Query('offset') offset?: number,
     @Query('limit') limit?: number,
-  ): Promise<CollectionResponseDto[]> {
+  ): Promise<CollectionDto[]> {
     const collections = await this._collectionService.findRootCollections(
       user.id,
       { offset, limit },
@@ -182,14 +182,14 @@ export class CollectionController {
     description: 'Include children in response',
   })
   @ApiAuth({
-    type: CollectionResponseDto,
+    type: CollectionDto,
     summary: 'Get collection by ID',
   })
   async findOne(
     @Param('id') id: string,
     @CurrentUser() user: UserEntity,
     @Query('includeChildren') includeChildren?: boolean,
-  ): Promise<CollectionResponseDto> {
+  ): Promise<CollectionDto> {
     const collection = await this._collectionService.findOneByIdOrFail(
       id,
       user.id,
@@ -207,7 +207,7 @@ export class CollectionController {
   })
   @ApiQuery({ name: 'limit', required: false, description: 'Pagination limit' })
   @ApiAuth({
-    type: CollectionResponseDto,
+    type: CollectionDto,
     responseType: 'list',
     summary: 'Get children of a collection',
   })
@@ -216,7 +216,7 @@ export class CollectionController {
     @CurrentUser() user: UserEntity,
     @Query('offset') offset?: number,
     @Query('limit') limit?: number,
-  ): Promise<CollectionResponseDto[]> {
+  ): Promise<CollectionDto[]> {
     const children = await this._collectionService.findChildren(id, user.id, {
       offset,
       limit,
@@ -229,13 +229,13 @@ export class CollectionController {
 
   @Post()
   @ApiAuth({
-    type: CollectionResponseDto,
+    type: CollectionDto,
     summary: 'Create a new collection',
   })
   async create(
     @Body() createDto: CollectionCreateDto,
     @CurrentUser() user: UserEntity,
-  ): Promise<CollectionResponseDto> {
+  ): Promise<CollectionDto> {
     const collection = await this._collectionService.create(
       {
         name: createDto.name,
@@ -254,14 +254,14 @@ export class CollectionController {
 
   @Put(':id')
   @ApiAuth({
-    type: CollectionResponseDto,
+    type: CollectionDto,
     summary: 'Update a collection',
   })
   async update(
     @Param('id') id: string,
     @Body() updateDto: CollectionUpdateDto,
     @CurrentUser() user: UserEntity,
-  ): Promise<CollectionResponseDto> {
+  ): Promise<CollectionDto> {
     const collection = await this._collectionService.update(
       id,
       {
@@ -279,7 +279,7 @@ export class CollectionController {
   }
 
   @ApiAuth({
-    type: CollectionResponseDto,
+    type: CollectionDto,
     summary: 'Move collection to new parent',
   })
   @Patch(':id/move')
@@ -287,7 +287,7 @@ export class CollectionController {
     @Param('id') id: string,
     @Body() moveDto: CollectionMoveDto,
     @CurrentUser() user: UserEntity,
-  ): Promise<CollectionResponseDto> {
+  ): Promise<CollectionDto> {
     const collection = await this._collectionService.move(
       id,
       { newParentId: moveDto.newParentId },
@@ -318,14 +318,14 @@ export class CollectionController {
   }
 
   @ApiAuth({
-    type: CollectionResponseDto,
+    type: CollectionDto,
     summary: 'Restore a soft-deleted collection',
   })
   @Patch(':id/restore')
   async restore(
     @Param('id') id: string,
     @CurrentUser() user: UserEntity,
-  ): Promise<CollectionResponseDto> {
+  ): Promise<CollectionDto> {
     const collection = await this._collectionService.restore(id, user.id);
     await this._collectionService.save();
 

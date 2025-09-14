@@ -1,13 +1,13 @@
 import { CollectionEntity } from '@app/entities';
 import { Injectable } from '@nestjs/common';
-import { CollectionResponseDto, CollectionTreeResponseDto } from './models';
+import { CollectionDto, CollectionTreeResponseDto } from './models';
 
 @Injectable()
 export class CollectionMapper {
   /**
    * Convert CollectionEntity to CollectionResponseDto
    */
-  toResponseDto(entity: CollectionEntity): CollectionResponseDto {
+  toResponseDto(entity: CollectionEntity): CollectionDto {
     return {
       id: entity.id,
       name: entity.name,
@@ -43,7 +43,7 @@ export class CollectionMapper {
   /**
    * Convert multiple CollectionEntity to CollectionResponseDto array
    */
-  toResponseDtoArray(entities: CollectionEntity[]): CollectionResponseDto[] {
+  toResponseDtoArray(entities: CollectionEntity[]): CollectionDto[] {
     return entities.map((entity) => this.toResponseDto(entity));
   }
 
