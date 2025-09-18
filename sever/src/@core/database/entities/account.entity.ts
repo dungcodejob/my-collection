@@ -1,6 +1,5 @@
 import { AccountRepository } from '@app/repositories';
 import {
-  Cascade,
   Entity,
   EntityRepositoryType,
   ManyToOne,
@@ -32,7 +31,7 @@ export class AccountEntity extends BaseEntity {
   @Property({ nullable: true })
   lastLoginAt?: Date;
 
-  @ManyToOne(() => UserEntity, { cascade: [Cascade.REMOVE] })
+  @ManyToOne(() => UserEntity, { deleteRule: 'cascade' })
   user: UserEntity;
 
   [EntityRepositoryType]?: AccountRepository;

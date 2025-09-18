@@ -2,6 +2,7 @@ import * as authentication from './error.authentication';
 import * as bookmark from './error.bookmark';
 import * as collection from './error.collection';
 import * as crawl from './error.crawl';
+import * as tag from './error.tag';
 import * as user from './error.user';
 
 // Export error constants and types
@@ -14,6 +15,7 @@ export {
   bookmark as BookmarkErrors,
   collection as CollectionErrors,
   crawl as CrawlErrors,
+  tag as TagErrors,
   user as UserErrors,
 };
 
@@ -23,6 +25,7 @@ export const Errors = {
   ...bookmark,
   ...collection,
   ...crawl,
+  ...tag,
   ...user,
 };
 

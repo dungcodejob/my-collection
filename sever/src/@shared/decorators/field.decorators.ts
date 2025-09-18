@@ -7,6 +7,7 @@ import {
   IsDefined,
   IsEmail,
   IsEnum,
+  IsHexColor,
   IsInt,
   IsJWT,
   IsNumber,
@@ -47,6 +48,7 @@ interface IStringFieldOptions extends IFieldOptions {
   maxLength?: number;
   toLowerCase?: boolean;
   toUpperCase?: boolean;
+  isHexColor?: boolean;
 }
 
 interface IEnumFieldOptions extends IFieldOptions {
@@ -143,6 +145,10 @@ export function StringField(
 
   if (options.toUpperCase) {
     decorators.push(ToUpperCase());
+  }
+
+  if (options.isHexColor) {
+    decorators.push(IsHexColor({ each: options.each }));
   }
 
   return applyDecorators(...decorators);

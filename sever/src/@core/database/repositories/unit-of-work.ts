@@ -3,17 +3,21 @@ import { Global, Injectable, Module, Provider } from '@nestjs/common';
 import {
   AccountEntity,
   BookmarkEntity,
+  BookmarkTagEntity,
   CollectionEntity,
   CrawlEntity,
   SessionEntity,
+  TagEntity,
   UserEntity,
 } from '@app/entities';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { AccountRepository } from './account.repository';
+import { BookmarkTagRepository } from './bookmark-tag.repository';
 import { BookmarkRepository } from './bookmark.repository';
 import { CollectionRepository } from './collection.repository';
 import { CrawlRepository } from './crawl.repository';
 import { SessionRepository } from './session.repository';
+import { TagRepository } from './tag.repository';
 import { UserRepository } from './user.repository';
 
 export const UNIT_OF_WORK = Symbol('UnitOfWork');
@@ -25,6 +29,8 @@ export interface UnitOfWork {
   collection: CollectionRepository;
   crawl: CrawlRepository;
   bookmark: BookmarkRepository;
+  tag: TagRepository;
+  bookmarkTag: BookmarkTagRepository;
   save(): Promise<void>;
   start(): Promise<void>;
   commit(): Promise<void>;
@@ -40,6 +46,8 @@ export class UnitOfWorkImpl implements UnitOfWork {
   private _collection?: CollectionRepository;
   private _crawl?: CrawlRepository;
   private _bookmark?: BookmarkRepository;
+  private _tag?: TagRepository;
+  private _bookmarkTag?: BookmarkTagRepository;
 
   constructor(private readonly _em: EntityManager) {}
   getEntityManager(): EntityManager {
@@ -89,6 +97,20 @@ export class UnitOfWorkImpl implements UnitOfWork {
       this._bookmark = this._em.getRepository(BookmarkEntity);
     }
     return this._bookmark;
+  }
+
+  get tag(): TagRepository {
+    if (!this._tag) {
+      this._tag = this._em.getRepository(TagEntity);
+    }
+    return this._tag;
+  }
+
+  get bookmarkTag(): BookmarkTagRepository {
+    if (!this._bookmarkTag) {
+      this._bookmarkTag = this._em.getRepository(BookmarkTagEntity);
+    }
+    return this._bookmarkTag;
   }
 
   save(): Promise<void> {

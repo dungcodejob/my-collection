@@ -4,9 +4,11 @@ import {
   EntityRepositoryType,
   Index,
   ManyToOne,
+  OneToMany,
   Property,
 } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
+import { BookmarkTagEntity } from './bookmark-tag.entity';
 import { CollectionEntity } from './collection.entity';
 import { UserEntity } from './user.entity';
 
@@ -38,8 +40,11 @@ export class BookmarkEntity extends BaseEntity {
   @Property({ nullable: true, type: 'json' })
   metadata?: Record<string, any>;
 
+  @OneToMany(() => BookmarkTagEntity, (bt) => bt.bookmark)
+  bookmarkTags: BookmarkTagEntity[];
+
   @Property({ nullable: true, type: 'json' })
-  tags?: string[]; // Array of tags stored as JSON
+  tags?: string[]; // Legacy field - kept for backward compatibility
 
   @Property({ nullable: true, type: 'text' })
   notes?: string;
@@ -133,20 +138,56 @@ export class BookmarkEntity extends BaseEntity {
   }
 
   /**
-   * Get tags as array
+   * Get tags as array from relationships
    */
   getTagsArray(): string[] {
+    if (this.bookmarkTags && this.bookmarkTags.length > 0) {
+      return this.bookmarkTags.map((bt) => bt.tag.name);
+    }
+    // Fallback to legacy tags field
     if (!this.tags || !Array.isArray(this.tags)) return [];
     return this.tags.filter((tag) => tag && tag.trim().length > 0);
   }
 
   /**
-   * Set tags from array
+   * Set tags from array (legacy method)
    */
   setTagsFromArray(tags: string[]): void {
     this.tags = tags
       .filter((tag) => tag && tag.trim().length > 0)
       .map((tag) => tag.trim());
+  }
+
+  /**
+   * Get tag names from relationships
+   */
+  getTagNames(): string[] {
+    return this.getTagsArray();
+  }
+
+  /**
+   * Get tag entities
+   */
+  getTagEntities(): BookmarkTagEntity[] {
+    return this.bookmarkTags || [];
+  }
+
+  /**
+   * Check if bookmark has specific tag
+   */
+  hasTag(tagName: string): boolean {
+    return this.getTagsArray().includes(tagName.toLowerCase());
+  }
+
+  /**
+   * Get tag count
+   */
+  getTagCount(): number {
+    return this.bookmarkTags
+      ? this.bookmarkTags.length
+      : this.tags
+        ? this.tags.length
+        : 0;
   }
 
   /**

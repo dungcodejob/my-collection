@@ -32,4 +32,5 @@ export const FEATURE_KEY = {
   HEALTH: 'health',
   CRAWL: 'crawl',
   BOOKMARK: 'bookmark',
+  TAG: 'tag',
 } as const;

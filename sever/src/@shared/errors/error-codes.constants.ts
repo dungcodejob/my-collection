@@ -173,6 +173,28 @@ export const FILE_ERROR_CODES = {
   ALREADY_EXISTS: 'File.AlreadyExists',
 } as const;
 
+// Tag Error Codes
+export const TAG_ERROR_CODES = {
+  NOT_FOUND: 'Tag.NotFound',
+  ALREADY_EXISTS: 'Tag.AlreadyExists',
+  CANNOT_DELETE: 'Tag.CannotDelete',
+  CANNOT_REMOVE: 'Tag.CannotRemove',
+  ALREADY_ASSIGNED: 'Tag.AlreadyAssigned',
+  NOT_ASSIGNED: 'Tag.NotAssigned',
+  INVALID_NAME: 'Tag.InvalidName',
+  NAME_REQUIRED: 'Tag.NameRequired',
+  NAME_TOO_LONG: 'Tag.NameTooLong',
+  DESCRIPTION_TOO_LONG: 'Tag.DescriptionTooLong',
+  INVALID_COLOR: 'Tag.InvalidColor',
+  INVALID_CATEGORY: 'Tag.InvalidCategory',
+  SYSTEM_TAG_PROTECTED: 'Tag.SystemTagProtected',
+  BULK_OPERATION_FAILED: 'Tag.BulkOperationFailed',
+  ASSIGNMENT_FAILED: 'Tag.AssignmentFailed',
+  USAGE_COUNT_ERROR: 'Tag.UsageCountError',
+  INVALID_CONFIDENCE: 'Tag.InvalidConfidence',
+  AUTO_GENERATION_FAILED: 'Tag.AutoGenerationFailed',
+} as const;
+
 // Export all error codes as a single object for easy access
 export const ERROR_CODES = {
   AUTH: AUTH_ERROR_CODES,
@@ -180,6 +202,7 @@ export const ERROR_CODES = {
   COLLECTION: COLLECTION_ERROR_CODES,
   CRAWL: CRAWL_ERROR_CODES,
   BOOKMARK: BOOKMARK_ERROR_CODES,
+  TAG: TAG_ERROR_CODES,
   SYSTEM: SYSTEM_ERROR_CODES,
   FILE: FILE_ERROR_CODES,
 } as const;
@@ -195,6 +218,8 @@ export type CrawlErrorCode =
   (typeof CRAWL_ERROR_CODES)[keyof typeof CRAWL_ERROR_CODES];
 export type BookmarkErrorCode =
   (typeof BOOKMARK_ERROR_CODES)[keyof typeof BOOKMARK_ERROR_CODES];
+export type TagErrorCode =
+  (typeof TAG_ERROR_CODES)[keyof typeof TAG_ERROR_CODES];
 export type SystemErrorCode =
   (typeof SYSTEM_ERROR_CODES)[keyof typeof SYSTEM_ERROR_CODES];
 export type FileErrorCode =
@@ -206,6 +231,7 @@ export type ErrorCode =
   | CollectionErrorCode
   | CrawlErrorCode
   | BookmarkErrorCode
+  | TagErrorCode
   | SystemErrorCode
   | FileErrorCode;
 

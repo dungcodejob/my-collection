@@ -21,6 +21,7 @@ import { BookmarkModule } from './bookmark';
 import { CollectionModule } from './collection';
 import { CrawlModule } from './crawl';
 import { HealthModule } from './health/health.module';
+import { TagModule } from './tag';
 import { UserModule } from './user';
 
 @Module({
@@ -32,6 +33,7 @@ import { UserModule } from './user';
     BookmarkModule,
     CollectionModule,
     CrawlModule,
+    TagModule,
     HealthModule,
     ConfigModule.forRoot({
       load: [appConfig, cookieConfig, jwtConfig, httpConfig],
