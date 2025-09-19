@@ -49,7 +49,9 @@ export class UnitOfWorkImpl implements UnitOfWork {
   private _tag?: TagRepository;
   private _bookmarkTag?: BookmarkTagRepository;
 
-  constructor(private readonly _em: EntityManager) {}
+  constructor(private readonly _em: EntityManager) {
+    this._em.addFilter('deleteFlag', { deleteFlag: false });
+  }
   getEntityManager(): EntityManager {
     return this._em;
   }
