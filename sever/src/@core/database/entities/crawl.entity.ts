@@ -7,7 +7,8 @@ import {
   ManyToOne,
   Property,
 } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { BaseEntityWithTenant } from './base-extend.entity';
+import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
 
 export enum CrawlStatus {
@@ -25,12 +26,12 @@ export enum CrawlType {
 }
 
 @Entity({ repository: () => CrawlRepository })
-@Index({ properties: ['id'] })
 @Index({ properties: ['user', 'deleteFlag'] })
-@Index({ properties: ['url'] })
+@Index({ properties: ['tenant', 'deleteFlag'] })
 @Index({ properties: ['status'] })
 @Index({ properties: ['crawlType'] })
-export class CrawlEntity extends BaseEntity {
+@Index({ properties: ['url'] })
+export class CrawlEntity extends BaseEntityWithTenant {
   @Property({ length: 2048 })
   url: string;
 
@@ -88,23 +89,39 @@ export class CrawlEntity extends BaseEntity {
   @ManyToOne(() => UserEntity)
   user: UserEntity;
 
+  @ManyToOne(() => TenantEntity)
+  tenant: TenantEntity;
+
   [EntityRepositoryType]?: CrawlRepository;
 
   constructor({
     url,
     crawlType,
     user,
+    tenant,
+    title,
+    description,
+    metadata,
     expiresAt,
   }: {
     url: string;
     crawlType: CrawlType;
     user: UserEntity;
+    tenant: TenantEntity;
+    title?: string;
+    description?: string;
+    metadata?: Record<string, any>;
     expiresAt?: Date;
   }) {
     super();
     this.url = url;
+    this.status = CrawlStatus.PENDING;
     this.crawlType = crawlType;
     this.user = user;
+    this.tenant = tenant;
+    this.title = title;
+    this.description = description;
+    this.metadata = metadata;
     this.expiresAt = expiresAt;
   }
 

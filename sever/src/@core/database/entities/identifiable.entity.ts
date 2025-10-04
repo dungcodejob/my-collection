@@ -1,11 +1,11 @@
 import { Entity, PrimaryKey } from '@mikro-orm/core';
-import { v6 } from 'uuid';
+import { v7 } from 'uuid';
 
 export type IdentityType = string;
-export const DatabaseDefaultUUID = () => v6();
+export const DatabaseDefaultUUID = () => v7();
 
 @Entity({ abstract: true })
 export class IdentifiableEntity {
-  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'uuidv7()' })
   id: IdentityType;
 }

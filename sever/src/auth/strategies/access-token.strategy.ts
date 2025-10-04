@@ -2,18 +2,18 @@ import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { REQUEST_KEY } from '@app/constants';
 import { AccountEntity, SessionEntity, UserEntity } from '@app/entities';
 import { Errors } from '@app/errors';
-import { SessionService } from '@app/session';
+import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AccessPayload } from '../models';
 
 @Injectable()
-export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class AccessTokenStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectJwtConfig()
     jwtConfig: JwtConfig,
-    private readonly _sessionService: SessionService,
+    private readonly _em: EntityManager,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -27,9 +27,15 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     session: SessionEntity;
     account: AccountEntity;
   }> {
-    const session = await this._sessionService.findOneById(payload.id);
+    const session = await this._em.findOne(SessionEntity, payload.id, {
+      populate: ['tenant'],
+    });
 
     if (!session || !session.isValid()) {
+      throw Errors.Authentication.Unauthorized;
+    }
+
+    if (session.tenant.id !== payload.tenantId) {
       throw Errors.Authentication.Unauthorized;
     }
 

@@ -5,5 +5,6 @@ export * from './collection.repository';
 export * from './crawl.repository';
 export * from './session.repository';
 export * from './tag.repository';
+export * from './tenant.repository';
 export * from './unit-of-work';
 export * from './user.repository';

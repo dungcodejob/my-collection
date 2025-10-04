@@ -8,13 +8,14 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { AccountEntity } from './account.entity';
-import { BaseEntity } from './base.entity';
+import { BaseEntityWithTenant } from './base-extend.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => SessionRepository })
 @Index({ properties: ['id'] })
 @Index({ properties: ['account', 'isActive'] })
-export class SessionEntity extends BaseEntity {
+@Index({ properties: ['tenant', 'isActive'] })
+export class SessionEntity extends BaseEntityWithTenant {
   @Property()
   deviceId: string;
 
@@ -65,6 +66,7 @@ export class SessionEntity extends BaseEntity {
     id: string;
     expiresAt: Date;
     account: AccountEntity;
+
     ipAddress?: string;
     userAgent?: string;
     deviceType?: string;

@@ -37,20 +37,14 @@ export class TagController {
     type: TagResponseDto,
     summary: 'Create a new tag',
   })
-  async createTag(
-    @Body() createDto: TagCreateDto,
-    @CurrentUser() user: UserEntity,
-  ): Promise<TagResponseDto> {
-    const tag = await this._tagService.createTag(
-      {
-        name: createDto.name,
-        description: createDto.description,
-        color: createDto.color,
-        category: createDto.category,
-        isSystem: createDto.isSystem,
-      },
-      user.id,
-    );
+  async createTag(@Body() createDto: TagCreateDto): Promise<TagResponseDto> {
+    const tag = await this._tagService.createTag({
+      name: createDto.name,
+      description: createDto.description,
+      color: createDto.color,
+      category: createDto.category,
+      isSystem: createDto.isSystem,
+    });
 
     return this._tagMapper.toResponseDto(tag);
   }
@@ -96,10 +90,9 @@ export class TagController {
     summary: 'Get tags for current user',
   })
   async findAll(
-    @CurrentUser() user: UserEntity,
     @Query() searchDto: TagSearchDto,
   ): Promise<TagWithPaginationResponseDto> {
-    const { tags, total } = await this._tagService.findTags(user.id, searchDto);
+    const { tags, total } = await this._tagService.findTags(searchDto);
 
     return this._tagMapper.toPaginationResponseDto(
       tags,
@@ -448,9 +441,8 @@ export class TagController {
   async assignTagToBookmark(
     @Param('tagId') tagId: string,
     @Param('bookmarkId') bookmarkId: string,
-    @CurrentUser() user: UserEntity,
   ): Promise<{ success: boolean }> {
-    await this._tagService.assignTagToBookmark(bookmarkId, tagId, user.id);
+    await this._tagService.assignTagToBookmark(bookmarkId, tagId);
     return { success: true };
   }
 

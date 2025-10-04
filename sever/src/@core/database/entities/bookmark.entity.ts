@@ -7,18 +7,21 @@ import {
   OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+
+import { BaseEntityWithTenant } from './base-extend.entity';
 import { BookmarkTagEntity } from './bookmark-tag.entity';
 import { CollectionEntity } from './collection.entity';
+import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => BookmarkRepository })
 @Index({ properties: ['id'] })
 @Index({ properties: ['user', 'deleteFlag'] })
+@Index({ properties: ['tenant', 'deleteFlag'] })
 @Index({ properties: ['url'] })
 @Index({ properties: ['title'] })
 @Index({ properties: ['collection'] })
-export class BookmarkEntity extends BaseEntity {
+export class BookmarkEntity extends BaseEntityWithTenant {
   @Property({ length: 2048 })
   url: string;
 
@@ -64,6 +67,9 @@ export class BookmarkEntity extends BaseEntity {
   @ManyToOne(() => UserEntity)
   user: UserEntity;
 
+  @ManyToOne(() => TenantEntity)
+  tenant: TenantEntity;
+
   @ManyToOne(() => CollectionEntity, { nullable: true })
   collection?: CollectionEntity;
 
@@ -73,6 +79,7 @@ export class BookmarkEntity extends BaseEntity {
     url,
     title,
     user,
+    tenant,
     collection,
     description,
     imageUrl,
@@ -85,6 +92,7 @@ export class BookmarkEntity extends BaseEntity {
     url: string;
     title: string;
     user: UserEntity;
+    tenant: TenantEntity;
     collection?: CollectionEntity;
     description?: string;
     imageUrl?: string;
@@ -98,6 +106,7 @@ export class BookmarkEntity extends BaseEntity {
     this.url = url;
     this.title = title;
     this.user = user;
+    this.tenant = tenant;
     this.collection = collection;
     this.description = description;
     this.imageUrl = imageUrl;

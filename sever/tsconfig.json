@@ -54,7 +54,11 @@
       "@app/background": ["src/@core/background"],
       "@app/background/*": ["src/@core/background/*"],
       "@app/database": ["src/@core/database"],
-      "@app/database/*": ["src/@core/database/*"]
+      "@app/database/*": ["src/@core/database/*"],
+      "@app/tenant": ["src/tenant"],
+      "@app/tenant/*": ["src/tenant/*"],
+      "@app/request": ["src/@core/request"],
+      "@app/request/*": ["src/@core/request/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

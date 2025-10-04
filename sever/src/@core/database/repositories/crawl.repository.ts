@@ -25,6 +25,27 @@ export class CrawlRepository extends EntityRepository<CrawlEntity> {
   }
 
   /**
+   * Find crawls by user ID and tenant ID
+   */
+  async findByUserAndTenant(
+    userId: string,
+    tenantId: string,
+    options?: FindCrawlOptions,
+  ): Promise<CrawlEntity[]> {
+    return this.find(
+      {
+        user: { id: userId },
+        tenant: { id: tenantId },
+        deleteFlag: false,
+      },
+      {
+        orderBy: { createAt: 'DESC' },
+        ...options,
+      },
+    );
+  }
+
+  /**
    * Find crawl by URL and user
    */
   async findByUrl(

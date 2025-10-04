@@ -2,6 +2,7 @@ import { AccountEntity, SessionEntity, UserEntity } from '@app/entities';
 import { SessionCreateInput } from '@app/session';
 import { faker } from '@faker-js/faker';
 import { createMockAccount } from './account.factory';
+import { createMockTenant } from './tenant.factory';
 import { createMockUser } from './user.factory';
 
 /**
@@ -58,6 +59,7 @@ export const createMockSessionInput = (
   overrides: Partial<SessionCreateInput> = {},
 ): SessionCreateInput => {
   return {
+    tenant: createMockTenant(),
     account: createMockAccount(),
     user: createMockUser(),
     refreshTokenHash: faker.string.alphanumeric(64),

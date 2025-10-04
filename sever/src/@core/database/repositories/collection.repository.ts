@@ -33,12 +33,10 @@ export class CollectionRepository extends EntityRepository<CollectionEntity> {
    * Find root collections (collections without parent) for a user
    */
   async findRootCollections(
-    userId: string,
     options?: FindCollectionOptions,
   ): Promise<CollectionEntity[]> {
     return this.find(
       {
-        user: { id: userId },
         parent: null,
         deleteFlag: false,
       },
@@ -54,13 +52,11 @@ export class CollectionRepository extends EntityRepository<CollectionEntity> {
    */
   async findChildren(
     parentId: string,
-    userId: string,
     options?: FindCollectionOptions,
   ): Promise<CollectionEntity[]> {
     return this.find(
       {
         parent: { id: parentId },
-        user: { id: userId },
         deleteFlag: false,
       },
       {
@@ -73,17 +69,14 @@ export class CollectionRepository extends EntityRepository<CollectionEntity> {
   /**
    * Find collection tree structure for a user
    */
-  async findCollectionTree(
-    userId: string,
-    maxDepth: number = 5,
-  ): Promise<CollectionEntity[]> {
-    const rootCollections = await this.findRootCollections(userId, {
+  async findCollectionTree(maxDepth: number = 5): Promise<CollectionEntity[]> {
+    const rootCollections = await this.findRootCollections({
       populate: ['children'],
     });
 
     // Recursively populate children up to maxDepth
     for (const root of rootCollections) {
-      await this.populateChildrenRecursively(root, userId, maxDepth - 1);
+      await this.populateChildrenRecursively(root, maxDepth - 1);
     }
 
     return rootCollections;
@@ -94,18 +87,17 @@ export class CollectionRepository extends EntityRepository<CollectionEntity> {
    */
   private async populateChildrenRecursively(
     collection: CollectionEntity,
-    userId: string,
     remainingDepth: number,
   ): Promise<void> {
     if (remainingDepth <= 0) return;
 
-    const children = await this.findChildren(collection.id, userId);
+    const children = await this.findChildren(collection.id);
     collection.children.set(children);
     collection.updateHasChildFlag();
 
     // Recursively populate children's children
     for (const child of children) {
-      await this.populateChildrenRecursively(child, userId, remainingDepth - 1);
+      await this.populateChildrenRecursively(child, remainingDepth - 1);
     }
   }
 
@@ -264,18 +256,15 @@ export class CollectionRepository extends EntityRepository<CollectionEntity> {
   async moveToParent(
     collectionId: string,
     newParentId: string | null,
-    userId: string,
   ): Promise<void> {
     const collection = await this.findOneOrFail({
       id: collectionId,
-      user: { id: userId },
     });
 
     let parent: CollectionEntity | undefined = undefined;
     if (newParentId) {
       parent = await this.findOneOrFail({
         id: newParentId,
-        user: { id: userId },
       });
     }
 
@@ -283,17 +272,14 @@ export class CollectionRepository extends EntityRepository<CollectionEntity> {
     collection.generatePath();
 
     // Update all children paths recursively
-    await this.updateChildrenPaths(collection, userId);
+    await this.updateChildrenPaths(collection);
   }
 
   /**
    * Update paths for all children recursively
    */
-  private async updateChildrenPaths(
-    parent: CollectionEntity,
-    userId: string,
-  ): Promise<void> {
-    const children = await this.findChildren(parent.id, userId);
+  private async updateChildrenPaths(parent: CollectionEntity): Promise<void> {
+    const children = await this.findChildren(parent.id);
 
     for (const child of children) {
       child.parent = parent;
@@ -301,7 +287,7 @@ export class CollectionRepository extends EntityRepository<CollectionEntity> {
       await this.em.persistAndFlush(child);
 
       // Recursively update children's children
-      await this.updateChildrenPaths(child, userId);
+      await this.updateChildrenPaths(child);
     }
   }
 }

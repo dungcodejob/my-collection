@@ -26,7 +26,7 @@ export const SWAGGER_SCHEME = {
 } as const;
 
 export const FEATURE_KEY = {
-  AUTH: 'Auth',
+  AUTH: 'auth',
   USER: 'user',
   COLLECTION: 'collection',
   HEALTH: 'health',

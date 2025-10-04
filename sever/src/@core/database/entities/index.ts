@@ -7,4 +7,5 @@ export * from './crawl.entity';
 export * from './identifiable.entity';
 export * from './session.entity';
 export * from './tag.entity';
+export * from './tenant.entity';
 export * from './user.entity';

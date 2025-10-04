@@ -1,11 +1,18 @@
-import { UserEntity } from '@app/entities';
+import { TenantEntity, UserEntity } from '@app/entities';
 import { FilterQuery, FindOptions } from '@mikro-orm/core';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { TagEntity } from '../entities/tag.entity';
 
 type FindTagOptions = FindOptions<TagEntity, 'author', '*', never>;
+type CreateTagInput = Omit<TagEntity, 'id' | 'author'> & {
+  author?: UserEntity;
+};
 
 export class TagRepository extends EntityRepository<TagEntity> {
+  constructor(em: EntityManager) {
+    super(em, TagEntity);
+  }
+
   /**
    * Find tags by user ID
    */
@@ -59,7 +66,8 @@ export class TagRepository extends EntityRepository<TagEntity> {
    */
   async findOrCreate(
     name: string,
-    authorId?: string,
+    author: UserEntity,
+    tenant: TenantEntity,
     options?: {
       description?: string;
       color?: string;
@@ -68,14 +76,13 @@ export class TagRepository extends EntityRepository<TagEntity> {
   ): Promise<TagEntity> {
     const normalizedName = name.toLowerCase().trim();
 
-    let tag = await this.findByName(normalizedName, authorId);
+    let tag = await this.findByName(normalizedName, author?.id);
 
     if (!tag) {
       tag = new TagEntity({
         name: normalizedName,
-        author: authorId
-          ? this.em.getReference(UserEntity, authorId)
-          : undefined,
+        author: author,
+        tenant: tenant,
         description: options?.description,
         color: options?.color,
         category: options?.category,
@@ -102,6 +109,34 @@ export class TagRepository extends EntityRepository<TagEntity> {
       {
         name: { $ilike: searchPattern },
         author: { id: userId },
+        deleteFlag: false,
+        isActive: true,
+        ...options,
+      },
+      {
+        orderBy: { usageCount: 'DESC', name: 'ASC' },
+        limit,
+      },
+    );
+  }
+
+  /**
+   * Search tags by name pattern with tenant context
+   */
+  async searchByNameAndTenant(
+    searchTerm: string,
+    userId: string,
+    tenantId: string,
+    limit: number = 20,
+    options?: FindTagOptions,
+  ): Promise<TagEntity[]> {
+    const searchPattern = `%${searchTerm.toLowerCase()}%`;
+
+    return this.find(
+      {
+        name: { $ilike: searchPattern },
+        author: { id: userId },
+        tenant: { id: tenantId },
         deleteFlag: false,
         isActive: true,
         ...options,

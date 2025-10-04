@@ -5,11 +5,12 @@ import {
   ManyToOne,
   Property,
 } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { BaseEntityWithTenant } from './base-extend.entity';
+import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => AccountRepository })
-export class AccountEntity extends BaseEntity {
+export class AccountEntity extends BaseEntityWithTenant {
   @Property({ unique: true })
   username: string;
 
@@ -41,13 +42,16 @@ export class AccountEntity extends BaseEntity {
     email,
     passwordHash,
     user,
+    tenant,
   }: {
     username: string;
     email: string;
     passwordHash: string;
     user: UserEntity;
+    tenant: TenantEntity;
   }) {
     super();
+    this.tenant = tenant;
     this.username = username;
     this.email = email;
     this.passwordHash = passwordHash;

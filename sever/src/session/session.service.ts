@@ -3,10 +3,19 @@ import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
 import { FindOneOptions, RequiredEntityData } from '@mikro-orm/core';
 import { Inject, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
+
+export type SessionFindOptions = FindOneOptions<
+  SessionEntity,
+  'user' | 'account' | 'tenant',
+  '*',
+  never
+>;
+
 export type SessionCreateInput = Omit<
   RequiredEntityData<SessionEntity>,
   'deviceId' | 'refreshCount' | 'isActive'
 >;
+
 @Injectable()
 export class SessionService {
   constructor(@Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork) {}
@@ -15,10 +24,7 @@ export class SessionService {
     return this.getActiveSessionsForUser(userId);
   }
 
-  async findOneById(
-    id: string,
-    options?: FindOneOptions<SessionEntity, never, '*', never>,
-  ) {
+  async findOneById(id: string, options?: SessionFindOptions) {
     return this._unitOfWork.session.findOne(
       {
         id,

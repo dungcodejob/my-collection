@@ -1,6 +1,7 @@
 import { CrawlEntity, CrawlStatus, CrawlType } from '@app/entities';
 import { Errors } from '@app/errors';
 import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
+import { RequestContextService } from '@app/request';
 import { isNil } from '@app/utils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
@@ -27,28 +28,28 @@ export class CrawlService {
   private readonly MAX_CONTENT_SIZE = 10 * 1024 * 1024; // 10MB
   private readonly MAX_RETRIES = 3;
 
-  constructor(@Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork) {}
+  constructor(
+    @Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork,
+    private readonly _ctx: RequestContextService,
+  ) {}
 
   /**
    * Create a new crawl request with immediate metadata extraction
    */
-  async createCrawl(
-    data: CrawlCreateInput,
-    userId: string,
-  ): Promise<CrawlEntity> {
+  async createCrawl(data: CrawlCreateInput): Promise<CrawlEntity> {
     // Validate URL
     const urlValidation = UrlValidator.validate(data.url);
     if (!urlValidation.isValid) {
       throw Errors.Crawl.InvalidUrl(urlValidation.errorMessage);
     }
 
-    // Get user entity
-    const user = await this._unitOfWork.user.findOneOrFail({ id: userId });
+    const user = this._ctx.user;
+    const tenant = this._ctx.tenant;
 
-    // Check for existing crawl with same URL
+    // Check for existing crawl with same URL within tenant
     const existingCrawl = await this._unitOfWork.crawl.findByUrl(
       urlValidation.normalizedUrl!,
-      userId,
+      user.id,
     );
 
     if (existingCrawl && !existingCrawl.isExpired()) {
@@ -61,6 +62,7 @@ export class CrawlService {
       url: urlValidation.normalizedUrl!,
       crawlType: data.crawlType,
       user,
+      tenant,
       expiresAt: data.expiresAt,
     });
 
@@ -76,23 +78,21 @@ export class CrawlService {
   /**
    * Create a new crawl request (legacy async version)
    */
-  async createCrawlAsync(
-    data: CrawlCreateInput,
-    userId: string,
-  ): Promise<CrawlEntity> {
+  async createCrawlAsync(data: CrawlCreateInput): Promise<CrawlEntity> {
     // Validate URL
     const urlValidation = UrlValidator.validate(data.url);
     if (!urlValidation.isValid) {
       throw Errors.Crawl.InvalidUrl(urlValidation.errorMessage);
     }
 
-    // Get user entity
-    const user = await this._unitOfWork.user.findOneOrFail({ id: userId });
+    // Get user and tenant entities
+    const user = this._ctx.user;
+    const tenant = this._ctx.tenant;
 
-    // Check for existing crawl with same URL
+    // Check for existing crawl with same URL within tenant
     const existingCrawl = await this._unitOfWork.crawl.findByUrl(
       urlValidation.normalizedUrl!,
-      userId,
+      user.id,
     );
 
     if (existingCrawl && !existingCrawl.isExpired()) {
@@ -105,6 +105,7 @@ export class CrawlService {
       url: urlValidation.normalizedUrl!,
       crawlType: data.crawlType,
       user,
+      tenant,
       expiresAt: data.expiresAt,
     });
 
@@ -128,7 +129,6 @@ export class CrawlService {
   async createBatchCrawls(
     urls: string[],
     crawlType: CrawlType,
-    userId: string,
     expiresAt?: Date,
   ): Promise<{
     crawls: CrawlEntity[];
@@ -141,8 +141,9 @@ export class CrawlService {
     const failures: Array<{ url: string; error: string }> = [];
     let successCount = 0;
 
-    // Get user entity once for all crawls
-    const user = await this._unitOfWork.user.findOneOrFail({ id: userId });
+    // Get user and tenant entities once for all crawls
+    const user = this._ctx.user;
+    const tenant = this._ctx.tenant;
 
     // Process crawls with concurrency limit and Unit of Work pattern
     const BATCH_SIZE = 5; // Process 5 URLs concurrently
@@ -164,10 +165,10 @@ export class CrawlService {
             continue;
           }
 
-          // Check for existing crawl
+          // Check for existing crawl within tenant
           const existingCrawl = await this._unitOfWork.crawl.findByUrl(
             urlValidation.normalizedUrl!,
-            userId,
+            user.id,
           );
 
           if (existingCrawl && !existingCrawl.isExpired()) {
@@ -181,6 +182,7 @@ export class CrawlService {
             url: urlValidation.normalizedUrl!,
             crawlType,
             user,
+            tenant,
             expiresAt,
           });
 
@@ -246,7 +248,6 @@ export class CrawlService {
   async createBatchCrawlsAsync(
     urls: string[],
     crawlType: CrawlType,
-    userId: string,
     expiresAt?: Date,
   ): Promise<{
     crawls: CrawlEntity[];
@@ -261,10 +262,11 @@ export class CrawlService {
 
     for (const url of urls) {
       try {
-        const crawl = await this.createCrawlAsync(
-          { url, crawlType, expiresAt },
-          userId,
-        );
+        const crawl = await this.createCrawlAsync({
+          url,
+          crawlType,
+          expiresAt,
+        });
         results.push(crawl);
         successCount++;
       } catch (error) {
@@ -515,21 +517,30 @@ export class CrawlService {
   }
 
   /**
-   * Find crawl by ID
+   * Find crawl by ID within tenant context
    */
-  async findOneById(id: string, userId: string): Promise<CrawlEntity | null> {
+  async findOneById(
+    id: string,
+    userId: string,
+    tenantId: string,
+  ): Promise<CrawlEntity | null> {
     return this._unitOfWork.crawl.findOne({
       id,
       user: { id: userId },
+      tenant: { id: tenantId },
       deleteFlag: false,
     });
   }
 
   /**
-   * Find crawl by ID or fail
+   * Find crawl by ID or fail within tenant context
    */
-  async findOneByIdOrFail(id: string, userId: string): Promise<CrawlEntity> {
-    const crawl = await this.findOneById(id, userId);
+  async findOneByIdOrFail(
+    id: string,
+    userId: string,
+    tenantId: string,
+  ): Promise<CrawlEntity> {
+    const crawl = await this.findOneById(id, userId, tenantId);
 
     if (isNil(crawl)) {
       throw Errors.Crawl.NotFound;
@@ -539,10 +550,11 @@ export class CrawlService {
   }
 
   /**
-   * Find crawls by user with pagination and filters
+   * Find crawls by user with pagination and filters within tenant context
    */
   async findByUserId(
     userId: string,
+
     options?: CrawlSearchOptions,
   ): Promise<{ crawls: CrawlEntity[]; total: number }> {
     return this._unitOfWork.crawl.findWithPagination(
@@ -558,7 +570,7 @@ export class CrawlService {
   }
 
   /**
-   * Get crawl statistics for user
+   * Get crawl statistics for user within tenant context
    */
   async getCrawlStats(userId: string) {
     return this._unitOfWork.crawl.getCrawlStats(userId);
@@ -570,8 +582,12 @@ export class CrawlService {
   /**
    * Retry failed crawl with immediate metadata extraction
    */
-  async retryCrawl(crawlId: string, userId: string): Promise<CrawlEntity> {
-    const crawl = await this.findOneByIdOrFail(crawlId, userId);
+  async retryCrawl(
+    crawlId: string,
+    userId: string,
+    tenantId: string,
+  ): Promise<CrawlEntity> {
+    const crawl = await this.findOneByIdOrFail(crawlId, userId, tenantId);
 
     if (!crawl.canRetry(this.MAX_RETRIES)) {
       throw Errors.Crawl.CannotRetry;
@@ -587,8 +603,12 @@ export class CrawlService {
   /**
    * Retry failed crawl (async processing)
    */
-  async retryCrawlAsync(crawlId: string, userId: string): Promise<CrawlEntity> {
-    const crawl = await this.findOneByIdOrFail(crawlId, userId);
+  async retryCrawlAsync(
+    crawlId: string,
+    userId: string,
+    tenantId: string,
+  ): Promise<CrawlEntity> {
+    const crawl = await this.findOneByIdOrFail(crawlId, userId, tenantId);
 
     if (!crawl.canRetry(this.MAX_RETRIES)) {
       throw Errors.Crawl.CannotRetry;
@@ -609,8 +629,12 @@ export class CrawlService {
   /**
    * Delete crawl
    */
-  async deleteCrawl(crawlId: string, userId: string): Promise<void> {
-    const crawl = await this.findOneByIdOrFail(crawlId, userId);
+  async deleteCrawl(
+    crawlId: string,
+    userId: string,
+    tenantId: string,
+  ): Promise<void> {
+    const crawl = await this.findOneByIdOrFail(crawlId, userId, tenantId);
 
     crawl.deleteFlag = true;
     crawl.deletedAt = new Date();
@@ -669,11 +693,9 @@ export class CrawlService {
   /**
    * Get recent crawls for user
    */
-  async getRecentCrawls(
-    userId: string,
-    limit: number = 10,
-  ): Promise<CrawlEntity[]> {
-    return this._unitOfWork.crawl.findRecentCrawls(userId, limit);
+  async getRecentCrawls(limit: number = 10): Promise<CrawlEntity[]> {
+    const user = this._ctx.user;
+    return this._unitOfWork.crawl.findRecentCrawls(user.id, limit);
   }
 
   /**

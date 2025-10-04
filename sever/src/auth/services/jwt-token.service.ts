@@ -8,7 +8,7 @@ import {
   type JwtConfig,
 } from '@app/configs';
 import { SECOND } from '@app/constants';
-import { AccountEntity, SessionEntity } from '@app/entities';
+import { AccountEntity, SessionEntity, TenantEntity } from '@app/entities';
 import { v6 } from 'uuid';
 import {
   AccessPayload,
@@ -33,6 +33,7 @@ export class JwtTokenService {
   generateAccessToken(
     session: SessionEntity,
     account: AccountEntity,
+    tenant: TenantEntity,
     domain?: string | null,
   ): Promise<string> {
     const { secret, time } = this.jwtConfig[TokenTypeEnum.ACCESS];
@@ -48,6 +49,8 @@ export class JwtTokenService {
     const payload: AccessPayload = {
       id: session.id,
       email: account.email,
+      tenantId: tenant?.id,
+      tenantSlug: tenant?.slug,
     };
 
     return this.generateToken(payload, secret, jwtOptions);
@@ -56,6 +59,7 @@ export class JwtTokenService {
   generateRefreshToken(
     session: SessionEntity,
     account: AccountEntity,
+    tenant: TenantEntity,
     domain?: string | null,
     tokenId?: string,
   ): Promise<string> {
@@ -74,6 +78,8 @@ export class JwtTokenService {
       email: account.email,
       tokenId: tokenId ?? v6(),
       version: account.version,
+      tenantId: tenant.id,
+      tenantSlug: tenant.slug,
     };
 
     return this.generateToken(payload, secret, jwtOptions);

@@ -1,6 +1,7 @@
 import { BookmarkEntity, CollectionEntity } from '@app/entities';
 import { Errors } from '@app/errors';
 import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
+import { RequestContextService } from '@app/request';
 import { isNil } from '@app/utils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
@@ -41,22 +42,20 @@ export class BookmarkService {
   constructor(
     @Inject(UNIT_OF_WORK)
     private readonly _unitOfWork: UnitOfWork,
+    private readonly _requestContextService: RequestContextService,
   ) {}
 
   /**
-   * Create a new bookmark
+   * Create a new bookmark for a specific tenant
    */
-  async createBookmark(
-    data: BookmarkCreateInput,
-    userId: string,
-  ): Promise<BookmarkEntity> {
-    // Get user entity
-    const user = await this._unitOfWork.user.findOneOrFail({ id: userId });
+  async createBookmark(data: BookmarkCreateInput): Promise<BookmarkEntity> {
+    // Get user and tenant entities
+    const user = this._requestContextService.user;
 
-    // Check if bookmark with same URL already exists for this user
+    // Check if bookmark with same URL already exists for this user and tenant
     const existingBookmark = await this._unitOfWork.bookmark.findByUrl(
       data.url,
-      userId,
+      user.id,
     );
 
     if (existingBookmark) {
@@ -69,7 +68,7 @@ export class BookmarkService {
       collection =
         (await this._unitOfWork.collection.findOne({
           id: data.collectionId,
-          user: { id: userId },
+          user: { id: user.id },
           deleteFlag: false,
         })) ?? undefined;
 
@@ -83,6 +82,7 @@ export class BookmarkService {
       url: data.url,
       title: data.title,
       user,
+      tenant: this._requestContextService.tenant,
       collection,
       description: data.description,
       imageUrl: data.imageUrl,
@@ -97,20 +97,21 @@ export class BookmarkService {
     await this._unitOfWork.save();
 
     this.logger.log(
-      `Created bookmark ${createdBookmark.id} for user ${userId}`,
+      `Created bookmark ${createdBookmark.id} for user ${user.id} in tenant ${this._requestContextService.tenant.id}`,
     );
     return createdBookmark;
   }
 
   /**
-   * Update bookmark
+   * Update bookmark within tenant context
    */
   async updateBookmark(
     bookmarkId: string,
     data: BookmarkUpdateInput,
-    userId: string,
   ): Promise<BookmarkEntity> {
-    const bookmark = await this.findOneByIdOrFail(bookmarkId, userId);
+    const user = this._requestContextService.user;
+    const tenant = this._requestContextService.tenant;
+    const bookmark = await this.findOneByIdOrFail(bookmarkId);
 
     // Update basic fields
     if (data.title !== undefined) bookmark.title = data.title;
@@ -134,7 +135,6 @@ export class BookmarkService {
       } else {
         const collection = await this._unitOfWork.collection.findOne({
           id: data.collectionId,
-          user: { id: userId },
           deleteFlag: false,
         });
 
@@ -147,33 +147,31 @@ export class BookmarkService {
     }
 
     await this._unitOfWork.save();
-    this.logger.log(`Updated bookmark ${bookmarkId} for user ${userId}`);
+    this.logger.log(
+      `Updated bookmark ${bookmarkId} for user ${user.id} in tenant ${tenant.id}`,
+    );
     return bookmark;
   }
 
   /**
    * Delete bookmark
    */
-  async deleteBookmark(bookmarkId: string, userId: string): Promise<void> {
-    const bookmark = await this.findOneByIdOrFail(bookmarkId, userId);
+  async deleteBookmark(bookmarkId: string): Promise<void> {
+    const bookmark = await this.findOneByIdOrFail(bookmarkId);
 
     bookmark.deleteFlag = true;
     bookmark.deletedAt = new Date();
 
     await this._unitOfWork.save();
-    this.logger.log(`Deleted bookmark ${bookmarkId} for user ${userId}`);
+    this.logger.log(`Deleted bookmark ${bookmarkId}`);
   }
 
   /**
    * Find bookmark by ID
    */
-  async findOneById(
-    bookmarkId: string,
-    userId: string,
-  ): Promise<BookmarkEntity | null> {
+  async findOneById(bookmarkId: string): Promise<BookmarkEntity | null> {
     return this._unitOfWork.bookmark.findOne({
       id: bookmarkId,
-      user: { id: userId },
       deleteFlag: false,
     });
   }
@@ -181,11 +179,8 @@ export class BookmarkService {
   /**
    * Find bookmark by ID or fail
    */
-  async findOneByIdOrFail(
-    bookmarkId: string,
-    userId: string,
-  ): Promise<BookmarkEntity> {
-    const bookmark = await this.findOneById(bookmarkId, userId);
+  async findOneByIdOrFail(bookmarkId: string): Promise<BookmarkEntity> {
+    const bookmark = await this.findOneById(bookmarkId);
 
     if (isNil(bookmark)) {
       throw Errors.Bookmark.NotFound;
@@ -198,17 +193,22 @@ export class BookmarkService {
    * Find bookmarks with search and pagination
    */
   async findBookmarks(
-    userId: string,
     searchDto: BookmarkSearchDto,
   ): Promise<{ bookmarks: BookmarkEntity[]; total: number }> {
+    const user = this._requestContextService.user;
     const { offset = 0, limit = 20, ...filters } = searchDto;
 
-    return this._unitOfWork.bookmark.findWithPagination(userId, offset, limit, {
-      search: filters.search,
-      collectionId: filters.collectionId,
-      isFavorite: filters.isFavorite,
-      tags: filters.tags,
-    });
+    return this._unitOfWork.bookmark.findWithPagination(
+      user.id,
+      offset,
+      limit,
+      {
+        search: filters.search,
+        collectionId: filters.collectionId,
+        isFavorite: filters.isFavorite,
+        tags: filters.tags,
+      },
+    );
   }
 
   /**
@@ -221,45 +221,40 @@ export class BookmarkService {
   /**
    * Get user tags
    */
-  async getUserTags(userId: string): Promise<string[]> {
-    return this._unitOfWork.bookmark.getUserTags(userId);
+  async getUserTags(): Promise<string[]> {
+    const user = this._requestContextService.user;
+    return this._unitOfWork.bookmark.getUserTags(user.id);
   }
 
   /**
    * Get recent bookmarks
    */
-  async getRecentBookmarks(
-    userId: string,
-    limit: number = 10,
-  ): Promise<BookmarkEntity[]> {
-    return this._unitOfWork.bookmark.findRecent(userId, limit);
+  async getRecentBookmarks(limit: number = 10): Promise<BookmarkEntity[]> {
+    const user = this._requestContextService.user;
+    return this._unitOfWork.bookmark.findRecent(user.id, limit);
   }
 
   /**
    * Get favorite bookmarks
    */
-  async getFavoriteBookmarks(userId: string): Promise<BookmarkEntity[]> {
-    return this._unitOfWork.bookmark.findFavorites(userId);
+  async getFavoriteBookmarks(): Promise<BookmarkEntity[]> {
+    const user = this._requestContextService.user;
+    return this._unitOfWork.bookmark.findFavorites(user.id);
   }
 
   /**
    * Get most visited bookmarks
    */
-  async getMostVisitedBookmarks(
-    userId: string,
-    limit: number = 10,
-  ): Promise<BookmarkEntity[]> {
-    return this._unitOfWork.bookmark.findMostVisited(userId, limit);
+  async getMostVisitedBookmarks(limit: number = 10): Promise<BookmarkEntity[]> {
+    const user = this._requestContextService.user;
+    return this._unitOfWork.bookmark.findMostVisited(user.id, limit);
   }
 
   /**
    * Visit bookmark (increment visit count)
    */
-  async visitBookmark(
-    bookmarkId: string,
-    userId: string,
-  ): Promise<BookmarkEntity> {
-    const bookmark = await this.findOneByIdOrFail(bookmarkId, userId);
+  async visitBookmark(bookmarkId: string): Promise<BookmarkEntity> {
+    const bookmark = await this.findOneByIdOrFail(bookmarkId);
     bookmark.incrementVisitCount();
     await this._unitOfWork.save();
     return bookmark;
@@ -268,11 +263,8 @@ export class BookmarkService {
   /**
    * Toggle bookmark favorite status
    */
-  async toggleFavorite(
-    bookmarkId: string,
-    userId: string,
-  ): Promise<BookmarkEntity> {
-    const bookmark = await this.findOneByIdOrFail(bookmarkId, userId);
+  async toggleFavorite(bookmarkId: string): Promise<BookmarkEntity> {
+    const bookmark = await this.findOneByIdOrFail(bookmarkId);
 
     if (bookmark.isFavorite) {
       bookmark.unmarkAsFavorite();
@@ -292,7 +284,6 @@ export class BookmarkService {
    */
   async bulkMoveBookmarks(
     data: BulkMoveBookmarksDto,
-    userId: string,
   ): Promise<BulkBookmarkOperationResponseDto> {
     const { bookmarkIds, collectionId } = data;
     const results = {
@@ -308,7 +299,6 @@ export class BookmarkService {
       collection =
         (await this._unitOfWork.collection.findOne({
           id: collectionId,
-          user: { id: userId },
           deleteFlag: false,
         })) ?? undefined;
 
@@ -320,7 +310,7 @@ export class BookmarkService {
     // Process each bookmark
     for (const bookmarkId of bookmarkIds) {
       try {
-        const bookmark = await this.findOneById(bookmarkId, userId);
+        const bookmark = await this.findOneById(bookmarkId);
         if (bookmark) {
           bookmark.collection = collection;
           results.successCount++;
@@ -349,7 +339,6 @@ export class BookmarkService {
    */
   async bulkUpdateFavorites(
     data: BulkFavoriteBookmarksDto,
-    userId: string,
   ): Promise<BulkBookmarkOperationResponseDto> {
     const { bookmarkIds, isFavorite } = data;
     const results = {
@@ -362,7 +351,7 @@ export class BookmarkService {
     // Process each bookmark
     for (const bookmarkId of bookmarkIds) {
       try {
-        const bookmark = await this.findOneById(bookmarkId, userId);
+        const bookmark = await this.findOneById(bookmarkId);
         if (bookmark) {
           bookmark.isFavorite = isFavorite;
           results.successCount++;
@@ -391,7 +380,6 @@ export class BookmarkService {
    */
   async bulkDeleteBookmarks(
     bookmarkIds: string[],
-    userId: string,
   ): Promise<BulkBookmarkOperationResponseDto> {
     const results = {
       successCount: 0,
@@ -403,7 +391,7 @@ export class BookmarkService {
     // Process each bookmark
     for (const bookmarkId of bookmarkIds) {
       try {
-        const bookmark = await this.findOneById(bookmarkId, userId);
+        const bookmark = await this.findOneById(bookmarkId);
         if (bookmark) {
           bookmark.deleteFlag = true;
           bookmark.deletedAt = new Date();
@@ -430,11 +418,11 @@ export class BookmarkService {
    * Search bookmarks by term
    */
   async searchBookmarks(
-    userId: string,
     searchTerm: string,
     limit: number = 20,
   ): Promise<BookmarkEntity[]> {
-    return this._unitOfWork.bookmark.searchBookmarks(userId, searchTerm, {
+    const user = this._requestContextService.user;
+    return this._unitOfWork.bookmark.searchBookmarks(user.id, searchTerm, {
       limit,
     });
   }
@@ -443,11 +431,11 @@ export class BookmarkService {
    * Find bookmarks by tags
    */
   async findBookmarksByTags(
-    userId: string,
     tags: string[],
     limit: number = 20,
   ): Promise<BookmarkEntity[]> {
-    return this._unitOfWork.bookmark.findByTags(userId, tags, { limit });
+    const user = this._requestContextService.user;
+    return this._unitOfWork.bookmark.findByTags(user.id, tags, { limit });
   }
 
   /**
@@ -455,8 +443,8 @@ export class BookmarkService {
    */
   async getBookmarksByCollection(
     collectionId: string,
-    userId: string,
   ): Promise<BookmarkEntity[]> {
-    return this._unitOfWork.bookmark.findByCollection(collectionId, userId);
+    const user = this._requestContextService.user;
+    return this._unitOfWork.bookmark.findByCollection(collectionId, user.id);
   }
 }

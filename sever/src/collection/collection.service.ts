@@ -1,6 +1,7 @@
 import { CollectionEntity } from '@app/entities';
 import { Errors } from '@app/errors';
 import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
+import { RequestContextService } from '@app/request';
 import { isNil } from '@app/utils';
 import { FilterQuery, Populate } from '@mikro-orm/core';
 import { Inject, Injectable } from '@nestjs/common';
@@ -36,19 +37,22 @@ export type PaginationOptions = {
   limit?: number;
 };
 
+// TODO Collection: using user from context
 @Injectable()
 export class CollectionService {
-  constructor(@Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork) {}
+  constructor(
+    @Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork,
+    private readonly _ctx: RequestContextService,
+  ) {}
 
   /**
-   * Find collection by ID for a specific user
+   * Find collection by ID for a specific user and tenant
    */
   async findOneById(
     id: string,
-    userId: string,
     options?: CollectionQueryOptions,
   ): Promise<CollectionEntity | null> {
-    const populateFields: string[] = ['user'];
+    const populateFields: string[] = ['user', 'tenant'];
     if (options?.includeChildren) {
       populateFields.push('children');
     }
@@ -56,7 +60,6 @@ export class CollectionService {
     const collection = await this._unitOfWork.collection.findOne(
       {
         id,
-        user: { id: userId },
         deleteFlag: false,
       },
       {
@@ -72,10 +75,9 @@ export class CollectionService {
    */
   async findOneByIdOrFail(
     id: string,
-    userId: string,
     options?: CollectionQueryOptions,
   ): Promise<CollectionEntity> {
-    const collection = await this.findOneById(id, userId, options);
+    const collection = await this.findOneById(id, options);
 
     if (isNil(collection)) {
       throw Errors.Collection.NotFound;
@@ -85,75 +87,67 @@ export class CollectionService {
   }
 
   /**
-   * Find all collections for a user
+   * Find all collections for a user within a tenant
    */
   async findByUserId(
-    userId: string,
     options?: CollectionQueryOptions & PaginationOptions,
   ): Promise<CollectionEntity[]> {
+    const tenant = this._ctx.tenant;
+    const user = this._ctx.user;
     if (options?.search) {
-      return this._unitOfWork.collection.findByName(userId, options.search, {
+      return this._unitOfWork.collection.findByName(user.id, options.search, {
         offset: options.offset,
         limit: options.limit,
       });
     }
 
     if (options?.parentId) {
-      return this._unitOfWork.collection.findChildren(
-        options.parentId,
-        userId,
-        {
-          offset: options.offset,
-          limit: options.limit,
-        },
-      );
+      return this._unitOfWork.collection.findChildren(options.parentId, {
+        offset: options.offset,
+        limit: options.limit,
+      });
     }
 
-    return this._unitOfWork.collection.findByUserId(userId, {
+    return this._unitOfWork.collection.findByUserId(user.id, {
       offset: options?.offset,
       limit: options?.limit,
     });
   }
 
   /**
-   * Find root collections (collections without parent)
+   * Find root collections (collections without parent) for a tenant
    */
   async findRootCollections(
-    userId: string,
     options?: PaginationOptions,
   ): Promise<CollectionEntity[]> {
-    return this._unitOfWork.collection.findRootCollections(userId, {
+    return this._unitOfWork.collection.findRootCollections({
       offset: options?.offset,
       limit: options?.limit,
     });
   }
 
   /**
-   * Find collection tree structure
+   * Find collection tree structure for a tenant
    */
-  async findCollectionTree(
-    userId: string,
-    maxDepth: number = 5,
-  ): Promise<CollectionEntity[]> {
-    return this._unitOfWork.collection.findCollectionTree(userId, maxDepth);
+  async findCollectionTree(maxDepth: number = 5): Promise<CollectionEntity[]> {
+    return this._unitOfWork.collection.findCollectionTree(maxDepth);
   }
 
   /**
-   * Find children of a collection
+   * Find children of a collection within a tenant
    */
   async findChildren(
     parentId: string,
-    userId: string,
     options?: PaginationOptions,
   ): Promise<CollectionEntity[]> {
-    return this._unitOfWork.collection.findChildren(parentId, userId, {
+    return this._unitOfWork.collection.findChildren(parentId, {
       offset: options?.offset,
       limit: options?.limit,
     });
   }
 
   /**
-   * Find collections with pagination
+   * Find collections with pagination for a tenant
    */
   async findWithPagination(
     userId: string,
@@ -170,7 +164,7 @@ export class CollectionService {
   }
 
   /**
-   * Count collections by user
+   * Count collections by user and tenant
    */
   async countByUser(userId: string): Promise<number> {
     return this._unitOfWork.collection.countByUser(userId);
@@ -179,22 +173,18 @@ export class CollectionService {
   /**
    * Create a new collection
    */
-  async create(
-    data: CollectionCreateInput,
-    userId: string,
-  ): Promise<CollectionEntity> {
+  async create(data: CollectionCreateInput): Promise<CollectionEntity> {
     // Start transaction
     await this._unitOfWork.start();
 
+    const user = this._ctx.user;
+    const tenant = this._ctx.tenant;
     try {
-      // Get user entity
-      const user = await this._unitOfWork.user.findOneOrFail({ id: userId });
-
       // Validate parent if provided
       let parent: CollectionEntity | undefined;
 
       if (data.parentId) {
-        parent = await this.findOneByIdOrFail(data.parentId, userId);
+        parent = await this.findOneByIdOrFail(data.parentId);
       }
 
       // Create collection with temporary path (will be updated after ID is generated)
@@ -205,6 +195,7 @@ export class CollectionService {
         description: data.description,
         sortOrder: data.sortOrder,
         user,
+        tenant,
         parent,
       });
 
@@ -240,7 +231,7 @@ export class CollectionService {
     data: CollectionUpdateInput,
     userId: string,
   ): Promise<CollectionEntity> {
-    const collection = await this.findOneByIdOrFail(id, userId);
+    const collection = await this.findOneByIdOrFail(id);
 
     // Update fields
     if (data.name !== undefined) {
@@ -277,25 +268,21 @@ export class CollectionService {
     await this._unitOfWork.start();
 
     try {
-      const collection = await this.findOneByIdOrFail(id, userId);
+      const collection = await this.findOneByIdOrFail(id);
       const oldParent = collection.parent;
 
       // Validate new parent if provided
       let newParent: CollectionEntity | undefined;
       if (data.newParentId) {
         // Check if new parent exists and belongs to user
-        newParent = await this.findOneByIdOrFail(data.newParentId, userId);
+        newParent = await this.findOneByIdOrFail(data.newParentId);
 
         // Prevent moving to itself or its children
         if (data.newParentId === id) {
           throw Errors.Collection.CannotMoveToSelf;
         }
 
-        const isDescendant = await this._isDescendant(
-          id,
-          data.newParentId,
-          userId,
-        );
+        const isDescendant = await this._isDescendant(id, data.newParentId);
         if (isDescendant) {
           throw Errors.Collection.CannotMoveToDescendant;
         }
@@ -310,7 +297,7 @@ export class CollectionService {
 
       // Update old parent's hasChild flag
       if (oldParent) {
-        const siblings = await this.findChildren(oldParent.id, userId);
+        const siblings = await this.findChildren(oldParent.id);
         oldParent.isHasChild = siblings.length > 0;
       }
 
@@ -336,7 +323,7 @@ export class CollectionService {
   ): Promise<void> {
     // Validate all collections belong to user
     for (const collectionId of collectionIds) {
-      await this.findOneByIdOrFail(collectionId, userId);
+      await this.findOneByIdOrFail(collectionId);
     }
 
     await this._unitOfWork.collection.updateSortOrder(collectionIds, userId);
@@ -349,14 +336,14 @@ export class CollectionService {
     await this._unitOfWork.start();
 
     try {
-      const collection = await this.findOneByIdOrFail(id, userId);
+      const collection = await this.findOneByIdOrFail(id);
       const parent = collection.parent;
 
       await this._unitOfWork.collection.softDeleteWithChildren(id, userId);
 
       // Update parent's hasChild flag if parent exists
       if (parent) {
-        const siblings = await this.findChildren(parent.id, userId);
+        const siblings = await this.findChildren(parent.id);
         parent.isHasChild = siblings.length > 0;
       }
 
@@ -429,9 +416,8 @@ export class CollectionService {
   private async _isDescendant(
     ancestorId: string,
     descendantId: string,
-    userId: string,
   ): Promise<boolean> {
-    const descendant = await this.findOneById(descendantId, userId);
+    const descendant = await this.findOneById(descendantId);
     if (!descendant) {
       return false;
     }
@@ -447,7 +433,7 @@ export class CollectionService {
     parent: CollectionEntity,
     userId: string,
   ): Promise<void> {
-    const children = await this.findChildren(parent.id, userId);
+    const children = await this.findChildren(parent.id);
 
     for (const child of children) {
       child.generatePath();

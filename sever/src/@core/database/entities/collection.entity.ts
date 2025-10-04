@@ -8,14 +8,16 @@ import {
   OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { BaseEntityWithTenant } from './base-extend.entity';
+import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => CollectionRepository })
 @Index({ properties: ['id'] })
 @Index({ properties: ['user', 'deleteFlag'] })
+@Index({ properties: ['tenant', 'deleteFlag'] })
 @Index({ properties: ['parent'] })
-export class CollectionEntity extends BaseEntity {
+export class CollectionEntity extends BaseEntityWithTenant {
   @Property()
   name: string;
 
@@ -40,6 +42,9 @@ export class CollectionEntity extends BaseEntity {
   @ManyToOne(() => UserEntity)
   user: UserEntity;
 
+  @ManyToOne(() => TenantEntity)
+  tenant: TenantEntity;
+
   @ManyToOne(() => CollectionEntity, { nullable: true })
   parent?: CollectionEntity;
 
@@ -55,6 +60,7 @@ export class CollectionEntity extends BaseEntity {
     description,
     sortOrder,
     user,
+    tenant,
     parent,
   }: {
     name: string;
@@ -63,6 +69,7 @@ export class CollectionEntity extends BaseEntity {
     description?: string;
     sortOrder?: number;
     user: UserEntity;
+    tenant: TenantEntity;
     parent?: CollectionEntity;
   }) {
     super();
@@ -72,6 +79,7 @@ export class CollectionEntity extends BaseEntity {
     this.description = description;
     this.sortOrder = sortOrder || 0;
     this.user = user;
+    this.tenant = tenant;
     this.parent = parent;
   }
 

@@ -1,8 +1,10 @@
 import { METADATA_KEY } from '@app/constants';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+// import { AuthGuard } from '@nestjs/passport';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
+// import { JwtTokenService } from '../services';
 // @Injectable()
 // export class JwtAuthGuard implements CanActivate {
 //   constructor(
@@ -70,7 +72,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getClass(),
     ]);
 
-    console.log('isPublic', isPublic);
     if (isPublic) {
       return true;
     }

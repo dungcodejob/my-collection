@@ -42,21 +42,17 @@ export class BookmarkController {
   })
   async createBookmark(
     @Body() createDto: BookmarkCreateDto,
-    @CurrentUser() user: UserEntity,
   ): Promise<BookmarkResponseDto> {
-    const bookmark = await this._bookmarkService.createBookmark(
-      {
-        url: createDto.url,
-        title: createDto.title,
-        description: createDto.description,
-        imageUrl: createDto.imageUrl,
-        siteName: createDto.siteName,
-        tags: createDto.tags,
-        notes: createDto.notes,
-        collectionId: createDto.collectionId,
-      },
-      user.id,
-    );
+    const bookmark = await this._bookmarkService.createBookmark({
+      url: createDto.url,
+      title: createDto.title,
+      description: createDto.description,
+      imageUrl: createDto.imageUrl,
+      siteName: createDto.siteName,
+      tags: createDto.tags,
+      notes: createDto.notes,
+      collectionId: createDto.collectionId,
+    });
 
     return this._bookmarkMapper.toResponseDto(bookmark);
   }
@@ -92,13 +88,10 @@ export class BookmarkController {
     summary: 'Get bookmarks for current user',
   })
   async findAll(
-    @CurrentUser() user: UserEntity,
     @Query() searchDto: BookmarkSearchDto,
   ): Promise<BookmarkWithPaginationResponseDto> {
-    const { bookmarks, total } = await this._bookmarkService.findBookmarks(
-      user.id,
-      searchDto,
-    );
+    const { bookmarks, total } =
+      await this._bookmarkService.findBookmarks(searchDto);
 
     return this._bookmarkMapper.toPaginationResponseDto(
       bookmarks,
@@ -130,11 +123,9 @@ export class BookmarkController {
     summary: 'Get recent bookmarks for current user',
   })
   async getRecentBookmarks(
-    @CurrentUser() user: UserEntity,
     @Query('limit') limit?: number,
   ): Promise<BookmarkResponseDto[]> {
     const bookmarks = await this._bookmarkService.getRecentBookmarks(
-      user.id,
       limit || 10,
     );
 
@@ -147,10 +138,8 @@ export class BookmarkController {
     responseType: 'list',
     summary: 'Get favorite bookmarks for current user',
   })
-  async getFavoriteBookmarks(
-    @CurrentUser() user: UserEntity,
-  ): Promise<BookmarkResponseDto[]> {
-    const bookmarks = await this._bookmarkService.getFavoriteBookmarks(user.id);
+  async getFavoriteBookmarks(): Promise<BookmarkResponseDto[]> {
+    const bookmarks = await this._bookmarkService.getFavoriteBookmarks();
     return this._bookmarkMapper.toResponseDtoArray(bookmarks);
   }
 
@@ -166,11 +155,9 @@ export class BookmarkController {
     summary: 'Get most visited bookmarks for current user',
   })
   async getMostVisitedBookmarks(
-    @CurrentUser() user: UserEntity,
     @Query('limit') limit?: number,
   ): Promise<BookmarkResponseDto[]> {
     const bookmarks = await this._bookmarkService.getMostVisitedBookmarks(
-      user.id,
       limit || 10,
     );
 
@@ -190,10 +177,8 @@ export class BookmarkController {
       },
     },
   })
-  async getUserTags(
-    @CurrentUser() user: UserEntity,
-  ): Promise<{ tags: string[] }> {
-    const tags = await this._bookmarkService.getUserTags(user.id);
+  async getUserTags(): Promise<{ tags: string[] }> {
+    const tags = await this._bookmarkService.getUserTags();
     return { tags };
   }
 
@@ -210,12 +195,10 @@ export class BookmarkController {
     summary: 'Search bookmarks by term',
   })
   async searchBookmarks(
-    @CurrentUser() user: UserEntity,
     @Query('q') searchTerm: string,
     @Query('limit') limit?: number,
   ): Promise<BookmarkResponseDto[]> {
     const bookmarks = await this._bookmarkService.searchBookmarks(
-      user.id,
       searchTerm,
       limit || 20,
     );
@@ -240,13 +223,11 @@ export class BookmarkController {
     summary: 'Find bookmarks by tags',
   })
   async findBookmarksByTags(
-    @CurrentUser() user: UserEntity,
     @Query('tags') tagsParam: string,
     @Query('limit') limit?: number,
   ): Promise<BookmarkResponseDto[]> {
     const tags = tagsParam.split(',').map((tag) => tag.trim());
     const bookmarks = await this._bookmarkService.findBookmarksByTags(
-      user.id,
       tags,
       limit || 20,
     );
@@ -262,12 +243,9 @@ export class BookmarkController {
   })
   async getBookmarksByCollection(
     @Param('collectionId') collectionId: string,
-    @CurrentUser() user: UserEntity,
   ): Promise<BookmarkResponseDto[]> {
-    const bookmarks = await this._bookmarkService.getBookmarksByCollection(
-      collectionId,
-      user.id,
-    );
+    const bookmarks =
+      await this._bookmarkService.getBookmarksByCollection(collectionId);
 
     return this._bookmarkMapper.toResponseDtoArray(bookmarks);
   }
@@ -277,11 +255,8 @@ export class BookmarkController {
     type: BookmarkResponseDto,
     summary: 'Get bookmark by ID',
   })
-  async findOne(
-    @Param('id') id: string,
-    @CurrentUser() user: UserEntity,
-  ): Promise<BookmarkResponseDto> {
-    const bookmark = await this._bookmarkService.findOneByIdOrFail(id, user.id);
+  async findOne(@Param('id') id: string): Promise<BookmarkResponseDto> {
+    const bookmark = await this._bookmarkService.findOneByIdOrFail(id);
     return this._bookmarkMapper.toResponseDto(bookmark);
   }
 
@@ -295,22 +270,17 @@ export class BookmarkController {
   async updateBookmark(
     @Param('id') id: string,
     @Body() updateDto: BookmarkUpdateDto,
-    @CurrentUser() user: UserEntity,
   ): Promise<BookmarkResponseDto> {
-    const bookmark = await this._bookmarkService.updateBookmark(
-      id,
-      {
-        title: updateDto.title,
-        description: updateDto.description,
-        imageUrl: updateDto.imageUrl,
-        siteName: updateDto.siteName,
-        tags: updateDto.tags,
-        notes: updateDto.notes,
-        collectionId: updateDto.collectionId,
-        isFavorite: updateDto.isFavorite,
-      },
-      user.id,
-    );
+    const bookmark = await this._bookmarkService.updateBookmark(id, {
+      title: updateDto.title,
+      description: updateDto.description,
+      imageUrl: updateDto.imageUrl,
+      siteName: updateDto.siteName,
+      tags: updateDto.tags,
+      notes: updateDto.notes,
+      collectionId: updateDto.collectionId,
+      isFavorite: updateDto.isFavorite,
+    });
 
     return this._bookmarkMapper.toResponseDto(bookmark);
   }
@@ -320,11 +290,8 @@ export class BookmarkController {
     type: BookmarkResponseDto,
     summary: 'Visit bookmark (increment visit count)',
   })
-  async visitBookmark(
-    @Param('id') id: string,
-    @CurrentUser() user: UserEntity,
-  ): Promise<BookmarkResponseDto> {
-    const bookmark = await this._bookmarkService.visitBookmark(id, user.id);
+  async visitBookmark(@Param('id') id: string): Promise<BookmarkResponseDto> {
+    const bookmark = await this._bookmarkService.visitBookmark(id);
     return this._bookmarkMapper.toResponseDto(bookmark);
   }
 
@@ -333,11 +300,8 @@ export class BookmarkController {
     type: BookmarkResponseDto,
     summary: 'Toggle bookmark favorite status',
   })
-  async toggleFavorite(
-    @Param('id') id: string,
-    @CurrentUser() user: UserEntity,
-  ): Promise<BookmarkResponseDto> {
-    const bookmark = await this._bookmarkService.toggleFavorite(id, user.id);
+  async toggleFavorite(@Param('id') id: string): Promise<BookmarkResponseDto> {
+    const bookmark = await this._bookmarkService.toggleFavorite(id);
     return this._bookmarkMapper.toResponseDto(bookmark);
   }
 
@@ -346,11 +310,8 @@ export class BookmarkController {
   @ApiResponse({
     schema: { type: 'object', properties: { success: { type: 'boolean' } } },
   })
-  async deleteBookmark(
-    @Param('id') id: string,
-    @CurrentUser() user: UserEntity,
-  ): Promise<{ success: boolean }> {
-    await this._bookmarkService.deleteBookmark(id, user.id);
+  async deleteBookmark(@Param('id') id: string): Promise<{ success: boolean }> {
+    await this._bookmarkService.deleteBookmark(id);
     return { success: true };
   }
 
@@ -361,9 +322,8 @@ export class BookmarkController {
   })
   async bulkMoveBookmarks(
     @Body() bulkMoveDto: BulkMoveBookmarksDto,
-    @CurrentUser() user: UserEntity,
   ): Promise<BulkBookmarkOperationResponseDto> {
-    return this._bookmarkService.bulkMoveBookmarks(bulkMoveDto, user.id);
+    return this._bookmarkService.bulkMoveBookmarks(bulkMoveDto);
   }
 
   @Post('bulk/favorite')
@@ -373,9 +333,8 @@ export class BookmarkController {
   })
   async bulkUpdateFavorites(
     @Body() bulkFavoriteDto: BulkFavoriteBookmarksDto,
-    @CurrentUser() user: UserEntity,
   ): Promise<BulkBookmarkOperationResponseDto> {
-    return this._bookmarkService.bulkUpdateFavorites(bulkFavoriteDto, user.id);
+    return this._bookmarkService.bulkUpdateFavorites(bulkFavoriteDto);
   }
 
   @Post('bulk/delete')
@@ -385,11 +344,7 @@ export class BookmarkController {
   })
   async bulkDeleteBookmarks(
     @Body() bulkDeleteDto: BulkBookmarkOperationDto,
-    @CurrentUser() user: UserEntity,
   ): Promise<BulkBookmarkOperationResponseDto> {
-    return this._bookmarkService.bulkDeleteBookmarks(
-      bulkDeleteDto.bookmarkIds,
-      user.id,
-    );
+    return this._bookmarkService.bulkDeleteBookmarks(bulkDeleteDto.bookmarkIds);
   }
 }

@@ -31,6 +31,28 @@ export class BookmarkRepository extends EntityRepository<BookmarkEntity> {
   }
 
   /**
+   * Find bookmarks by user ID and tenant ID
+   */
+  async findByUserAndTenant(
+    userId: string,
+    tenantId: string,
+    options?: FindBookmarkOptions,
+  ): Promise<BookmarkEntity[]> {
+    return this.find(
+      {
+        user: { id: userId },
+        tenant: { id: tenantId },
+        deleteFlag: false,
+      },
+      {
+        orderBy: { createAt: 'DESC' },
+        populate: ['collection'],
+        ...options,
+      },
+    );
+  }
+
+  /**
    * Find bookmark by URL and user
    */
   async findByUrl(
@@ -52,6 +74,29 @@ export class BookmarkRepository extends EntityRepository<BookmarkEntity> {
   }
 
   /**
+   * Find bookmark by URL, user and tenant
+   */
+  async findByUrlAndTenant(
+    url: string,
+    userId: string,
+    tenantId: string,
+    options?: FindBookmarkOptions,
+  ): Promise<BookmarkEntity | null> {
+    return this.findOne(
+      {
+        url,
+        user: { id: userId },
+        tenant: { id: tenantId },
+        deleteFlag: false,
+      },
+      {
+        populate: ['collection'],
+        ...options,
+      },
+    );
+  }
+
+  /**
    * Find bookmarks by collection
    */
   async findByCollection(
@@ -63,6 +108,30 @@ export class BookmarkRepository extends EntityRepository<BookmarkEntity> {
       {
         collection: { id: collectionId },
         user: { id: userId },
+        deleteFlag: false,
+      },
+      {
+        orderBy: { createAt: 'DESC' },
+        populate: ['collection'],
+        ...options,
+      },
+    );
+  }
+
+  /**
+   * Find bookmarks by collection with tenant context
+   */
+  async findByCollectionAndTenant(
+    collectionId: string,
+    userId: string,
+    tenantId: string,
+    options?: FindBookmarkOptions,
+  ): Promise<BookmarkEntity[]> {
+    return this.find(
+      {
+        collection: { id: collectionId },
+        user: { id: userId },
+        tenant: { id: tenantId },
         deleteFlag: false,
       },
       {

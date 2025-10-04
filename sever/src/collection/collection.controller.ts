@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from '@app/auth';
 import { FEATURE_KEY, SWAGGER_SCHEME } from '@app/constants';
 import { ApiAuth, CurrentUser } from '@app/decorators';
 import { UserEntity } from '@app/entities';
@@ -11,6 +12,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -59,13 +61,12 @@ export class CollectionController {
   })
   @Get()
   async findAll(
-    @CurrentUser() user: UserEntity,
     @Query('search') search?: string,
     @Query('parentId') parentId?: string,
     @Query('offset') offset?: number,
     @Query('limit') limit?: number,
   ): Promise<CollectionDto[]> {
-    const collections = await this._collectionService.findByUserId(user.id, {
+    const collections = await this._collectionService.findByUserId({
       search,
       parentId,
       offset,
@@ -89,11 +90,9 @@ export class CollectionController {
   })
   @Get('tree')
   async getTree(
-    @CurrentUser() user: UserEntity,
     @Query('maxDepth') maxDepth?: number,
   ): Promise<CollectionTreeResponseDto[]> {
     const collections = await this._collectionService.findCollectionTree(
-      user.id,
       maxDepth || 5,
     );
 
@@ -115,14 +114,13 @@ export class CollectionController {
     summary: 'Get root collections (collections without parent)',
   })
   async findRootCollections(
-    @CurrentUser() user: UserEntity,
     @Query('offset') offset?: number,
     @Query('limit') limit?: number,
   ): Promise<CollectionDto[]> {
-    const collections = await this._collectionService.findRootCollections(
-      user.id,
-      { offset, limit },
-    );
+    const collections = await this._collectionService.findRootCollections({
+      offset,
+      limit,
+    });
 
     return collections.map((collection) =>
       this._collectionMapper.toResponseDto(collection),
@@ -187,14 +185,12 @@ export class CollectionController {
   })
   async findOne(
     @Param('id') id: string,
-    @CurrentUser() user: UserEntity,
+
     @Query('includeChildren') includeChildren?: boolean,
   ): Promise<CollectionDto> {
-    const collection = await this._collectionService.findOneByIdOrFail(
-      id,
-      user.id,
-      { includeChildren },
-    );
+    const collection = await this._collectionService.findOneByIdOrFail(id, {
+      includeChildren,
+    });
 
     return this._collectionMapper.toResponseDto(collection);
   }
@@ -213,11 +209,10 @@ export class CollectionController {
   })
   async getChildren(
     @Param('id') id: string,
-    @CurrentUser() user: UserEntity,
     @Query('offset') offset?: number,
     @Query('limit') limit?: number,
   ): Promise<CollectionDto[]> {
-    const children = await this._collectionService.findChildren(id, user.id, {
+    const children = await this._collectionService.findChildren(id, {
       offset,
       limit,
     });
@@ -228,24 +223,19 @@ export class CollectionController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiAuth({
     type: CollectionDto,
     summary: 'Create a new collection',
   })
-  async create(
-    @Body() createDto: CollectionCreateDto,
-    @CurrentUser() user: UserEntity,
-  ): Promise<CollectionDto> {
-    const collection = await this._collectionService.create(
-      {
-        name: createDto.name,
-        icon: createDto.icon,
-        parentId: createDto.parentId,
-        description: createDto.description,
-        sortOrder: createDto.sortOrder,
-      },
-      user.id,
-    );
+  async create(@Body() createDto: CollectionCreateDto): Promise<CollectionDto> {
+    const collection = await this._collectionService.create({
+      name: createDto.name,
+      icon: createDto.icon,
+      parentId: createDto.parentId,
+      description: createDto.description,
+      sortOrder: createDto.sortOrder,
+    });
 
     await this._collectionService.save();
 

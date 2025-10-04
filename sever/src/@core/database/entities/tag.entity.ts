@@ -9,12 +9,14 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { BookmarkTagEntity } from './bookmark-tag.entity';
+import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => TagRepository })
 @Index({ properties: ['id'] })
 @Index({ properties: ['name'] })
 @Index({ properties: ['author', 'deleteFlag'] })
+@Index({ properties: ['tenant', 'deleteFlag'] })
 @Index({ properties: ['usageCount'] })
 export class TagEntity extends BaseEntity {
   @Property({ length: 100, unique: true })
@@ -41,6 +43,9 @@ export class TagEntity extends BaseEntity {
   @ManyToOne(() => UserEntity, { nullable: true })
   author?: UserEntity;
 
+  @ManyToOne(() => TenantEntity)
+  tenant: TenantEntity;
+
   @OneToMany(() => BookmarkTagEntity, (bt) => bt.tag)
   bookmarkTags: BookmarkTagEntity[];
 
@@ -53,6 +58,7 @@ export class TagEntity extends BaseEntity {
     color,
     category,
     isSystem = false,
+    tenant,
   }: {
     name: string;
     author?: UserEntity;
@@ -60,6 +66,7 @@ export class TagEntity extends BaseEntity {
     color?: string;
     category?: string;
     isSystem?: boolean;
+    tenant: TenantEntity;
   }) {
     super();
     this.name = name.toLowerCase().trim(); // Normalize tag names
@@ -68,6 +75,7 @@ export class TagEntity extends BaseEntity {
     this.color = color;
     this.category = category;
     this.isSystem = isSystem;
+    this.tenant = tenant;
   }
 
   /**

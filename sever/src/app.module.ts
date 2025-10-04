@@ -10,6 +10,7 @@ import { HttpExceptionFilter } from '@app/filters';
 import { TransformInterceptor } from '@app/interceptors';
 import { RequestMiddlewareModule } from '@app/middlewares';
 import { UnitOfWorkModule } from '@app/repositories';
+import { RequestModule } from '@app/request';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
@@ -27,6 +28,7 @@ import { UserModule } from './user';
 @Module({
   imports: [
     RequestMiddlewareModule,
+    RequestModule,
     UnitOfWorkModule,
     AuthModule,
     UserModule,

@@ -8,6 +8,7 @@ import {
   CrawlEntity,
   SessionEntity,
   TagEntity,
+  TenantEntity,
   UserEntity,
 } from '@app/entities';
 import { EntityManager } from '@mikro-orm/postgresql';
@@ -18,6 +19,7 @@ import { CollectionRepository } from './collection.repository';
 import { CrawlRepository } from './crawl.repository';
 import { SessionRepository } from './session.repository';
 import { TagRepository } from './tag.repository';
+import { TenantRepository } from './tenant.repository';
 import { UserRepository } from './user.repository';
 
 export const UNIT_OF_WORK = Symbol('UnitOfWork');
@@ -31,11 +33,14 @@ export interface UnitOfWork {
   bookmark: BookmarkRepository;
   tag: TagRepository;
   bookmarkTag: BookmarkTagRepository;
+  tenant: TenantRepository;
   save(): Promise<void>;
   start(): Promise<void>;
   commit(): Promise<void>;
   rollback(): Promise<void>;
   getEntityManager(): EntityManager;
+
+  setFilterParams(filterName: string, params: Record<string, unknown>): void;
 }
 
 @Injectable()
@@ -48,10 +53,16 @@ export class UnitOfWorkImpl implements UnitOfWork {
   private _bookmark?: BookmarkRepository;
   private _tag?: TagRepository;
   private _bookmarkTag?: BookmarkTagRepository;
+  private _tenant?: TenantRepository;
 
   constructor(private readonly _em: EntityManager) {
     this._em.addFilter('deleteFlag', { deleteFlag: false });
   }
+
+  setFilterParams(filterName: string, params: Record<string, unknown>) {
+    this._em.setFilterParams(filterName, params);
+  }
+
   getEntityManager(): EntityManager {
     return this._em;
   }
@@ -115,6 +126,13 @@ export class UnitOfWorkImpl implements UnitOfWork {
     return this._bookmarkTag;
   }
 
+  get tenant(): TenantRepository {
+    if (!this._tenant) {
+      this._tenant = this._em.getRepository(TenantEntity);
+    }
+    return this._tenant;
+  }
+
   save(): Promise<void> {
     return this._em.flush();
   }
@@ -141,10 +159,18 @@ export const provideUnitOfWork = (): Provider => ({
 @Global()
 @Module({
   providers: [
-    {
-      provide: UNIT_OF_WORK,
-      useClass: UnitOfWorkImpl,
-    },
+    // {
+    //   provide: UNIT_OF_WORK,
+    //   scope: Scope.REQUEST,
+    //   inject: [EntityManager],
+    //   useFactory: (em: EntityManager) => {
+    //     // em.setFilterParams('tenant', {
+    //     //   tenantId: tenantProvider.getTenantId(),
+    //     // });
+    //     return new UnitOfWorkImpl(em);
+    //   },
+    // },
+    provideUnitOfWork(),
   ],
   exports: [UNIT_OF_WORK],
 })
