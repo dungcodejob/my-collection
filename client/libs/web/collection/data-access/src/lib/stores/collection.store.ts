@@ -28,7 +28,7 @@ import { CollectionApi } from "../services/collection.api";
 const COLLECTION_ROOT: Collection = {
   id: "",
   name: "root",
-  childPath: "/",
+  path: "/",
   isHasChild: true,
   createdAt: new Date(),
   updatedAt: new Date(),

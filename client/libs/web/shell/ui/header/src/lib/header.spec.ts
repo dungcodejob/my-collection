@@ -1,6 +1,6 @@
 import { signal } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ThemeMode, ThemePreset, ThemeService } from "@client/web-shared-services";
+import { MCThemeService, ThemeMode, ThemePreset } from "@client/web-shared-services";
 import { MCHeader } from "./header";
 
 describe("MCHeader", () => {
@@ -21,7 +21,7 @@ describe("MCHeader", () => {
 
     await TestBed.configureTestingModule({
       imports: [MCHeader],
-      providers: [{ provide: ThemeService, useValue: mockThemeService }],
+      providers: [{ provide: MCThemeService, useValue: mockThemeService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MCHeader);

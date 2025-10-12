@@ -77,7 +77,7 @@ export class MCCollectionDetailDialog implements OnInit {
         ...data,
         ...this.form.getRawValue(),
         parentId: this.$parent().id,
-        path: this.$parent().childPath,
+        path: this.$parent().path,
         icon: "",
       };
       this.update.emit(request);
@@ -85,7 +85,7 @@ export class MCCollectionDetailDialog implements OnInit {
       const request: CreateCollectionRequest = {
         ...this.form.getRawValue(),
         icon: "",
-        path: this.$parent().childPath,
+        path: this.$parent().path,
         parentId: this.$parent().id,
       };
       this.create.emit(request);

@@ -46,7 +46,7 @@ export class MCCollectionList implements OnInit {
 
   ngOnInit(): void {
     const root = this.facade.$root();
-    this.facade.load({ path: root.childPath, currentPage: 1, pageSize: 10 });
+    this.facade.load({ path: root.path, currentPage: 1, pageSize: 10 });
 
     this.closeDialogEffect();
     this.displayToastEffect();
@@ -94,7 +94,7 @@ export class MCCollectionList implements OnInit {
       .closed$.pipe(
         tap(result => {
           if (result) {
-            this.facade.delete({ id: collection.id, path: parent.childPath });
+            this.facade.delete({ id: collection.id, path: parent.path });
           }
         }),
         takeUntilDestroyed(this._destroyRef)
@@ -103,7 +103,7 @@ export class MCCollectionList implements OnInit {
   }
 
   onNodeExpand(node: Collection): void {
-    this.facade.load({ path: node.childPath, currentPage: 1, pageSize: 10 });
+    this.facade.load({ path: node.path, currentPage: 1, pageSize: 10 });
   }
 
   private closeDialogEffect(): void {

@@ -37,7 +37,7 @@ export class CollectionTreeService {
   getNodeChildren(node: Signal<Collection>): Signal<Collection[]> {
     return computed(() => {
       const tree = this._$tree();
-      const collection = tree[node().childPath] || [];
+      const collection = tree[node().path] || [];
       return collection;
     });
   }

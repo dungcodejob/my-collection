@@ -1,0 +1,74 @@
+import { BookmarkEntity } from "@common/entities";
+import { EntityManager, FilterQuery, Ref } from "@mikro-orm/postgresql";
+
+export class BookmarkRepositoryImpl implements BookmarkRepository {
+  constructor(private readonly _em: EntityManager) {}
+
+  findById(id: string): Promise<BookmarkEntity> {
+    return this._em.findOne(BookmarkEntity, id);
+  }
+
+  findByCollectionId(
+    collectionId: string,
+    keyword?: string,
+    tagIds?: string[]
+  ): Promise<BookmarkEntity[]> {
+    const filter: FilterQuery<BookmarkEntity> = {};
+
+    if (collectionId) {
+      filter.collection = { id: collectionId };
+    }
+
+    if (tagIds && tagIds.length > 0) {
+      filter.tags = tagIds;
+    }
+
+    if (keyword) {
+      filter.title = { $like: `%${keyword}%` };
+    }
+
+    console.log(filter);
+
+    return this._em.find(BookmarkEntity, filter, {
+      populate: ["tags"],
+      // groupBy: "id",
+      // having: { "count(b1.tag_entity_id)": { $gte: tagIds.length } },
+    });
+  }
+
+  async findAll(
+    userId: string,
+    keyword?: string,
+    tagIds?: string[]
+  ): Promise<BookmarkEntity[]> {
+    const filter: FilterQuery<BookmarkEntity> = {
+      collection: { user: { id: userId } },
+    };
+
+    if (tagIds && tagIds.length > 0) {
+      filter.tags = tagIds;
+    }
+
+    if (keyword) {
+      filter.title = { $ilike: `%${keyword}%` };
+    }
+
+    return this._em.find(BookmarkEntity, filter, {
+      populate: ["tags", "collection"],
+
+      // groupBy: 'id',
+      // having: { 'count(b1.tag_entity_id)': { $gte: tagIds.length } },
+    });
+  }
+  add(entity: BookmarkEntity): BookmarkEntity {
+    this._em.persist(entity);
+    return entity;
+  }
+
+  delete(entity: BookmarkEntity | Ref<BookmarkEntity>): void {
+    this._em.remove(entity);
+  }
+  // findById(id: IdentityType): Promise<BookmarkEntity> {
+  //   return this._em.findOne(BookmarkEntity, id);
+  // }
+}
