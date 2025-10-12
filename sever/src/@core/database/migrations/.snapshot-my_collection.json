@@ -426,6 +426,15 @@
           "default": "false",
           "mappedType": "boolean"
         },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
         "name": {
           "name": "name",
           "type": "varchar(100)",
@@ -505,15 +514,6 @@
           "nullable": true,
           "length": 255,
           "mappedType": "string"
-        },
-        "tenant_id": {
-          "name": "tenant_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
         }
       },
       "name": "tag_entity",
@@ -594,6 +594,19 @@
       ],
       "checks": [],
       "foreignKeys": {
+        "tag_entity_tenant_id_foreign": {
+          "constraintName": "tag_entity_tenant_id_foreign",
+          "columnNames": [
+            "tenant_id"
+          ],
+          "localTableName": "public.tag_entity",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.tenant_entity",
+          "createForeignKeyConstraint": true,
+          "updateRule": "cascade"
+        },
         "tag_entity_author_id_foreign": {
           "constraintName": "tag_entity_author_id_foreign",
           "columnNames": [
@@ -606,19 +619,6 @@
           "referencedTableName": "public.user_entity",
           "createForeignKeyConstraint": true,
           "deleteRule": "set null",
-          "updateRule": "cascade"
-        },
-        "tag_entity_tenant_id_foreign": {
-          "constraintName": "tag_entity_tenant_id_foreign",
-          "columnNames": [
-            "tenant_id"
-          ],
-          "localTableName": "public.tag_entity",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.tenant_entity",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -1034,6 +1034,15 @@
           "default": "false",
           "mappedType": "boolean"
         },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
         "name": {
           "name": "name",
           "type": "varchar(255)",
@@ -1052,6 +1061,16 @@
           "primary": false,
           "nullable": true,
           "length": 100,
+          "mappedType": "string"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(50)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 50,
           "mappedType": "string"
         },
         "path": {
@@ -1114,15 +1133,6 @@
           "length": 255,
           "mappedType": "string"
         },
-        "tenant_id": {
-          "name": "tenant_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
         "parent_id": {
           "name": "parent_id",
           "type": "uuid",
@@ -1179,6 +1189,17 @@
           "unique": false
         },
         {
+          "keyName": "collection_entity_tenant_id_slug_unique",
+          "columnNames": [
+            "tenant_id",
+            "slug"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
           "keyName": "collection_entity_pkey",
           "columnNames": [
             "id"
@@ -1191,19 +1212,6 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "collection_entity_user_id_foreign": {
-          "constraintName": "collection_entity_user_id_foreign",
-          "columnNames": [
-            "user_id"
-          ],
-          "localTableName": "public.collection_entity",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.user_entity",
-          "createForeignKeyConstraint": true,
-          "updateRule": "cascade"
-        },
         "collection_entity_tenant_id_foreign": {
           "constraintName": "collection_entity_tenant_id_foreign",
           "columnNames": [
@@ -1214,6 +1222,19 @@
             "id"
           ],
           "referencedTableName": "public.tenant_entity",
+          "createForeignKeyConstraint": true,
+          "updateRule": "cascade"
+        },
+        "collection_entity_user_id_foreign": {
+          "constraintName": "collection_entity_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.collection_entity",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user_entity",
           "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         },
@@ -1287,6 +1308,15 @@
           "nullable": false,
           "default": "false",
           "mappedType": "boolean"
+        },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
         },
         "url": {
           "name": "url",
@@ -1424,15 +1454,6 @@
           "length": 255,
           "mappedType": "string"
         },
-        "tenant_id": {
-          "name": "tenant_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
         "collection_id": {
           "name": "collection_id",
           "type": "uuid",
@@ -1521,19 +1542,6 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "bookmark_entity_user_id_foreign": {
-          "constraintName": "bookmark_entity_user_id_foreign",
-          "columnNames": [
-            "user_id"
-          ],
-          "localTableName": "public.bookmark_entity",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.user_entity",
-          "createForeignKeyConstraint": true,
-          "updateRule": "cascade"
-        },
         "bookmark_entity_tenant_id_foreign": {
           "constraintName": "bookmark_entity_tenant_id_foreign",
           "columnNames": [
@@ -1544,6 +1552,19 @@
             "id"
           ],
           "referencedTableName": "public.tenant_entity",
+          "createForeignKeyConstraint": true,
+          "updateRule": "cascade"
+        },
+        "bookmark_entity_user_id_foreign": {
+          "constraintName": "bookmark_entity_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.bookmark_entity",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user_entity",
           "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         },

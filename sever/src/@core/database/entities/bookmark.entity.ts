@@ -2,6 +2,7 @@ import { BookmarkRepository } from '@app/repositories';
 import {
   Entity,
   EntityRepositoryType,
+  Filter,
   Index,
   ManyToOne,
   OneToMany,
@@ -11,7 +12,6 @@ import {
 import { BaseEntityWithTenant } from './base-extend.entity';
 import { BookmarkTagEntity } from './bookmark-tag.entity';
 import { CollectionEntity } from './collection.entity';
-import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => BookmarkRepository })
@@ -21,6 +21,10 @@ import { UserEntity } from './user.entity';
 @Index({ properties: ['url'] })
 @Index({ properties: ['title'] })
 @Index({ properties: ['collection'] })
+@Filter({
+  name: 'tenant',
+  cond: (args) => ({ tenantId: args.tenantId }),
+})
 export class BookmarkEntity extends BaseEntityWithTenant {
   @Property({ length: 2048 })
   url: string;
@@ -67,9 +71,6 @@ export class BookmarkEntity extends BaseEntityWithTenant {
   @ManyToOne(() => UserEntity)
   user: UserEntity;
 
-  @ManyToOne(() => TenantEntity)
-  tenant: TenantEntity;
-
   @ManyToOne(() => CollectionEntity, { nullable: true })
   collection?: CollectionEntity;
 
@@ -79,7 +80,6 @@ export class BookmarkEntity extends BaseEntityWithTenant {
     url,
     title,
     user,
-    tenant,
     collection,
     description,
     imageUrl,
@@ -92,7 +92,6 @@ export class BookmarkEntity extends BaseEntityWithTenant {
     url: string;
     title: string;
     user: UserEntity;
-    tenant: TenantEntity;
     collection?: CollectionEntity;
     description?: string;
     imageUrl?: string;
@@ -106,7 +105,6 @@ export class BookmarkEntity extends BaseEntityWithTenant {
     this.url = url;
     this.title = title;
     this.user = user;
-    this.tenant = tenant;
     this.collection = collection;
     this.description = description;
     this.imageUrl = imageUrl;

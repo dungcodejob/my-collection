@@ -1,5 +1,6 @@
 import { TagRepository } from '@app/repositories';
 import {
+  Cascade,
   Entity,
   EntityRepositoryType,
   Index,
@@ -7,7 +8,7 @@ import {
   OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { BaseEntityWithTenant } from './base-extend.entity';
 import { BookmarkTagEntity } from './bookmark-tag.entity';
 import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
@@ -18,7 +19,7 @@ import { UserEntity } from './user.entity';
 @Index({ properties: ['author', 'deleteFlag'] })
 @Index({ properties: ['tenant', 'deleteFlag'] })
 @Index({ properties: ['usageCount'] })
-export class TagEntity extends BaseEntity {
+export class TagEntity extends BaseEntityWithTenant {
   @Property({ length: 100, unique: true })
   name: string;
 
@@ -43,10 +44,9 @@ export class TagEntity extends BaseEntity {
   @ManyToOne(() => UserEntity, { nullable: true })
   author?: UserEntity;
 
-  @ManyToOne(() => TenantEntity)
-  tenant: TenantEntity;
-
-  @OneToMany(() => BookmarkTagEntity, (bt) => bt.tag)
+  @OneToMany(() => BookmarkTagEntity, (bt) => bt.tag, {
+    cascade: [Cascade.REMOVE],
+  })
   bookmarkTags: BookmarkTagEntity[];
 
   [EntityRepositoryType]?: TagRepository;
@@ -66,7 +66,7 @@ export class TagEntity extends BaseEntity {
     color?: string;
     category?: string;
     isSystem?: boolean;
-    tenant: TenantEntity;
+    tenant?: TenantEntity;
   }) {
     super();
     this.name = name.toLowerCase().trim(); // Normalize tag names
@@ -75,7 +75,10 @@ export class TagEntity extends BaseEntity {
     this.color = color;
     this.category = category;
     this.isSystem = isSystem;
-    this.tenant = tenant;
+
+    if (tenant) {
+      this.tenant = tenant;
+    }
   }
 
   /**

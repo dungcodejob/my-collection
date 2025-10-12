@@ -78,4 +78,40 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     return super.canActivate(context);
   }
+
+  // handleRequest<
+  //   TPayload extends {
+  //     user: UserEntity;
+  //     session: SessionEntity;
+  //     account: AccountEntity;
+  //     tenant: TenantEntity;
+  //   },
+  // >(
+  //   err: any,
+  //   payload: TPayload,
+  //   info: any,
+  //   context: ExecutionContext,
+  //   status?: any,
+  // ): TPayload | undefined {
+  //   const isPublic = this.reflector.getAllAndOverride(METADATA_KEY.IS_PUBLIC, [
+  //     context.getHandler(),
+  //     context.getClass(),
+  //   ]);
+
+  //   if (isPublic) {
+  //     return;
+  //   }
+
+  //   if (!payload) {
+  //     return;
+  //   }
+
+  //   const req = context.switchToHttp().getRequest();
+  //   req[REQUEST_KEY.CURRENT_USER] = payload.user;
+  //   req[REQUEST_KEY.CURRENT_SESSION] = payload.session;
+  //   req[REQUEST_KEY.CURRENT_ACCOUNT] = payload.account;
+
+  //   req[REQUEST_KEY.CURRENT_TENANT] = payload.tenant;
+  //   return payload;
+  // }
 }

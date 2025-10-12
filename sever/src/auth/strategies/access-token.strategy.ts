@@ -1,6 +1,11 @@
 import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { REQUEST_KEY } from '@app/constants';
-import { AccountEntity, SessionEntity, UserEntity } from '@app/entities';
+import {
+  AccountEntity,
+  SessionEntity,
+  TenantEntity,
+  UserEntity,
+} from '@app/entities';
 import { Errors } from '@app/errors';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
@@ -23,9 +28,10 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: AccessPayload): Promise<{
-    user: UserEntity;
-    session: SessionEntity;
-    account: AccountEntity;
+    [REQUEST_KEY.CURRENT_USER]: UserEntity;
+    [REQUEST_KEY.CURRENT_SESSION]: SessionEntity;
+    [REQUEST_KEY.CURRENT_ACCOUNT]: AccountEntity;
+    [REQUEST_KEY.CURRENT_TENANT]: TenantEntity;
   }> {
     const session = await this._em.findOne(SessionEntity, payload.id, {
       populate: ['tenant'],
@@ -43,6 +49,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy) {
       [REQUEST_KEY.CURRENT_USER]: session.user,
       [REQUEST_KEY.CURRENT_SESSION]: session,
       [REQUEST_KEY.CURRENT_ACCOUNT]: session.account,
+      [REQUEST_KEY.CURRENT_TENANT]: session.tenant,
     };
   }
 }

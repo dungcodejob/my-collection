@@ -4,70 +4,40 @@ import {
   TenantEntity,
   UserEntity,
 } from '@app/entities';
-import { Errors } from '@app/errors';
-import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { AsyncLocalStorage } from 'async_hooks';
 
-@Injectable({ scope: Scope.REQUEST })
+type RequestContext = {
+  tenant?: TenantEntity;
+  user?: UserEntity;
+  session?: SessionEntity;
+  account?: AccountEntity;
+};
+
+@Injectable()
 export class RequestContextService {
-  private _tenant?: TenantEntity;
-  private _user?: UserEntity;
-  private _session?: SessionEntity;
-  private _account?: AccountEntity;
+  private readonly als = new AsyncLocalStorage<RequestContext>();
 
-  constructor(@Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork) {}
+  constructor() {}
 
-  setSession(session: SessionEntity) {
-    this._session = session;
+  run(context: RequestContext, callback: () => void) {
+    const store = context;
+    this.als.run(store, callback);
   }
 
-  setUser(user: UserEntity) {
-    this._user = user;
+  get tenant(): TenantEntity | undefined {
+    return this.als.getStore()?.tenant;
   }
 
-  setTenant(tenant?: TenantEntity) {
-    this._tenant = tenant;
-    this._unitOfWork.setFilterParams('tenant', {
-      tenantId: tenant?.id,
-    });
-    // this._unitOfWork.getEntityManager().addFilter('tenant', {
-    //   tenantId: tenant.id,
-    // });
+  get user(): UserEntity | undefined {
+    return this.als.getStore()?.user;
   }
 
-  setAccount(account: AccountEntity) {
-    this._account = account;
+  get session(): SessionEntity | undefined {
+    return this.als.getStore()?.session;
   }
 
-  get tenant(): TenantEntity {
-    if (!this._tenant) {
-      throw Errors.Authentication.Unauthorized;
-    }
-
-    return this._tenant;
-  }
-
-  get user(): UserEntity {
-    if (!this._user) {
-      throw Errors.Authentication.Unauthorized;
-    }
-
-    return this._user;
-  }
-
-  get session(): SessionEntity {
-    if (!this._session) {
-      throw Errors.Authentication.Unauthorized;
-    }
-
-    return this._session;
-  }
-
-  get account(): AccountEntity {
-    if (!this._account) {
-      throw Errors.Authentication.Unauthorized;
-    }
-
-    return this._account;
+  get account(): AccountEntity | undefined {
+    return this.als.getStore()?.account;
   }
 }

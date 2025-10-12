@@ -1,10 +1,14 @@
 import { CollectionEntity } from '@app/entities';
 import { Errors } from '@app/errors';
-import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
-import { RequestContextService } from '@app/request';
-import { isNil } from '@app/utils';
-import { FilterQuery, Populate } from '@mikro-orm/core';
+import {
+  FindCollectionOptions,
+  FindOneCollectionOptions,
+  UNIT_OF_WORK,
+  type UnitOfWork,
+} from '@app/repositories';
+import { generateBaseSlug, isNil } from '@app/utils';
 import { Inject, Injectable } from '@nestjs/common';
+import { CollectionQueryDto } from './models';
 
 export type CollectionCreateInput = {
   name: string;
@@ -14,58 +18,37 @@ export type CollectionCreateInput = {
   sortOrder?: number;
 };
 
-export type CollectionUpdateInput = Partial<{
+export type CollectionUpdateInput = {
   name: string;
   icon?: string;
   description?: string;
   sortOrder?: number;
-}>;
+};
 
 export type CollectionMoveInput = {
   newParentId?: string;
 };
 
-export type CollectionQueryOptions = {
-  includeChildren?: boolean;
-  maxDepth?: number;
+export type CollectionSearch = {
   search?: string;
   parentId?: string;
 };
 
-export type PaginationOptions = {
-  offset?: number;
-  limit?: number;
+export type CollectionChildrenFilter = {
+  parentId: string;
+  keyword?: string;
 };
 
 // TODO Collection: using user from context
 @Injectable()
 export class CollectionService {
-  constructor(
-    @Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork,
-    private readonly _ctx: RequestContextService,
-  ) {}
+  constructor(@Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork) {}
 
   /**
    * Find collection by ID for a specific user and tenant
    */
-  async findOneById(
-    id: string,
-    options?: CollectionQueryOptions,
-  ): Promise<CollectionEntity | null> {
-    const populateFields: string[] = ['user', 'tenant'];
-    if (options?.includeChildren) {
-      populateFields.push('children');
-    }
-
-    const collection = await this._unitOfWork.collection.findOne(
-      {
-        id,
-        deleteFlag: false,
-      },
-      {
-        populate: populateFields as Populate<CollectionEntity, 'children'>,
-      },
-    );
+  async findById(id: string, options?: FindOneCollectionOptions) {
+    const collection = await this._unitOfWork.collection.findById(id, options);
 
     return collection;
   }
@@ -73,11 +56,11 @@ export class CollectionService {
   /**
    * Find collection by ID or fail
    */
-  async findOneByIdOrFail(
+  async findByIdOrFail(
     id: string,
-    options?: CollectionQueryOptions,
+    options?: FindOneCollectionOptions,
   ): Promise<CollectionEntity> {
-    const collection = await this.findOneById(id, options);
+    const collection = await this.findById(id, options);
 
     if (isNil(collection)) {
       throw Errors.Collection.NotFound;
@@ -90,135 +73,101 @@ export class CollectionService {
    * Find all collections for a user within a tenant
    */
   async findByUserId(
-    options?: CollectionQueryOptions & PaginationOptions,
-  ): Promise<CollectionEntity[]> {
-    const tenant = this._ctx.tenant;
-    const user = this._ctx.user;
-    if (options?.search) {
-      return this._unitOfWork.collection.findByName(user.id, options.search, {
-        offset: options.offset,
-        limit: options.limit,
-      });
+    query?: CollectionQueryDto,
+    options?: FindCollectionOptions,
+  ) {
+    const collection = await this._unitOfWork.collection.find(query, options);
+
+    if (isNil(collection)) {
+      throw Errors.Collection.NotFound;
     }
 
-    if (options?.parentId) {
-      return this._unitOfWork.collection.findChildren(options.parentId, {
-        offset: options.offset,
-        limit: options.limit,
-      });
-    }
-
-    return this._unitOfWork.collection.findByUserId(user.id, {
-      offset: options?.offset,
-      limit: options?.limit,
-    });
+    return collection;
   }
 
   /**
    * Find root collections (collections without parent) for a tenant
    */
-  async findRootCollections(
-    options?: PaginationOptions,
-  ): Promise<CollectionEntity[]> {
-    return this._unitOfWork.collection.findRootCollections({
-      offset: options?.offset,
-      limit: options?.limit,
-    });
-  }
+  // async findRootCollections(
+  //   options?: PaginationOptions,
+  // ): Promise<CollectionEntity[]> {
+  //   return this._unitOfWork.collection.findRootCollections({
+  //     offset: options?.offset,
+  //     limit: options?.limit,
+  //   });
+  // }
 
   /**
    * Find collection tree structure for a tenant
    */
-  async findCollectionTree(maxDepth: number = 5): Promise<CollectionEntity[]> {
-    return this._unitOfWork.collection.findCollectionTree(maxDepth);
-  }
+  // async findCollectionTree(maxDepth: number = 5): Promise<CollectionEntity[]> {
+  //   return this._unitOfWork.collection.findCollectionTree(maxDepth);
+  // }
 
   /**
    * Find children of a collection within a tenant
    */
-  async findChildren(
-    parentId: string,
-    options?: PaginationOptions,
-  ): Promise<CollectionEntity[]> {
-    return this._unitOfWork.collection.findChildren(parentId, {
-      offset: options?.offset,
-      limit: options?.limit,
-    });
-  }
+  // async findChildren(
+  //   filter: CollectionChildrenFilter,
+  //   options?: PaginationOptions,
+  // ): Promise<CollectionEntity[]> {
+  //   let where = this.addTenantIdToQuery<CollectionEntity>({
+  //     parent: filter.parentId,
+  //     deleteFlag: false,
+  //   });
 
-  /**
-   * Find collections with pagination for a tenant
-   */
-  async findWithPagination(
-    userId: string,
-    options?: PaginationOptions & {
-      filters?: FilterQuery<CollectionEntity>;
-    },
-  ): Promise<{ collections: CollectionEntity[]; total: number }> {
-    return this._unitOfWork.collection.findWithPagination(
-      userId,
-      options?.offset,
-      options?.limit,
-      options?.filters,
-    );
-  }
+  //   if (filter.keyword) {
+  //     where = this.setConditionFilter<CollectionEntity>(where, {
+  //       name: {
+  //         $like: `%${filter.keyword}%`,
+  //       },
+  //     });
+  //   }
 
-  /**
-   * Count collections by user and tenant
-   */
-  async countByUser(userId: string): Promise<number> {
-    return this._unitOfWork.collection.countByUser(userId);
-  }
+  //   return this._unitOfWork.collection.findChildren(where, {
+  //     offset: options?.offset,
+  //     limit: options?.limit,
+  //   });
+  // }
 
   /**
    * Create a new collection
    */
   async create(data: CollectionCreateInput): Promise<CollectionEntity> {
-    // Start transaction
-    await this._unitOfWork.start();
-
-    const user = this._ctx.user;
-    const tenant = this._ctx.tenant;
     try {
-      // Validate parent if provided
-      let parent: CollectionEntity | undefined;
+      let parent: CollectionEntity | null = null;
 
       if (data.parentId) {
-        parent = await this.findOneByIdOrFail(data.parentId);
+        parent = await this.findById(data.parentId);
       }
 
-      // Create collection with temporary path (will be updated after ID is generated)
+      let sortOrder = data.sortOrder;
+      if (isNil(sortOrder)) {
+        const latestOrder = await this._unitOfWork.collection.findLatestOrder(
+          parent?.id,
+        );
+        sortOrder = latestOrder?.sortOrder || 0;
+      }
+
       const collection = new CollectionEntity({
         name: data.name,
         icon: data.icon,
-        path: 'temp', // Temporary path
         description: data.description,
-        sortOrder: data.sortOrder,
-        user,
-        tenant,
-        parent,
+        sortOrder: sortOrder,
+        parent: parent || undefined,
+        slug: await this.generatePathSlug(data.name),
       });
 
       const createdCollection = this._unitOfWork.collection.create(collection);
 
-      // Flush to get the generated ID
-      await this._unitOfWork.getEntityManager().flush();
-
-      // Now generate the proper path using the ID
-      createdCollection.generatePath();
-
-      // Update parent's hasChild flag if parent exists
       if (parent) {
         parent.updateHasChildFlag();
       }
 
-      // Commit transaction
-      await this._unitOfWork.commit();
-
       return createdCollection;
     } catch (error) {
       // Rollback transaction on error
-      await this._unitOfWork.rollback();
+      console.error('Error creating collection:', error);
       throw error;
     }
   }
@@ -229,217 +178,246 @@ export class CollectionService {
   async update(
     id: string,
     data: CollectionUpdateInput,
-    userId: string,
   ): Promise<CollectionEntity> {
-    const collection = await this.findOneByIdOrFail(id);
+    try {
+      const collection = await this.findByIdOrFail(id);
 
-    // Update fields
-    if (data.name !== undefined) {
       collection.name = data.name;
-      // Regenerate path if name changed
-      collection.generatePath();
-      // Update children paths recursively
-      await this._updateChildrenPathsRecursively(collection, userId);
-    }
-
-    if (data.icon !== undefined) {
       collection.icon = data.icon;
-    }
-
-    if (data.description !== undefined) {
       collection.description = data.description;
-    }
 
-    if (data.sortOrder !== undefined) {
-      collection.sortOrder = data.sortOrder;
+      return collection;
+    } catch (error) {
+      // Rollback transaction on error
+      console.error('Error updating collection:', error);
+      throw error;
     }
+  }
 
-    return collection;
+  /**
+   * Save collection changes
+   */
+  async save(): Promise<void> {
+    await this._unitOfWork.save();
   }
 
   /**
    * Move collection to new parent
    */
-  async move(
-    id: string,
-    data: CollectionMoveInput,
-    userId: string,
-  ): Promise<CollectionEntity> {
-    await this._unitOfWork.start();
+  // async move(
+  //   id: string,
+  //   data: CollectionMoveInput,
+  //   userId: string,
+  // ): Promise<CollectionEntity> {
+  //   await this._unitOfWork.start();
 
-    try {
-      const collection = await this.findOneByIdOrFail(id);
-      const oldParent = collection.parent;
+  //   try {
+  //     const collection = await this.findOneByIdOrFail(id);
+  //     const oldParent = collection.parent;
 
-      // Validate new parent if provided
-      let newParent: CollectionEntity | undefined;
-      if (data.newParentId) {
-        // Check if new parent exists and belongs to user
-        newParent = await this.findOneByIdOrFail(data.newParentId);
+  //     // Validate new parent if provided
+  //     let newParent: CollectionEntity | undefined;
+  //     if (data.newParentId) {
+  //       // Check if new parent exists and belongs to user
+  //       newParent = await this.findOneByIdOrFail(data.newParentId);
 
-        // Prevent moving to itself or its children
-        if (data.newParentId === id) {
-          throw Errors.Collection.CannotMoveToSelf;
-        }
+  //       // Prevent moving to itself or its children
+  //       if (data.newParentId === id) {
+  //         throw Errors.Collection.CannotMoveToSelf;
+  //       }
 
-        const isDescendant = await this._isDescendant(id, data.newParentId);
-        if (isDescendant) {
-          throw Errors.Collection.CannotMoveToDescendant;
-        }
-      }
+  //       const isDescendant = await this._isDescendant(id, data.newParentId);
+  //       if (isDescendant) {
+  //         throw Errors.Collection.CannotMoveToDescendant;
+  //       }
+  //     }
 
-      // Update collection's parent
-      collection.parent = newParent;
+  //     // Update collection's parent
+  //     collection.parent = newParent;
 
-      // Regenerate path for this collection and all its children
-      collection.generatePath();
-      await this._updateChildrenPathsRecursively(collection, userId);
+  //     // Regenerate path for this collection and all its children
+  //     collection.generatePath();
+  //     await this._updateChildrenPathsRecursively(collection, userId);
 
-      // Update old parent's hasChild flag
-      if (oldParent) {
-        const siblings = await this.findChildren(oldParent.id);
-        oldParent.isHasChild = siblings.length > 0;
-      }
+  //     // Update old parent's hasChild flag
+  //     if (oldParent) {
+  //       const siblings = await this.findChildren(oldParent.id);
+  //       oldParent.isHasChild = siblings.length > 0;
+  //     }
 
-      // Update new parent's hasChild flag
-      if (newParent) {
-        newParent.isHasChild = true;
-      }
+  //     // Update new parent's hasChild flag
+  //     if (newParent) {
+  //       newParent.isHasChild = true;
+  //     }
 
-      await this._unitOfWork.commit();
-      return collection;
-    } catch (error) {
-      await this._unitOfWork.rollback();
-      throw error;
-    }
-  }
+  //     await this._unitOfWork.commit();
+  //     return collection;
+  //   } catch (error) {
+  //     await this._unitOfWork.rollback();
+  //     throw error;
+  //   }
+  // }
 
   /**
    * Update sort order for multiple collections
    */
-  async updateSortOrder(
-    collectionIds: string[],
-    userId: string,
-  ): Promise<void> {
-    // Validate all collections belong to user
-    for (const collectionId of collectionIds) {
-      await this.findOneByIdOrFail(collectionId);
-    }
+  // async updateSortOrder(
+  //   collectionIds: string[],
+  //   userId: string,
+  // ): Promise<void> {
+  //   // Validate all collections belong to user
+  //   for (const collectionId of collectionIds) {
+  //     await this.findOneByIdOrFail(collectionId);
+  //   }
 
-    await this._unitOfWork.collection.updateSortOrder(collectionIds, userId);
-  }
+  //   await this._unitOfWork.collection.updateSortOrder(collectionIds, userId);
+  // }
 
   /**
    * Soft delete a collection and all its children
    */
-  async delete(id: string, userId: string): Promise<void> {
-    await this._unitOfWork.start();
+  // async delete(id: string, userId: string): Promise<void> {
+  //   await this._unitOfWork.start();
 
-    try {
-      const collection = await this.findOneByIdOrFail(id);
-      const parent = collection.parent;
+  //   try {
+  //     const collection = await this.findOneByIdOrFail(id);
+  //     const parent = collection.parent;
 
-      await this._unitOfWork.collection.softDeleteWithChildren(id, userId);
+  //     await this._unitOfWork.collection.softDeleteWithChildren(id, userId);
 
-      // Update parent's hasChild flag if parent exists
-      if (parent) {
-        const siblings = await this.findChildren(parent.id);
-        parent.isHasChild = siblings.length > 0;
-      }
+  //     // Update parent's hasChild flag if parent exists
+  //     if (parent) {
+  //       const siblings = await this.findChildren(parent.id);
+  //       parent.isHasChild = siblings.length > 0;
+  //     }
 
-      await this._unitOfWork.commit();
-    } catch (error) {
-      await this._unitOfWork.rollback();
-      throw error;
-    }
-  }
+  //     await this._unitOfWork.commit();
+  //   } catch (error) {
+  //     await this._unitOfWork.rollback();
+  //     throw error;
+  //   }
+  // }
 
   /**
    * Restore a soft-deleted collection
    */
-  async restore(id: string, userId: string): Promise<CollectionEntity> {
-    await this._unitOfWork.start();
+  // async restore(id: string, userId: string): Promise<CollectionEntity> {
+  //   await this._unitOfWork.start();
 
-    try {
-      const collection = await this._unitOfWork.collection.findOne({
-        id,
-        user: { id: userId },
-        deleteFlag: true,
-      });
+  //   try {
+  //     const collection = await this._unitOfWork.collection.findOne({
+  //       id,
+  //       user: { id: userId },
+  //       deleteFlag: true,
+  //     });
 
-      if (isNil(collection)) {
-        throw Errors.Collection.NotFound;
-      }
+  //     if (isNil(collection)) {
+  //       throw Errors.Collection.NotFound;
+  //     }
 
-      collection.deleteFlag = false;
-      collection.deletedAt = undefined;
+  //     collection.deleteFlag = false;
+  //     collection.deletedAt = undefined;
 
-      // Update parent's hasChild flag if parent exists
-      if (collection.parent) {
-        collection.parent.isHasChild = true;
-      }
+  //     // Update parent's hasChild flag if parent exists
+  //     if (collection.parent) {
+  //       collection.parent.isHasChild = true;
+  //     }
 
-      await this._unitOfWork.commit();
-      return collection;
-    } catch (error) {
-      await this._unitOfWork.rollback();
-      throw error;
-    }
-  }
+  //     await this._unitOfWork.commit();
+  //     return collection;
+  //   } catch (error) {
+  //     await this._unitOfWork.rollback();
+  //     throw error;
+  //   }
+  // }
 
   /**
    * Permanently delete a collection
    */
-  async permanentDelete(id: string, userId: string): Promise<void> {
-    const collection = await this._unitOfWork.collection.findOne({
-      id,
-      user: { id: userId },
-    });
+  // async permanentDelete(id: string, userId: string): Promise<void> {
+  //   const collection = await this._unitOfWork.collection.findOne({
+  //     id,
+  //     user: { id: userId },
+  //   });
 
-    if (isNil(collection)) {
-      throw Errors.Collection.NotFound;
-    }
+  //   if (isNil(collection)) {
+  //     throw Errors.Collection.NotFound;
+  //   }
 
-    await this._unitOfWork.collection.softDeleteWithChildren(id, userId);
-  }
+  //   await this._unitOfWork.collection.softDeleteWithChildren(id, userId);
+  // }
 
   /**
    * Save changes to database
    */
-  async save(): Promise<void> {
-    return this._unitOfWork.save();
-  }
+  // async save(): Promise<void> {
+  //   return this._unitOfWork.save();
+  // }
 
   /**
    * Check if a collection is descendant of another
    */
-  private async _isDescendant(
-    ancestorId: string,
-    descendantId: string,
-  ): Promise<boolean> {
-    const descendant = await this.findOneById(descendantId);
-    if (!descendant) {
-      return false;
-    }
+  // private async _isDescendant(
+  //   ancestorId: string,
+  //   descendantId: string,
+  // ): Promise<boolean> {
+  //   const descendant = await this.findOneById(descendantId);
+  //   if (!descendant) {
+  //     return false;
+  //   }
 
-    // Check if ancestor ID is in the descendant's path
-    return descendant.path.includes(ancestorId);
-  }
+  //   // Check if ancestor ID is in the descendant's path
+  //   return descendant.path.includes(ancestorId);
+  // }
 
   /**
    * Update children paths recursively when parent changes
    */
-  private async _updateChildrenPathsRecursively(
-    parent: CollectionEntity,
-    userId: string,
-  ): Promise<void> {
-    const children = await this.findChildren(parent.id);
+  // private async _updateChildrenPathsRecursively(
+  //   parent: CollectionEntity,
+  //   userId: string,
+  // ): Promise<void> {
+  //   const children = await this.findChildren(parent.id);
+
+  //   for (const child of children) {
+  //     child.generatePath();
+
+  //     // Recursively update children's children
+  //     await this._updateChildrenPathsRecursively(child, userId);
+  //   }
+  // }
+
+  async delete(id: string): Promise<void> {
+    const collection = await this.findById(id);
+    if (!collection) {
+      throw Errors.Collection.NotFound;
+    }
+
+    const children = await this._unitOfWork.collection.findDescendants(
+      collection.id,
+    );
 
     for (const child of children) {
-      child.generatePath();
-
-      // Recursively update children's children
-      await this._updateChildrenPathsRecursively(child, userId);
+      await this._unitOfWork.collection.delete(child);
     }
+
+    await this._unitOfWork.collection.delete(collection);
+  }
+
+  private async generatePathSlug(name: string): Promise<string> {
+    const baseSlug = generateBaseSlug(name);
+    let slug = baseSlug;
+    let counter = 0;
+
+    while (await this.isSlugTaken(slug)) {
+      counter++;
+      slug = `${baseSlug}-${counter}`;
+    }
+    return slug;
+  }
+
+  private async isSlugTaken(slug: string): Promise<boolean> {
+    const exists = await this._unitOfWork.collection.findBySlug(slug);
+    return !!exists;
   }
 }

@@ -1,10 +1,8 @@
-import { BookmarkTagEntity, TagEntity } from '@app/entities';
+import { TagEntity } from '@app/entities';
 import { Errors } from '@app/errors';
 import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
-import { RequestContextService } from '@app/request';
 import { isNil } from '@app/utils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { TagSearchDto } from './models';
 
 export type TagCreateInput = {
   name: string;
@@ -29,20 +27,10 @@ export class TagService {
   constructor(
     @Inject(UNIT_OF_WORK)
     private readonly _unitOfWork: UnitOfWork,
-    private readonly _ctx: RequestContextService,
   ) {}
 
-  /**
-   * Create a new tag
-   */
-  async createTag(data: TagCreateInput): Promise<TagEntity> {
-    const user = this._ctx.user;
-    const tenant = this._ctx.tenant;
-    // Check if tag with same name already exists for this user
-    const existingTag = await this._unitOfWork.tag.findByName(
-      data.name,
-      user.id,
-    );
+  async create(data: TagCreateInput): Promise<TagEntity> {
+    const existingTag = await this._unitOfWork.tag.findByName(data.name);
 
     if (existingTag) {
       throw Errors.Tag.AlreadyExists;
@@ -51,8 +39,6 @@ export class TagService {
     // Create tag
     const tag = new TagEntity({
       name: data.name,
-      author: user,
-      tenant,
       description: data.description,
       color: data.color,
       category: data.category,
@@ -60,38 +46,28 @@ export class TagService {
     });
 
     const createdTag = this._unitOfWork.tag.create(tag);
-    await this._unitOfWork.save();
 
-    this.logger.log(`Created tag ${createdTag.id} for user ${user.id}`);
+    this.logger.log(
+      `Created tag ${createdTag.id} for user ${createdTag.author?.id}`,
+    );
     return createdTag;
   }
 
-  /**
-   * Update tag
-   */
-  async updateTag(
-    tagId: string,
-    data: TagUpdateInput,
-    userId: string,
-  ): Promise<TagEntity> {
-    const tag = await this.findOneByIdOrFail(tagId, userId);
+  async update(tagId: string, data: TagUpdateInput): Promise<TagEntity> {
+    const tag = await this.findOneByIdOrFail(tagId);
 
     // Check if new name conflicts with existing tag
     if (data.name && data.name !== tag.name) {
-      const existingTag = await this._unitOfWork.tag.findByName(
-        data.name,
-        userId,
-      );
+      const existingTag = await this._unitOfWork.tag.findByName(data.name);
       if (existingTag && existingTag.id !== tagId) {
         throw Errors.Tag.AlreadyExists;
       }
       tag.name = data.name.toLowerCase().trim();
     }
 
-    // Update other fields
-    if (data.description !== undefined) tag.description = data.description;
-    if (data.color !== undefined) tag.color = data.color;
-    if (data.category !== undefined) tag.category = data.category;
+    tag.description = data.description;
+    tag.color = data.color;
+    tag.category = data.category;
     if (data.isActive !== undefined) {
       if (data.isActive) {
         tag.activate();
@@ -100,49 +76,38 @@ export class TagService {
       }
     }
 
-    await this._unitOfWork.save();
-    this.logger.log(`Updated tag ${tagId} for user ${userId}`);
+    this.logger.log(`Updated tag ${tagId} for user ${tag.author?.id}`);
     return tag;
   }
 
   /**
    * Delete tag
    */
-  async deleteTag(tagId: string, userId: string): Promise<void> {
-    const tag = await this.findOneByIdOrFail(tagId, userId);
+  async delete(tagId: string): Promise<void> {
+    const tag = await this.findOneByIdOrFail(tagId);
 
     // Check if tag can be deleted
     if (!tag.canBeDeleted()) {
       throw Errors.Tag.CannotDelete;
     }
 
-    // Soft delete the tag
-    tag.deleteFlag = true;
-    tag.deletedAt = new Date();
+    this._unitOfWork.tag.delete(tag);
 
-    // Also delete all bookmark-tag relationships
-    await this._unitOfWork.bookmarkTag.bulkDeleteByTagIds([tagId]);
-
-    await this._unitOfWork.save();
-    this.logger.log(`Deleted tag ${tagId} for user ${userId}`);
+    this.logger.log(`Deleted tag ${tagId} for user ${tag.author?.id}`);
   }
 
   /**
    * Find tag by ID
    */
-  async findOneById(tagId: string, userId: string): Promise<TagEntity | null> {
-    return this._unitOfWork.tag.findOne({
-      id: tagId,
-      author: { id: userId },
-      deleteFlag: false,
-    });
+  async findOneById(tagId: string): Promise<TagEntity | null> {
+    return this._unitOfWork.tag.findById(tagId);
   }
 
   /**
    * Find tag by ID or fail
    */
-  async findOneByIdOrFail(tagId: string, userId: string): Promise<TagEntity> {
-    const tag = await this.findOneById(tagId, userId);
+  async findOneByIdOrFail(tagId: string): Promise<TagEntity> {
+    const tag = await this.findOneById(tagId);
 
     if (isNil(tag)) {
       throw Errors.Tag.NotFound;
@@ -154,202 +119,202 @@ export class TagService {
   /**
    * Find or create tag by name
    */
-  async findOrCreateTag(
-    name: string,
-    options?: {
-      description?: string;
-      color?: string;
-      category?: string;
-    },
-  ): Promise<TagEntity> {
-    const user = this._ctx.user;
-    const tenant = this._ctx.tenant;
-    return this._unitOfWork.tag.findOrCreate(name, user, tenant, options);
-  }
+  // async findOrCreateTag(
+  //   name: string,
+  //   options?: {
+  //     description?: string;
+  //     color?: string;
+  //     category?: string;
+  //   },
+  // ): Promise<TagEntity> {
+  //   const user = this._ctx.user;
+  //   const tenant = this._ctx.tenant;
+  //   return this._unitOfWork.tag.findOrCreate(name, user, tenant, options);
+  // }
 
   /**
    * Find tags with search and pagination
    */
-  async findTags(
-    searchDto: TagSearchDto,
-  ): Promise<{ tags: TagEntity[]; total: number }> {
-    const { offset = 0, limit = 20, ...filters } = searchDto;
+  // async findTags(
+  //   searchDto: TagSearchDto,
+  // ): Promise<{ tags: TagEntity[]; total: number }> {
+  //   const { offset = 0, limit = 20, ...filters } = searchDto;
 
-    return this._unitOfWork.tag.findWithPagination(
-      this._ctx.user.id,
-      offset,
-      limit,
-      {
-        search: filters.search,
-        category: filters.category,
-        isActive: filters.isActive,
-        minUsage: filters.minUsage,
-        maxUsage: filters.maxUsage,
-      },
-    );
-  }
+  //   return this._unitOfWork.tag.findWithPagination(
+  //     this._ctx.user.id,
+  //     offset,
+  //     limit,
+  //     {
+  //       search: filters.search,
+  //       category: filters.category,
+  //       isActive: filters.isActive,
+  //       minUsage: filters.minUsage,
+  //       maxUsage: filters.maxUsage,
+  //     },
+  //   );
+  // }
 
   /**
    * Search tags by name
    */
-  async searchTags(
-    searchTerm: string,
-    userId: string,
-    limit: number = 20,
-  ): Promise<TagEntity[]> {
-    return this._unitOfWork.tag.searchByName(searchTerm, userId, limit);
-  }
+  // async searchTags(
+  //   searchTerm: string,
+  //   userId: string,
+  //   limit: number = 20,
+  // ): Promise<TagEntity[]> {
+  //   return this._unitOfWork.tag.searchByName(searchTerm, userId, limit);
+  // }
 
   /**
    * Get popular tags
    */
-  async getPopularTags(
-    userId: string,
-    limit: number = 20,
-  ): Promise<TagEntity[]> {
-    return this._unitOfWork.tag.findPopular(userId, limit);
-  }
+  // async getPopularTags(
+  //   userId: string,
+  //   limit: number = 20,
+  // ): Promise<TagEntity[]> {
+  //   return this._unitOfWork.tag.findPopular(userId, limit);
+  // }
 
   /**
    * Get tags by category
    */
-  async getTagsByCategory(
-    category: string,
-    userId: string,
-  ): Promise<TagEntity[]> {
-    return this._unitOfWork.tag.findByCategory(category, userId);
-  }
+  // async getTagsByCategory(
+  //   category: string,
+  //   userId: string,
+  // ): Promise<TagEntity[]> {
+  //   return this._unitOfWork.tag.findByCategory(category, userId);
+  // }
 
   /**
    * Get unused tags
    */
-  async getUnusedTags(userId: string): Promise<TagEntity[]> {
-    return this._unitOfWork.tag.findUnused(userId);
-  }
+  // async getUnusedTags(userId: string): Promise<TagEntity[]> {
+  //   return this._unitOfWork.tag.findUnused(userId);
+  // }
 
   /**
    * Get all categories
    */
-  async getCategories(userId: string): Promise<string[]> {
-    return this._unitOfWork.tag.getCategories(userId);
-  }
+  // async getCategories(userId: string): Promise<string[]> {
+  //   return this._unitOfWork.tag.getCategories(userId);
+  // }
 
   /**
    * Get tag statistics
    */
-  async getTagStats(userId: string) {
-    return this._unitOfWork.tag.getTagStats(userId);
-  }
+  // async getTagStats(userId: string) {
+  //   return this._unitOfWork.tag.getTagStats(userId);
+  // }
 
   /**
    * Get tag usage statistics
    */
-  async getTagUsageStats(userId: string) {
-    return this._unitOfWork.bookmarkTag.getTagUsageStats(userId);
-  }
+  // async getTagUsageStats(userId: string) {
+  //   return this._unitOfWork.bookmarkTag.getTagUsageStats(userId);
+  // }
 
   /**
    * Assign tag to bookmark
    */
-  async assignTagToBookmark(
-    bookmarkId: string,
-    tagId: string,
-    options?: {
-      notes?: string;
-      isAutoGenerated?: boolean;
-      confidence?: number;
-    },
-  ): Promise<BookmarkTagEntity> {
-    // Verify bookmark and tag belong to user
-    const [bookmark, tag] = await Promise.all([
-      this._unitOfWork.bookmark.findOne({
-        id: bookmarkId,
-        deleteFlag: false,
-      }),
-      this._unitOfWork.tag.findOne({
-        id: tagId,
-        deleteFlag: false,
-      }),
-    ]);
+  // async assignTagToBookmark(
+  //   bookmarkId: string,
+  //   tagId: string,
+  //   options?: {
+  //     notes?: string;
+  //     isAutoGenerated?: boolean;
+  //     confidence?: number;
+  //   },
+  // ): Promise<BookmarkTagEntity> {
+  //   // Verify bookmark and tag belong to user
+  //   const [bookmark, tag] = await Promise.all([
+  //     this._unitOfWork.bookmark.findOne({
+  //       id: bookmarkId,
+  //       deleteFlag: false,
+  //     }),
+  //     this._unitOfWork.tag.findOne({
+  //       id: tagId,
+  //       deleteFlag: false,
+  //     }),
+  //   ]);
 
-    if (!bookmark) {
-      throw Errors.Bookmark.NotFound;
-    }
+  //   if (!bookmark) {
+  //     throw Errors.Bookmark.NotFound;
+  //   }
 
-    if (!tag) {
-      throw Errors.Tag.NotFound;
-    }
+  //   if (!tag) {
+  //     throw Errors.Tag.NotFound;
+  //   }
 
-    // Check if assignment already exists
-    const existingAssignment =
-      await this._unitOfWork.bookmarkTag.findByBookmarkAndTag(
-        bookmarkId,
-        tagId,
-      );
+  //   // Check if assignment already exists
+  //   const existingAssignment =
+  //     await this._unitOfWork.bookmarkTag.findByBookmarkAndTag(
+  //       bookmarkId,
+  //       tagId,
+  //     );
 
-    if (existingAssignment) {
-      throw Errors.Tag.AlreadyAssigned;
-    }
+  //   if (existingAssignment) {
+  //     throw Errors.Tag.AlreadyAssigned;
+  //   }
 
-    // Get user entity
+  //   // Get user entity
 
-    const tenant = this._ctx.tenant;
-    const user = this._ctx.user;
+  //   const tenant = this._ctx.tenant;
+  //   const user = this._ctx.user;
 
-    // Create assignment
-    const assignment = new BookmarkTagEntity({
-      bookmark,
-      tag,
-      addedBy: user,
-      tenant,
-      notes: options?.notes,
-      isAutoGenerated: options?.isAutoGenerated || false,
-      confidence: options?.confidence,
-    });
+  //   // Create assignment
+  //   const assignment = new BookmarkTagEntity({
+  //     bookmark,
+  //     tag,
+  //     addedBy: user,
+  //     tenant,
+  //     notes: options?.notes,
+  //     isAutoGenerated: options?.isAutoGenerated || false,
+  //     confidence: options?.confidence,
+  //   });
 
-    const createdAssignment = this._unitOfWork.bookmarkTag.create(assignment);
+  //   const createdAssignment = this._unitOfWork.bookmarkTag.create(assignment);
 
-    // Increment tag usage count
-    tag.incrementUsage();
+  //   // Increment tag usage count
+  //   tag.incrementUsage();
 
-    await this._unitOfWork.save();
-    this.logger.log(`Assigned tag ${tagId} to bookmark ${bookmarkId}`);
-    return createdAssignment;
-  }
+  //   await this._unitOfWork.save();
+  //   this.logger.log(`Assigned tag ${tagId} to bookmark ${bookmarkId}`);
+  //   return createdAssignment;
+  // }
 
   /**
    * Remove tag from bookmark
    */
-  async removeTagFromBookmark(
-    bookmarkId: string,
-    tagId: string,
-    userId: string,
-  ): Promise<void> {
-    const assignment = await this._unitOfWork.bookmarkTag.findByBookmarkAndTag(
-      bookmarkId,
-      tagId,
-    );
+  // async removeTagFromBookmark(
+  //   bookmarkId: string,
+  //   tagId: string,
+  //   userId: string,
+  // ): Promise<void> {
+  //   const assignment = await this._unitOfWork.bookmarkTag.findByBookmarkAndTag(
+  //     bookmarkId,
+  //     tagId,
+  //   );
 
-    if (!assignment) {
-      throw Errors.Tag.NotAssigned;
-    }
+  //   if (!assignment) {
+  //     throw Errors.Tag.NotAssigned;
+  //   }
 
-    // Check if user can remove this assignment
-    if (!assignment.canBeRemoved(userId)) {
-      throw Errors.Tag.CannotRemove;
-    }
+  //   // Check if user can remove this assignment
+  //   if (!assignment.canBeRemoved(userId)) {
+  //     throw Errors.Tag.CannotRemove;
+  //   }
 
-    // Soft delete the assignment
-    assignment.deleteFlag = true;
-    assignment.deletedAt = new Date();
+  //   // Soft delete the assignment
+  //   assignment.deleteFlag = true;
+  //   assignment.deletedAt = new Date();
 
-    // Decrement tag usage count
-    const tag = await this._unitOfWork.tag.findOneOrFail({ id: tagId });
-    tag.decrementUsage();
+  //   // Decrement tag usage count
+  //   const tag = await this._unitOfWork.tag.findOneOrFail({ id: tagId });
+  //   tag.decrementUsage();
 
-    await this._unitOfWork.save();
-    this.logger.log(`Removed tag ${tagId} from bookmark ${bookmarkId}`);
-  }
+  //   await this._unitOfWork.save();
+  //   this.logger.log(`Removed tag ${tagId} from bookmark ${bookmarkId}`);
+  // }
 
   // /**
   //  * Bulk update tags
@@ -467,51 +432,51 @@ export class TagService {
   /**
    * Get related tags
    */
-  async getRelatedTags(
-    tagId: string,
-    userId: string,
-    limit: number = 10,
-  ): Promise<{ tagId: string; tagName: string; coOccurrence: number }[]> {
-    return this._unitOfWork.bookmarkTag.findRelatedTags(tagId, userId, limit);
-  }
+  // async getRelatedTags(
+  //   tagId: string,
+  //   userId: string,
+  //   limit: number = 10,
+  // ): Promise<{ tagId: string; tagName: string; coOccurrence: number }[]> {
+  //   return this._unitOfWork.bookmarkTag.findRelatedTags(tagId, userId, limit);
+  // }
 
   /**
    * Get similar tags by name
    */
-  async getSimilarTags(
-    name: string,
-    userId: string,
-    limit: number = 5,
-  ): Promise<TagEntity[]> {
-    return this._unitOfWork.tag.findSimilar(name, userId, limit);
-  }
+  // async getSimilarTags(
+  //   name: string,
+  //   userId: string,
+  //   limit: number = 5,
+  // ): Promise<TagEntity[]> {
+  //   return this._unitOfWork.tag.findSimilar(name, userId, limit);
+  // }
 
   /**
    * Get tag timeline
    */
-  async getTagTimeline(
-    userId: string,
-    days: number = 30,
-  ): Promise<{ date: string; count: number }[]> {
-    return this._unitOfWork.bookmarkTag.getTagTimeline(userId, days);
-  }
+  // async getTagTimeline(
+  //   userId: string,
+  //   days: number = 30,
+  // ): Promise<{ date: string; count: number }[]> {
+  //   return this._unitOfWork.bookmarkTag.getTagTimeline(userId, days);
+  // }
 
   /**
    * Clean up unused tags
    */
-  async cleanupUnusedTags(userId: string): Promise<number> {
-    const unusedTags = await this.getUnusedTags(userId);
-    const deletableTags = unusedTags.filter((tag) => tag.canBeDeleted());
+  // async cleanupUnusedTags(userId: string): Promise<number> {
+  //   const unusedTags = await this.getUnusedTags(userId);
+  //   const deletableTags = unusedTags.filter((tag) => tag.canBeDeleted());
 
-    for (const tag of deletableTags) {
-      tag.deleteFlag = true;
-      tag.deletedAt = new Date();
-    }
+  //   for (const tag of deletableTags) {
+  //     tag.deleteFlag = true;
+  //     tag.deletedAt = new Date();
+  //   }
 
-    await this._unitOfWork.save();
-    this.logger.log(
-      `Cleaned up ${deletableTags.length} unused tags for user ${userId}`,
-    );
-    return deletableTags.length;
-  }
+  //   await this._unitOfWork.save();
+  //   this.logger.log(
+  //     `Cleaned up ${deletableTags.length} unused tags for user ${userId}`,
+  //   );
+  //   return deletableTags.length;
+  // }
 }

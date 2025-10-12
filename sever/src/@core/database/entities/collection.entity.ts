@@ -7,9 +7,9 @@ import {
   ManyToOne,
   OneToMany,
   Property,
+  Unique,
 } from '@mikro-orm/core';
 import { BaseEntityWithTenant } from './base-extend.entity';
-import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => CollectionRepository })
@@ -17,12 +17,16 @@ import { UserEntity } from './user.entity';
 @Index({ properties: ['user', 'deleteFlag'] })
 @Index({ properties: ['tenant', 'deleteFlag'] })
 @Index({ properties: ['parent'] })
+@Unique({ properties: ['tenant', 'slug'] })
 export class CollectionEntity extends BaseEntityWithTenant {
   @Property()
   name: string;
 
   @Property({ nullable: true, length: 100 })
   icon?: string;
+
+  @Property({ length: 50 })
+  slug: string;
 
   @Property({ length: 500 })
   path: string;
@@ -42,9 +46,6 @@ export class CollectionEntity extends BaseEntityWithTenant {
   @ManyToOne(() => UserEntity)
   user: UserEntity;
 
-  @ManyToOne(() => TenantEntity)
-  tenant: TenantEntity;
-
   @ManyToOne(() => CollectionEntity, { nullable: true })
   parent?: CollectionEntity;
 
@@ -56,68 +57,47 @@ export class CollectionEntity extends BaseEntityWithTenant {
   constructor({
     name,
     icon,
-    path,
     description,
     sortOrder,
-    user,
-    tenant,
     parent,
+    slug,
   }: {
     name: string;
+    slug: string;
     icon?: string;
-    path: string;
     description?: string;
-    sortOrder?: number;
-    user: UserEntity;
-    tenant: TenantEntity;
+    sortOrder: number;
     parent?: CollectionEntity;
   }) {
     super();
     this.name = name;
     this.icon = icon;
-    this.path = path;
     this.description = description;
-    this.sortOrder = sortOrder || 0;
-    this.user = user;
-    this.tenant = tenant;
+    this.slug = slug;
+    this.sortOrder = sortOrder;
     this.parent = parent;
   }
 
-  /**
-   * Update the hasChild flag based on children count
-   */
   updateHasChildFlag(): void {
     this.isHasChild = this.children.length > 0;
   }
 
-  /**
-   * Generate path based on parent path and current ID
-   */
   generatePath(): void {
     if (this.parent) {
-      this.path = `${this.parent.path}/${this.id}`;
+      this.path = `${this.parent.path}/${this.slug}`;
     } else {
-      this.path = this.id;
+      this.path = this.slug;
     }
   }
 
-  /**
-   * Check if this collection is a root collection (no parent)
-   */
   isRoot(): boolean {
     return !this.parent;
   }
 
-  /**
-   * Get parent ID from parent relationship
-   */
   getParentId(): string | null {
     return this.parent?.id || null;
   }
 
-  /**
-   * Get the depth level of this collection in the hierarchy
-   */
   getDepthLevel(): number {
     if (!this.parent) return 0;
     return this.parent.getDepthLevel() + 1;

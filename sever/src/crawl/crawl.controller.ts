@@ -1,16 +1,8 @@
 import { FEATURE_KEY } from '@app/constants';
-import { ApiAuth, CurrentUser } from '@app/decorators';
-import { UserEntity } from '@app/entities';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CrawlMapper } from './crawl.mapper';
 import { CrawlService } from './crawl.service';
-import {
-  CrawlRequestDto,
-  CrawlResponseDto,
-  CrawlStatsDto,
-  CrawlSummaryDto,
-} from './models';
 
 @ApiTags(FEATURE_KEY.CRAWL)
 @Controller(FEATURE_KEY.CRAWL)
@@ -20,147 +12,147 @@ export class CrawlController {
     private readonly _crawlMapper: CrawlMapper,
   ) {}
 
-  @Post()
-  @ApiAuth({
-    type: CrawlResponseDto,
-    summary: 'Create a new crawl request with immediate metadata extraction',
-    description:
-      'Creates a crawl request and returns metadata synchronously in the response',
-  })
-  async createCrawl(
-    @Body() createDto: CrawlRequestDto,
-  ): Promise<CrawlResponseDto> {
-    const crawl = await this._crawlService.createCrawl({
-      url: createDto.url,
-      crawlType: createDto.crawlType,
-      expiresAt: createDto.expiresAt,
-    });
-
-    return this._crawlMapper.toResponseDto(crawl);
-  }
-
-  @Post('async')
-  @ApiAuth({
-    type: CrawlResponseDto,
-    summary: 'Create a new crawl request (async processing)',
-    description:
-      'Creates a crawl request and processes metadata in the background',
-  })
-  async createCrawlAsync(
-    @Body() createDto: CrawlRequestDto,
-  ): Promise<CrawlResponseDto> {
-    const crawl = await this._crawlService.createCrawlAsync({
-      url: createDto.url,
-      crawlType: createDto.crawlType,
-      expiresAt: createDto.expiresAt,
-    });
-
-    return this._crawlMapper.toResponseDto(crawl);
-  }
-
-  // @Post('batch')
-  // @ApiOperation({
-  //   summary:
-  //     'Create multiple crawl requests with immediate metadata extraction',
-  //   description:
-  //     'Creates multiple crawl requests and returns metadata synchronously for all URLs',
-  // })
-  // @ApiResponse({ type: BatchCrawlResponseDto, status: 201 })
-  // async createBatchCrawls(
-  //   @Body() batchDto: BatchCrawlRequestDto,
-  // ): Promise<BatchCrawlResponseDto> {
-  //   const crawls = await this._crawlService.createBatchCrawls(
-  //     batchDto.urls,
-  //     batchDto.crawlType,
-  //     batchDto.expiresAt,
-  //   );
-
-  //   return this._crawlMapper.toResponseDto(crawls);
-  // }
-
-  // @Post('batch/async')
-  // @ApiOperation({
-  //   summary: 'Create multiple crawl requests (async processing)',
-  //   description:
-  //     'Creates multiple crawl requests and processes metadata in the background',
-  // })
-  // @ApiResponse({ type: BatchCrawlResponseDto, status: 201 })
-  // async createBatchCrawlsAsync(
-  //   @Body() batchDto: BatchCrawlRequestDto,
-  //   @CurrentUser() user: UserEntity,
-  //   @TenantId() tenantId: string,
-  // ): Promise<BatchCrawlResponseDto> {
-  //   const crawls = await this._crawlService.createBatchCrawlsAsync(
-  //     batchDto.urls.map((url) => ({
-  //       url: url.url,
-  //       crawlType: url.crawlType,
-  //       options: url.options,
-  //     })),
-  //     user.id,
-  //     tenantId,
-  //   );
-
-  //   return this._crawlMapper.toBatchResponseDto(crawls);
-  // }
-
-  // @Get()
-  // @ApiQuery({ name: 'search', required: false, description: 'Search term' })
-  // @ApiQuery({
-  //   name: 'status',
-  //   required: false,
-  //   description: 'Filter by status',
-  // })
-  // @ApiQuery({
-  //   name: 'crawlType',
-  //   required: false,
-  //   description: 'Filter by crawl type',
-  // })
-  // @ApiQuery({
-  //   name: 'offset',
-  //   required: false,
-  //   description: 'Pagination offset',
-  // })
-  // @ApiQuery({ name: 'limit', required: false, description: 'Pagination limit' })
+  // @Post()
   // @ApiAuth({
   //   type: CrawlResponseDto,
-  //   responseType: 'pagination',
-  //   summary: 'Get crawls for current user',
+  //   summary: 'Create a new crawl request with immediate metadata extraction',
+  //   description:
+  //     'Creates a crawl request and returns metadata synchronously in the response',
   // })
-  // async findAll(
-  //   @Query() searchDto: CrawlSearchDto,
-  // ): Promise<CrawlWithPaginationResponseDto> {
-  //   const { crawls, total } = await this._crawlService.findCrawls(searchDto);
+  // async createCrawl(
+  //   @Body() createDto: CrawlRequestDto,
+  // ): Promise<CrawlResponseDto> {
+  //   const crawl = await this._crawlService.createCrawl({
+  //     url: createDto.url,
+  //     crawlType: createDto.crawlType,
+  //     expiresAt: createDto.expiresAt,
+  //   });
 
-  //   return this._crawlMapper.toPaginationResponseDto(
-  //     crawls,
-  //     total,
-  //     searchDto.offset || 0,
-  //     searchDto.limit || 20,
-  //   );
+  //   return this._crawlMapper.toResponseDto(crawl);
   // }
 
-  @Get('stats')
-  @ApiOperation({ summary: 'Get crawl statistics for current user' })
-  @ApiResponse({ type: CrawlStatsDto })
-  async getStats(@CurrentUser() user: UserEntity): Promise<CrawlStatsDto> {
-    return this._crawlService.getCrawlStats(user.id);
-  }
+  // @Post('async')
+  // @ApiAuth({
+  //   type: CrawlResponseDto,
+  //   summary: 'Create a new crawl request (async processing)',
+  //   description:
+  //     'Creates a crawl request and processes metadata in the background',
+  // })
+  // async createCrawlAsync(
+  //   @Body() createDto: CrawlRequestDto,
+  // ): Promise<CrawlResponseDto> {
+  //   const crawl = await this._crawlService.createCrawlAsync({
+  //     url: createDto.url,
+  //     crawlType: createDto.crawlType,
+  //     expiresAt: createDto.expiresAt,
+  //   });
 
-  @Get('recent')
-  @ApiOperation({ summary: 'Get recent crawls for current user' })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    description: 'Number of recent crawls',
-  })
-  @ApiResponse({ type: [CrawlSummaryDto] })
-  async getRecentCrawls(
-    @Query('limit') limit?: number,
-  ): Promise<CrawlSummaryDto[]> {
-    const crawls = await this._crawlService.getRecentCrawls(limit || 10);
+  //   return this._crawlMapper.toResponseDto(crawl);
+  // }
 
-    return this._crawlMapper.toSummaryDtoArray(crawls);
-  }
+  // // @Post('batch')
+  // // @ApiOperation({
+  // //   summary:
+  // //     'Create multiple crawl requests with immediate metadata extraction',
+  // //   description:
+  // //     'Creates multiple crawl requests and returns metadata synchronously for all URLs',
+  // // })
+  // // @ApiResponse({ type: BatchCrawlResponseDto, status: 201 })
+  // // async createBatchCrawls(
+  // //   @Body() batchDto: BatchCrawlRequestDto,
+  // // ): Promise<BatchCrawlResponseDto> {
+  // //   const crawls = await this._crawlService.createBatchCrawls(
+  // //     batchDto.urls,
+  // //     batchDto.crawlType,
+  // //     batchDto.expiresAt,
+  // //   );
+
+  // //   return this._crawlMapper.toResponseDto(crawls);
+  // // }
+
+  // // @Post('batch/async')
+  // // @ApiOperation({
+  // //   summary: 'Create multiple crawl requests (async processing)',
+  // //   description:
+  // //     'Creates multiple crawl requests and processes metadata in the background',
+  // // })
+  // // @ApiResponse({ type: BatchCrawlResponseDto, status: 201 })
+  // // async createBatchCrawlsAsync(
+  // //   @Body() batchDto: BatchCrawlRequestDto,
+  // //   @CurrentUser() user: UserEntity,
+  // //   @TenantId() tenantId: string,
+  // // ): Promise<BatchCrawlResponseDto> {
+  // //   const crawls = await this._crawlService.createBatchCrawlsAsync(
+  // //     batchDto.urls.map((url) => ({
+  // //       url: url.url,
+  // //       crawlType: url.crawlType,
+  // //       options: url.options,
+  // //     })),
+  // //     user.id,
+  // //     tenantId,
+  // //   );
+
+  // //   return this._crawlMapper.toBatchResponseDto(crawls);
+  // // }
+
+  // // @Get()
+  // // @ApiQuery({ name: 'search', required: false, description: 'Search term' })
+  // // @ApiQuery({
+  // //   name: 'status',
+  // //   required: false,
+  // //   description: 'Filter by status',
+  // // })
+  // // @ApiQuery({
+  // //   name: 'crawlType',
+  // //   required: false,
+  // //   description: 'Filter by crawl type',
+  // // })
+  // // @ApiQuery({
+  // //   name: 'offset',
+  // //   required: false,
+  // //   description: 'Pagination offset',
+  // // })
+  // // @ApiQuery({ name: 'limit', required: false, description: 'Pagination limit' })
+  // // @ApiAuth({
+  // //   type: CrawlResponseDto,
+  // //   responseType: 'pagination',
+  // //   summary: 'Get crawls for current user',
+  // // })
+  // // async findAll(
+  // //   @Query() searchDto: CrawlSearchDto,
+  // // ): Promise<CrawlWithPaginationResponseDto> {
+  // //   const { crawls, total } = await this._crawlService.findCrawls(searchDto);
+
+  // //   return this._crawlMapper.toPaginationResponseDto(
+  // //     crawls,
+  // //     total,
+  // //     searchDto.offset || 0,
+  // //     searchDto.limit || 20,
+  // //   );
+  // // }
+
+  // @Get('stats')
+  // @ApiOperation({ summary: 'Get crawl statistics for current user' })
+  // @ApiResponse({ type: CrawlStatsDto })
+  // async getStats(@CurrentUser() user: UserEntity): Promise<CrawlStatsDto> {
+  //   return this._crawlService.getCrawlStats(user.id);
+  // }
+
+  // @Get('recent')
+  // @ApiOperation({ summary: 'Get recent crawls for current user' })
+  // @ApiQuery({
+  //   name: 'limit',
+  //   required: false,
+  //   description: 'Number of recent crawls',
+  // })
+  // @ApiResponse({ type: [CrawlSummaryDto] })
+  // async getRecentCrawls(
+  //   @Query('limit') limit?: number,
+  // ): Promise<CrawlSummaryDto[]> {
+  //   const crawls = await this._crawlService.getRecentCrawls(limit || 10);
+
+  //   return this._crawlMapper.toSummaryDtoArray(crawls);
+  // }
 
   // @Post('validate-url')
   // @ApiOperation({ summary: 'Validate URL for crawling' })

@@ -3,6 +3,7 @@ export * from './collection-breadcrumb.dto';
 export * from './collection-create.dto';
 export * from './collection-export.dto';
 export * from './collection-move.dto';
+export * from './collection-query.dto';
 export * from './collection-stats.dto';
 export * from './collection-tree-response.dto';
 export * from './collection-update.dto';

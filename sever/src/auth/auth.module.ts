@@ -6,6 +6,7 @@ import { TenantSharedModule } from '@app/tenant';
 import { UserModule } from '@app/user';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
@@ -33,7 +34,10 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
 
     AccessTokenStrategy,
     RefreshTokenStrategy,
-    JwtAuthGuard,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
   exports: [AuthService],
 })

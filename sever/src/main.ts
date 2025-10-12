@@ -6,7 +6,7 @@ import {
   HttpConfig,
   httpConfig,
 } from '@app/configs';
-import { VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -29,6 +29,14 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
   app.use(cookieParser(cookieConfigValues.secret));
   app.use(helmet());
+
+  // Configure global validation pipe with transformation
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
 
   if (httpConfigValues.versioningEnable) {
     app.enableVersioning({

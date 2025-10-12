@@ -3,14 +3,12 @@ import { Global, Injectable, Module, Provider } from '@nestjs/common';
 import {
   AccountEntity,
   BookmarkEntity,
-  BookmarkTagEntity,
-  CollectionEntity,
   CrawlEntity,
   SessionEntity,
-  TagEntity,
   TenantEntity,
   UserEntity,
 } from '@app/entities';
+import { RequestContextService } from '@app/request';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { AccountRepository } from './account.repository';
 import { BookmarkTagRepository } from './bookmark-tag.repository';
@@ -39,8 +37,6 @@ export interface UnitOfWork {
   commit(): Promise<void>;
   rollback(): Promise<void>;
   getEntityManager(): EntityManager;
-
-  setFilterParams(filterName: string, params: Record<string, unknown>): void;
 }
 
 @Injectable()
@@ -55,12 +51,11 @@ export class UnitOfWorkImpl implements UnitOfWork {
   private _bookmarkTag?: BookmarkTagRepository;
   private _tenant?: TenantRepository;
 
-  constructor(private readonly _em: EntityManager) {
+  constructor(
+    private readonly _em: EntityManager,
+    private readonly _ctx: RequestContextService,
+  ) {
     this._em.addFilter('deleteFlag', { deleteFlag: false });
-  }
-
-  setFilterParams(filterName: string, params: Record<string, unknown>) {
-    this._em.setFilterParams(filterName, params);
   }
 
   getEntityManager(): EntityManager {
@@ -93,7 +88,7 @@ export class UnitOfWorkImpl implements UnitOfWork {
 
   get collection(): CollectionRepository {
     if (!this._collection) {
-      this._collection = this._em.getRepository(CollectionEntity);
+      this._collection = new CollectionRepository(this._em, this._ctx);
     }
     return this._collection;
   }
@@ -114,14 +109,14 @@ export class UnitOfWorkImpl implements UnitOfWork {
 
   get tag(): TagRepository {
     if (!this._tag) {
-      this._tag = this._em.getRepository(TagEntity);
+      this._tag = new TagRepository(this._em, this._ctx);
     }
     return this._tag;
   }
 
   get bookmarkTag(): BookmarkTagRepository {
     if (!this._bookmarkTag) {
-      this._bookmarkTag = this._em.getRepository(BookmarkTagEntity);
+      this._bookmarkTag = new BookmarkTagRepository(this._em, this._ctx);
     }
     return this._bookmarkTag;
   }

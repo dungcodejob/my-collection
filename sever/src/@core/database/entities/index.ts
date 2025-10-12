@@ -1,4 +1,5 @@
 export * from './account.entity';
+export * from './base-extend.entity';
 export * from './base.entity';
 export * from './bookmark-tag.entity';
 export * from './bookmark.entity';

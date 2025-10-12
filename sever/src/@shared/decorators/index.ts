@@ -4,6 +4,8 @@ export * from './http/api-error-responses.decorator';
 export * from './http/api-ok-responses.decorator';
 export * from './http/http.decorator';
 export * from './origin.decorator';
+export * from './parse-filters.decorator';
+export * from './parse-sorts.decorator';
 export * from './public.decorator';
 export * from './session.decorator';
 export * from './transform.decorators';

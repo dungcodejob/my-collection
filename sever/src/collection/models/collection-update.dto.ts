@@ -1,15 +1,19 @@
-import { NumberFieldOptional, StringFieldOptional } from '@app/decorators';
+import {
+  NumberFieldOptional,
+  StringField,
+  StringFieldOptional,
+} from '@app/decorators';
 
 /**
  * DTO for updating a collection
  */
 export class CollectionUpdateDto {
-  @StringFieldOptional({
+  @StringField({
     description: 'Collection name',
     example: 'Updated Documents',
     maxLength: 255,
   })
-  name?: string;
+  name: string;
 
   @StringFieldOptional({
     description: 'Collection icon',
