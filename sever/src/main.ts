@@ -6,7 +6,7 @@ import {
   HttpConfig,
   httpConfig,
 } from '@app/configs';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { HttpStatus, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -25,7 +25,12 @@ async function bootstrap() {
   const testing = appConfigValues.testing;
 
   const globalPrefix = 'api';
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:4200', // cho phép Angular gọi
+    credentials: true, // nếu bạn gửi cookie/token
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
   app.setGlobalPrefix(globalPrefix);
   app.use(cookieParser(cookieConfigValues.secret));
   app.use(helmet());
@@ -34,7 +39,11 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      whitelist: true,
+      skipNullProperties: false,
+      skipUndefinedProperties: false,
+      skipMissingProperties: false,
+      forbidUnknownValues: false,
+      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     }),
   );
 

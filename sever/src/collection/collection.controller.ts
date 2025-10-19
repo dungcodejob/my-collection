@@ -1,6 +1,6 @@
 import { FEATURE_KEY, SWAGGER_SCHEME } from '@app/constants';
 import { ApiAuth } from '@app/decorators';
-import { ApiCustomQuery } from '@app/models';
+import { ApiCustomQuery, ResponseBuilder } from '@app/models';
 import {
   Body,
   Controller,
@@ -37,12 +37,19 @@ export class CollectionController {
     summary: 'Get all collections for current user',
   })
   @Get()
-  async findAll(@Query() query: CollectionQueryDto): Promise<CollectionDto[]> {
+  async findAll(@Query() query: CollectionQueryDto) {
     const collections = await this._collectionService.findByUserId(query);
 
-    return collections.map((collection) =>
+    const items = collections.map((collection) =>
       this._collectionMapper.toResponseDto(collection),
     );
+
+    return ResponseBuilder.toList({
+      items,
+      meta: {
+        count: items.length,
+      },
+    });
   }
 
   // @ApiQuery({
@@ -194,7 +201,7 @@ export class CollectionController {
     type: CollectionDto,
     summary: 'Create a new collection',
   })
-  async create(@Body() createDto: CollectionCreateDto): Promise<CollectionDto> {
+  async create(@Body() createDto: CollectionCreateDto) {
     const collection = await this._collectionService.create({
       name: createDto.name,
       icon: createDto.icon,
@@ -205,7 +212,11 @@ export class CollectionController {
 
     await this._collectionService.save();
 
-    return this._collectionMapper.toResponseDto(collection);
+    const result = this._collectionMapper.toResponseDto(collection);
+
+    return ResponseBuilder.toSingle({
+      data: result,
+    });
   }
 
   @Put(':id')
@@ -216,7 +227,7 @@ export class CollectionController {
   async update(
     @Param('id') id: string,
     @Body() updateDto: CollectionUpdateDto,
-  ): Promise<CollectionDto> {
+  ) {
     const collection = await this._collectionService.update(id, {
       name: updateDto.name,
       icon: updateDto.icon,
@@ -226,7 +237,11 @@ export class CollectionController {
 
     await this._collectionService.save();
 
-    return this._collectionMapper.toResponseDto(collection);
+    const result = this._collectionMapper.toResponseDto(collection);
+
+    return ResponseBuilder.toSingle({
+      data: result,
+    });
   }
 
   // @ApiAuth({

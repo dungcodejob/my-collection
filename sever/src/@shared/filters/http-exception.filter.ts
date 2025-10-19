@@ -11,6 +11,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request, Response } from 'express';
@@ -50,6 +51,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
         result = {
           meta: exception.meta,
         };
+      }
+
+      if (exception instanceof UnprocessableEntityException) {
+        errorCode = exception.message;
+        result = exception.getResponse() as ValidatorResponseDto['result'];
       }
 
       // Handle unauthorized exceptions

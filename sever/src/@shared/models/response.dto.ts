@@ -1,5 +1,7 @@
+import { MESSAGE_SUCCESS } from '@app/constants';
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
+import { HttpStatusCode } from 'axios';
 import { PaginationMetaDto } from './pagination-meta.dto';
 
 export class BaseResponseDto {
@@ -17,17 +19,17 @@ export class BaseResponseDto {
     description: 'Timestamp of the response',
     example: '2023-01-01T00:00:00.000Z',
   })
-  timestamp: string;
+  timestamp?: string;
   @ApiProperty({
     description: 'Requested URL',
     example: '/api/endpoint',
   })
-  url: string;
+  url?: string;
   @ApiProperty({
     description: 'HTTP method used',
     example: 'GET',
   })
-  method: string;
+  method?: string;
 }
 
 export class ErrorResponseDto extends BaseResponseDto {
@@ -105,5 +107,51 @@ export class FileImportValidatorException extends BadRequestException {
       message: 'App.ValidationError',
     });
     this.meta = { failureCount: validators.length, validators };
+  }
+}
+
+type ResponseResult<T> = T extends SuccessResponseDto<infer U> ? U : never;
+
+export class ResponseBuilder {
+  static toSingle<T>(
+    result: ResponseResult<SingleResponseDto<T>>,
+    options?: {
+      message?: string;
+      statusCode?: number;
+    },
+  ): Partial<SingleResponseDto<T>> {
+    return {
+      result,
+      statusCode: options?.statusCode ?? HttpStatusCode.Ok,
+      message: options?.message ?? MESSAGE_SUCCESS.DEFAULT,
+    };
+  }
+
+  static toList<T>(
+    result: ResponseResult<ListResponseDto<T>>,
+    options?: {
+      message?: string;
+      statusCode?: number;
+    },
+  ): Partial<ListResponseDto<T>> {
+    return {
+      result,
+      statusCode: options?.statusCode ?? HttpStatusCode.Ok,
+      message: options?.message ?? MESSAGE_SUCCESS.DEFAULT,
+    };
+  }
+
+  static toPagination<T>(
+    result: ResponseResult<PaginationResponseDto<T>>,
+    options?: {
+      message?: string;
+      statusCode?: number;
+    },
+  ): Partial<PaginationResponseDto<T>> {
+    return {
+      result,
+      statusCode: options?.statusCode ?? HttpStatusCode.Ok,
+      message: options?.message ?? MESSAGE_SUCCESS.DEFAULT,
+    };
   }
 }

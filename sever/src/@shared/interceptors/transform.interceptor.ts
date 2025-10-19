@@ -1,4 +1,3 @@
-import { MESSAGE_SUCCESS, RESPONSE_KEY } from '@app/constants';
 import { SuccessResponseDto } from '@app/models';
 import {
   CallHandler,
@@ -22,27 +21,21 @@ export class TransformInterceptor<T> implements NestInterceptor {
     );
   }
 
-  private _handleResponse(result: any, context: ExecutionContext): void {
+  private _handleResponse(
+    result: SuccessResponseDto<T>,
+    context: ExecutionContext,
+  ): void {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
     const status = response.statusCode || HttpStatus.OK;
 
-    let message =
-      this.reflector.get(RESPONSE_KEY.MESSAGE, context.getHandler()) ||
-      MESSAGE_SUCCESS.DEFAULT;
-
-    if (result?.message) {
-      message = result.message;
-    }
     // const message = response["message"] ?? "";
 
     const body: SuccessResponseDto<T> = {
-      statusCode: status,
+      ...result,
       success: true,
-      message,
-      result,
       timestamp: new Date().toISOString(),
       url: request.url,
       method: request.method,

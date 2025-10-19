@@ -4,7 +4,7 @@ import {
   MEMORY_RSS_LIMIT,
 } from '@app/constants';
 import { ApiOkResponseSingle, Public } from '@app/decorators';
-import { Result } from '@app/models';
+import { ResponseBuilder } from '@app/models';
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -43,10 +43,14 @@ export class HealthController {
       () => this.mikroOrmHealthIndicator.pingCheck('database'),
     ]);
 
-    return Result.toSingle({
-      data: result,
-      message: 'Database connection is healthy and responding',
-    });
+    return ResponseBuilder.toSingle(
+      {
+        data: result,
+      },
+      {
+        message: 'Database connection is healthy and responding',
+      },
+    );
   }
 
   @ApiOperation({
@@ -64,10 +68,14 @@ export class HealthController {
         this.memoryHealthIndicator.checkHeap('memory_heap', MEMORY_HEAP_LIMIT),
     ]);
 
-    return Result.toSingle({
-      data: result,
-      message: 'Memory heap is healthy and responding',
-    });
+    return ResponseBuilder.toSingle(
+      {
+        data: result,
+      },
+      {
+        message: 'Memory heap is healthy and responding',
+      },
+    );
   }
 
   @ApiOperation({
@@ -84,10 +92,14 @@ export class HealthController {
       () => this.memoryHealthIndicator.checkRSS('memory_rss', MEMORY_RSS_LIMIT),
     ]);
 
-    return Result.toSingle({
-      data: result,
-      message: 'Memory rss is healthy and responding',
-    });
+    return ResponseBuilder.toSingle(
+      {
+        data: result,
+      },
+      {
+        message: 'Memory rss is healthy and responding',
+      },
+    );
   }
 
   @ApiOperation({
@@ -108,9 +120,13 @@ export class HealthController {
         }),
     ]);
 
-    return Result.toSingle({
-      data: result,
-      message: 'Storage is healthy and responding',
-    });
+    return ResponseBuilder.toSingle(
+      {
+        data: result,
+      },
+      {
+        message: 'Storage is healthy and responding',
+      },
+    );
   }
 }

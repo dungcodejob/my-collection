@@ -1,3 +1,5 @@
+import { MESSAGE_SUCCESS } from '@app/constants';
+import { HttpStatus } from '@nestjs/common';
 import { PaginationMetaDto } from './pagination-meta.dto';
 
 type ResultOptions = { status: number; message: string };
@@ -12,12 +14,12 @@ type PaginationResultOptions<T> = Partial<ResultOptions> & {
 };
 
 export class ResultDto {
-  readonly status: number;
+  readonly statusCode: number;
   readonly message: string;
 
   constructor(options?: Partial<ResultOptions>) {
-    this.status = options?.status || 200;
-    this.message = options?.message || 'Response successful';
+    this.statusCode = options?.status || HttpStatus.OK;
+    this.message = options?.message || MESSAGE_SUCCESS.DEFAULT;
   }
 }
 

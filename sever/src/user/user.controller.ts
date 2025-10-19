@@ -1,6 +1,6 @@
 import { FEATURE_KEY } from '@app/constants';
 import { ApiAuth } from '@app/decorators';
-import { Result } from '@app/models';
+import { ResponseBuilder } from '@app/models';
 import { Controller, Get, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserMapper } from './user.mapper';
@@ -17,7 +17,7 @@ export class UserController {
   })
   @Get('profile')
   getProfile(@Req() req) {
-    return Result.toSingle({
+    return ResponseBuilder.toSingle({
       data: this._userMapper.toUserInfo(req.user.user),
     });
   }
