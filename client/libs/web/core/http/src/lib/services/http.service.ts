@@ -31,6 +31,7 @@ export class HttpService implements OnInitConfig {
   protected _baseUrl!: string;
 
   configure(config: MCConfig): void {
+    console.log(config);
     this._baseUrl = config.apiBaseUrl;
   }
 

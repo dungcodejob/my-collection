@@ -15,3 +15,4 @@ export const BYTE = 1024;
 export const MB = BYTE * BYTE;
 export const MEMORY_HEAP_LIMIT = 150 * MB;
 export const MEMORY_RSS_LIMIT = 200 * MB;
+export const COLLECTION_ROOT_PATH = '/';

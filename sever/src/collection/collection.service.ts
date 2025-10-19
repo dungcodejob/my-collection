@@ -73,7 +73,7 @@ export class CollectionService {
    * Find all collections for a user within a tenant
    */
   async findByUserId(
-    query?: CollectionQueryDto,
+    query: CollectionQueryDto,
     options?: FindCollectionOptions,
   ) {
     const collection = await this._unitOfWork.collection.find(query, options);

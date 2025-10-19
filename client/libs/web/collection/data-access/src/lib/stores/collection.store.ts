@@ -25,8 +25,11 @@ import {
 import { Collection } from "../models/collection";
 import { CollectionAdapter } from "../services/collection.adapter";
 import { CollectionApi } from "../services/collection.api";
+
+export const COLLECTION_ROOT_ID = "COLLECTION_ROOT_ID";
+
 const COLLECTION_ROOT: Collection = {
-  id: "",
+  id: COLLECTION_ROOT_ID,
   name: "root",
   path: "/",
   isHasChild: true,

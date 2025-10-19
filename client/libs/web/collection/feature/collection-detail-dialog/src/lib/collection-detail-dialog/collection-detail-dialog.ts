@@ -8,6 +8,7 @@ import {
 } from "@angular/forms";
 import {
   Collection,
+  COLLECTION_ROOT_ID,
   CreateCollectionRequest,
   UpdateCollectionRequest,
 } from "@client/web-collection-data-access";
@@ -72,21 +73,21 @@ export class MCCollectionDetailDialog implements OnInit {
 
   onSave(): void {
     const data = this.$data();
+    const parent = this.$parent();
+    const parentId = parent.id !== COLLECTION_ROOT_ID ? parent.id : undefined;
     if (data) {
       const request: UpdateCollectionRequest = {
         ...data,
         ...this.form.getRawValue(),
-        parentId: this.$parent().id,
-        path: this.$parent().path,
-        icon: "",
+        parentId,
+        path: parent.path,
       };
       this.update.emit(request);
     } else {
       const request: CreateCollectionRequest = {
         ...this.form.getRawValue(),
-        icon: "",
-        path: this.$parent().path,
-        parentId: this.$parent().id,
+        path: parent.path,
+        parentId,
       };
       this.create.emit(request);
     }

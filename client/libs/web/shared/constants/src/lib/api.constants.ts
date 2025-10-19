@@ -29,11 +29,11 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: "/user/change-password",
   },
   COLLECTIONS: {
-    BASE: "/collections",
-    BY_ID: (id: string) => `/collections/${id}`,
-    ITEMS: (collectionId: string) => `/collections/${collectionId}/items`,
+    BASE: "/collection",
+    BY_ID: (id: string) => `/collection/${id}`,
+    ITEMS: (collectionId: string) => `/collection/${collectionId}/items`,
     ITEM_BY_ID: (collectionId: string, itemId: string) =>
-      `/collections/${collectionId}/items/${itemId}`,
+      `/collection/${collectionId}/items/${itemId}`,
   },
 } as const;
 

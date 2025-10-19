@@ -86,7 +86,7 @@ export class CollectionEntity extends BaseEntityWithTenant {
     if (this.parent) {
       this.path = `${this.parent.path}/${this.slug}`;
     } else {
-      this.path = this.slug;
+      this.path = `/${this.slug}`;
     }
   }
 

@@ -1,3 +1,4 @@
+import { COLLECTION_ROOT_PATH } from '@app/constants';
 import { QueryDto } from '@app/models';
 import {
   FindOneOptions,
@@ -26,7 +27,8 @@ export type CollectionQuery = QueryDto & {
 };
 
 export class CollectionRepository extends BaseRepository {
-  async find(query?: CollectionQuery, options?: FindCollectionOptions) {
+  async find(query: CollectionQuery, options?: FindCollectionOptions) {
+    const { path } = query;
     let where = this.addUserIdAndTenantIdToQuery<CollectionEntity>({
       deleteFlag: false,
     });
@@ -34,10 +36,18 @@ export class CollectionRepository extends BaseRepository {
     where = QueryDto.setConditionFilter(where, query?.filters);
     const newOptions = QueryDto.setConditionSort(options || {}, query?.sorts);
 
-    if (query?.path) {
-      where = this.setConditionFilter(where, {
-        path: { $like: `${query.path}%` },
-      });
+    if (path) {
+      if (path === COLLECTION_ROOT_PATH) {
+        where = this.setConditionFilter(where, {
+          parent: null,
+        });
+      } else {
+        where = this.setConditionFilter(where, {
+          parent: {
+            path,
+          },
+        });
+      }
     }
 
     return this.em.find(CollectionEntity, where, {
@@ -56,7 +66,6 @@ export class CollectionRepository extends BaseRepository {
         id,
         deleteFlag: false,
       },
-
       {
         ...options,
         populate: ['parent', 'children'],
