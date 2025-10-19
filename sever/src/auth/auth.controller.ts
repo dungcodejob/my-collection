@@ -1,3 +1,4 @@
+import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { COOKIE_KEY, FEATURE_KEY, SWAGGER_SCHEME } from '@app/constants';
 import {
   ApiAuthErrors,
@@ -7,7 +8,7 @@ import {
   Session,
 } from '@app/decorators';
 import { Errors } from '@app/errors';
-import { Result } from '@app/models';
+import { ResponseBuilder } from '@app/models';
 import { isNil } from '@app/utils';
 import {
   Body,
@@ -28,7 +29,6 @@ import {
 } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
-import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { AuthService } from './auth.service';
 import {
   AuthResultDto,
@@ -77,7 +77,7 @@ export class AuthController {
     const result = await this._authService.login(loginDto, sessionInfo, origin);
     this.saveRefreshCookie(res, result.refreshToken);
 
-    return Result.toSingle({ data: result });
+    return ResponseBuilder.toSingle({ data: result });
   }
 
   @ApiOperation({
@@ -160,7 +160,7 @@ export class AuthController {
 
     this.saveRefreshCookie(res, result.refreshToken);
 
-    return Result.toSingle({ data: result });
+    return ResponseBuilder.toSingle({ data: result });
   }
 
   private getRefreshFromCookieOrBody(

@@ -6,19 +6,17 @@ import {
   HttpRequest,
   HttpStatusCode,
 } from "@angular/common/http";
-import { inject } from "@angular/core";
+import { inject, Injector } from "@angular/core";
 import { toObservable } from "@angular/core/rxjs-interop";
-import { authEvents, AuthStore } from "@client/web-auth-data-access";
+import { AuthStore, AuthTokens } from "@client/web-auth-data-access";
 import { API_ENDPOINTS } from "@client/web-shared-constants";
-import { injectDispatch } from "@ngrx/signals/events";
 import { catchError, filter, Observable, switchMap, take, throwError } from "rxjs";
-
 export const authInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
   next: HttpHandlerFn
 ) => {
-  const authStore = inject(AuthStore);
-  const dispatch = injectDispatch(authEvents);
+  const injector = inject(Injector);
+  const authStore = injector.get(AuthStore);
   const tokens = authStore.tokens();
 
   const exceptions = [
@@ -30,13 +28,13 @@ export const authInterceptor: HttpInterceptorFn = (
   const handle401Error = (
     nextRequest: HttpRequest<unknown>,
     handler: HttpHandlerFn,
-    refreshToken: string,
+    authTokens: AuthTokens,
     error: HttpErrorResponse
   ): Observable<HttpEvent<unknown>> => {
     const refreshing = authStore.$isRefreshPending();
 
-    if (refreshing) {
-      dispatch.refreshToken({ refreshToken });
+    if (!refreshing) {
+      authStore.refresh(authTokens);
     }
 
     return toObservable(authStore.tokens).pipe(
@@ -82,7 +80,7 @@ export const authInterceptor: HttpInterceptorFn = (
           return throwError(() => error);
         }
 
-        return handle401Error(request, next, tokens.refreshToken, error);
+        return handle401Error(request, next, tokens, error);
       } else {
         return throwError(() => error);
       }

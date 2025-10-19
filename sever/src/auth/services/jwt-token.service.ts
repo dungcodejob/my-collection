@@ -99,9 +99,8 @@ export class JwtTokenService {
   ): Promise<T> {
     const { time, secret } = this.jwtConfig[tokenType];
 
+    // Chỉ verify theo chữ ký (secret) và thời hạn (maxAge)
     const jwtOptions: JwtVerifyOptions = {
-      issuer: this.issuer,
-      audience: new RegExp(this.appConfig.domain),
       secret,
       maxAge: time,
     };

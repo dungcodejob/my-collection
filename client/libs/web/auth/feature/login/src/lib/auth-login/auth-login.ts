@@ -81,10 +81,8 @@ export class AuthLogin implements OnInit {
     if (this.loginForm.valid) {
       const body = this.loginForm.getRawValue();
       this._loginFacade.login({
-        credentials: {
-          emailOrUsername: body.username,
-          password: body.password,
-        },
+        emailOrUsername: body.username,
+        password: body.password,
       });
     } else {
       this.loginForm.updateValueAndValidity();

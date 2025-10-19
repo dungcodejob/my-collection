@@ -1,6 +1,6 @@
 {
   "mode": "dev",
-  "apiBaseUrl": "https://api.mycollection.com",
+  "apiBaseUrl": "http://localhost:3000/api/v1",
   "appVersion": "1.0.0",
   "apiKey": "prod-key-456",
   "featureFlags": {

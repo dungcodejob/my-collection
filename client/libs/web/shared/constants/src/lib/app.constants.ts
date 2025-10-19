@@ -8,6 +8,7 @@ export const APP_INFO = {
 
 // Storage Keys
 export const STORAGE_KEYS = {
+  AUTH: "auth",
   ACCESS_TOKEN: "access_token",
   REFRESH_TOKEN: "refresh_token",
   USER_PROFILE: "user_profile",
