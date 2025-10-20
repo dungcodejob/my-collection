@@ -17,7 +17,10 @@ import { UserEntity } from './user.entity';
 @Index({ properties: ['user', 'deleteFlag'] })
 @Index({ properties: ['tenant', 'deleteFlag'] })
 @Index({ properties: ['parent'] })
-@Unique({ properties: ['tenant', 'slug'] })
+@Unique({
+  name: 'collection_entity_tenant_id_slug_unique',
+  expression: `create unique index "collection_entity_tenant_id_slug_unique" on "collection_entity" ("tenant_id", "slug") where delete_flag = false;`,
+})
 export class CollectionEntity extends BaseEntityWithTenant {
   @Property()
   name: string;

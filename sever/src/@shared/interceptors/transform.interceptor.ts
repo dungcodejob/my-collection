@@ -41,6 +41,10 @@ export class TransformInterceptor<T> implements NestInterceptor {
       method: request.method,
     };
 
+    if (!body.result) {
+      body.result = null as T;
+    }
+
     response.status(status).send(body);
   }
 
