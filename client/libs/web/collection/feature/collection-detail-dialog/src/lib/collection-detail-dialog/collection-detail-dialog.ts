@@ -8,10 +8,10 @@ import {
 } from "@angular/forms";
 import {
   Collection,
-  COLLECTION_ROOT_ID,
   CreateCollectionRequest,
   UpdateCollectionRequest,
 } from "@client/web-collection-data-access";
+import { COLLECTION_ROOT_ID } from "@client/web-shared-constants";
 import { injectAutoEffect } from "@client/web-shared-utils";
 import { NgIconComponent } from "@ng-icons/core";
 import { BrnDialogModule } from "@spartan-ng/brain/dialog";

@@ -101,3 +101,6 @@ export const FILE_UPLOAD = {
     ],
   },
 } as const;
+
+export const COLLECTION_ROOT_ID = "COLLECTION_ROOT_ID";
+export const COLLECTION_ROOT_PATH = "/";

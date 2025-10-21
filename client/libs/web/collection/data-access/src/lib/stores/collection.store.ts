@@ -1,5 +1,6 @@
 import { computed, inject } from "@angular/core";
 import { tapHandleApi } from "@client/web-core-http";
+import { COLLECTION_ROOT_ID, COLLECTION_ROOT_PATH } from "@client/web-shared-constants";
 import {
   injectParams,
   NamedStatusState,
@@ -26,12 +27,10 @@ import { Collection } from "../models/collection";
 import { CollectionAdapter } from "../services/collection.adapter";
 import { CollectionApi } from "../services/collection.api";
 
-export const COLLECTION_ROOT_ID = "COLLECTION_ROOT_ID";
-
 const COLLECTION_ROOT: Collection = {
   id: COLLECTION_ROOT_ID,
   name: "root",
-  path: "/",
+  path: COLLECTION_ROOT_PATH,
   isHasChild: true,
   createdAt: new Date(),
   updatedAt: new Date(),

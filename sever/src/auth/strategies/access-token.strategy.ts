@@ -38,6 +38,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy) {
     });
 
     if (!session || !session.isValid()) {
+      console.log(session?.expiresAt?.toISOString(), new Date().toISOString());
       throw Errors.Authentication.Unauthorized;
     }
 

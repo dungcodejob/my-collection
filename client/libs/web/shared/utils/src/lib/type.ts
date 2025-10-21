@@ -28,3 +28,7 @@ export function isPlainObject(o: Record<string, any>): boolean {
   // Most likely a plain Object
   return true;
 }
+
+export function isNil<T>(o: T | null | undefined): o is null | undefined {
+  return o === null || o === undefined;
+}

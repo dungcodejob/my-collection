@@ -1,6 +1,7 @@
 import { CollectionEntity } from '@app/entities';
 import { Injectable } from '@nestjs/common';
 import { CollectionDto, CollectionTreeResponseDto } from './models';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CollectionMapper {
@@ -8,20 +9,9 @@ export class CollectionMapper {
    * Convert CollectionEntity to CollectionResponseDto
    */
   toResponseDto(entity: CollectionEntity): CollectionDto {
-    return {
-      id: entity.id,
-      name: entity.name,
-      icon: entity.icon,
-      parentId: entity.parent?.id,
-      parentPath: entity.parent?.path,
-      path: entity.path,
-      description: entity.description,
-      sortOrder: entity.sortOrder,
-      isHasChild: entity.isHasChild,
-      isActive: entity.isActive,
-      createdAt: entity.createAt || new Date(),
-      updatedAt: entity.updateAt || new Date(),
-    };
+    return plainToInstance(CollectionDto, entity, {
+      excludeExtraneousValues: true,
+    });
   }
 
   /**

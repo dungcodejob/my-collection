@@ -35,6 +35,10 @@ export const API_ENDPOINTS = {
     ITEM_BY_ID: (collectionId: string, itemId: string) =>
       `/collection/${collectionId}/items/${itemId}`,
   },
+  BOOKMARKS: {
+    BASE: "/bookmark",
+    BY_ID: (id: string) => `/bookmark/${id}`,
+  },
 } as const;
 
 // HTTP Configuration
