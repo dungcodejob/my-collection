@@ -1,6 +1,8 @@
+import { BookmarkEntity } from '@app/entities';
 import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
 import { RequestContextService } from '@app/request';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { BookmarkSearchDto } from './models';
 
 export type BookmarkCreateInput = {
   url: string;
@@ -180,27 +182,17 @@ export class BookmarkService {
   //   return bookmark;
   // }
 
-  // /**
-  //  * Find bookmarks with search and pagination
-  //  */
-  // async findBookmarks(
-  //   searchDto: BookmarkSearchDto,
-  // ): Promise<{ bookmarks: BookmarkEntity[]; total: number }> {
-  //   const user = this._requestContextService.user;
-  //   const { offset = 0, limit = 20, ...filters } = searchDto;
-
-  //   return this._unitOfWork.bookmark.findWithPagination(
-  //     user.id,
-  //     offset,
-  //     limit,
-  //     {
-  //       search: filters.search,
-  //       collectionId: filters.collectionId,
-  //       isFavorite: filters.isFavorite,
-  //       tags: filters.tags,
-  //     },
-  //   );
-  // }
+  /**
+   * Find bookmarks with search and pagination
+   */
+  async search(
+    query: BookmarkSearchDto,
+  ): Promise<{ bookmarks: BookmarkEntity[]; total: number }> {
+    const { entities, count } = await this._unitOfWork.bookmark.findAll(query, {
+      isHasCount: true,
+    });
+    return { bookmarks: entities, total: count };
+  }
 
   // /**
   //  * Get bookmark statistics

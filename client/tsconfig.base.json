@@ -117,6 +117,9 @@
       ],
       "@spartan-ng/helm/tooltip": [
         "libs/web/shared/ui/spartan/ui-tooltip-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/typography": [
+        "libs/web/shared/ui/spartan/ui-typography-helm/src/index.ts"
       ]
     }
   },

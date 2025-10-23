@@ -1,4 +1,4 @@
-import { effect, inject } from "@angular/core";
+import { inject } from "@angular/core";
 import { tapHandleApi } from "@client/web-core-http";
 import {
   injectParams,
@@ -6,13 +6,7 @@ import {
   setStatus,
   withStatus,
 } from "@client/web-shared-utils";
-import {
-  patchState,
-  signalStore,
-  withHooks,
-  withMethods,
-  withProps,
-} from "@ngrx/signals";
+import { patchState, signalStore, withMethods, withProps } from "@ngrx/signals";
 import {
   addEntity,
   removeEntity,
@@ -52,8 +46,9 @@ export const BookmarkStore = signalStore(
   }),
   withProps(() => ({
     $params: injectParams(),
+    _bookmarkApi: inject(BookmarkApi),
   })),
-  withMethods((store, _bookmarkApi = inject(BookmarkApi)) => ({
+  withMethods(({ _bookmarkApi, ...store }) => ({
     load: rxMethod<BookmarkFilterDto>(
       pipe(
         switchMap(filter =>
@@ -106,12 +101,5 @@ export const BookmarkStore = signalStore(
         )
       )
     ),
-  })),
-  withHooks({
-    onInit: store => {
-      effect(() => {
-        const params = store.$params();
-      });
-    },
-  })
+  }))
 );

@@ -18,6 +18,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth';
+import { BookmarkModule } from './bookmark';
 import { CollectionModule } from './collection';
 import { CrawlModule } from './crawl';
 import { HealthModule } from './health/health.module';
@@ -30,7 +31,7 @@ import { UserModule } from './user';
     UnitOfWorkModule,
     AuthModule,
     UserModule,
-    // BookmarkModule,
+    BookmarkModule,
     CollectionModule,
     CrawlModule,
     // TagModule,

@@ -1,3 +1,10 @@
-<div>
-  <input hlmInput placeholder="Search bookmarks" type="text" />
+<div class="flex flex-col gap-4">
+  <p hlmH2>Bookmarks</p>
+  <div class="flex justify-between items-center gap-6">
+    <input hlmInput placeholder="Search bookmarks" type="text" />
+    <button class="flex-none" hlmBtn type="button" (click)="onCreate()">
+      <ng-icon hlm name="lucidePlus" size="16" />
+      Add Bookmark
+    </button>
+  </div>
 </div>

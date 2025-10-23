@@ -1,1 +1,3 @@
-export * from "./lib/web-bookmark-data-access/web-bookmark-data-access";
+export * from "./lib/models";
+export * from "./lib/services";
+export * from "./lib/stores";

@@ -48,18 +48,8 @@ function defaultSerialize<TValue>(value: TValue | null): TValue | undefined {
   return value as TValue;
 }
 
-export function withParam<TValue = unknown>(
-  initial?: TValue | null
-): SignalStoreFeature<
-  EmptyFeatureResult,
-  EmptyFeatureResult & {
-    state: { param: TValue | null };
-    props: { $param: Signal<TValue | null> };
-    methods: { setParam: (value: TValue | null) => void };
-  }
->;
 export function withParam<TValue = unknown, KValue extends Params = Params>(
-  config: ParamFeatureConfig<TValue, KValue>
+  config?: ParamFeatureConfig<TValue, KValue>
 ): SignalStoreFeature<
   EmptyFeatureResult,
   EmptyFeatureResult & {

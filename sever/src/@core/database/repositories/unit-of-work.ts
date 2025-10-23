@@ -2,7 +2,6 @@ import { Global, Injectable, Module, Provider } from '@nestjs/common';
 
 import {
   AccountEntity,
-  BookmarkEntity,
   CrawlEntity,
   SessionEntity,
   TenantEntity,
@@ -102,7 +101,7 @@ export class UnitOfWorkImpl implements UnitOfWork {
 
   get bookmark(): BookmarkRepository {
     if (!this._bookmark) {
-      this._bookmark = this._em.getRepository(BookmarkEntity);
+      this._bookmark = new BookmarkRepository(this._em, this._ctx);
     }
     return this._bookmark;
   }

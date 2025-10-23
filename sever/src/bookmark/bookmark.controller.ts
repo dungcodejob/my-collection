@@ -1,8 +1,11 @@
 import { FEATURE_KEY } from '@app/constants';
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiAuth } from '@app/decorators';
+import { PaginationMetaDto, ResponseBuilder } from '@app/models';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { BookmarkMapper } from './bookmark.mapper';
 import { BookmarkService } from './bookmark.service';
+import { BookmarkResponseDto, BookmarkSearchDto } from './models';
 
 @ApiTags(FEATURE_KEY.BOOKMARK)
 @Controller(FEATURE_KEY.BOOKMARK)
@@ -34,49 +37,34 @@ export class BookmarkController {
   //   return this._bookmarkMapper.toResponseDto(bookmark);
   // }
 
-  // @Get()
-  // @ApiQuery({ name: 'search', required: false, description: 'Search term' })
-  // @ApiQuery({
-  //   name: 'collectionId',
-  //   required: false,
-  //   description: 'Filter by collection ID',
-  // })
-  // @ApiQuery({
-  //   name: 'isFavorite',
-  //   required: false,
-  //   description: 'Filter by favorite status',
-  // })
-  // @ApiQuery({
-  //   name: 'tags',
-  //   required: false,
-  //   description: 'Filter by tags (comma-separated)',
-  // })
-  // @ApiQuery({
-  //   name: 'offset',
-  //   required: false,
-  //   description: 'Pagination offset',
-  // })
-  // @ApiQuery({ name: 'limit', required: false, description: 'Pagination limit' })
-  // @ApiQuery({ name: 'sortBy', required: false, description: 'Sort field' })
-  // @ApiQuery({ name: 'sortOrder', required: false, description: 'Sort order' })
-  // @ApiAuth({
-  //   type: BookmarkResponseDto,
-  //   responseType: 'pagination',
-  //   summary: 'Get bookmarks for current user',
-  // })
-  // async findAll(
-  //   @Query() searchDto: BookmarkSearchDto,
-  // ): Promise<BookmarkWithPaginationResponseDto> {
-  //   const { bookmarks, total } =
-  //     await this._bookmarkService.findBookmarks(searchDto);
+  @Get()
+  @ApiQuery({ name: 'search', required: false, description: 'Search term' })
+  @ApiQuery({
+    name: 'isFavorite',
+    required: false,
+    description: 'Filter by favorite status',
+  })
+  @ApiQuery({
+    name: 'tags',
+    required: false,
+    description: 'Filter by tags (comma-separated)',
+  })
+  @ApiAuth({
+    type: BookmarkResponseDto,
+    responseType: 'pagination',
+    summary: 'Get bookmarks for current user',
+  })
+  async findAll(@Query() query: BookmarkSearchDto) {
+    const { bookmarks, total } = await this._bookmarkService.search(query);
 
-  //   return this._bookmarkMapper.toPaginationResponseDto(
-  //     bookmarks,
-  //     total,
-  //     searchDto.offset || 0,
-  //     searchDto.limit || 20,
-  //   );
-  // }
+    const items = this._bookmarkMapper.toResponseDtoArray(bookmarks);
+
+    const meta = new PaginationMetaDto({ parameter: query, total });
+    return ResponseBuilder.toPagination({
+      items,
+      meta: { pagination: meta },
+    });
+  }
 
   // @Get('stats')
   // @ApiAuth({

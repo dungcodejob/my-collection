@@ -24,6 +24,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+import { UUID_VERSION } from '@app/constants';
 import { Constructor } from '@app/utils';
 import { ToBoolean, ToLowerCase, ToUpperCase } from './transform.decorators';
 import { IsNullable } from './validators/is-nullable.decorator';
@@ -283,7 +284,10 @@ export function UUIDField(
   options: Omit<ApiPropertyOptions, 'type' | 'format' | 'isArray'> &
     IFieldOptions = {},
 ): PropertyDecorator {
-  const decorators = [Type(() => String), IsUUID('4', { each: options.each })];
+  const decorators = [
+    Type(() => String),
+    IsUUID(UUID_VERSION, { each: options.each }),
+  ];
 
   if (options.nullable) {
     decorators.push(IsNullable());

@@ -1,17 +1,10 @@
+import { UUIDFieldOptional } from '@app/decorators';
+import { PaginationQueryDto } from '@app/models';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsBoolean,
-  IsInt,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Max,
-  Min,
-} from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 
-export class BookmarkSearchDto {
+export class BookmarkSearchDto extends PaginationQueryDto {
   @ApiPropertyOptional({
     description:
       'Search term to filter bookmarks by title, description, tags, or URL',
@@ -21,12 +14,10 @@ export class BookmarkSearchDto {
   @IsString({ message: 'Search term must be a string' })
   search?: string;
 
-  @ApiPropertyOptional({
+  @UUIDFieldOptional({
     description: 'Collection ID to filter bookmarks',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @IsOptional()
-  @IsUUID(4, { message: 'Collection ID must be a valid UUID' })
   collectionId?: string;
 
   @ApiPropertyOptional({
@@ -57,47 +48,4 @@ export class BookmarkSearchDto {
   @IsArray({ message: 'Tags must be an array' })
   @IsString({ each: true, message: 'Each tag must be a string' })
   tags?: string[];
-
-  @ApiPropertyOptional({
-    description: 'Number of items to skip for pagination',
-    example: 0,
-    minimum: 0,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt({ message: 'Offset must be an integer' })
-  @Min(0, { message: 'Offset must be at least 0' })
-  offset?: number = 0;
-
-  @ApiPropertyOptional({
-    description: 'Number of items to return',
-    example: 20,
-    minimum: 1,
-    maximum: 100,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt({ message: 'Limit must be an integer' })
-  @Min(1, { message: 'Limit must be at least 1' })
-  @Max(100, { message: 'Limit must not exceed 100' })
-  limit?: number = 20;
-
-  @ApiPropertyOptional({
-    description: 'Sort field',
-    example: 'createAt',
-    enum: ['createAt', 'updateAt', 'title', 'visitCount', 'lastVisitedAt'],
-  })
-  @IsOptional()
-  @IsString({ message: 'Sort field must be a string' })
-  sortBy?: 'createAt' | 'updateAt' | 'title' | 'visitCount' | 'lastVisitedAt' =
-    'createAt';
-
-  @ApiPropertyOptional({
-    description: 'Sort order',
-    example: 'DESC',
-    enum: ['ASC', 'DESC'],
-  })
-  @IsOptional()
-  @IsString({ message: 'Sort order must be a string' })
-  sortOrder?: 'ASC' | 'DESC' = 'DESC';
 }

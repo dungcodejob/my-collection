@@ -1,4 +1,4 @@
-import { PaginationParameterDto } from './pagination-parameter.dto';
+import { PaginationQueryDto } from './pagination.dto';
 
 export class PaginationMetaDto {
   readonly currentPage: number;
@@ -8,7 +8,7 @@ export class PaginationMetaDto {
   readonly hasPrevious: boolean;
   readonly hasNext: boolean;
 
-  constructor(data: { parameter: PaginationParameterDto; total: number }) {
+  constructor(data: { parameter: PaginationQueryDto; total: number }) {
     this.currentPage = data.parameter.currentPage;
     this.pageSize = data.parameter.pageSize;
     this.totalPages = Math.ceil(data.total / data.parameter.pageSize);
