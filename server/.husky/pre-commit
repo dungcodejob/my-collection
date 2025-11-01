@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Setup Node.js environment
+# . "$(dirname -- "$0")/setup-node.sh"
+
+# Run lint-staged
+# cd client && npm run lint && npm run test

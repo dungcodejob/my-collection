@@ -1,5 +1,5 @@
 import { Status } from "@client/web-shared-utils";
-import { Observable } from "rxjs";
+import { finalize, Observable } from "rxjs";
 import { ResponseDto, UnwrapResponseHttp } from "../models";
 import { tapError } from "./tap-error";
 import { tapResponseData } from "./tap-response-data";
@@ -8,6 +8,7 @@ type ApiHandleOptions<TData, TError> = {
   successFn: (data: TData) => void;
   errorFn?: (error: TError) => void;
   statusFn?: (status: Status) => void;
+  finalFn?: () => void;
 };
 
 /**
@@ -75,7 +76,7 @@ type ApiHandleOptions<TData, TError> = {
 export function tapHandleApi<T extends ResponseDto<K>, K, TError = unknown>(
   options: ApiHandleOptions<UnwrapResponseHttp<T>, TError>
 ): (source: Observable<T>) => Observable<T> {
-  const { successFn, errorFn, statusFn } = options;
+  const { successFn, errorFn, statusFn, finalFn } = options;
 
   if (statusFn) {
     statusFn("pending");
@@ -90,12 +91,19 @@ export function tapHandleApi<T extends ResponseDto<K>, K, TError = unknown>(
         successFn(data);
       }),
       tapError(error => {
+        console.error("Error in tapHandleApi:", error);
+
         if (errorFn) {
           errorFn(error as TError);
         }
 
         if (statusFn) {
           statusFn({ error: error });
+        }
+      }),
+      finalize(() => {
+        if (finalFn) {
+          finalFn();
         }
       })
     );

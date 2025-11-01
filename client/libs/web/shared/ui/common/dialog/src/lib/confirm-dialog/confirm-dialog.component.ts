@@ -10,7 +10,7 @@ import { ConfirmDialogData, defaultConfirmDialogData } from "./confirm-dialog-da
   templateUrl: "./confirm-dialog.component.html",
   styleUrl: "./confirm-dialog.component.scss",
 })
-export class ConfirmDialogComponent implements OnInit {
+export class MCConfirmDialogComponent implements OnInit {
   private readonly _dialogRef = inject<BrnDialogRef<boolean>>(BrnDialogRef);
   private readonly _dialogContext = injectBrnDialogContext<{
     data: ConfirmDialogData | null;

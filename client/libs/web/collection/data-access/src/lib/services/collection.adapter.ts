@@ -28,19 +28,22 @@ export class CollectionAdapter {
     collection: Collection
   ): CollectionTree {
     const collections = tree;
-    const collectionsInPath = [...tree[collection.path]];
+    const collectionsInPath = [...tree[path]];
 
     if (!collectionsInPath) {
-      throw new Error("not exist collections with path: " + collection.path);
+      throw new Error("not exist collections with path: " + path);
     }
 
     const indexToUpdate = collectionsInPath.findIndex(item => item.id === collection.id);
 
-    if (!indexToUpdate) {
+    if (indexToUpdate === -1) {
       throw new Error("not exist collection with id: " + collection.id);
     }
 
-    collectionsInPath[indexToUpdate] = collection;
+    collectionsInPath[indexToUpdate] = {
+      ...collectionsInPath[indexToUpdate],
+      ...collection,
+    };
 
     return {
       ...collections,
@@ -48,7 +51,7 @@ export class CollectionAdapter {
     };
   }
 
-  removeCollection(
+  deleteCollection(
     tree: CollectionTree,
     path: string,
     collectionId: string
@@ -62,7 +65,7 @@ export class CollectionAdapter {
 
     const indexToRemove = collectionsInPath.findIndex(item => item.id === collectionId);
 
-    if (!indexToRemove) {
+    if (indexToRemove === -1) {
       throw new Error("not exist collection with id: " + collectionId);
     }
 

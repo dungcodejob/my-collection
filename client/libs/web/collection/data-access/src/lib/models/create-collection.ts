@@ -1,6 +1,7 @@
 export type CreateCollectionRequest = {
-  readonly name: string;
-  readonly icon: string;
   readonly path: string;
+
+  readonly name: string;
+  readonly icon?: string;
   readonly parentId?: string;
 };

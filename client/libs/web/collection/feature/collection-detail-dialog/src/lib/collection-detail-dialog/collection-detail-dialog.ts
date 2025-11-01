@@ -11,6 +11,7 @@ import {
   CreateCollectionRequest,
   UpdateCollectionRequest,
 } from "@client/web-collection-data-access";
+import { COLLECTION_ROOT_ID } from "@client/web-shared-constants";
 import { injectAutoEffect } from "@client/web-shared-utils";
 import { NgIconComponent } from "@ng-icons/core";
 import { BrnDialogModule } from "@spartan-ng/brain/dialog";
@@ -48,6 +49,7 @@ export class MCCollectionDetailDialog implements OnInit {
 
   readonly update = output<UpdateCollectionRequest>();
   readonly create = output<CreateCollectionRequest>();
+
   readonly closed = output<void>();
 
   readonly $title = computed(() => {
@@ -65,24 +67,27 @@ export class MCCollectionDetailDialog implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.registerFormDisableEffect();
+    this.formDisableEffect();
+    this.setFormValueEffect();
   }
 
   onSave(): void {
     const data = this.$data();
+    const parent = this.$parent();
+    const parentId = parent.id !== COLLECTION_ROOT_ID ? parent.id : undefined;
     if (data) {
       const request: UpdateCollectionRequest = {
         ...data,
         ...this.form.getRawValue(),
-        icon: "",
+        parentId,
+        path: parent.path,
       };
       this.update.emit(request);
     } else {
       const request: CreateCollectionRequest = {
         ...this.form.getRawValue(),
-        icon: "",
-        path: this.$parent().path,
-        parentId: this.$parent().id,
+        path: parent.path,
+        parentId,
       };
       this.create.emit(request);
     }
@@ -98,12 +103,25 @@ export class MCCollectionDetailDialog implements OnInit {
     });
   }
 
-  private registerFormDisableEffect(): void {
+  private formDisableEffect(): void {
     this._autoEffect(() => {
       if (this.$isPending()) {
         this.form.disable();
       } else {
         this.form.enable();
+      }
+    });
+  }
+
+  private setFormValueEffect(): void {
+    this._autoEffect(() => {
+      const data = this.$data();
+      if (data) {
+        this.form.patchValue({
+          name: data.name,
+        });
+      } else {
+        this.form.reset();
       }
     });
   }

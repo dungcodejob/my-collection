@@ -4,7 +4,7 @@
   "sourceRoot": "libs/web/collection/data-access/src",
   "prefix": "lib",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:web", "type:data-access", "category:collection"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",

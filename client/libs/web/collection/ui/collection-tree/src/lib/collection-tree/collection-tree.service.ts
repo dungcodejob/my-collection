@@ -15,19 +15,19 @@ export class CollectionTreeService {
   readonly $selectedNode = this._$selectedNode.asReadonly();
 
   expand(node: Collection): void {
-    this._$expandedNode.set(node);
+    this._$expandedNode.set({ ...node });
   }
 
   update(node: Collection): void {
-    this._$updateNode.set(node);
+    this._$updateNode.set({ ...node });
   }
 
   delete(node: Collection): void {
-    this._$deleteNode.set(node);
+    this._$deleteNode.set({ ...node });
   }
 
   select(node: Collection): void {
-    this._$selectedNode.set(node);
+    this._$selectedNode.set({ ...node });
   }
 
   setTree(tree: { [key: string]: Collection[] }): void {

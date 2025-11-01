@@ -35,7 +35,10 @@ export const MCCollectionListFacade = signalStore(
       $parent: computed(() => {
         const parentId = store.parentId();
         const collections = _collectionStore.collections();
-        return _collectionAdapter.getCollectionById(collections, parentId);
+        return (
+          _collectionAdapter.getCollectionById(collections, parentId) ||
+          _collectionStore.root()
+        );
       }),
       $collectionDetails: computed(() => store.collectionDetails()),
       $isOpenDialog: computed(() => store.isOpenDialog()),
@@ -50,8 +53,13 @@ export const MCCollectionListFacade = signalStore(
       load: _collectionStore.load,
       update: _collectionStore.update,
       create: _collectionStore.create,
+      delete: _collectionStore.delete,
       openCreateDialog: (parentId: string | null): void => {
-        patchState(store, { isOpenDialog: true, parentId: parentId });
+        patchState(store, {
+          isOpenDialog: true,
+          parentId: parentId,
+          collectionDetails: null,
+        });
       },
       openUpdateDialog: (collectionDetails: Collection): void => {
         patchState(store, {
@@ -63,8 +71,6 @@ export const MCCollectionListFacade = signalStore(
       close: (): void => {
         patchState(store, {
           isOpenDialog: false,
-          parentId: null,
-          collectionDetails: null,
         });
       },
     };

@@ -1,5 +1,6 @@
 import { computed, inject } from "@angular/core";
 import { tapHandleApi } from "@client/web-core-http";
+import { COLLECTION_ROOT_ID, COLLECTION_ROOT_PATH } from "@client/web-shared-constants";
 import {
   injectParams,
   NamedStatusState,
@@ -19,15 +20,17 @@ import { pipe, switchMap } from "rxjs";
 import {
   CollectionFilter,
   CreateCollectionRequest,
+  DeleteCollectionRequest,
   UpdateCollectionRequest,
 } from "../models";
 import { Collection } from "../models/collection";
 import { CollectionAdapter } from "../services/collection.adapter";
 import { CollectionApi } from "../services/collection.api";
+
 const COLLECTION_ROOT: Collection = {
-  id: "",
+  id: COLLECTION_ROOT_ID,
   name: "root",
-  path: "/",
+  path: COLLECTION_ROOT_PATH,
   isHasChild: true,
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -142,6 +145,26 @@ export const CollectionStore = signalStore(
                       store.collections(),
                       request.path,
                       result.data
+                    ),
+                  }),
+                statusFn: status =>
+                  patchState(store, setStatus(status, collectionStatusNames.update)),
+              })
+            )
+          )
+        )
+      ),
+      delete: rxMethod<DeleteCollectionRequest>(
+        pipe(
+          switchMap(request =>
+            _collectionApi.deleteCollection(request).pipe(
+              tapHandleApi({
+                successFn: () =>
+                  patchState(store, {
+                    collections: _collectionAdapter.deleteCollection(
+                      store.collections(),
+                      request.path,
+                      request.id
                     ),
                   }),
                 statusFn: status =>

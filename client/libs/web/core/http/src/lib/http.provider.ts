@@ -11,7 +11,6 @@ import { HttpService } from "./services/http.service";
 export const provideAppHttp = (
   ...features: HttpFeature<HttpFeatureKind>[]
 ): (Provider | EnvironmentProviders)[] => [
-  provideHttpClient(...features),
-  provideHttpClient(withFetch()),
+  provideHttpClient(...features, withFetch()),
   provideAppInitWithConfig(HttpService),
 ];
