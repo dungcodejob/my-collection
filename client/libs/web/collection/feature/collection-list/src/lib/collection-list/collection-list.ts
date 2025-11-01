@@ -21,7 +21,7 @@ import { injectAutoEffect } from "@client/web-shared-utils";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucidePlus } from "@ng-icons/lucide";
 import { HlmButtonDirective } from "@spartan-ng/helm/button";
-import { tap } from "rxjs";
+import { Subject, tap } from "rxjs";
 import { MCCollectionListFacade } from "./collection-list.facade";
 @Component({
   selector: "mc-collection-list",
@@ -43,6 +43,8 @@ export class MCCollectionList implements OnInit {
   private readonly _dialogService = inject(MCDialogService);
   private readonly _toastService = inject(MCToastService);
   private readonly _router = inject(Router);
+
+  readonly collectionToDelete$ = new Subject<Collection>();
 
   ngOnInit(): void {
     const root = this.facade.$root();

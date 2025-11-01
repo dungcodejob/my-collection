@@ -1,0 +1,39 @@
+{
+  "preset": "ts-jest/presets/default-esm",
+  "testEnvironment": "node",
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "src",
+  "testRegex": ".*\\.spec\\.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": [
+      "ts-jest",
+      {
+        "useESM": true
+      }
+    ]
+  },
+  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "coverageDirectory": "../coverage",
+  "moduleNameMapper": {
+    "^@app/configs(.*)$": "<rootDir>/core/configs$1",
+    "^@app/entities(.*)$": "<rootDir>/core/database/entities$1",
+    "^@app/repositories(.*)$": "<rootDir>/core/database/repositories$1",
+    "^@app/factories(.*)$": "<rootDir>/core/database/factories$1",
+    "^@app/account(.*)$": "<rootDir>/account$1",
+    "^@app/constants(.*)$": "<rootDir>/shared/constants$1",
+    "^@app/utils(.*)$": "<rootDir>/shared/utils$1",
+    "^@app/errors(.*)$": "<rootDir>/shared/errors$1",
+    "^@app/session(.*)$": "<rootDir>/session$1",
+    "^@app/auth(.*)$": "<rootDir>/auth$1",
+    "^@app/user(.*)$": "<rootDir>/user$1",
+    "^@app/decorators(.*)$": "<rootDir>/shared/decorators$1",
+    "^@app/interceptors(.*)$": "<rootDir>/shared/interceptors$1",
+    "^@app/filters(.*)$": "<rootDir>/shared/filters$1",
+    "^@app/models(.*)$": "<rootDir>/shared/models$1",
+    "^@app/tests(.*)$": "<rootDir>/core/tests$1",
+    "^@app/core/tests(.*)$": "<rootDir>/core/tests$1",
+    "^@app/services(.*)$": "<rootDir>/shared/services$1"
+  },
+  "transformIgnorePatterns": ["node_modules/(?!(.*@faker-js/faker.*))"],
+  "extensionsToTreatAsEsm": [".ts"]
+}

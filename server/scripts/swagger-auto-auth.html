@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Swagger Auto Authentication</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f8fafc;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        color: #1e293b;
+        margin-bottom: 10px;
+      }
+      .header p {
+        color: #64748b;
+        margin: 0;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.2s;
+      }
+      input:focus {
+        outline: none;
+        border-color: #3b82f6;
+      }
+      .btn {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        width: 100%;
+      }
+      .btn:hover {
+        background: #2563eb;
+      }
+      .btn:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+      }
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        display: none;
+      }
+      .result.success {
+        background: #dcfce7;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+      }
+      .result.error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+      }
+      .token-display {
+        background: #f1f5f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 12px;
+        word-break: break-all;
+        border: 1px solid #e2e8f0;
+      }
+      .instructions {
+        background: #eff6ff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+        border: 1px solid #bfdbfe;
+      }
+      .instructions h3 {
+        color: #1e40af;
+        margin-top: 0;
+      }
+      .instructions ol {
+        color: #1e40af;
+        padding-left: 20px;
+      }
+      .bookmarklet {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+        border: 1px solid #e2e8f0;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 11px;
+        word-break: break-all;
+      }
+      .copy-btn {
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .copy-btn:hover {
+        background: #059669;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 Swagger Auto Authentication</h1>
+        <p>Tự động lấy token từ API và set vào Swagger UI</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="apiUrl">API Base URL:</label>
+          <input
+            type="url"
+            id="apiUrl"
+            value="http://localhost:3000"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email hoặc Username:</label>
+          <input type="text" id="email" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" required />
+        </div>
+
+        <button type="submit" class="btn" id="loginBtn">
+          🔐 Đăng nhập và lấy Token
+        </button>
+      </form>
+
+      <div id="result" class="result">
+        <div id="resultMessage"></div>
+        <div
+          id="tokenDisplay"
+          class="token-display"
+          style="display: none"
+        ></div>
+      </div>
+
+      <div class="instructions">
+        <h3>📖 Hướng dẫn sử dụng:</h3>
+        <ol>
+          <li>Nhập thông tin đăng nhập và click "Đăng nhập và lấy Token"</li>
+          <li>Copy token được hiển thị</li>
+          <li>
+            Mở Swagger UI tại
+            <a href="http://localhost:3000/api/docs" target="_blank"
+              >http://localhost:3000/api/docs</a
+            >
+          </li>
+          <li>Click nút "Authorize" 🔓 trong Swagger UI</li>
+          <li>Nhập: <code>Bearer &lt;your-token&gt;</code></li>
+          <li>
+            Hoặc sử dụng JavaScript bookmarklet bên dưới để tự động set token
+          </li>
+        </ol>
+
+        <h3>🔧 JavaScript Bookmarklet (Tự động):</h3>
+        <p>Copy đoạn code dưới đây và chạy trong Console của Swagger UI:</p>
+        <div id="bookmarklet" class="bookmarklet"></div>
+        <button class="copy-btn" onclick="copyBookmarklet()">
+          📋 Copy Bookmarklet
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let currentToken = '';
+
+      document
+        .getElementById('loginForm')
+        .addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const loginBtn = document.getElementById('loginBtn');
+          const result = document.getElementById('result');
+          const resultMessage = document.getElementById('resultMessage');
+          const tokenDisplay = document.getElementById('tokenDisplay');
+          const bookmarklet = document.getElementById('bookmarklet');
+
+          // Get form data
+          const apiUrl = document.getElementById('apiUrl').value;
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+
+          // Show loading state
+          loginBtn.disabled = true;
+          loginBtn.textContent = '🔄 Đang đăng nhập...';
+          result.style.display = 'none';
+
+          try {
+            // Call login API
+            const response = await fetch(`${apiUrl}/api/auth/login`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                emailOrUsername: email,
+                password: password,
+              }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+              // Success
+              currentToken = data.data.accessToken;
+              const user = data.data.user;
+
+              result.className = 'result success';
+              resultMessage.innerHTML = `
+                        ✅ <strong>Đăng nhập thành công!</strong><br>
+                        👤 User: ${user.name || user.email || 'Unknown'}<br>
+                        🎫 Token đã được tạo và sẵn sàng sử dụng.
+                    `;
+
+              tokenDisplay.textContent = currentToken;
+              tokenDisplay.style.display = 'block';
+
+              // Generate bookmarklet
+              const bookmarkletCode = generateBookmarklet(currentToken);
+              bookmarklet.textContent = bookmarkletCode;
+
+              // Copy token to clipboard if possible
+              try {
+                await navigator.clipboard.writeText(currentToken);
+                resultMessage.innerHTML +=
+                  '<br>📋 Token đã được copy vào clipboard!';
+              } catch (err) {
+                console.log('Clipboard not available');
+              }
+            } else {
+              // Error from API
+              result.className = 'result error';
+              resultMessage.textContent = `❌ Đăng nhập thất bại: ${data.error || data.message || 'Unknown error'}`;
+              tokenDisplay.style.display = 'none';
+            }
+          } catch (error) {
+            // Network or other error
+            result.className = 'result error';
+            resultMessage.textContent = `❌ Lỗi kết nối: ${error.message}`;
+            tokenDisplay.style.display = 'none';
+          }
+
+          // Reset button state
+          loginBtn.disabled = false;
+          loginBtn.textContent = '🔐 Đăng nhập và lấy Token';
+          result.style.display = 'block';
+        });
+
+      function generateBookmarklet(token) {
+        return `javascript:(function(){var token='${token}';if(window.ui&&window.ui.authActions){window.ui.authActions.authorize({BearerAuth:{name:'BearerAuth',schema:{type:'http',scheme:'bearer',bearerFormat:'JWT'},value:token}});console.log('✅ Token set successfully!');alert('✅ Token đã được set vào Swagger UI!');}else if(window.swaggerUi){window.swaggerUi.api.clientAuthorizations.add('Authorization',new window.SwaggerClient.ApiKeyAuthorization('Authorization','Bearer '+token,'header'));console.log('✅ Token set successfully!');alert('✅ Token đã được set vào Swagger UI!');}else{alert('❌ Không tìm thấy Swagger UI instance!');}})();`;
+      }
+
+      function copyBookmarklet() {
+        const bookmarklet = document.getElementById('bookmarklet').textContent;
+
+        if (navigator.clipboard) {
+          navigator.clipboard
+            .writeText(bookmarklet)
+            .then(() => {
+              alert(
+                '📋 Bookmarklet đã được copy! Paste vào Console của Swagger UI.',
+              );
+            })
+            .catch((err) => {
+              console.error('Copy failed:', err);
+              fallbackCopy(bookmarklet);
+            });
+        } else {
+          fallbackCopy(bookmarklet);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          alert('📋 Bookmarklet đã được copy!');
+        } catch (err) {
+          alert('❌ Không thể copy tự động. Vui lòng copy manual.');
+        }
+        document.body.removeChild(textArea);
+      }
+
+      // Auto-focus first input
+      document.getElementById('email').focus();
+    </script>
+  </body>
+</html>
