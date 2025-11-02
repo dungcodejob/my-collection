@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 export class AlsThreadContext {
-  constructor(private readonly als: AsyncLocalStorage<Map<string, any>>) {}
+  private readonly als = new AsyncLocalStorage<Map<string, any>>();
 
   run<T>(run: () => Promise<T>): Promise<T> {
     const threadId = Math.random().toString(32).substring(2);

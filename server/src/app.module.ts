@@ -10,7 +10,11 @@ import { HttpExceptionFilter } from '@app/filters';
 import { TransformInterceptor } from '@app/interceptors';
 import { RequestMiddlewareModule } from '@app/middlewares';
 import { UnitOfWorkModule } from '@app/repositories';
-import { AlsThreadContext, RequestModule } from '@app/request';
+import {
+  AlsThreadContext,
+  AlsThreadContextModule,
+  RequestModule,
+} from '@app/request';
 import { UserSessionStorage } from '@app/services/user-session';
 import { UserSessionInMemoryStorage } from '@app/services/user-session.in-memory-storage';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -28,6 +32,7 @@ import { UserModule } from './user';
 
 @Module({
   imports: [
+    AlsThreadContextModule,
     RequestMiddlewareModule,
     RequestModule,
     UnitOfWorkModule,

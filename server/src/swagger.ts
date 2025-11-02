@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SwaggerUiOptions } from '@nestjs/swagger/dist/interfaces/swagger-ui-options.interface';
 import { NextFunction, Request, Response } from 'express';
-import { AppConfig } from './@core/configs/app.config';
+import { AppConfig } from './core/configs/app.config';
 
 const apiDocumentationCredentials = {
   name: 'admin',
