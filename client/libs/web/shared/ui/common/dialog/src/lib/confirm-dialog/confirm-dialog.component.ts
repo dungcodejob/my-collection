@@ -1,12 +1,12 @@
 import { Component, OnInit, inject } from "@angular/core";
-import { HlmAlertDialogModule } from "@spartan-ng/helm/alert-dialog";
+import { HlmAlertDialogImports } from "@spartan-ng/helm/alert-dialog";
 
 import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/brain/dialog";
 import { ConfirmDialogData, defaultConfirmDialogData } from "./confirm-dialog-data";
 
 @Component({
   standalone: true,
-  imports: [HlmAlertDialogModule],
+  imports: [HlmAlertDialogImports],
   templateUrl: "./confirm-dialog.component.html",
   styleUrl: "./confirm-dialog.component.scss",
 })

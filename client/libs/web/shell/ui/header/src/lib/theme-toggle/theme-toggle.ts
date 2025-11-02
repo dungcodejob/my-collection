@@ -8,27 +8,16 @@ import {
   lucidePalette,
   lucideSun,
 } from "@ng-icons/lucide";
-import { HlmButtonDirective } from "@spartan-ng/helm/button";
-import { HlmIconDirective } from "@spartan-ng/helm/icon";
-import { HlmMenuComponent, HlmMenuItemDirective } from "@spartan-ng/helm/menu";
-import {
-  HlmTooltipComponent,
-  HlmTooltipTriggerDirective,
-} from "@spartan-ng/helm/tooltip";
+import { HlmButton } from "@spartan-ng/helm/button";
+import { HlmIconImports } from "@spartan-ng/helm/icon";
+import { HlmMenuImports } from "@spartan-ng/helm/menu";
+import { HlmTooltipImports } from "@spartan-ng/helm/tooltip";
 
 @Component({
   selector: "mc-theme-toggle",
   templateUrl: "./theme-toggle.html",
   styleUrl: "./theme-toggle.css",
-  imports: [
-    HlmButtonDirective,
-    HlmMenuComponent,
-    HlmMenuItemDirective,
-    HlmTooltipComponent,
-    HlmTooltipTriggerDirective,
-    HlmIconDirective,
-    NgIcon,
-  ],
+  imports: [HlmButton, HlmMenuImports, HlmTooltipImports, HlmIconImports, NgIcon],
   providers: [
     provideIcons({ lucideSun, lucideMoon, lucideMonitor, lucidePalette, lucideCircle }),
   ],

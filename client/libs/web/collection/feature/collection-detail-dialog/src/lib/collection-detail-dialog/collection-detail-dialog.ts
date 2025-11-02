@@ -14,11 +14,11 @@ import {
 import { COLLECTION_ROOT_ID } from "@client/web-shared-constants";
 import { injectAutoEffect } from "@client/web-shared-utils";
 import { NgIconComponent } from "@ng-icons/core";
-import { BrnDialogModule } from "@spartan-ng/brain/dialog";
-import { HlmButtonModule } from "@spartan-ng/helm/button";
-import { HlmDialogModule } from "@spartan-ng/helm/dialog";
-import { HlmFormFieldModule } from "@spartan-ng/helm/form-field";
-import { HlmInputModule } from "@spartan-ng/helm/input";
+import { BrnDialogImports } from "@spartan-ng/brain/dialog";
+import { HlmButtonImports } from "@spartan-ng/helm/button";
+import { HlmDialogImports } from "@spartan-ng/helm/dialog";
+import { HlmFormFieldImports } from "@spartan-ng/helm/form-field";
+import { HlmInputImports } from "@spartan-ng/helm/input";
 type CollectionDetailForm = FormGroup<{
   name: FormControl<string>;
 }>;
@@ -27,13 +27,14 @@ type CollectionDetailForm = FormGroup<{
   selector: "mc-collection-detail-dialog",
   imports: [
     ReactiveFormsModule,
-    HlmInputModule,
-    HlmButtonModule,
-    HlmFormFieldModule,
-    BrnDialogModule,
-    HlmDialogModule,
+    HlmInputImports,
+    HlmButtonImports,
+    HlmFormFieldImports,
+    BrnDialogImports,
+    HlmDialogImports,
     NgIconComponent,
   ],
+
   templateUrl: "./collection-detail-dialog.html",
   styleUrl: "./collection-detail-dialog.css",
 })

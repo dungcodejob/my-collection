@@ -7,12 +7,12 @@ import {
   lucideSettings,
   lucideUser,
 } from "@ng-icons/lucide";
-import { HlmButtonDirective } from "@spartan-ng/helm/button";
+import { HlmButton } from "@spartan-ng/helm/button";
 import type { User } from "../sidebar";
 
 @Component({
   selector: "mc-nav-user",
-  imports: [NgOptimizedImage, HlmButtonDirective, NgIconComponent],
+  imports: [NgOptimizedImage, HlmButton, NgIconComponent],
   providers: [
     provideIcons({ lucideChevronsUpDown, lucideLogOut, lucideSettings, lucideUser }),
   ],

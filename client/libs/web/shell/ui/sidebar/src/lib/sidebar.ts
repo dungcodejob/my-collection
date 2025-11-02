@@ -13,8 +13,8 @@ import {
   lucideGalleryVerticalEnd,
   lucideSettings2,
 } from "@ng-icons/lucide";
-import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
-import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
+import {} from "@spartan-ng/brain/separator";
+import { HlmSeparatorImports } from "@spartan-ng/helm/separator";
 import { MCNavGroup } from "./nav-group/nav-group";
 import { MCNavUserComponent } from "./nav-user/nav-user";
 import { MCTeamSwitcher } from "./team-switcher/team-switcher";
@@ -57,8 +57,7 @@ export type User = {
     MCTeamSwitcher,
     MCNavGroup,
     MCNavUserComponent,
-    BrnSeparatorComponent,
-    HlmSeparatorDirective,
+    HlmSeparatorImports,
   ],
   providers: [
     provideIcons({

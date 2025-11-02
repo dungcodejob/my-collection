@@ -20,17 +20,12 @@ import { MCDialogService } from "@client/web-shared-ui-dialog";
 import { injectAutoEffect } from "@client/web-shared-utils";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucidePlus } from "@ng-icons/lucide";
-import { HlmButtonDirective } from "@spartan-ng/helm/button";
+import { HlmButton } from "@spartan-ng/helm/button";
 import { Subject, tap } from "rxjs";
 import { MCCollectionListFacade } from "./collection-list.facade";
 @Component({
   selector: "mc-collection-list",
-  imports: [
-    MCCollectionDetailDialog,
-    MCCollectionTree,
-    HlmButtonDirective,
-    NgIconComponent,
-  ],
+  imports: [MCCollectionDetailDialog, MCCollectionTree, HlmButton, NgIconComponent],
   providers: [MCCollectionListFacade, provideIcons({ lucidePlus })],
   templateUrl: "./collection-list.html",
   styleUrl: "./collection-list.css",

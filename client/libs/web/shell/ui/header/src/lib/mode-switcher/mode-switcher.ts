@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { MCThemeService } from "@client/web-shared-services";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { lucideMoon, lucideSun } from "@ng-icons/lucide";
-import { HlmButtonDirective } from "@spartan-ng/helm/button";
-import { HlmIconDirective } from "@spartan-ng/helm/icon";
+import { HlmButton } from "@spartan-ng/helm/button";
+import { HlmIconImports } from "@spartan-ng/helm/icon";
 
 @Component({
   selector: "mc-mode-switcher",
   templateUrl: "./mode-switcher.html",
   styleUrl: "./mode-switcher.css",
-  imports: [HlmButtonDirective, HlmIconDirective, NgIcon],
+  imports: [HlmButton, HlmIconImports, NgIcon],
   providers: [provideIcons({ lucideSun, lucideMoon })],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

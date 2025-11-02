@@ -1,0 +1,31 @@
+{
+  "name": "card",
+  "$schema": "../../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/shared/ui/spartan/card/src",
+  "prefix": "hlm",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": [
+        "{workspaceRoot}/dist/{projectRoot}"
+      ],
+      "options": {
+        "project": "libs/web/shared/ui/spartan/card/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/web/shared/ui/spartan/card/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/web/shared/ui/spartan/card/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

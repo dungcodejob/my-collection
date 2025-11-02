@@ -1,20 +1,19 @@
 import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { lucideChevronRight, lucideMenu, lucideSearch } from "@ng-icons/lucide";
-import { BrnSeparatorComponent } from "@spartan-ng/brain/separator";
-import { HlmButtonDirective } from "@spartan-ng/helm/button";
-import { HlmIconDirective } from "@spartan-ng/helm/icon";
-import { HlmSeparatorDirective } from "@spartan-ng/helm/separator";
+import { HlmButton } from "@spartan-ng/helm/button";
+import { HlmIconImports } from "@spartan-ng/helm/icon";
+import { HlmSeparator, HlmSeparatorImports } from "@spartan-ng/helm/separator";
 import { MCModeSwitcher } from "./mode-switcher/mode-switcher";
 @Component({
   selector: "mc-site-header",
   templateUrl: "./header.html",
   styleUrl: "./header.css",
   imports: [
-    HlmButtonDirective,
-    HlmIconDirective,
-    BrnSeparatorComponent,
-    HlmSeparatorDirective,
+    HlmButton,
+    HlmIconImports,
+    HlmSeparatorImports,
+    HlmSeparator,
     NgIcon,
     MCModeSwitcher,
   ],

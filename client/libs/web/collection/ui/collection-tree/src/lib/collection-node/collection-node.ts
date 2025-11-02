@@ -12,14 +12,14 @@ import {
   lucideFolderOpen,
   lucidePencilLine,
 } from "@ng-icons/lucide";
-import { BrnMenuModule } from "@spartan-ng/brain/menu";
-import { HlmButtonModule } from "@spartan-ng/helm/button";
-import { HlmIconModule } from "@spartan-ng/helm/icon";
-import { HlmMenuModule } from "@spartan-ng/helm/menu";
+import { BrnMenuImports } from "@spartan-ng/brain/menu";
+import { HlmButtonImports } from "@spartan-ng/helm/button";
+import { HlmIconImports } from "@spartan-ng/helm/icon";
+import { HlmMenuImports } from "@spartan-ng/helm/menu";
 import { CollectionTreeService } from "../collection-tree/collection-tree.service";
 @Component({
   selector: "mc-collection-node",
-  imports: [HlmButtonModule, HlmIconModule, NgIcon, HlmMenuModule, BrnMenuModule],
+  imports: [HlmButtonImports, HlmIconImports, NgIcon, HlmMenuImports, BrnMenuImports],
   providers: [
     provideIcons({
       lucideFolder,
