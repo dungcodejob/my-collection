@@ -39,6 +39,9 @@ export const API_ENDPOINTS = {
     BASE: "/bookmark",
     BY_ID: (id: string) => `/bookmark/${id}`,
   },
+  METADATA: {
+    BASE: "/metadata",
+  },
 } as const;
 
 // HTTP Configuration

@@ -14,17 +14,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
-import { HlmAlertDirective } from "@spartan-ng/helm/alert";
-import { HlmButtonDirective } from "@spartan-ng/helm/button";
+import { HlmAlert } from "@spartan-ng/helm/alert";
+import { HlmButton } from "@spartan-ng/helm/button";
 import {
-  HlmCardContentDirective,
-  HlmCardDirective,
-  HlmCardFooterDirective,
-  HlmCardHeaderDirective,
+  HlmCardContent,
+  HlmCard,
+  HlmCardFooter,
+  HlmCardHeader,
 } from "@spartan-ng/helm/card";
 import { HlmCheckboxImports } from "@spartan-ng/helm/checkbox";
-import { HlmInputDirective } from "@spartan-ng/helm/input";
-import { HlmLabelDirective } from "@spartan-ng/helm/label";
+import { HlmInput } from "@spartan-ng/helm/input";
+import { HlmLabel } from "@spartan-ng/helm/label";
 import { AuthLoginFacade } from "./auth-login.facade";
 
 type LoginForm = FormGroup<{
@@ -39,15 +39,15 @@ type LoginForm = FormGroup<{
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    HlmButtonDirective,
-    HlmInputDirective,
+    HlmButton,
+    HlmInput,
     ...HlmCheckboxImports,
-    HlmCardDirective,
-    HlmCardContentDirective,
-    HlmCardHeaderDirective,
-    HlmCardFooterDirective,
-    HlmAlertDirective,
-    HlmLabelDirective,
+    HlmCard,
+    HlmCardContent,
+    HlmCardHeader,
+    HlmCardFooter,
+    HlmAlert,
+    HlmLabel,
   ],
   providers: [AuthLoginFacade],
   templateUrl: "./auth-login.html",

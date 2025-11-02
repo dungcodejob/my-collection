@@ -1,0 +1,153 @@
+<hlm-dialog [state]="$isOpen() ? 'open' : 'closed'" (closed)="closed.emit()">
+  <hlm-dialog-content *brnDialogContent="let ctx" class="sm:max-w-[500px]">
+    <form class="flex flex-col gap-4" [formGroup]="form" (ngSubmit)="onSave()">
+      <hlm-dialog-header>
+        <h3 hlmDialogTitle>{{ $title() }}</h3>
+        <p hlmDialogDescription>
+          Add a new bookmark to your collection. Fill in the URL and generate metadata
+          automatically.
+        </p>
+      </hlm-dialog-header>
+
+      <div class="grid gap-4 py-4">
+        <!-- URL Field with Gen Metadata Button -->
+        <div class="flex flex-col space-y-1">
+          @let urlControl = form.get('url');
+          <label for="url" hlmLabel>URL *</label>
+          <div class="flex gap-2">
+            <input
+              autocapitalize="none"
+              autocomplete="off"
+              autocorrect="off"
+              class="flex-1 focus-visible:ring-1 focus-visible:ring-offset-0"
+              formControlName="url"
+              hlmInput
+              id="url"
+              placeholder="https://example.com"
+              size="sm"
+              type="url"
+            />
+            <button
+              hlmBtn
+              size="sm"
+              type="button"
+              variant="outline"
+              [disabled]="$isGenMetadataDisabled()"
+              (click)="onGenMetadata()"
+            >
+              @if ($isMetadataLoading()) {
+              <ng-icon
+                class="mr-2 animate-spin"
+                hlm
+                name="lucideLoaderCircle"
+                size="sm"
+              />
+              }
+              <span>Gen Metadata</span>
+            </button>
+          </div>
+
+          @if (urlControl && urlControl.invalid && (urlControl.dirty ||
+          urlControl.touched)) { @if (urlControl.errors?.['required']) {
+          <div hlmInputError>URL is required.</div>
+          } @if (urlControl.errors?.['invalidUrl']) {
+          <div hlmInputError>Please enter a valid URL.</div>
+          } } @if ($urlError()) {
+          <div hlmInputError>{{ $urlError() }}</div>
+          }
+        </div>
+
+        <!-- Title Field -->
+        <div class="flex flex-col space-y-1">
+          @let titleControl = form.get('title');
+          <label for="title" hlmLabel>Title *</label>
+          <input
+            autocapitalize="none"
+            autocomplete="off"
+            autocorrect="off"
+            class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+            formControlName="title"
+            hlmInput
+            id="title"
+            placeholder="Bookmark title"
+            size="sm"
+            type="text"
+          />
+
+          @if (titleControl && titleControl.invalid && (titleControl.dirty ||
+          titleControl.touched)) { @if (titleControl.errors?.['required']) {
+          <div hlmInputError>Title is required.</div>
+          } }
+        </div>
+
+        <!-- Description Field -->
+        <div class="flex flex-col space-y-1">
+          <label for="description" hlmLabel>Description</label>
+          <textarea
+            class="w-full focus-visible:ring-1 focus-visible:ring-offset-0 min-h-[80px]"
+            formControlName="description"
+            hlmInput
+            id="description"
+            placeholder="Optional description"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- Notes Field -->
+        <div class="flex flex-col space-y-1">
+          <label for="notes" hlmLabel>Notes</label>
+          <textarea
+            class="w-full focus-visible:ring-1 focus-visible:ring-offset-0 min-h-[80px]"
+            formControlName="notes"
+            hlmInput
+            id="notes"
+            placeholder="Personal notes"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- Folder/Collection Selection -->
+        <div class="flex flex-col space-y-1">
+          <label for="collectionId" hlmLabel>Folder</label>
+          <select
+            class="w-full focus-visible:ring-1 focus-visible:ring-offset-0"
+            formControlName="collectionId"
+            hlmInput
+            id="collectionId"
+          >
+            <option value="">Select a folder (optional)</option>
+            @for (collection of $collections(); track collection.id) {
+            <option [value]="collection.id">{{ collection.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Metadata Preview -->
+        @if ($metadata()) {
+        <div class="border rounded-lg p-3 bg-muted/50">
+          <h4 class="text-sm font-medium mb-2">Fetched Metadata:</h4>
+          <div class="space-y-1 text-sm text-muted-foreground">
+            @if ($metadata()?.title) {
+            <div><strong>Title:</strong> {{ $metadata()?.title }}</div>
+            } @if ($metadata()?.description) {
+            <div><strong>Description:</strong> {{ $metadata()?.description }}</div>
+            } @if ($metadata()?.siteName) {
+            <div><strong>Site:</strong> {{ $metadata()?.siteName }}</div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+
+      <hlm-dialog-footer>
+        <button hlmBtn type="button" variant="outline" (click)="onClose()">Cancel</button>
+        <button hlmBtn type="submit" [disabled]="$isSaveButtonDisabled()">
+          @if ($isSaving()) {
+          <ng-icon class="mr-2 animate-spin" hlm name="lucideLoaderCircle" size="sm" />
+          }
+          <span>Save Bookmark</span>
+        </button>
+      </hlm-dialog-footer>
+    </form>
+  </hlm-dialog-content>
+</hlm-dialog>
