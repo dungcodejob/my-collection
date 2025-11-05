@@ -1,5 +1,5 @@
 <hlm-dialog [state]="$isOpen() ? 'open' : 'closed'" (closed)="closed.emit()">
-  <hlm-dialog-content *brnDialogContent="let ctx" class="sm:max-w-[500px]">
+  <hlm-dialog-content *brnDialogContent="let ctx" class="sm:max-w-[700px] w-[700px]">
     <form class="flex flex-col gap-4" [formGroup]="form" (ngSubmit)="onSave()">
       <hlm-dialog-header>
         <h3 hlmDialogTitle>{{ $title() }}</h3>
@@ -78,6 +78,12 @@
           titleControl.touched)) { @if (titleControl.errors?.['required']) {
           <div hlmInputError>Title is required.</div>
           } }
+        </div>
+
+        <!-- Image Review -->
+        <div class="flex flex-col space-y-1">
+          <label for="imageUrl" hlmLabel>Image</label>
+          <mc-bookmark-image-review id="imageUrl" placeholder="Optional image" rows="3" />
         </div>
 
         <!-- Description Field -->

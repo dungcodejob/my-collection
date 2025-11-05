@@ -1,0 +1,268 @@
+<!-- Main Container -->
+<div class="space-y-6 p-4 max-w-full">
+  <!-- Image Preview Section -->
+  <section class="space-y-3">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="m-0 text-lg font-semibold text-[hsl(var(--foreground))]">
+        Ảnh đại diện
+      </h3>
+      @if ($selectedImageUrl()) {
+      <button
+        class="flex items-center gap-2"
+        hlmBtn
+        size="sm"
+        type="button"
+        variant="outline"
+        [disabled]="!$isEnabled() || $isImageLoading() || $hasImageError()"
+        (click)="onImageZoom($selectedImageUrl())"
+      >
+        <ng-icon name="lucideZoomIn" size="16" />
+        Phóng to
+      </button>
+      }
+    </div>
+
+    <div
+      class="relative w-full min-h-[200px] border-2 border-dashed rounded-md overflow-hidden bg-[hsl(var(--muted)/0.3)]"
+    >
+      @if ($isImageLoading()) {
+      <!-- Loading State -->
+      <div
+        class="flex flex-col items-center justify-center gap-3 p-8 text-[hsl(var(--muted-foreground))] text-center"
+      >
+        <ng-icon class="animate-spin" name="lucideLoader2" size="32" />
+        <span>Đang tải ảnh...</span>
+      </div>
+      } @else if ($hasImageError()) {
+      <!-- Error State -->
+      <div
+        class="flex flex-col items-center justify-center gap-3 p-8 text-[hsl(var(--destructive))] text-center"
+      >
+        <ng-icon name="lucideImageOff" size="48" />
+        <span>Không thể tải ảnh</span>
+      </div>
+      } @else if ($selectedImageUrl()) {
+      <!-- Image Display -->
+      <div class="relative w-full h-full flex items-center justify-center">
+        <img
+          class="max-w-full max-h-[400px] w-auto h-auto object-contain rounded transition-transform duration-200 hover:scale-[1.02]"
+          [alt]="'Ảnh đại diện bookmark'"
+          [src]="$selectedImageUrl()"
+          (error)="onImageError($selectedImageUrl())"
+          (load)="onImageLoad($selectedImageUrl())"
+          (loadstart)="onImageLoadStart($selectedImageUrl())"
+        />
+      </div>
+      } @else {
+      <!-- Placeholder State -->
+      <div
+        class="flex flex-col items-center justify-center gap-3 p-8 text-[hsl(var(--muted-foreground))] text-center"
+      >
+        <ng-icon name="lucideImage" size="48" />
+        <span>Chưa có ảnh được chọn</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Image Selection Section -->
+  <section class="space-y-3">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="m-0 text-base font-semibold text-[hsl(var(--foreground))]">Chọn ảnh</h3>
+      <button
+        class="flex items-center gap-2"
+        hlmBtn
+        size="sm"
+        type="button"
+        variant="outline"
+        [disabled]="!$isEnabled() || $isUploading()"
+        (click)="onUploadClick()"
+      >
+        @if ($isUploading()) {
+        <ng-icon class="animate-spin" name="lucideLoader2" size="16" />
+        Đang tải lên... } @else {
+        <ng-icon name="lucideUpload" size="16" />
+        Tải ảnh lên }
+      </button>
+    </div>
+
+    <!-- Hidden File Input -->
+    <input
+      #fileInput
+      accept="image/*"
+      class="hidden"
+      type="file"
+      [disabled]="!$isEnabled() || $isUploading()"
+      (change)="onFileSelected($event)"
+    />
+
+    @if ($hasImages()) {
+    <!-- Images Grid -->
+    <ng-scrollbar class="max-h-[400px]">
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 p-2">
+        @for (image of $allImages(); track image.id) {
+        <div
+          class="relative border rounded-md p-3 bg-[hsl(var(--card))] transition-all duration-200 hover:border-[hsl(var(--primary))] hover:shadow-[0_2px_8px_hsl(var(--primary)/0.1)]"
+          [class]="isImageSelected(image) ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.05)] shadow-[0_0_0_1px_hsl(var(--primary))]' : ''"
+        >
+          <div
+            class="relative w-full h-[120px] mb-3 rounded overflow-hidden bg-[hsl(var(--muted)/0.3)]"
+          >
+            <img
+              class="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
+              [alt]="getImageAlt(image)"
+              [src]="image.url"
+              (error)="onImageError(image.url)"
+              (load)="onImageLoad(image.url)"
+              (loadstart)="onImageLoadStart(image.url)"
+            />
+
+            <!-- Selection Overlay -->
+            @if (isImageSelected(image)) {
+            <div
+              class="absolute top-2 right-2 w-8 h-8 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-full flex items-center justify-center shadow-[0_2px_4px_hsl(var(--primary)/0.3)]"
+            >
+              <ng-icon name="lucideCheck" size="20" />
+            </div>
+            }
+
+            <!-- Type Badge -->
+            <div
+              class="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded text-xs font-medium"
+              [class]="image.type === 'metadata'
+                ? 'bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]'
+                : 'bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]'
+              "
+            >
+              @if (image.type === 'metadata') {
+              <ng-icon name="lucideGlobe" size="12" />
+              <span>Web</span>
+              } @else {
+              <ng-icon name="lucideImages" size="12" />
+              <span>Upload</span>
+              }
+            </div>
+          </div>
+
+          <!-- Image Info -->
+          <div class="mb-3">
+            <p class="text-sm font-medium text-[hsl(var(--foreground))] mb-1 truncate">
+              {{ getImageAlt(image) }}
+            </p>
+            @if (image.size) {
+            <p class="text-xs text-[hsl(var(--muted-foreground))]">
+              {{ formatFileSize(image.size) }}
+            </p>
+            }
+          </div>
+
+          <!-- Select Button -->
+          <button
+            class="w-full"
+            hlmBtn
+            size="sm"
+            type="button"
+            variant="outline"
+            [class]="isImageSelected(image) ? 'ring-1 ring-[hsl(var(--primary))]' : ''"
+            [disabled]="!$isEnabled()"
+            (click)="onImageSelect(image)"
+          >
+            @if (isImageSelected(image)) {
+            <ng-icon name="lucideCheck" size="16" />
+            Đã chọn } @else { Chọn ảnh này }
+          </button>
+        </div>
+        }
+      </div>
+    </ng-scrollbar>
+    } @else {
+    <!-- No Images State -->
+    <div
+      class="flex flex-col items-center justify-center gap-3 p-8 text-[hsl(var(--muted-foreground))] text-center"
+    >
+      <ng-icon name="lucideImages" size="48" />
+      <p>Không có ảnh nào để hiển thị</p>
+      <p class="text-sm">Tải ảnh lên hoặc thêm URL có chứa ảnh để bắt đầu</p>
+    </div>
+    }
+
+    <!-- Upload Instructions -->
+    <div class="mt-4 space-y-1 text-sm">
+      <h4 class="mb-2 text-sm font-medium">Hướng dẫn tải ảnh:</h4>
+      <ul class="space-y-1 text-xs text-muted-foreground">
+        <li>Định dạng hỗ trợ: JPG, PNG, GIF, WebP</li>
+        <li>Kích thước tối đa: {{ formatFileSize($uploadConfig().maxSizeBytes) }}</li>
+        @if ($uploadConfig().maxDimensions) {
+        <li>
+          Kích thước ảnh tối đa: {{ $uploadConfig().maxDimensions!.width }}x{{
+          $uploadConfig().maxDimensions!.height }}px
+        </li>
+        }
+      </ul>
+    </div>
+  </section>
+</div>
+
+<div
+  class="relative rounded-lg border border-dashed p-6 text-center transition-colors"
+  [class]="{'border-primary bg-primary/5': $isDragging(), 'border-muted-foreground/25 hover:border-muted-foreground/50': !$isDragging()}"
+>
+  <input class="sr-only" />
+
+  <div class="flex flex-col items-center gap-4">
+    <div
+      class="flex h-12 w-12 items-center justify-center rounded-full bg-muted transition-colors"
+      [class]="{'border-primary bg-primary/10': $isDragging(), 'border-muted-foreground/25': !$isDragging()}"
+    >
+      <ng-icon class="h-5 w-5 text-muted-foreground" name="lucideUpload" size="16" />
+    </div>
+
+    <div class="space-y-2">
+      <p class="text-sm font-medium">
+        Drag and drop files here or
+        <button
+          class="cursor-pointer text-primary underline-offset-4 hover:underline"
+          type="button"
+        >
+          browse files
+        </button>
+      </p>
+      <p class="text-xs text-muted-foreground">
+        Support for multiple file types up to 10MB each
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Image Zoom Modal -->
+<!-- @if (_$isImageZoomed()) {
+<brn-dialog [state]="'open'">
+  <hlm-dialog-content class="image-zoom-modal">
+    <hlm-dialog-header>
+      <hlm-dialog-title>Xem ảnh phóng to</hlm-dialog-title>
+      <button
+        class="image-zoom-modal__close-btn"
+        hlmBtn
+        size="sm"
+        type="button"
+        variant="ghost"
+        (click)="onCloseZoom()"
+      >
+        <ng-icon name="lucideX" size="16" />
+      </button>
+    </hlm-dialog-header>
+
+    <div class="image-zoom-modal__content">
+      @if (_$zoomedImageUrl()) {
+      <img
+        class="image-zoom-modal__image"
+        [alt]="'Ảnh phóng to'"
+        [src]="_$zoomedImageUrl()!"
+        (error)="onImageError(_$zoomedImageUrl()!)"
+        (load)="onImageLoad(_$zoomedImageUrl()!)"
+      />
+      }
+    </div>
+  </hlm-dialog-content>
+</brn-dialog>
+} -->

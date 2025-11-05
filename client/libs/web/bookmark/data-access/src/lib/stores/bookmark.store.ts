@@ -11,7 +11,7 @@ import {
   addEntity,
   removeEntity,
   setAllEntities,
-  updateAllEntities,
+  updateEntity,
   withEntities,
 } from "@ngrx/signals/entities";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
@@ -40,6 +40,7 @@ export const BookmarkStore = signalStore(
   withStatus({
     names: [
       bookmarkStatusNames.list,
+      bookmarkStatusNames.details,
       bookmarkStatusNames.create,
       bookmarkStatusNames.update,
     ],
@@ -54,48 +55,95 @@ export const BookmarkStore = signalStore(
         switchMap(filter =>
           _bookmarkApi.loadBookmarks(filter).pipe(
             tapHandleApi({
-              successFn: result => patchState(store, setAllEntities(result.items)),
-              statusFn: status =>
-                patchState(store, setStatus(status, bookmarkStatusNames.list)),
+              successFn: result => {
+                patchState(store, setAllEntities(result.items));
+              },
+              errorFn: error => {
+                console.error("Failed to load bookmarks:", error);
+              },
+              statusFn: status => {
+                patchState(store, setStatus(status, bookmarkStatusNames.list));
+              },
             })
           )
         )
       )
     ),
+
+    loadById: rxMethod<{ id: string }>(
+      pipe(
+        switchMap(({ id }) =>
+          _bookmarkApi.findBookmarkById(id).pipe(
+            tapHandleApi({
+              successFn: result => {
+                patchState(store, addEntity(result.data));
+              },
+              errorFn: error => {
+                console.error(`Failed to load bookmark ${id}:`, error);
+              },
+              statusFn: status => {
+                patchState(store, setStatus(status, bookmarkStatusNames.details));
+              },
+            })
+          )
+        )
+      )
+    ),
+
     create: rxMethod<BookmarkCreateDto>(
       pipe(
         switchMap(request =>
           _bookmarkApi.createBookmark(request).pipe(
             tapHandleApi({
-              successFn: result => patchState(store, addEntity(result.data)),
-              statusFn: status =>
-                patchState(store, setStatus(status, bookmarkStatusNames.create)),
+              successFn: result => {
+                patchState(store, addEntity(result.data));
+              },
+              errorFn: error => {
+                console.error("Failed to create bookmark:", error);
+              },
+              statusFn: status => {
+                patchState(store, setStatus(status, bookmarkStatusNames.create));
+              },
             })
           )
         )
       )
     ),
+
     update: rxMethod<BookmarkUpdateDto & { id: string }>(
       pipe(
         switchMap(request =>
           _bookmarkApi.updateBookmark(request).pipe(
             tapHandleApi({
-              successFn: result => patchState(store, updateAllEntities(result.data)),
-              statusFn: status =>
-                patchState(store, setStatus(status, bookmarkStatusNames.update)),
+              successFn: result => {
+                patchState(store, updateEntity({ id: request.id, changes: result.data }));
+              },
+              errorFn: error => {
+                console.error(`Failed to update bookmark ${request.id}:`, error);
+              },
+              statusFn: status => {
+                patchState(store, setStatus(status, bookmarkStatusNames.update));
+              },
             })
           )
         )
       )
     ),
+
     delete: rxMethod<{ id: string }>(
       pipe(
-        switchMap(request =>
-          _bookmarkApi.deleteBookmark(request).pipe(
+        switchMap(({ id }) =>
+          _bookmarkApi.deleteBookmark({ id }).pipe(
             tapHandleApi({
-              successFn: () => patchState(store, removeEntity(request.id)),
-              statusFn: status =>
-                patchState(store, setStatus(status, bookmarkStatusNames.update)),
+              successFn: () => {
+                patchState(store, removeEntity(id));
+              },
+              errorFn: error => {
+                console.error(`Failed to delete bookmark ${id}:`, error);
+              },
+              statusFn: status => {
+                patchState(store, setStatus(status, bookmarkStatusNames.update));
+              },
             })
           )
         )

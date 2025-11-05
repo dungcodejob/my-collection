@@ -10,6 +10,7 @@ import {
 } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { BookmarkApi, BookmarkCreateDto } from "@client/web-bookmark-data-access";
+import { MCBookmarkImageReview } from "@client/web-bookmark-image-review";
 import { Collection } from "@client/web-collection-data-access";
 import { HttpService, SingleResponseDto } from "@client/web-core-http";
 import { NgIconComponent } from "@ng-icons/core";
@@ -44,6 +45,7 @@ type UrlMetadata = {
     HlmSelectImports,
     HlmTextareaImports,
     NgIconComponent,
+    MCBookmarkImageReview,
   ],
 })
 export class MCBookmarkDetailDialog {

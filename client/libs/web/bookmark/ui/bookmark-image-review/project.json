@@ -1,0 +1,20 @@
+{
+  "name": "web-bookmark-image-review",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/bookmark/ui/bookmark-image-review/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:web", "type:ui", "category:bookmark", "feature:image-review"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/web/bookmark/ui/bookmark-image-review/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
