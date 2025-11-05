@@ -42,6 +42,7 @@ import { UserModule } from './user';
     CollectionModule,
     CrawlModule,
     // TagModule,
+
     HealthModule,
     ConfigModule.forRoot({
       load: [appConfig, cookieConfig, jwtConfig, httpConfig],
