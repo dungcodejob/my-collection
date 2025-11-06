@@ -7,10 +7,19 @@ export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 export const WEEK = 7 * DAY;
 
-export const DEFAULT_CURRENT_PAGE = 1;
-export const DEFAULT_PAGE_SIZE = 20;
+
 
 export const BYTE = 1024;
 export const MB = BYTE * BYTE;
 export const MEMORY_HEAP_LIMIT = 150 * MB;
 export const MEMORY_RSS_LIMIT = 200 * MB;
+
+
+export const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
+
+export const PAGE_SIZE_DEFAULT = {
+  TABLE: PAGE_SIZE_OPTIONS[0],
+  SELECT: PAGE_SIZE_OPTIONS[0],
+} as const;
+
+export const CURRENT_PAGE_DEFAULT = 1;
