@@ -1,0 +1,193 @@
+/* Spartan UI Select Component Styles */
+
+/* Custom styling for the select component */
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Enhanced focus styles */
+brn-select:focus-within hlm-select-trigger {
+  @apply ring-2 ring-ring ring-offset-2;
+}
+
+/* Improved disabled state */
+brn-select[data-disabled] hlm-select-trigger {
+  @apply cursor-not-allowed opacity-50;
+}
+
+/* Smooth animations for content */
+hlm-select-content {
+  @apply animate-in fade-in-0 zoom-in-95;
+}
+
+/* Custom scrollbar for viewport */
+hlm-select-viewport {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+hlm-select-viewport::-webkit-scrollbar {
+  width: 6px;
+}
+
+hlm-select-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+hlm-select-viewport::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+
+hlm-select-viewport::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Item hover and focus states */
+hlm-select-item[data-highlighted] {
+  @apply bg-accent text-accent-foreground;
+}
+
+hlm-select-item[data-disabled] {
+  @apply cursor-not-allowed opacity-50;
+}
+
+/* Icon animations */
+hlm-select-icon ng-icon {
+  @apply transition-transform duration-200;
+}
+
+brn-select[data-state="open"] hlm-select-icon ng-icon {
+  @apply rotate-180;
+}
+
+/* Search functionality */
+.search-container {
+  position: relative;
+  padding: 8px;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.search-input {
+  width: 100%;
+  padding: 6px 32px 6px 8px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.search-input:focus,
+.search-input.focused {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: hsl(var(--muted-foreground));
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: all 0.2s ease-in-out;
+}
+
+.clear-search-btn:hover {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+.clear-search-btn:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.no-options {
+  padding: 8px 12px;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+  font-size: 14px;
+}
+
+/* Accessibility - Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles for options */
+.focused {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  background-color: red;
+}
+
+hlm-option:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: -2px;
+}
+
+/* Keyboard navigation indicator */
+hlm-option[aria-selected="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+hlm-option[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .search-input:focus,
+  .search-input.focused {
+    border-width: 2px;
+  }
+
+  hlm-option.focused {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .search-input,
+  .clear-search-btn {
+    transition: none;
+  }
+}
+
+/* Prevent search input from closing dropdown */
+.search-container input:focus {
+  @apply outline-none;
+}
+
+/* Enhanced item styling for search results */
+hlm-select-item {
+  @apply transition-colors duration-150;
+}
+
+hlm-select-item:hover {
+  @apply bg-accent/80;
+}
