@@ -1,0 +1,321 @@
+openapi: 3.0.3
+info:
+  title: Create Bookmark API
+  description: API endpoint for creating a new bookmark with metadata
+  version: 1.0.0
+  contact:
+    name: My Collection API Team
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://api.my-collection.com/v1
+    description: Production server
+
+paths:
+  /bookmarks:
+    post:
+      summary: Create a new bookmark
+      description: Creates a new bookmark for the authenticated user with provided metadata
+      operationId: createBookmark
+      tags:
+        - Bookmarks
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookmarkDto"
+            examples:
+              basic:
+                summary: Basic bookmark
+                value:
+                  url: "https://example.com"
+                  title: "Example Website"
+              complete:
+                summary: Complete bookmark with all fields
+                value:
+                  url: "https://example.com/article"
+                  title: "Interesting Article"
+                  description: "A detailed article about web development best practices"
+                  imageUrl: "https://example.com/images/article-thumbnail.jpg"
+                  notes: "Read this for the project research"
+                  faviconUrl: "https://example.com/favicon.ico"
+                  collectionId: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        "201":
+          description: Bookmark created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookmarkResponseDto"
+              examples:
+                success:
+                  summary: Successfully created bookmark
+                  value:
+                    id: "123e4567-e89b-12d3-a456-426614174000"
+                    userId: "550e8400-e29b-41d4-a716-446655440000"
+                    url: "https://example.com/article"
+                    title: "Interesting Article"
+                    description: "A detailed article about web development best practices"
+                    imageUrl: "https://example.com/images/article-thumbnail.jpg"
+                    notes: "Read this for the project research"
+                    faviconUrl: "https://example.com/favicon.ico"
+                    createdAt: "2025-01-06T10:30:00Z"
+                    updatedAt: "2025-01-06T10:30:00Z"
+                    collectionId: "550e8400-e29b-41d4-a716-446655440000"
+        "400":
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation_error:
+                  summary: Validation error
+                  value:
+                    statusCode: 400
+                    message: "Validation failed"
+                    errors:
+                      - field: "url"
+                        message: "url must be a valid URL"
+                      - field: "title"
+                        message: "title must not be empty"
+        "401":
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unauthorized:
+                  summary: Missing authentication
+                  value:
+                    statusCode: 401
+                    message: "Unauthorized"
+                    error: "Authentication token is required"
+        "409":
+          description: Conflict - Duplicate URL exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DuplicateErrorResponse"
+              examples:
+                duplicate:
+                  summary: Duplicate bookmark found
+                  value:
+                    statusCode: 409
+                    message: "A bookmark with this URL already exists"
+                    error: "DUPLICATE_URL"
+                    existingBookmark:
+                      id: "123e4567-e89b-12d3-a456-426614174000"
+                      title: "Existing Bookmark Title"
+                      createdAt: "2025-01-05T15:20:00Z"
+                      imageUrl: "https://example.com/images/thumbnail.jpg"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    statusCode: 500
+                    message: "Internal server error"
+                    error: "An unexpected error occurred"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT authentication token
+
+  schemas:
+    CreateBookmarkDto:
+      type: object
+      required:
+        - url
+        - title
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: The web address to bookmark
+          example: "https://example.com/article"
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Display name for the bookmark
+          example: "Interesting Article"
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+          description: Detailed description of the bookmark content
+          example: "A comprehensive guide to modern web development"
+        imageUrl:
+          type: string
+          format: uri
+          maxLength: 2048
+          nullable: true
+          description: Thumbnail or preview image URL
+          example: "https://example.com/images/thumbnail.jpg"
+        notes:
+          type: string
+          maxLength: 2000
+          nullable: true
+          description: User's personal notes about the bookmark
+          example: "Important for project research"
+        faviconUrl:
+          type: string
+          format: uri
+          maxLength: 2048
+          nullable: true
+          description: Website favicon URL
+          example: "https://example.com/favicon.ico"
+        collectionId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Parent collection ID (if organizing into collections)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    BookmarkResponseDto:
+      type: object
+      required:
+        - id
+        - userId
+        - url
+        - title
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique bookmark identifier
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        userId:
+          type: string
+          format: uuid
+          description: Owner of the bookmark
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        url:
+          type: string
+          format: uri
+          description: The bookmarked web address
+          example: "https://example.com/article"
+        title:
+          type: string
+          description: Display name for the bookmark
+          example: "Interesting Article"
+        description:
+          type: string
+          nullable: true
+          description: Detailed description
+          example: "A comprehensive guide"
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: Thumbnail image URL
+          example: "https://example.com/images/thumbnail.jpg"
+        notes:
+          type: string
+          nullable: true
+          description: User's personal notes
+          example: "Important for research"
+        faviconUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: Website favicon URL
+          example: "https://example.com/favicon.ico"
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2025-01-06T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2025-01-06T10:30:00Z"
+        collectionId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Parent collection ID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    DuplicateErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+        - error
+      properties:
+        statusCode:
+          type: integer
+          example: 409
+        message:
+          type: string
+          example: "A bookmark with this URL already exists"
+        error:
+          type: string
+          example: "DUPLICATE_URL"
+        existingBookmark:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            imageUrl:
+              type: string
+              format: uri
+              nullable: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+      properties:
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: "Validation failed"
+        error:
+          type: string
+          description: Error type or details
+          example: "Bad Request"
+        errors:
+          type: array
+          description: Detailed validation errors
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Field name that failed validation
+              message:
+                type: string
+                description: Validation error message

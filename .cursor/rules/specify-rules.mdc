@@ -1,0 +1,32 @@
+﻿# my-collection Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2025-11-06
+
+## Active Technologies
+- PostgreSQL 15+ with MikroORM (bookmark data, user associations) (001-add-bookmark-dialog)
+
+- TypeScript 5.8.2 (Frontend & Backend) (001-add-bookmark-dialog)
+
+## Project Structure
+
+```text
+backend/
+frontend/
+tests/
+```
+
+## Commands
+
+npm test; npm run lint
+
+## Code Style
+
+TypeScript 5.8.2 (Frontend & Backend): Follow standard conventions
+
+## Recent Changes
+- 001-add-bookmark-dialog: Added TypeScript 5.8.2 (Frontend & Backend)
+
+- 001-add-bookmark-dialog: Added TypeScript 5.8.2 (Frontend & Backend)
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

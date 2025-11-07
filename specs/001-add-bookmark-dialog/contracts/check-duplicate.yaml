@@ -1,0 +1,168 @@
+openapi: 3.0.3
+info:
+  title: Check Duplicate Bookmark API
+  description: API endpoint for checking if a bookmark URL already exists
+  version: 1.0.0
+  contact:
+    name: My Collection API Team
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://api.my-collection.com/v1
+    description: Production server
+
+paths:
+  /bookmarks/check-duplicate:
+    get:
+      summary: Check for duplicate bookmark URL
+      description: Checks if a bookmark with the given URL already exists for the authenticated user
+      operationId: checkDuplicateBookmark
+      tags:
+        - Bookmarks
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: The URL to check for duplicates
+          schema:
+            type: string
+            format: uri
+            maxLength: 2048
+          example: "https://example.com/article"
+      responses:
+        "200":
+          description: Duplicate check completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DuplicateCheckResponseDto"
+              examples:
+                exists:
+                  summary: Duplicate found
+                  value:
+                    exists: true
+                    bookmark:
+                      id: "123e4567-e89b-12d3-a456-426614174000"
+                      title: "Existing Bookmark Title"
+                      createdAt: "2025-01-05T15:20:00Z"
+                      imageUrl: "https://example.com/images/thumbnail.jpg"
+                not_exists:
+                  summary: No duplicate found
+                  value:
+                    exists: false
+                    bookmark: null
+        "400":
+          description: Invalid URL or request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalid_url:
+                  summary: Invalid URL format
+                  value:
+                    statusCode: 400
+                    message: "Invalid URL format"
+                    error: "url must be a valid HTTP/HTTPS URL"
+                missing_url:
+                  summary: Missing URL parameter
+                  value:
+                    statusCode: 400
+                    message: "Validation failed"
+                    error: "url query parameter is required"
+        "401":
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unauthorized:
+                  summary: Missing authentication
+                  value:
+                    statusCode: 401
+                    message: "Unauthorized"
+                    error: "Authentication token is required"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    statusCode: 500
+                    message: "Failed to check for duplicates"
+                    error: "An unexpected error occurred"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT authentication token
+
+  schemas:
+    DuplicateCheckResponseDto:
+      type: object
+      required:
+        - exists
+      properties:
+        exists:
+          type: boolean
+          description: Whether a bookmark with this URL already exists
+          example: true
+        bookmark:
+          type: object
+          nullable: true
+          description: Existing bookmark details (only if exists is true)
+          required:
+            - id
+            - title
+            - createdAt
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Existing bookmark ID
+              example: "123e4567-e89b-12d3-a456-426614174000"
+            title:
+              type: string
+              description: Existing bookmark title
+              example: "Existing Bookmark Title"
+            createdAt:
+              type: string
+              format: date-time
+              description: When the existing bookmark was created
+              example: "2025-01-05T15:20:00Z"
+            imageUrl:
+              type: string
+              format: uri
+              nullable: true
+              description: Existing bookmark thumbnail
+              example: "https://example.com/images/thumbnail.jpg"
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+      properties:
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: "Invalid URL format"
+        error:
+          type: string
+          description: Error details
+          example: "url must be a valid HTTP/HTTPS URL"

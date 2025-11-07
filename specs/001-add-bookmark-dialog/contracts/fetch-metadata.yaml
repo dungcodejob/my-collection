@@ -1,0 +1,263 @@
+openapi: 3.0.3
+info:
+  title: Fetch Metadata API
+  description: API endpoint for extracting metadata from a website URL
+  version: 1.0.0
+  contact:
+    name: My Collection API Team
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://api.my-collection.com/v1
+    description: Production server
+
+paths:
+  /metadata:
+    get:
+      summary: Fetch website metadata
+      description: Extracts metadata (title, description, images) from a given URL
+      operationId: fetchMetadata
+      tags:
+        - Metadata
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: The website URL to extract metadata from
+          schema:
+            type: string
+            format: uri
+            maxLength: 2048
+          example: "https://example.com/article"
+      responses:
+        "200":
+          description: Metadata extracted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetadataResponseDto"
+              examples:
+                complete:
+                  summary: Complete metadata
+                  value:
+                    url: "https://example.com/article"
+                    title: "Complete Guide to Web Development"
+                    description: "A comprehensive guide covering modern web development practices and tools"
+                    images:
+                      - "https://example.com/images/hero.jpg"
+                      - "https://example.com/images/thumbnail.jpg"
+                      - "https://example.com/images/diagram.png"
+                    primaryImage: "https://example.com/images/hero.jpg"
+                    favicon: "https://example.com/favicon.ico"
+                    siteName: "Example Blog"
+                    author: "John Doe"
+                    publishedDate: "2025-01-05T10:00:00Z"
+                partial:
+                  summary: Partial metadata (no images)
+                  value:
+                    url: "https://example.com/simple-page"
+                    title: "Simple Page"
+                    description: null
+                    images: []
+                    primaryImage: null
+                    favicon: "https://example.com/favicon.ico"
+                    siteName: null
+                    author: null
+                    publishedDate: null
+        "400":
+          description: Invalid URL or request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalid_url:
+                  summary: Invalid URL format
+                  value:
+                    statusCode: 400
+                    message: "Invalid URL format"
+                    error: "url must be a valid HTTP/HTTPS URL"
+                missing_url:
+                  summary: Missing URL parameter
+                  value:
+                    statusCode: 400
+                    message: "Validation failed"
+                    error: "url query parameter is required"
+        "401":
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unauthorized:
+                  summary: Missing authentication
+                  value:
+                    statusCode: 401
+                    message: "Unauthorized"
+                    error: "Authentication token is required"
+        "404":
+          description: URL not found or inaccessible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                not_found:
+                  summary: Website not found
+                  value:
+                    statusCode: 404
+                    message: "Website not found"
+                    error: "The URL returned a 404 status code"
+        "408":
+          description: Request timeout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                timeout:
+                  summary: Request timed out
+                  value:
+                    statusCode: 408
+                    message: "Request timeout"
+                    error: "The website took too long to respond (timeout: 10s)"
+        "429":
+          description: Too many requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RateLimitErrorResponse"
+              examples:
+                rate_limit:
+                  summary: Rate limit exceeded
+                  value:
+                    statusCode: 429
+                    message: "Too many requests"
+                    error: "Rate limit exceeded. Please try again later."
+                    retryAfter: 60
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    statusCode: 500
+                    message: "Failed to fetch metadata"
+                    error: "An error occurred while extracting metadata from the website"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT authentication token
+
+  schemas:
+    MetadataResponseDto:
+      type: object
+      required:
+        - url
+        - title
+        - images
+      properties:
+        url:
+          type: string
+          format: uri
+          description: The source website URL
+          example: "https://example.com/article"
+        title:
+          type: string
+          description: Page title (from meta tags or <title> element)
+          example: "Complete Guide to Web Development"
+        description:
+          type: string
+          nullable: true
+          description: Page description (from meta tags)
+          example: "A comprehensive guide covering modern web development"
+        images:
+          type: array
+          description: Array of image URLs found on the page (max 10)
+          maxItems: 10
+          items:
+            type: string
+            format: uri
+          example:
+            - "https://example.com/images/hero.jpg"
+            - "https://example.com/images/thumbnail.jpg"
+        primaryImage:
+          type: string
+          format: uri
+          nullable: true
+          description: Main/featured image (og:image or first large image)
+          example: "https://example.com/images/hero.jpg"
+        favicon:
+          type: string
+          format: uri
+          nullable: true
+          description: Website favicon URL
+          example: "https://example.com/favicon.ico"
+        siteName:
+          type: string
+          nullable: true
+          description: Website name (from og:site_name)
+          example: "Example Blog"
+        author:
+          type: string
+          nullable: true
+          description: Content author (from meta tags)
+          example: "John Doe"
+        publishedDate:
+          type: string
+          format: date-time
+          nullable: true
+          description: Publication date (ISO 8601 format)
+          example: "2025-01-05T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+      properties:
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: "Invalid URL format"
+        error:
+          type: string
+          description: Error details
+          example: "url must be a valid HTTP/HTTPS URL"
+
+    RateLimitErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+        - error
+      properties:
+        statusCode:
+          type: integer
+          example: 429
+        message:
+          type: string
+          example: "Too many requests"
+        error:
+          type: string
+          example: "Rate limit exceeded. Please try again later."
+        retryAfter:
+          type: integer
+          description: Seconds until rate limit resets
+          example: 60

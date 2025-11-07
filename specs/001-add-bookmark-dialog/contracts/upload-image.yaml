@@ -1,0 +1,352 @@
+openapi: 3.0.3
+info:
+  title: Image Upload API
+  description: API endpoints for uploading custom bookmark images
+  version: 1.0.0
+  contact:
+    name: My Collection API Team
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://api.my-collection.com/v1
+    description: Production server
+
+paths:
+  /bookmarks/images/presigned-url:
+    post:
+      summary: Get presigned URL for image upload
+      description: Generates a presigned URL for direct upload to cloud storage
+      operationId: getPresignedUrl
+      tags:
+        - Images
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageUploadRequestDto"
+            examples:
+              jpeg:
+                summary: JPEG image upload request
+                value:
+                  filename: "my-bookmark-image.jpg"
+                  mimeType: "image/jpeg"
+                  size: 1048576
+              png:
+                summary: PNG image upload request
+                value:
+                  filename: "screenshot.png"
+                  mimeType: "image/png"
+                  size: 2097152
+      responses:
+        "200":
+          description: Presigned URL generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageUploadResponseDto"
+              examples:
+                success:
+                  summary: Presigned URL response
+                  value:
+                    presignedUrl: "https://storage.example.com/upload?signature=abc123&expires=1704537600"
+                    expiresIn: 900
+                    finalUrl: "https://cdn.example.com/bookmarks/550e8400-e29b-41d4-a716-446655440000.jpg"
+        "400":
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalid_mime_type:
+                  summary: Invalid MIME type
+                  value:
+                    statusCode: 400
+                    message: "Invalid file type"
+                    error: "Only JPEG, PNG, GIF, and WebP images are allowed"
+                file_too_large:
+                  summary: File size exceeds limit
+                  value:
+                    statusCode: 400
+                    message: "File too large"
+                    error: "Maximum file size is 5MB (5,242,880 bytes)"
+        "401":
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unauthorized:
+                  summary: Missing authentication
+                  value:
+                    statusCode: 401
+                    message: "Unauthorized"
+                    error: "Authentication token is required"
+        "429":
+          description: Too many requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RateLimitErrorResponse"
+              examples:
+                rate_limit:
+                  summary: Rate limit exceeded
+                  value:
+                    statusCode: 429
+                    message: "Too many upload requests"
+                    error: "Rate limit exceeded. Please try again later."
+                    retryAfter: 60
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    statusCode: 500
+                    message: "Failed to generate presigned URL"
+                    error: "An unexpected error occurred"
+
+  /bookmarks/images/validate:
+    post:
+      summary: Validate custom image URL
+      description: Validates that a provided image URL is accessible and is a valid image
+      operationId: validateImageUrl
+      tags:
+        - Images
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageUrlValidationRequestDto"
+            examples:
+              valid_url:
+                summary: Valid image URL
+                value:
+                  imageUrl: "https://example.com/images/bookmark-thumbnail.jpg"
+      responses:
+        "200":
+          description: Image URL is valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageUrlValidationResponseDto"
+              examples:
+                valid:
+                  summary: Valid image URL
+                  value:
+                    isValid: true
+                    imageUrl: "https://example.com/images/bookmark-thumbnail.jpg"
+                    mimeType: "image/jpeg"
+                    size: 524288
+                    dimensions:
+                      width: 1200
+                      height: 630
+        "400":
+          description: Invalid image URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageUrlValidationResponseDto"
+              examples:
+                invalid_url:
+                  summary: Invalid URL format
+                  value:
+                    isValid: false
+                    error: "Invalid URL format"
+                not_an_image:
+                  summary: URL is not an image
+                  value:
+                    isValid: false
+                    error: "The URL does not point to a valid image"
+                not_accessible:
+                  summary: Image not accessible
+                  value:
+                    isValid: false
+                    error: "The image URL returned a 404 status code"
+        "401":
+          description: Unauthorized - Invalid or missing authentication token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                unauthorized:
+                  summary: Missing authentication
+                  value:
+                    statusCode: 401
+                    message: "Unauthorized"
+                    error: "Authentication token is required"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                server_error:
+                  summary: Server error
+                  value:
+                    statusCode: 500
+                    message: "Failed to validate image URL"
+                    error: "An unexpected error occurred"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT authentication token
+
+  schemas:
+    ImageUploadRequestDto:
+      type: object
+      required:
+        - filename
+        - mimeType
+        - size
+      properties:
+        filename:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Original filename (will be sanitized)
+          example: "my-bookmark-image.jpg"
+        mimeType:
+          type: string
+          enum:
+            - image/jpeg
+            - image/png
+            - image/gif
+            - image/webp
+          description: File MIME type (must be in whitelist)
+          example: "image/jpeg"
+        size:
+          type: integer
+          minimum: 1
+          maximum: 5242880
+          description: File size in bytes (max 5MB)
+          example: 1048576
+
+    ImageUploadResponseDto:
+      type: object
+      required:
+        - presignedUrl
+        - expiresIn
+        - finalUrl
+      properties:
+        presignedUrl:
+          type: string
+          format: uri
+          description: Presigned URL for direct upload to cloud storage
+          example: "https://storage.example.com/upload?signature=abc123&expires=1704537600"
+        expiresIn:
+          type: integer
+          description: Seconds until presigned URL expires (typically 900 = 15 minutes)
+          example: 900
+        finalUrl:
+          type: string
+          format: uri
+          description: Final CDN URL where the image will be accessible after upload
+          example: "https://cdn.example.com/bookmarks/550e8400-e29b-41d4-a716-446655440000.jpg"
+
+    ImageUrlValidationRequestDto:
+      type: object
+      required:
+        - imageUrl
+      properties:
+        imageUrl:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: The image URL to validate
+          example: "https://example.com/images/bookmark-thumbnail.jpg"
+
+    ImageUrlValidationResponseDto:
+      type: object
+      required:
+        - isValid
+      properties:
+        isValid:
+          type: boolean
+          description: Whether the image URL is valid and accessible
+          example: true
+        imageUrl:
+          type: string
+          format: uri
+          description: The validated image URL (only if valid)
+          example: "https://example.com/images/bookmark-thumbnail.jpg"
+        mimeType:
+          type: string
+          description: Detected MIME type (only if valid)
+          example: "image/jpeg"
+        size:
+          type: integer
+          description: Image file size in bytes (only if valid)
+          example: 524288
+        dimensions:
+          type: object
+          description: Image dimensions (only if valid)
+          properties:
+            width:
+              type: integer
+              example: 1200
+            height:
+              type: integer
+              example: 630
+        error:
+          type: string
+          description: Error message (only if invalid)
+          example: "The URL does not point to a valid image"
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+      properties:
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: "Invalid file type"
+        error:
+          type: string
+          description: Error details
+          example: "Only JPEG, PNG, GIF, and WebP images are allowed"
+
+    RateLimitErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+        - error
+      properties:
+        statusCode:
+          type: integer
+          example: 429
+        message:
+          type: string
+          example: "Too many upload requests"
+        error:
+          type: string
+          example: "Rate limit exceeded. Please try again later."
+        retryAfter:
+          type: integer
+          description: Seconds until rate limit resets
+          example: 60

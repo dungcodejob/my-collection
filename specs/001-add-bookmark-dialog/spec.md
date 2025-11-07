@@ -61,13 +61,21 @@ A user wants to use a custom image for their bookmark instead of the auto-fetche
 
 ### Edge Cases
 
+## Clarifications
+
+### Session 2025-01-06
+
+- Q: When a user tries to save a duplicate URL, what should happen? → A: Show confirmation dialog with link to existing bookmark, allow user to proceed or cancel
+
+---
+
 - What happens when the entered URL is invalid or malformed?
 - What happens when the metadata fetch API fails or times out?
 - What happens when the website has no metadata available (no title, description, or images)?
 - What happens when the user tries to upload an image file that is too large or in an unsupported format?
 - What happens when the user provides an image URL that returns a 404 or is not an image?
 - What happens when the user tries to save a bookmark without entering a URL?
-- What happens when the user tries to save a bookmark for a URL that already exists in their collection?
+- What happens when the user tries to save a bookmark for a URL that already exists in their collection? (Clarified: Show confirmation dialog with link to existing bookmark, allow proceed or cancel)
 - What happens when the user closes the dialog while metadata is being fetched?
 - What happens when the user loses internet connection during metadata fetch?
 - What happens when the fetched metadata contains very long text (title or description exceeding character limits)?
@@ -117,7 +125,7 @@ A user wants to use a custom image for their bookmark instead of the auto-fetche
 - **FR-030**: System MUST validate that a URL is provided before allowing save
 - **FR-031**: System MUST validate that a title is provided (either fetched or manually entered)
 - **FR-032**: System MUST check for duplicate URLs in the user's existing bookmarks
-- **FR-033**: System MUST display a confirmation if the URL already exists with option to save anyway
+- **FR-033**: System MUST display a confirmation dialog when the URL already exists, showing a link to the existing bookmark and allowing the user to proceed with saving anyway or cancel
 - **FR-034**: System MUST save the bookmark with all provided data (URL, title, description, image, notes)
 - **FR-035**: System MUST close the dialog after successful bookmark creation
 - **FR-036**: System MUST display a success notification after bookmark is saved
