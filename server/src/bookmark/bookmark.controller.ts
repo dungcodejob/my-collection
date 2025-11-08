@@ -1,11 +1,15 @@
 import { FEATURE_KEY } from '@app/constants';
 import { ApiAuth } from '@app/decorators';
 import { PaginationMetaDto, ResponseBuilder } from '@app/models';
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { BookmarkMapper } from './bookmark.mapper';
 import { BookmarkService } from './bookmark.service';
-import { BookmarkResponseDto, BookmarkSearchDto } from './models';
+import {
+  BookmarkCreateDto,
+  BookmarkResponseDto,
+  BookmarkSearchDto,
+} from './models';
 
 @ApiTags(FEATURE_KEY.BOOKMARK)
 @Controller(FEATURE_KEY.BOOKMARK)
@@ -15,27 +19,31 @@ export class BookmarkController {
     private readonly _bookmarkMapper: BookmarkMapper,
   ) {}
 
-  // @Post()
-  // @ApiAuth({
-  //   type: BookmarkResponseDto,
-  //   summary: 'Create a new bookmark',
-  // })
-  // async createBookmark(
-  //   @Body() createDto: BookmarkCreateDto,
-  // ): Promise<BookmarkResponseDto> {
-  //   const bookmark = await this._bookmarkService.createBookmark({
-  //     url: createDto.url,
-  //     title: createDto.title,
-  //     description: createDto.description,
-  //     imageUrl: createDto.imageUrl,
-  //     siteName: createDto.siteName,
-  //     tags: createDto.tags,
-  //     notes: createDto.notes,
-  //     collectionId: createDto.collectionId,
-  //   });
+  /**
+   * T042: Create POST /bookmarks endpoint with @ApiOperation decorators
+   */
+  @Post()
+  @ApiAuth({
+    type: BookmarkResponseDto,
+    summary: 'Create a new bookmark',
+  })
+  async createBookmark(
+    @Body() createDto: BookmarkCreateDto,
+  ): Promise<BookmarkResponseDto> {
+    const bookmark = await this._bookmarkService.createBookmark({
+      url: createDto.url,
+      title: createDto.title,
+      description: createDto.description,
+      imageUrl: createDto.imageUrl,
+      faviconUrl: createDto.faviconUrl,
+      siteName: createDto.siteName,
+      tags: createDto.tags,
+      notes: createDto.notes,
+      collectionId: createDto.collectionId,
+    });
 
-  //   return this._bookmarkMapper.toResponseDto(bookmark);
-  // }
+    return this._bookmarkMapper.toResponseDto(bookmark);
+  }
 
   @Get()
   @ApiQuery({ name: 'search', required: false, description: 'Search term' })

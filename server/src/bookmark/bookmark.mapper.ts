@@ -21,6 +21,7 @@ export class BookmarkMapper {
       title: bookmark.title,
       description: bookmark.description,
       imageUrl: bookmark.imageUrl,
+      faviconUrl: bookmark.faviconUrl,
       siteName: bookmark.siteName,
       contentType: bookmark.contentType,
       metadata: bookmark.metadata,

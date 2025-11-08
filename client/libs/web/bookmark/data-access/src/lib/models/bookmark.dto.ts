@@ -4,6 +4,7 @@ export type BookmarkDto = {
   title: string;
   description?: string;
   imageUrl?: string;
+  faviconUrl?: string;
   siteName?: string;
   contentType?: string;
   metadata?: Record<string, any>;

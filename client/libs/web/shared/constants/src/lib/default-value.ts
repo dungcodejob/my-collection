@@ -7,13 +7,10 @@ export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 export const WEEK = 7 * DAY;
 
-
-
 export const BYTE = 1024;
 export const MB = BYTE * BYTE;
 export const MEMORY_HEAP_LIMIT = 150 * MB;
 export const MEMORY_RSS_LIMIT = 200 * MB;
-
 
 export const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 

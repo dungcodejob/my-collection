@@ -1,0 +1,175 @@
+<!-- T054-T067: Dialog template with Spartan UI -->
+<hlm-dialog-header>
+  <h3 hlmDialogTitle>Add Bookmark</h3>
+  <p hlmDialogDescription>
+    Enter a URL to fetch metadata, then customize and save your bookmark.
+  </p>
+</hlm-dialog-header>
+
+<form class="space-y-4" [formGroup]="bookmarkForm" (keydown)="onKeyDown($event)">
+  <!-- T055-T056: URL input with fetch button -->
+  <div class="space-y-2">
+    <label for="url" hlmLabel>URL *</label>
+    <div class="flex gap-2">
+      <input
+        class="flex-1"
+        formControlName="url"
+        hlmInput
+        id="url"
+        placeholder="https://example.com"
+        type="url"
+        [class.border-destructive]="getControl('url')?.invalid && getControl('url')?.touched"
+      />
+      <button
+        hlmBtn
+        type="button"
+        variant="secondary"
+        [disabled]="store.$isFetchMetadataPending() || !getControl('url')?.value"
+        (click)="onFetchMetadata()"
+      >
+        <!-- T066: Loading spinner -->
+        @if (store.$isFetchMetadataPending()) {
+        <hlm-spinner class="mr-2" size="sm" />
+        } Fetch Metadata
+      </button>
+    </div>
+    @if (getControl('url')?.invalid && getControl('url')?.touched) {
+    <p class="text-sm text-destructive">Please enter a valid URL</p>
+    } @if (urlError) {
+    <p class="text-sm text-destructive">{{ urlError }}</p>
+    }
+  </div>
+
+  <!-- T067: Error message display -->
+  @if (store.error()) {
+  <div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+    {{ store.error() }}
+  </div>
+  }
+
+  <!-- T057: Title input -->
+  <div class="space-y-2">
+    <label for="title" hlmLabel>Title *</label>
+    <input
+      formControlName="title"
+      hlmInput
+      id="title"
+      placeholder="Bookmark title"
+      type="text"
+      [class.border-destructive]="getControl('title')?.invalid && getControl('title')?.touched"
+    />
+    @if (getControl('title')?.invalid && getControl('title')?.touched) {
+    <p class="text-sm text-destructive">Title is required</p>
+    }
+  </div>
+
+  <!-- T058: Description textarea -->
+  <div class="space-y-2">
+    <label for="description" hlmLabel>Description</label>
+    <textarea
+      class="resize-none"
+      formControlName="description"
+      hlmInput
+      id="description"
+      placeholder="Brief description of the bookmark"
+      rows="3"
+    ></textarea>
+    <p class="text-xs text-muted-foreground">
+      {{ getControl('description')?.value?.length || 0 }} / 1000 characters
+    </p>
+  </div>
+
+  <!-- T059: Image preview section -->
+  @if (store.metadata()) {
+  <div class="space-y-2">
+    <label for="thumbnail" hlmLabel>Thumbnail</label>
+
+    <!-- Selected image preview -->
+    @if (store.selectedImage()) {
+    <div class="relative aspect-video w-full overflow-hidden rounded-md border">
+      <img
+        class="h-full w-full object-cover"
+        [alt]="getControl('title')?.value || 'Bookmark thumbnail'"
+        [src]="store.selectedImage()"
+        (error)="onImageError($event)"
+      />
+    </div>
+    }
+
+    <!-- Available images gallery -->
+    @if (store.availableImages().length > 1) {
+    <div class="space-y-2">
+      <p class="text-sm text-muted-foreground">
+        Choose from {{ store.availableImages().length }} available images:
+      </p>
+      <div class="grid grid-cols-4 gap-2">
+        @for (image of store.availableImages(); track $index) {
+        <button
+          class="relative aspect-video overflow-hidden rounded-md border-2 transition-all hover:border-primary"
+          type="button"
+          [class.border-border]="store.selectedImageIndex() !== $index"
+          [class.border-primary]="store.selectedImageIndex() === $index"
+          (click)="onSelectImage($index)"
+        >
+          <img
+            class="h-full w-full object-cover"
+            [alt]="'Thumbnail option ' + ($index + 1)"
+            [src]="image"
+            (error)="onImageError($event)"
+          />
+          @if (store.selectedImageIndex() === $index) {
+          <div class="absolute inset-0 bg-primary/20 flex items-center justify-center">
+            <svg class="h-6 w-6 text-primary" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                clip-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </div>
+          }
+        </button>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Notes textarea -->
+  <div class="space-y-2">
+    <label for="notes" hlmLabel>Notes</label>
+    <textarea
+      class="resize-none"
+      formControlName="notes"
+      hlmInput
+      id="notes"
+      placeholder="Add personal notes about this bookmark"
+      rows="3"
+    ></textarea>
+    <p class="text-xs text-muted-foreground">
+      {{ getControl('notes')?.value?.length || 0 }} / 2000 characters
+    </p>
+  </div>
+</form>
+
+<!-- T060: Save and Cancel buttons -->
+<hlm-dialog-footer>
+  <button hlmBtn type="button" variant="outline" (click)="onCancel()">Cancel</button>
+  <button
+    hlmBtn
+    type="button"
+    [disabled]="!store.canSave() || store.$isSaveBookmarkPending()"
+    (click)="onSave()"
+  >
+    @if (store.$isSaveBookmarkPending()) {
+    <hlm-spinner class="mr-2" size="sm" />
+    } Save Bookmark
+  </button>
+</hlm-dialog-footer>
+
+<!-- T069: Keyboard shortcut hint -->
+<div class="mt-2 text-xs text-muted-foreground text-center">
+  Press <kbd class="px-1 py-0.5 bg-muted rounded">Ctrl</kbd> +
+  <kbd class="px-1 py-0.5 bg-muted rounded">Enter</kbd> to save
+</div>

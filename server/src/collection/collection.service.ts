@@ -48,7 +48,10 @@ export class CollectionService {
    * Find collection by ID for a specific user and tenant
    */
   async findById(id: string, options?: FindOneCollectionOptions) {
-    const collection = await this._unitOfWork.collection.findById(id, options);
+    const collection = await this._unitOfWork.collection.findOneById(
+      id,
+      options,
+    );
 
     return collection;
   }
@@ -76,7 +79,10 @@ export class CollectionService {
     query: CollectionQueryDto,
     options?: FindCollectionOptions,
   ) {
-    const collection = await this._unitOfWork.collection.find(query, options);
+    const collection = await this._unitOfWork.collection.findAll(
+      query,
+      options,
+    );
 
     if (isNil(collection)) {
       throw Errors.Collection.NotFound;
@@ -417,7 +423,7 @@ export class CollectionService {
   }
 
   private async isSlugTaken(slug: string): Promise<boolean> {
-    const exists = await this._unitOfWork.collection.findBySlug(slug);
+    const exists = await this._unitOfWork.collection.findOneBySlug(slug);
     return !!exists;
   }
 }

@@ -1,5 +1,5 @@
 import { PaginationQueryDto, QueryDto } from '@app/models';
-import { FindOptions } from '@mikro-orm/core';
+import { FindOptions, RequiredEntityData } from '@mikro-orm/core';
 import { BookmarkEntity } from '../entities/bookmark.entity';
 import { BaseRepository, EntityWithCount } from './base.repository';
 
@@ -56,6 +56,50 @@ export class BookmarkRepository extends BaseRepository {
       };
     }
     return this.em.find(BookmarkEntity, where, newOptions);
+  }
+
+  async findOne(
+    query: {
+      id?: string;
+      url?: string;
+    },
+    options?: FindBookmarkOptions,
+  ): Promise<BookmarkEntity | null> {
+    let where = this.addUserIdAndTenantIdToQuery<BookmarkEntity>({
+      deleteFlag: false,
+    });
+
+    if (query.id) {
+      where = this.setConditionFilter(where, { id: query.id });
+    }
+
+    if (query.url) {
+      where = this.setConditionFilter(where, { url: query.url });
+    }
+    return this.em.findOne(BookmarkEntity, where, options);
+  }
+
+  async findOneByUrl(
+    url: string,
+    options?: FindBookmarkOptions,
+  ): Promise<BookmarkEntity | null> {
+    return this.findOne({ url }, options);
+  }
+
+  async findOneById(
+    id: string,
+    options?: FindBookmarkOptions,
+  ): Promise<BookmarkEntity | null> {
+    return this.findOne({ id }, options);
+  }
+
+  create(data: RequiredEntityData<BookmarkEntity>): BookmarkEntity {
+    const bookmark = this.em.create(
+      BookmarkEntity,
+      this.addUserAndTenantToEntity(data),
+    );
+
+    return bookmark;
   }
 
   // /**

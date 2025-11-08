@@ -33,6 +33,12 @@ export class BookmarkResponseDto {
   imageUrl?: string;
 
   @ApiPropertyOptional({
+    description: 'Favicon URL for the bookmark',
+    example: 'https://example.com/favicon.ico',
+  })
+  faviconUrl?: string;
+
+  @ApiPropertyOptional({
     description: 'Site name',
     example: 'Example Site',
   })

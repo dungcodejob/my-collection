@@ -38,6 +38,10 @@ export const API_ENDPOINTS = {
   BOOKMARKS: {
     BASE: "/bookmark",
     BY_ID: (id: string) => `/bookmark/${id}`,
+    CHECK_DUPLICATE: "/bookmark/check-duplicate",
+  },
+  CRAWL: {
+    METADATA: "/crawl/metadata",
   },
   METADATA: {
     BASE: "/metadata",

@@ -1,8 +1,9 @@
 import { FEATURE_KEY } from '@app/constants';
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CrawlMapper } from './crawl.mapper';
 import { CrawlService } from './crawl.service';
+import { MetadataDto } from './models';
 
 @ApiTags(FEATURE_KEY.CRAWL)
 @Controller(FEATURE_KEY.CRAWL)
@@ -11,6 +12,35 @@ export class CrawlController {
     private readonly _crawlService: CrawlService,
     private readonly _crawlMapper: CrawlMapper,
   ) {}
+
+  @Get('metadata')
+  @ApiOperation({
+    summary: 'Fetch metadata from URL',
+    description:
+      'Extracts metadata (title, description, images) from a given URL',
+  })
+  @ApiQuery({
+    name: 'url',
+    required: true,
+    description: 'URL to fetch metadata from',
+    example: 'https://example.com/article',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Metadata extracted successfully',
+    type: MetadataDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid URL or request',
+  })
+  @ApiResponse({
+    status: 408,
+    description: 'Request timeout',
+  })
+  async getMetadata(@Query('url') url: string): Promise<MetadataDto> {
+    return this._crawlService.getMetadata(url);
+  }
 
   // @Post()
   // @ApiAuth({

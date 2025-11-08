@@ -21,6 +21,7 @@ import { UserEntity } from './user.entity';
 @Index({ properties: ['url'] })
 @Index({ properties: ['title'] })
 @Index({ properties: ['collection'] })
+@Index({ properties: ['user', 'url'] }) // For duplicate URL detection
 @Filter({
   name: 'tenant',
   cond: (args) => ({ tenantId: args.tenantId }),
@@ -37,6 +38,9 @@ export class BookmarkEntity extends BaseEntityWithTenant {
 
   @Property({ nullable: true, length: 2048 })
   imageUrl?: string;
+
+  @Property({ nullable: true, length: 2048 })
+  faviconUrl?: string;
 
   @Property({ nullable: true, length: 100 })
   siteName?: string;
@@ -79,10 +83,10 @@ export class BookmarkEntity extends BaseEntityWithTenant {
   constructor({
     url,
     title,
-    user,
     collection,
     description,
     imageUrl,
+    faviconUrl,
     siteName,
     contentType,
     metadata,
@@ -91,10 +95,11 @@ export class BookmarkEntity extends BaseEntityWithTenant {
   }: {
     url: string;
     title: string;
-    user: UserEntity;
+
     collection?: CollectionEntity;
     description?: string;
     imageUrl?: string;
+    faviconUrl?: string;
     siteName?: string;
     contentType?: string;
     metadata?: Record<string, any>;
@@ -104,10 +109,10 @@ export class BookmarkEntity extends BaseEntityWithTenant {
     super();
     this.url = url;
     this.title = title;
-    this.user = user;
     this.collection = collection;
     this.description = description;
     this.imageUrl = imageUrl;
+    this.faviconUrl = faviconUrl;
     this.siteName = siteName;
     this.contentType = contentType;
     this.metadata = metadata;

@@ -1,4 +1,5 @@
 export * from './app.config';
+export * from './cache.config';
 export * from './cookie.config';
 export * from './database.config';
 export * from './http.config';

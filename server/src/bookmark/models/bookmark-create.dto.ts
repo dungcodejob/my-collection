@@ -48,6 +48,16 @@ export class BookmarkCreateDto {
   imageUrl?: string;
 
   @ApiPropertyOptional({
+    description: 'Favicon URL for the bookmark',
+    example: 'https://example.com/favicon.ico',
+    maxLength: 2048,
+  })
+  @IsOptional()
+  @IsUrl({}, { message: 'Favicon URL must be a valid URL' })
+  @MaxLength(2048, { message: 'Favicon URL must not exceed 2048 characters' })
+  faviconUrl?: string;
+
+  @ApiPropertyOptional({
     description: 'Site name',
     example: 'Example Site',
     maxLength: 100,

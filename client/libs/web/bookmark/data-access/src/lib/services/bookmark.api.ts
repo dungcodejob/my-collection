@@ -2,7 +2,12 @@ import { inject, Injectable } from "@angular/core";
 import { HttpService, ListResponseDto, SingleResponseDto } from "@client/web-core-http";
 import { API_ENDPOINTS } from "@client/web-shared-constants";
 import { Observable } from "rxjs";
-import { BookmarkCreateDto, BookmarkDto, BookmarkUpdateDto } from "../models";
+import {
+  BookmarkCreateDto,
+  BookmarkDto,
+  BookmarkUpdateDto,
+  MetadataDto,
+} from "../models";
 
 @Injectable({
   providedIn: "root",
@@ -48,5 +53,44 @@ export class BookmarkApi {
     return this._httpService.delete<SingleResponseDto<{ id: string; path: string }>>(
       API_ENDPOINTS.BOOKMARKS.BY_ID(request.id)
     );
+  }
+
+  /**
+   * T045: Fetch metadata from URL
+   * Calls GET /crawl/metadata?url={url}
+   */
+  fetchMetadata(url: string): Observable<SingleResponseDto<MetadataDto>> {
+    return this._httpService.get<SingleResponseDto<MetadataDto>>(
+      API_ENDPOINTS.CRAWL.METADATA,
+      { params: { url } }
+    );
+  }
+
+  /**
+   * T047: Check if bookmark URL already exists for current user
+   * Calls GET /bookmark/check-duplicate?url={url}
+   */
+  checkDuplicate(url: string): Observable<
+    SingleResponseDto<{
+      exists: boolean;
+      bookmark: {
+        id: string;
+        title: string;
+        createdAt: string;
+        imageUrl: string | null;
+      } | null;
+    }>
+  > {
+    return this._httpService.get<
+      SingleResponseDto<{
+        exists: boolean;
+        bookmark: {
+          id: string;
+          title: string;
+          createdAt: string;
+          imageUrl: string | null;
+        } | null;
+      }>
+    >(API_ENDPOINTS.BOOKMARKS.CHECK_DUPLICATE, { params: { url } });
   }
 }

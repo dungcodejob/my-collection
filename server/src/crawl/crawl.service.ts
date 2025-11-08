@@ -30,42 +30,239 @@ export class CrawlService {
     private readonly _ctx: RequestContextService,
   ) {}
 
-  getMetadata(link: string): Promise<MetadataDto> {
-    return fetch(link)
-      .then((res) => res.text())
-      .then((html) => {
-        const $ = cheerio.load(html);
-        const url = new URL(link);
-        const title =
-          $('meta[property="og:title"]').attr('content') ||
-          $('title').text() ||
-          $('meta[name="title"]').attr('content');
-        const description =
-          $('meta[property="og:description"]').attr('content') ??
-          $('meta[name="description"]').attr('content');
-        // let url = $('meta[property="og:url"]').attr('content');
-        // const site_name = $('meta[property="og:site_name"]').attr('content');
-        const image =
-          $('meta[property="og:image"]').attr('content') ||
-          $('meta[property="og:image:url"]').attr('content');
-        const icon =
-          $('link[rel="icon"]').attr('href') ||
-          $('link[rel="shortcut icon"]').attr('href');
-        // const keywords =
-        //   $('meta[property="og:keywords"]').attr('content') ||
-        //   $('meta[name="keywords"]').attr('content');
-
-        const metadata = new MetadataDto();
-        metadata.url = link;
-        metadata.domain = url.hostname;
-        metadata.image = image;
-        metadata.title = title;
-        metadata.description = description;
-
-        metadata.favicon = this.validURL(icon) ? icon : url.origin + icon;
-
-        return metadata;
+  async getMetadata(link: string): Promise<MetadataDto> {
+    try {
+      const response = await fetch(link, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; BookmarkBot/1.0)',
+        },
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const html = await response.text();
+      const $ = cheerio.load(html);
+      const url = new URL(link);
+
+      // Extract title (priority: og:title > twitter:title > title tag > meta title)
+      const title = this.extractTitle($);
+
+      // Extract description (priority: og:description > twitter:description > meta description)
+      const description = this.extractDescription($);
+
+      // Extract primary/featured image
+      const primaryImage = this.extractPrimaryImage($, url);
+
+      // Extract multiple images (max 10)
+      const images = this.extractImages($, url);
+
+      // Extract favicon
+      const favicon = this.extractFavicon($, url);
+
+      // Extract site name
+      const siteName = this.extractSiteName($);
+
+      // Extract author
+      const author = this.extractAuthor($);
+
+      // Extract published date
+      const publishedDate = this.extractPublishedDate($);
+
+      const metadata = new MetadataDto();
+      metadata.url = link;
+      metadata.domain = url.hostname;
+      metadata.title = title;
+      metadata.description = description;
+      metadata.image = primaryImage;
+      metadata.images = images;
+      metadata.favicon = favicon;
+      metadata.siteName = siteName;
+      metadata.author = author;
+      metadata.publishedDate = publishedDate;
+
+      return metadata;
+    } catch (error) {
+      this.logger.error(`Failed to fetch metadata for ${link}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Extract title from HTML (T031)
+   */
+  private extractTitle($: cheerio.CheerioAPI): string | undefined {
+    return (
+      $('meta[property="og:title"]').attr('content') ||
+      $('meta[name="twitter:title"]').attr('content') ||
+      $('title').text().trim() ||
+      $('meta[name="title"]').attr('content') ||
+      $('h1').first().text().trim()
+    );
+  }
+
+  /**
+   * Extract description from HTML (T032)
+   */
+  private extractDescription($: cheerio.CheerioAPI): string | undefined {
+    return (
+      $('meta[property="og:description"]').attr('content') ||
+      $('meta[name="twitter:description"]').attr('content') ||
+      $('meta[name="description"]').attr('content')
+    );
+  }
+
+  /**
+   * Extract primary/featured image (T033)
+   */
+  private extractPrimaryImage(
+    $: cheerio.CheerioAPI,
+    url: URL,
+  ): string | undefined {
+    const ogImage =
+      $('meta[property="og:image"]').attr('content') ||
+      $('meta[property="og:image:url"]').attr('content') ||
+      $('meta[name="twitter:image"]').attr('content');
+
+    if (ogImage) {
+      return this.resolveUrl(ogImage, url);
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Extract multiple images from page (T033)
+   * Returns up to 10 images
+   */
+  private extractImages($: cheerio.CheerioAPI, url: URL): string[] {
+    const images: string[] = [];
+    const seenUrls = new Set<string>();
+
+    // Add og:image first
+    const ogImage = this.extractPrimaryImage($, url);
+    if (ogImage) {
+      images.push(ogImage);
+      seenUrls.add(ogImage);
+    }
+
+    // Find img tags with reasonable size
+    $('img').each((_, elem) => {
+      if (images.length >= 10) return false; // Stop at 10 images
+
+      const src = $(elem).attr('src');
+      if (!src) return;
+
+      const resolvedUrl = this.resolveUrl(src, url);
+      if (!resolvedUrl || seenUrls.has(resolvedUrl)) return;
+
+      // Skip small images (likely icons/buttons)
+      const width = $(elem).attr('width');
+      const height = $(elem).attr('height');
+      if (width && height) {
+        const w = parseInt(width);
+        const h = parseInt(height);
+        if (w < 200 || h < 200) return;
+      }
+
+      images.push(resolvedUrl);
+      seenUrls.add(resolvedUrl);
+    });
+
+    return images.slice(0, 10);
+  }
+
+  /**
+   * Extract favicon from HTML (T034)
+   */
+  private extractFavicon($: cheerio.CheerioAPI, url: URL): string | undefined {
+    const icon =
+      $('link[rel="icon"]').attr('href') ||
+      $('link[rel="shortcut icon"]').attr('href') ||
+      $('link[rel="apple-touch-icon"]').attr('href');
+
+    if (icon) {
+      return this.resolveUrl(icon, url);
+    }
+
+    // Default favicon location
+    return `${url.origin}/favicon.ico`;
+  }
+
+  /**
+   * Extract site name
+   */
+  private extractSiteName($: cheerio.CheerioAPI): string | undefined {
+    return (
+      $('meta[property="og:site_name"]').attr('content') ||
+      $('meta[name="application-name"]').attr('content')
+    );
+  }
+
+  /**
+   * Extract author
+   */
+  private extractAuthor($: cheerio.CheerioAPI): string | undefined {
+    return (
+      $('meta[name="author"]').attr('content') ||
+      $('meta[property="article:author"]').attr('content') ||
+      $('meta[name="twitter:creator"]').attr('content')
+    );
+  }
+
+  /**
+   * Extract published date
+   */
+  private extractPublishedDate($: cheerio.CheerioAPI): string | undefined {
+    const dateStr =
+      $('meta[property="article:published_time"]').attr('content') ||
+      $('meta[name="publish_date"]').attr('content') ||
+      $('meta[name="date"]').attr('content') ||
+      $('time[datetime]').attr('datetime');
+
+    if (dateStr) {
+      try {
+        // Validate and format as ISO 8601
+        const date = new Date(dateStr);
+        if (!isNaN(date.getTime())) {
+          return date.toISOString();
+        }
+      } catch {
+        // Invalid date, return undefined
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Resolve relative URLs to absolute URLs
+   */
+  private resolveUrl(href: string, baseUrl: URL): string | undefined {
+    if (!href) return undefined;
+
+    try {
+      // Already absolute URL
+      if (href.startsWith('http://') || href.startsWith('https://')) {
+        return href;
+      }
+
+      // Protocol-relative URL
+      if (href.startsWith('//')) {
+        return `${baseUrl.protocol}${href}`;
+      }
+
+      // Absolute path
+      if (href.startsWith('/')) {
+        return `${baseUrl.origin}${href}`;
+      }
+
+      // Relative path
+      return new URL(href, baseUrl.href).href;
+    } catch {
+      return undefined;
+    }
   }
   // /*
   //  * Per RFC 3886, URL must begin with a scheme (not limited to http/https), e. g.:

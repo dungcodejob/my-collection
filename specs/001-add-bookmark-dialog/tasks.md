@@ -25,13 +25,13 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Install Cheerio dependency in backend package.json (npm install cheerio@1.1.2)
-- [ ] T002 Install Axios HTTP client in backend package.json (npm install axios@1.12.1)
-- [ ] T003 [P] Create Nx library for add-bookmark-dialog feature using Angular generator (client/libs/web/bookmark/feature/add-bookmark-dialog)
-- [ ] T004 [P] Create Nx library for image-gallery UI component using Angular generator (client/libs/web/bookmark/ui/image-gallery)
-- [ ] T005 [P] Create Nx library for url-input UI component using Angular generator (client/libs/web/bookmark/ui/url-input)
-- [ ] T006 Configure TypeScript strict mode in all new library tsconfig.json files
-- [ ] T007 Setup ESLint and Prettier for new libraries (copy from existing bookmark libs)
+- [X] T001 Install Cheerio dependency in backend package.json (npm install cheerio@1.1.2)
+- [X] T002 Install Axios HTTP client in backend package.json (npm install axios@1.12.1)
+- [X] T003 [P] Create Nx library for add-bookmark-dialog feature using Angular generator (client/libs/web/bookmark/feature/add-bookmark-dialog)
+- [X] T004 [P] Create Nx library for image-gallery UI component using Angular generator (client/libs/web/bookmark/ui/image-gallery)
+- [X] T005 [P] Create Nx library for url-input UI component using Angular generator (client/libs/web/bookmark/ui/url-input)
+- [X] T006 Configure TypeScript strict mode in all new library tsconfig.json files
+- [X] T007 Setup ESLint and Prettier for new libraries (copy from existing bookmark libs)
 
 ---
 
@@ -41,22 +41,22 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T008 Create database migration file for bookmark entity in server/src/database/migrations/
-- [ ] T009 Add notes column (TEXT) to bookmarks table in migration file
-- [ ] T010 Add favicon_url column (VARCHAR 2048) to bookmarks table in migration file
-- [ ] T011 Add composite index idx_bookmarks_user_url on (user_id, url) in migration file
-- [ ] T012 Add check constraint for notes length (max 2000 chars) in migration file
-- [ ] T013 Run database migration (npm run migration:up in server/)
-- [ ] T014 Update Bookmark entity in server/src/modules/bookmark/entities/bookmark.entity.ts (add notes and faviconUrl fields with MikroORM decorators)
-- [ ] T015 Create MetadataResponseDto in server/src/modules/crawl/dto/metadata-response.dto.ts with validation decorators
-- [ ] T016 Create MetadataRequestDto in server/src/modules/crawl/dto/metadata-request.dto.ts with URL validation
-- [ ] T017 Create CreateBookmarkDto in server/src/modules/bookmark/dto/create-bookmark.dto.ts with all validation decorators
-- [ ] T018 Update BookmarkResponseDto in server/src/modules/bookmark/dto/bookmark-response.dto.ts (add notes and faviconUrl fields)
-- [ ] T019 Create DuplicateCheckResponseDto in server/src/modules/bookmark/dto/duplicate-check-response.dto.ts
-- [ ] T020 Create metadata.model.ts interface in client/libs/web/bookmark/data-access/src/lib/models/
-- [ ] T021 Update bookmark.model.ts interface in client/libs/web/bookmark/data-access/src/lib/models/ (add notes and faviconUrl fields)
-- [ ] T022 Configure CORS settings in server/src/main.ts to allow frontend requests
-- [ ] T023 Setup Redis caching module in server/src/configs/cache.config.ts (for metadata caching)
+- [X] T008 Create database migration file for bookmark entity in server/src/database/migrations/
+- [X] T009 Add notes column (TEXT) to bookmarks table in migration file
+- [X] T010 Add favicon_url column (VARCHAR 2048) to bookmarks table in migration file
+- [X] T011 Add composite index idx_bookmarks_user_url on (user_id, url) in migration file
+- [X] T012 Add check constraint for notes length (max 2000 chars) in migration file
+- [ ] T013 Run database migration (npm run migration:up in server/) - SKIPPED (requires DB connection)
+- [X] T014 Update Bookmark entity in server/src/modules/bookmark/entities/bookmark.entity.ts (add notes and faviconUrl fields with MikroORM decorators)
+- [X] T015 Create MetadataResponseDto in server/src/modules/crawl/dto/metadata-response.dto.ts with validation decorators
+- [X] T016 Create MetadataRequestDto in server/src/modules/crawl/dto/metadata-request.dto.ts with URL validation
+- [X] T017 Create CreateBookmarkDto in server/src/modules/bookmark/dto/create-bookmark.dto.ts with all validation decorators
+- [X] T018 Update BookmarkResponseDto in server/src/modules/bookmark/dto/bookmark-response.dto.ts (add notes and faviconUrl fields)
+- [X] T019 Create DuplicateCheckResponseDto in server/src/modules/bookmark/dto/duplicate-check-response.dto.ts
+- [X] T020 Create metadata.model.ts interface in client/libs/web/bookmark/data-access/src/lib/models/
+- [X] T021 Update bookmark.model.ts interface in client/libs/web/bookmark/data-access/src/lib/models/ (add notes and faviconUrl fields)
+- [X] T022 Configure CORS settings in server/src/main.ts to allow frontend requests
+- [X] T023 Setup Redis caching module in server/src/configs/cache.config.ts (for metadata caching)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -83,60 +83,60 @@
 
 **Backend - Metadata Extraction**
 
-- [ ] T030 [P] [US1] Implement CrawlService.extractMetadata method in server/src/modules/crawl/crawl.service.ts (Cheerio HTML parsing)
-- [ ] T031 [P] [US1] Implement CrawlService.extractTitle helper in server/src/modules/crawl/crawl.service.ts (og:title, twitter:title, <title>)
-- [ ] T032 [P] [US1] Implement CrawlService.extractDescription helper in server/src/modules/crawl/crawl.service.ts (og:description, meta description)
-- [ ] T033 [P] [US1] Implement CrawlService.extractImages helper in server/src/modules/crawl/crawl.service.ts (og:image, img tags, max 10)
-- [ ] T034 [P] [US1] Implement CrawlService.extractFavicon helper in server/src/modules/crawl/crawl.service.ts (link rel=icon)
+- [X] T030 [P] [US1] Implement CrawlService.extractMetadata method in server/src/modules/crawl/crawl.service.ts (Cheerio HTML parsing)
+- [X] T031 [P] [US1] Implement CrawlService.extractTitle helper in server/src/modules/crawl/crawl.service.ts (og:title, twitter:title, <title>)
+- [X] T032 [P] [US1] Implement CrawlService.extractDescription helper in server/src/modules/crawl/crawl.service.ts (og:description, meta description)
+- [X] T033 [P] [US1] Implement CrawlService.extractImages helper in server/src/modules/crawl/crawl.service.ts (og:image, img tags, max 10)
+- [X] T034 [P] [US1] Implement CrawlService.extractFavicon helper in server/src/modules/crawl/crawl.service.ts (link rel=icon)
 - [ ] T035 [US1] Add metadata caching logic in CrawlService (Redis, 24-hour TTL) in server/src/modules/crawl/crawl.service.ts
-- [ ] T036 [US1] Create GET /metadata endpoint in server/src/modules/crawl/crawl.controller.ts with @ApiOperation decorators
+- [X] T036 [US1] Create GET /metadata endpoint in server/src/modules/crawl/crawl.controller.ts with @ApiOperation decorators
 - [ ] T037 [US1] Add rate limiting to metadata endpoint (60 requests/minute per user) in server/src/modules/crawl/crawl.controller.ts
 
 **Backend - Bookmark Creation**
 
-- [ ] T038 [P] [US1] Create CreateBookmarkCommand in server/src/modules/bookmark/commands/create-bookmark.command.ts
-- [ ] T039 [US1] Create CreateBookmarkHandler in server/src/modules/bookmark/commands/handlers/create-bookmark.handler.ts (CQRS pattern)
-- [ ] T040 [US1] Implement bookmark creation logic in CreateBookmarkHandler (validate, create entity, persist)
-- [ ] T041 [US1] Add duplicate URL check in CreateBookmarkHandler (query by user_id and url)
-- [ ] T042 [US1] Create POST /bookmarks endpoint in server/src/modules/bookmark/bookmark.controller.ts with @ApiOperation decorators
-- [ ] T043 [US1] Register CreateBookmarkHandler in server/src/modules/bookmark/bookmark.module.ts (CqrsModule providers)
-- [ ] T044 [US1] Add JWT authentication guard to bookmark endpoints in server/src/modules/bookmark/bookmark.controller.ts
+- [ ] T038 [P] [US1] Create CreateBookmarkCommand in server/src/modules/bookmark/commands/create-bookmark.command.ts - SKIPPED (using direct service call)
+- [ ] T039 [US1] Create CreateBookmarkHandler in server/src/modules/bookmark/commands/handlers/create-bookmark.handler.ts (CQRS pattern) - SKIPPED (using direct service call)
+- [X] T040 [US1] Implement bookmark creation logic in CreateBookmarkHandler (validate, create entity, persist)
+- [X] T041 [US1] Add duplicate URL check in CreateBookmarkHandler (query by user_id and url)
+- [X] T042 [US1] Create POST /bookmarks endpoint in server/src/modules/bookmark/bookmark.controller.ts with @ApiOperation decorators
+- [ ] T043 [US1] Register CreateBookmarkHandler in server/src/modules/bookmark/bookmark.module.ts (CqrsModule providers) - SKIPPED (not using CQRS for now)
+- [X] T044 [US1] Add JWT authentication guard to bookmark endpoints in server/src/modules/bookmark/bookmark.controller.ts - ALREADY EXISTS (@ApiAuth decorator)
 
 **Frontend - Data Access Layer**
 
-- [ ] T045 [P] [US1] Create BookmarkService.fetchMetadata method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
-- [ ] T046 [P] [US1] Create BookmarkService.createBookmark method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
-- [ ] T047 [P] [US1] Create BookmarkService.checkDuplicate method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
-- [ ] T048 [US1] Create AddBookmarkDialogStore using signalStore() in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.store.ts
-- [ ] T049 [US1] Add state properties (url, title, description, metadata, isLoading, error) to AddBookmarkDialogStore
-- [ ] T050 [US1] Add computed signals (isValid, canSave, hasChanges) to AddBookmarkDialogStore
-- [ ] T051 [US1] Implement fetchMetadata effect using rxMethod() in AddBookmarkDialogStore
-- [ ] T052 [US1] Implement saveBookmark effect using rxMethod() in AddBookmarkDialogStore
+- [X] T045 [P] [US1] Create BookmarkService.fetchMetadata method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
+- [X] T046 [P] [US1] Create BookmarkService.createBookmark method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts - ALREADY EXISTS
+- [X] T047 [P] [US1] Create BookmarkService.checkDuplicate method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
+- [X] T048 [US1] Create AddBookmarkDialogStore using signalStore() in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.store.ts
+- [X] T049 [US1] Add state properties (url, title, description, metadata, isLoading, error) to AddBookmarkDialogStore
+- [X] T050 [US1] Add computed signals (isValid, canSave, hasChanges) to AddBookmarkDialogStore
+- [X] T051 [US1] Implement fetchMetadata effect using rxMethod() in AddBookmarkDialogStore
+- [X] T052 [US1] Implement saveBookmark effect using rxMethod() in AddBookmarkDialogStore
 
 **Frontend - Dialog Component**
 
-- [ ] T053 [US1] Create AddBookmarkDialogComponent in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.ts
-- [ ] T054 [US1] Create dialog template in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.html (Spartan UI Dialog)
-- [ ] T055 [US1] Add URL input field with validation in dialog template
-- [ ] T056 [US1] Add "Fetch Metadata" button with loading state in dialog template
-- [ ] T057 [US1] Add title input field (reactive forms) in dialog template
-- [ ] T058 [US1] Add description textarea (reactive forms) in dialog template
-- [ ] T059 [US1] Add image preview section in dialog template
-- [ ] T060 [US1] Add "Save" and "Cancel" buttons in dialog template
-- [ ] T061 [US1] Implement URL validation logic in AddBookmarkDialogComponent
-- [ ] T062 [US1] Implement metadata fetch on button click in AddBookmarkDialogComponent
-- [ ] T063 [US1] Implement form population from metadata in AddBookmarkDialogComponent
-- [ ] T064 [US1] Implement save bookmark logic in AddBookmarkDialogComponent
-- [ ] T065 [US1] Implement dialog close logic (Cancel, X, outside click) in AddBookmarkDialogComponent
-- [ ] T066 [US1] Add loading indicators (spinner) during metadata fetch in dialog template
-- [ ] T067 [US1] Add error message display in dialog template
-- [ ] T068 [US1] Style dialog with Tailwind CSS in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.css
-- [ ] T069 [US1] Add keyboard shortcuts (Enter to save, Esc to close) in AddBookmarkDialogComponent
-- [ ] T070 [US1] Implement focus trap within dialog (CDK FocusTrap) in AddBookmarkDialogComponent
+- [X] T053 [US1] Create AddBookmarkDialogComponent in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.ts
+- [X] T054 [US1] Create dialog template in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.html (Spartan UI Dialog)
+- [X] T055 [US1] Add URL input field with validation in dialog template
+- [X] T056 [US1] Add "Fetch Metadata" button with loading state in dialog template
+- [X] T057 [US1] Add title input field (reactive forms) in dialog template
+- [X] T058 [US1] Add description textarea (reactive forms) in dialog template
+- [X] T059 [US1] Add image preview section in dialog template
+- [X] T060 [US1] Add "Save" and "Cancel" buttons in dialog template
+- [X] T061 [US1] Implement URL validation logic in AddBookmarkDialogComponent
+- [X] T062 [US1] Implement metadata fetch on button click in AddBookmarkDialogComponent
+- [X] T063 [US1] Implement form population from metadata in AddBookmarkDialogComponent
+- [X] T064 [US1] Implement save bookmark logic in AddBookmarkDialogComponent
+- [X] T065 [US1] Implement dialog close logic (Cancel, X, outside click) in AddBookmarkDialogComponent
+- [X] T066 [US1] Add loading indicators (spinner) during metadata fetch in dialog template
+- [X] T067 [US1] Add error message display in dialog template
+- [X] T068 [US1] Style dialog with Tailwind CSS in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.css
+- [X] T069 [US1] Add keyboard shortcuts (Enter to save, Esc to close) in AddBookmarkDialogComponent
+- [X] T070 [US1] Implement focus trap within dialog (CDK FocusTrap) in AddBookmarkDialogComponent - HANDLED BY SPARTAN UI
 
 **Frontend - Integration**
 
-- [ ] T071 [US1] Export AddBookmarkDialogComponent from client/libs/web/bookmark/feature/add-bookmark-dialog/src/index.ts
+- [X] T071 [US1] Export AddBookmarkDialogComponent from client/libs/web/bookmark/feature/add-bookmark-dialog/src/index.ts
 - [ ] T072 [US1] Add "Add Bookmark" button to bookmarks list page in client/apps/client/src/app/
 - [ ] T073 [US1] Implement dialog open/close logic in parent component
 - [ ] T074 [US1] Add success notification on bookmark creation (ngx-sonner toast)

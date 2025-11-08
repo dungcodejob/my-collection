@@ -27,7 +27,7 @@ export type CollectionQuery = QueryDto & {
 };
 
 export class CollectionRepository extends BaseRepository {
-  async find(query: CollectionQuery, options?: FindCollectionOptions) {
+  async findAll(query: CollectionQuery, options?: FindCollectionOptions) {
     const { path } = query;
     let where = this.addUserIdAndTenantIdToQuery<CollectionEntity>({
       deleteFlag: false,
@@ -56,21 +56,45 @@ export class CollectionRepository extends BaseRepository {
     });
   }
 
-  async findById(
+  async findOneById(
     id: string,
     options?: FindOneCollectionOptions,
   ): Promise<CollectionEntity | null> {
-    return this.em.findOne(
-      CollectionEntity,
-      {
-        id,
-        deleteFlag: false,
-      },
-      {
-        ...options,
-        populate: ['parent', 'children'],
-      },
-    );
+    return this.findOne({ id }, options);
+  }
+
+  async findOneBySlug(
+    slug: string,
+    options?: FindOneCollectionOptions,
+  ): Promise<CollectionEntity | null> {
+    return this.findOne({ slug }, options);
+  }
+
+  async findOne(
+    query: {
+      id?: string;
+      path?: string;
+      slug?: string;
+    },
+    options?: FindOneCollectionOptions,
+  ): Promise<CollectionEntity | null> {
+    let where = this.addUserIdAndTenantIdToQuery<CollectionEntity>({
+      deleteFlag: false,
+    });
+
+    if (query.id) {
+      where = this.setConditionFilter(where, { id: query.id });
+    }
+
+    if (query.path) {
+      where = this.setConditionFilter(where, { path: query.path });
+    }
+
+    if (query.slug) {
+      where = this.setConditionFilter(where, { slug: query.slug });
+    }
+
+    return this.em.findOne(CollectionEntity, where, options);
   }
 
   // async findByUserId(
@@ -92,22 +116,6 @@ export class CollectionRepository extends BaseRepository {
   //     orderBy: { sortOrder: 'ASC', createAt: 'ASC' },
   //   });
   // }
-
-  async findBySlug(
-    slug: string,
-    options?: FindOneCollectionOptions,
-  ): Promise<CollectionEntity | null> {
-    return this.em.findOne(
-      CollectionEntity,
-      this.addUserIdAndTenantIdToQuery<CollectionEntity>({
-        path: slug,
-        deleteFlag: false,
-      }),
-      {
-        ...options,
-      },
-    );
-  }
 
   async findLatestOrder(parentId?: string): Promise<CollectionEntity | null> {
     return this.em.findOne(

@@ -93,15 +93,15 @@ export class ExampleComponent {
 
 ### Inputs
 
-| Property      | Type                                | Default                 | Mô tả                       |
-| ------------- | ----------------------------------- | ----------------------- | --------------------------- |
-| `options`     | `SelectOption[]`                    | **required**            | Danh sách các tùy chọn      |
-| `placeholder` | `string`                            | `'Select an option...'` | Text hiển thị khi chưa chọn |
-| `disabled`    | `boolean`                           | `false`                 | Vô hiệu hóa component       |
-| `value`       | `string \| null`                    | `null`                  | Giá trị được chọn           |
-| `size`        | `'sm' \| 'md' \| 'lg'`              | `'md'`                  | Kích thước component        |
-| `variant`     | `'default' \| 'outline' \| 'ghost'` | `'default'`             | Kiểu hiển thị               |
-| `isSearchable` | `boolean`                          | `false`                 | Bật tính năng tìm kiếm      |
+| Property       | Type                                | Default                 | Mô tả                       |
+| -------------- | ----------------------------------- | ----------------------- | --------------------------- |
+| `options`      | `SelectOption[]`                    | **required**            | Danh sách các tùy chọn      |
+| `placeholder`  | `string`                            | `'Select an option...'` | Text hiển thị khi chưa chọn |
+| `disabled`     | `boolean`                           | `false`                 | Vô hiệu hóa component       |
+| `value`        | `string \| null`                    | `null`                  | Giá trị được chọn           |
+| `size`         | `'sm' \| 'md' \| 'lg'`              | `'md'`                  | Kích thước component        |
+| `variant`      | `'default' \| 'outline' \| 'ghost'` | `'default'`             | Kiểu hiển thị               |
+| `isSearchable` | `boolean`                           | `false`                 | Bật tính năng tìm kiếm      |
 
 ### Outputs
 
@@ -112,16 +112,16 @@ export class ExampleComponent {
 
 ## Keyboard Navigation
 
-| Key | Action |
-|-----|--------|
-| `Arrow Down` | Navigate to next option or move from search to first option |
-| `Arrow Up` | Navigate to previous option or move from search to last option |
-| `Enter` | Select focused option or first filtered option from search |
-| `Escape` | Close select dropdown |
-| `Home` | Focus first option |
-| `End` | Focus last option |
-| `Tab` | Navigate to next focusable element |
-| `Shift + Tab` | Navigate to previous focusable element |
+| Key           | Action                                                         |
+| ------------- | -------------------------------------------------------------- |
+| `Arrow Down`  | Navigate to next option or move from search to first option    |
+| `Arrow Up`    | Navigate to previous option or move from search to last option |
+| `Enter`       | Select focused option or first filtered option from search     |
+| `Escape`      | Close select dropdown                                          |
+| `Home`        | Focus first option                                             |
+| `End`         | Focus last option                                              |
+| `Tab`         | Navigate to next focusable element                             |
+| `Shift + Tab` | Navigate to previous focusable element                         |
 
 ## Accessibility Features
 

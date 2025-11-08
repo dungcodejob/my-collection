@@ -5,3 +5,4 @@ export * from './bookmark-stats.dto';
 export * from './bookmark-update.dto';
 export * from './bookmark-with-pagination-response.dto';
 export * from './bulk-bookmark-operation.dto';
+export * from './duplicate-check-response.dto';

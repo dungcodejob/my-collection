@@ -3,6 +3,7 @@ export type BookmarkCreateDto = {
   title: string;
   description?: string;
   imageUrl?: string;
+  faviconUrl?: string;
   siteName?: string;
   collectionId?: string;
   tags?: string[];
