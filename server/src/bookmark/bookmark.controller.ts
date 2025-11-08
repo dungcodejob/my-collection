@@ -1,6 +1,10 @@
 import { FEATURE_KEY } from '@app/constants';
 import { ApiAuth } from '@app/decorators';
-import { PaginationMetaDto, ResponseBuilder } from '@app/models';
+import {
+  PaginationMetaDto,
+  ResponseBuilder,
+  SingleResponseDto,
+} from '@app/models';
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { BookmarkMapper } from './bookmark.mapper';
@@ -29,7 +33,7 @@ export class BookmarkController {
   })
   async createBookmark(
     @Body() createDto: BookmarkCreateDto,
-  ): Promise<BookmarkResponseDto> {
+  ): Promise<Partial<SingleResponseDto<BookmarkResponseDto>>> {
     const bookmark = await this._bookmarkService.createBookmark({
       url: createDto.url,
       title: createDto.title,
@@ -42,7 +46,8 @@ export class BookmarkController {
       collectionId: createDto.collectionId,
     });
 
-    return this._bookmarkMapper.toResponseDto(bookmark);
+    const result = this._bookmarkMapper.toResponseDto(bookmark);
+    return ResponseBuilder.toSingle({ data: result });
   }
 
   @Get()

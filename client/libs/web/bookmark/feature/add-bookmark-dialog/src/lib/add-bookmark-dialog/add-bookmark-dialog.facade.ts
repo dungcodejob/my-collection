@@ -20,7 +20,7 @@ import {
   withState,
 } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { pipe, switchMap, tap } from "rxjs";
+import { pipe, switchMap } from "rxjs";
 
 /**
  * T048-T052: AddBookmarkDialogStore
@@ -147,13 +147,12 @@ export const AddBookmarkDialogFacade = signalStore(
      */
     fetchMetadata: rxMethod<string>(
       pipe(
-        tap(url => {
-          // Clear previous error
-          patchState(store, { error: null, url });
-        }),
         switchMap(url =>
           _bookmarkApi.fetchMetadata(url).pipe(
             tapHandleApi({
+              prefixFn: () => {
+                patchState(store, { error: null, metadata: null, url });
+              },
               successFn: result => {
                 const metadata = result.data;
                 patchState(store, {

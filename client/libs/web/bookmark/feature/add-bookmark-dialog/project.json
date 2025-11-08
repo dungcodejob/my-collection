@@ -1,5 +1,5 @@
 {
-  "name": "add-bookmark-dialog",
+  "name": "web-add-bookmark-dialog",
   "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/web/bookmark/feature/add-bookmark-dialog/src",
   "prefix": "lib",

@@ -6,6 +6,7 @@ import { tapResponseData } from "./tap-response-data";
 
 type ApiHandleOptions<TData, TError> = {
   successFn: (data: TData) => void;
+  prefixFn?: () => void;
   errorFn?: (error: TError) => void;
   statusFn?: (status: Status) => void;
   finalFn?: () => void;
@@ -76,10 +77,13 @@ type ApiHandleOptions<TData, TError> = {
 export function tapHandleApi<T extends ResponseDto<K>, K, TError = unknown>(
   options: ApiHandleOptions<UnwrapResponseHttp<T>, TError>
 ): (source: Observable<T>) => Observable<T> {
-  const { successFn, errorFn, statusFn, finalFn } = options;
+  const { successFn, errorFn, statusFn, finalFn, prefixFn } = options;
 
   if (statusFn) {
     statusFn("pending");
+  }
+  if (prefixFn) {
+    prefixFn();
   }
 
   return source =>

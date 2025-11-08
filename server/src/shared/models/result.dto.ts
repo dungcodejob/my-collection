@@ -53,18 +53,18 @@ export class PaginationResultDto<T> extends ResultDto {
   }
 }
 
-export class Result {
-  static toSingle<T>(options: SingleResultOptions<T>): SingleResultDto<T> {
-    return new SingleResultDto(options);
-  }
+// export class Result {
+//   static toSingle<T>(options: SingleResultOptions<T>): SingleResultDto<T> {
+//     return new SingleResultDto(options);
+//   }
 
-  static toList<T>(options: ListResultOptions<T>): ListResultDto<T> {
-    return new ListResultDto(options);
-  }
+//   static toList<T>(options: ListResultOptions<T>): ListResultDto<T> {
+//     return new ListResultDto(options);
+//   }
 
-  static toPagination<T>(
-    options: PaginationResultOptions<T>,
-  ): PaginationResultDto<T> {
-    return new PaginationResultDto(options);
-  }
-}
+//   static toPagination<T>(
+//     options: PaginationResultOptions<T>,
+//   ): PaginationResultDto<T> {
+//     return new PaginationResultDto(options);
+//   }
+// }

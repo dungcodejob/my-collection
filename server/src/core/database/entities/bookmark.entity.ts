@@ -1,5 +1,6 @@
 import { BookmarkRepository } from '@app/repositories';
 import {
+  Collection,
   Entity,
   EntityRepositoryType,
   Filter,
@@ -52,7 +53,7 @@ export class BookmarkEntity extends BaseEntityWithTenant {
   metadata?: Record<string, any>;
 
   @OneToMany(() => BookmarkTagEntity, (bt) => bt.bookmark)
-  bookmarkTags: BookmarkTagEntity[];
+  bookmarkTags = new Collection<BookmarkTagEntity>(this);
 
   @Property({ nullable: true, type: 'json' })
   tags?: string[]; // Legacy field - kept for backward compatibility
@@ -181,7 +182,7 @@ export class BookmarkEntity extends BaseEntityWithTenant {
    * Get tag entities
    */
   getTagEntities(): BookmarkTagEntity[] {
-    return this.bookmarkTags || [];
+    return this.bookmarkTags.getItems() || [];
   }
 
   /**

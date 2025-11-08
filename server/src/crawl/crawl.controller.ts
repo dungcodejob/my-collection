@@ -1,4 +1,5 @@
 import { FEATURE_KEY } from '@app/constants';
+import { ResponseBuilder, SingleResponseDto } from '@app/models';
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CrawlMapper } from './crawl.mapper';
@@ -38,8 +39,11 @@ export class CrawlController {
     status: 408,
     description: 'Request timeout',
   })
-  async getMetadata(@Query('url') url: string): Promise<MetadataDto> {
-    return this._crawlService.getMetadata(url);
+  async getMetadata(
+    @Query('url') url: string,
+  ): Promise<Partial<SingleResponseDto<MetadataDto>>> {
+    const result = await this._crawlService.getMetadata(url);
+    return ResponseBuilder.toSingle({ data: result });
   }
 
   // @Post()

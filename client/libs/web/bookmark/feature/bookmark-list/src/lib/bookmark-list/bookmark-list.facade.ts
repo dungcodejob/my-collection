@@ -3,7 +3,13 @@ import { BookmarkStore } from "@client/web-bookmark-data-access";
 import { CollectionStore } from "@client/web-collection-data-access";
 import { PARAM_KEYS } from "@client/web-shared-constants";
 import { injectAutoEffect, withParam } from "@client/web-shared-utils";
-import { signalStore, withComputed, withHooks, withProps } from "@ngrx/signals";
+import {
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withProps,
+} from "@ngrx/signals";
 
 type BookmarkListParams = {
   [PARAM_KEYS.COLLECTION_ID]: string;
@@ -25,6 +31,13 @@ export const BookmarkListFacade = signalStore(
         const { collectionId } = store.$param() as BookmarkListParams;
         _bookmarkStore.load({ collectionId });
       });
+    },
+  })),
+  // T075: Add method to refresh bookmarks after creation
+  withMethods(({ _bookmarkStore, ...store }) => ({
+    refreshBookmarks: (): void => {
+      const { collectionId } = store.$param() as BookmarkListParams;
+      _bookmarkStore.load({ collectionId });
     },
   }))
 );

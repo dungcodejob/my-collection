@@ -137,10 +137,10 @@
 **Frontend - Integration**
 
 - [X] T071 [US1] Export AddBookmarkDialogComponent from client/libs/web/bookmark/feature/add-bookmark-dialog/src/index.ts
-- [ ] T072 [US1] Add "Add Bookmark" button to bookmarks list page in client/apps/client/src/app/
-- [ ] T073 [US1] Implement dialog open/close logic in parent component
-- [ ] T074 [US1] Add success notification on bookmark creation (ngx-sonner toast)
-- [ ] T075 [US1] Refresh bookmark list after successful creation
+- [X] T072 [US1] Add "Add Bookmark" button to bookmarks list page in client/apps/client/src/app/
+- [X] T073 [US1] Implement dialog open/close logic in parent component
+- [X] T074 [US1] Add success notification on bookmark creation (ngx-sonner toast)
+- [X] T075 [US1] Refresh bookmark list after successful creation
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 

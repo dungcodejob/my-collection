@@ -3,7 +3,7 @@
  * Dialog for adding a new bookmark with metadata fetching
  */
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, effect, inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import {
   AbstractControl,
   FormBuilder,
@@ -12,7 +12,7 @@ import {
   ValidationErrors,
   Validators,
 } from "@angular/forms";
-import { injectAutoEffect } from "@client/web-shared-utils";
+import { injectAutoEffect, simpleUrlValidator } from "@client/web-shared-utils";
 import { BrnDialogRef } from "@spartan-ng/brain/dialog";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmDialogImports } from "@spartan-ng/helm/dialog";
@@ -51,43 +51,17 @@ export class AddBookmarkDialog implements OnInit {
   // T061: URL validation state
   urlError = "";
 
-  constructor() {
-    // T063: Auto-populate form when metadata is fetched
-    effect(() => {
-      const metadata = this.store.metadata();
-      if (metadata) {
-        this.bookmarkForm.patchValue({
-          title: metadata.title || "",
-          description: metadata.description || "",
-        });
-      }
-    });
-  }
-
   ngOnInit(): void {
     // T057-T058: Initialize form with validation
     this.bookmarkForm = this._fb.group({
-      url: ["", [Validators.required, this.urlValidator.bind(this)]],
+      url: ["", [Validators.required, simpleUrlValidator()]],
       title: ["", [Validators.required, Validators.maxLength(200)]],
       description: ["", [Validators.maxLength(1000)]],
       notes: ["", [Validators.maxLength(2000)]],
     });
 
     this.closeDialogEffect();
-  }
-
-  /**
-   * T061: URL validation logic
-   */
-  private urlValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value) return null;
-
-    try {
-      new URL(control.value);
-      return null;
-    } catch {
-      return { invalidUrl: true };
-    }
+    this.fetchMetadataEffect();
   }
 
   /**
@@ -98,11 +72,6 @@ export class AddBookmarkDialog implements OnInit {
 
     if (!url) {
       this.urlError = "Please enter a URL";
-      return;
-    }
-
-    if (!this.store.isValidUrl()) {
-      this.urlError = "Please enter a valid URL";
       return;
     }
 
@@ -178,5 +147,38 @@ export class AddBookmarkDialog implements OnInit {
         this._dialogRef.close(true);
       }
     });
+  }
+
+  private fetchMetadataEffect(): void {
+    // T063: Auto-populate form when metadata is fetched
+    this._autoEffect(() => {
+      const metadata = this.store.metadata();
+      const isFetchMetadataFulfilled = this.store.$isFetchMetadataFulfilled();
+      if (isFetchMetadataFulfilled && metadata) {
+        this.bookmarkForm.patchValue({
+          title: metadata.title || "",
+          description: metadata.description || "",
+          imageUrl: metadata.image || "",
+          faviconUrl: metadata.favicon || "",
+          siteName: metadata.siteName || "",
+          availableImages: metadata.images || [],
+          selectedImageIndex: 0,
+        });
+      }
+    });
+  }
+
+  /**
+   * T061: URL validation logic
+   */
+  private urlValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+
+    try {
+      new URL(control.value);
+      return null;
+    } catch {
+      return { invalidUrl: true };
+    }
   }
 }
