@@ -1,0 +1,584 @@
+openapi: 3.0.3
+info:
+  title: Bookmark Collection Browser API
+  description: |
+    API endpoints for browsing, filtering, sorting, and managing bookmarks within collections.
+    Supports URL-synchronized view state with extensible filtering capabilities.
+  version: 1.0.0
+  contact:
+    name: My Collection API Team
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development
+  - url: https://api.my-collection.com/api/v1
+    description: Production
+
+tags:
+  - name: Bookmarks
+    description: Bookmark browsing and management operations
+  - name: Collections
+    description: Collection access and verification
+
+security:
+  - BearerAuth: []
+
+paths:
+  /collections/{collectionId}/bookmarks:
+    get:
+      summary: Get bookmarks in a collection
+      description: |
+        Retrieves paginated, filtered, and sorted bookmarks from a collection.
+        Requires collection ownership (owner-only access).
+        Supports multiple filter types and sort orders with URL synchronization.
+      operationId: getCollectionBookmarks
+      tags:
+        - Bookmarks
+      parameters:
+        - name: collectionId
+          in: path
+          required: true
+          description: UUID of the collection
+          schema:
+            type: string
+            format: uuid
+          example: '123e4567-e89b-12d3-a456-426614174000'
+        
+        - name: page
+          in: query
+          required: false
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        
+        - name: pageSize
+          in: query
+          required: false
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          example: 20
+        
+        - name: filters
+          in: query
+          required: false
+          description: |
+            Filters in format `field:type:value`. Can be repeated for multiple filters.
+            Supported types: keyword, number, range, daterange, boolean.
+            Examples:
+            - `title:keyword:react` - keyword search in title
+            - `created:daterange:2024-01-01_2024-12-31` - date range filter
+            - `tags:keyword:work` - filter by tag
+            - `isFavorite:boolean:true` - boolean filter
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          examples:
+            keyword:
+              summary: Keyword filter
+              value: ['title:keyword:react']
+            daterange:
+              summary: Date range filter
+              value: ['created:daterange:2024-01-01_2024-12-31']
+            multiple:
+              summary: Multiple filters
+              value: ['title:keyword:react', 'isFavorite:boolean:true', 'created:daterange:2024-01-01_2024-12-31']
+        
+        - name: sort
+          in: query
+          required: false
+          description: |
+            Sort in format `field:direction`. Can be repeated for multi-column sort.
+            Supported fields: created, title, lastModified, url.
+            Directions: asc, desc.
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: '^(created|title|lastModified|url):(asc|desc)$'
+          style: form
+          explode: true
+          examples:
+            single:
+              summary: Single sort
+              value: ['created:desc']
+            multiple:
+              summary: Multiple sorts
+              value: ['created:desc', 'title:asc']
+        
+        - name: tagMode
+          in: query
+          required: false
+          description: |
+            Tag filter mode: 'and' (all tags required) or 'or' (any tag matches).
+            Only applies when tags filter is present.
+          schema:
+            type: string
+            enum: [and, or]
+            default: or
+          example: or
+
+      responses:
+        '200':
+          description: Successfully retrieved bookmarks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookmarkListResponse'
+              examples:
+                success:
+                  summary: Successful response with bookmarks
+                  value:
+                    bookmarks:
+                      - id: '123e4567-e89b-12d3-a456-426614174001'
+                        collectionId: '123e4567-e89b-12d3-a456-426614174000'
+                        title: 'React Documentation'
+                        url: 'https://react.dev'
+                        description: 'Official React documentation'
+                        tags: ['react', 'frontend', 'documentation']
+                        createdAt: '2024-01-15T10:30:00Z'
+                        lastModifiedAt: '2024-01-15T10:30:00Z'
+                        thumbnailUrl: 'https://cdn.example.com/react-thumb.jpg'
+                        isFavorite: true
+                        hasImage: true
+                    totalCount: 125
+                    page: 1
+                    pageSize: 20
+                    totalPages: 7
+                    hasNext: true
+                    hasPrevious: false
+                emptyResults:
+                  summary: No bookmarks match filters
+                  value:
+                    bookmarks: []
+                    totalCount: 0
+                    page: 1
+                    pageSize: 20
+                    totalPages: 0
+                    hasNext: false
+                    hasPrevious: false
+        
+        '400':
+          description: Bad request - invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidFilter:
+                  summary: Invalid filter format
+                  value:
+                    statusCode: 400
+                    message: 'Invalid filter format: expected field:type:value'
+                    error: 'Bad Request'
+                invalidPage:
+                  summary: Invalid page number
+                  value:
+                    statusCode: 400
+                    message: 'Page must be at least 1'
+                    error: 'Bad Request'
+        
+        '401':
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                statusCode: 401
+                message: 'Unauthorized'
+                error: 'Unauthorized'
+        
+        '403':
+          description: Forbidden - user is not the collection owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                statusCode: 403
+                message: 'You do not have access to this collection'
+                error: 'Forbidden'
+        
+        '404':
+          description: Collection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                statusCode: 404
+                message: 'Collection not found'
+                error: 'Not Found'
+
+  /bookmarks:
+    delete:
+      summary: Bulk delete bookmarks
+      description: |
+        Deletes multiple bookmarks at once. All bookmarks must belong to collections
+        owned by the authenticated user. Operation is transactional - either all
+        bookmarks are deleted or none are.
+      operationId: bulkDeleteBookmarks
+      tags:
+        - Bookmarks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteRequest'
+            examples:
+              fewBookmarks:
+                summary: Delete a few bookmarks
+                value:
+                  bookmarkIds:
+                    - '123e4567-e89b-12d3-a456-426614174001'
+                    - '123e4567-e89b-12d3-a456-426614174002'
+              manyBookmarks:
+                summary: Delete many bookmarks
+                value:
+                  bookmarkIds:
+                    - '123e4567-e89b-12d3-a456-426614174001'
+                    - '123e4567-e89b-12d3-a456-426614174002'
+                    - '123e4567-e89b-12d3-a456-426614174003'
+                    - '123e4567-e89b-12d3-a456-426614174004'
+                    - '123e4567-e89b-12d3-a456-426614174005'
+
+      responses:
+        '200':
+          description: Bookmarks successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkDeleteResponse'
+              example:
+                deletedCount: 5
+                deletedIds:
+                  - '123e4567-e89b-12d3-a456-426614174001'
+                  - '123e4567-e89b-12d3-a456-426614174002'
+                  - '123e4567-e89b-12d3-a456-426614174003'
+                  - '123e4567-e89b-12d3-a456-426614174004'
+                  - '123e4567-e89b-12d3-a456-426614174005'
+        
+        '400':
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                emptyArray:
+                  summary: Empty bookmark IDs array
+                  value:
+                    statusCode: 400
+                    message: 'At least one bookmark ID required'
+                    error: 'Bad Request'
+                invalidUuid:
+                  summary: Invalid UUID format
+                  value:
+                    statusCode: 400
+                    message: 'Invalid bookmark ID format'
+                    error: 'Bad Request'
+                tooMany:
+                  summary: Too many bookmarks
+                  value:
+                    statusCode: 400
+                    message: 'Maximum 100 bookmarks can be deleted at once'
+                    error: 'Bad Request'
+        
+        '401':
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                statusCode: 401
+                message: 'Unauthorized'
+                error: 'Unauthorized'
+        
+        '403':
+          description: Forbidden - one or more bookmarks not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                statusCode: 403
+                message: 'You do not have permission to delete one or more of these bookmarks'
+                error: 'Forbidden'
+        
+        '404':
+          description: One or more bookmarks not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                statusCode: 404
+                message: 'One or more bookmarks not found'
+                error: 'Not Found'
+
+  /collections/{collectionId}:
+    get:
+      summary: Get collection details
+      description: |
+        Retrieves collection metadata including name, description, and bookmark count.
+        Requires collection ownership.
+      operationId: getCollection
+      tags:
+        - Collections
+      parameters:
+        - name: collectionId
+          in: path
+          required: true
+          description: UUID of the collection
+          schema:
+            type: string
+            format: uuid
+          example: '123e4567-e89b-12d3-a456-426614174000'
+
+      responses:
+        '200':
+          description: Successfully retrieved collection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+              example:
+                id: '123e4567-e89b-12d3-a456-426614174000'
+                name: 'Web Development Resources'
+                description: 'Collection of useful web dev articles and tutorials'
+                ownerId: '223e4567-e89b-12d3-a456-426614174000'
+                createdAt: '2024-01-01T00:00:00Z'
+                bookmarkCount: 125
+        
+        '401':
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        
+        '403':
+          description: Forbidden - user is not the collection owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        
+        '404':
+          description: Collection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoint
+
+  schemas:
+    Bookmark:
+      type: object
+      required:
+        - id
+        - collectionId
+        - title
+        - url
+        - tags
+        - createdAt
+        - lastModifiedAt
+        - isFavorite
+        - hasImage
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the bookmark
+        collectionId:
+          type: string
+          format: uuid
+          description: ID of the parent collection
+        title:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Bookmark title
+        url:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: Bookmark URL (HTTP or HTTPS)
+        description:
+          type: string
+          maxLength: 5000
+          nullable: true
+          description: Optional description
+        tags:
+          type: array
+          items:
+            type: string
+            pattern: '^[a-z0-9-]+$'
+            minLength: 1
+            maxLength: 50
+          maxItems: 50
+          description: Array of tags (lowercase, alphanumeric with hyphens)
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        lastModifiedAt:
+          type: string
+          format: date-time
+          description: Last modification timestamp
+        thumbnailUrl:
+          type: string
+          format: uri
+          maxLength: 2048
+          nullable: true
+          description: URL of thumbnail image
+        isFavorite:
+          type: boolean
+          description: Whether bookmark is marked as favorite
+        hasImage:
+          type: boolean
+          description: Whether bookmark has an associated image
+
+    BookmarkListResponse:
+      type: object
+      required:
+        - bookmarks
+        - totalCount
+        - page
+        - pageSize
+        - totalPages
+        - hasNext
+        - hasPrevious
+      properties:
+        bookmarks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bookmark'
+          description: Array of bookmarks for the current page
+        totalCount:
+          type: integer
+          minimum: 0
+          description: Total number of bookmarks matching filters
+        page:
+          type: integer
+          minimum: 1
+          description: Current page number
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Number of items per page
+        totalPages:
+          type: integer
+          minimum: 0
+          description: Total number of pages
+        hasNext:
+          type: boolean
+          description: Whether there is a next page
+        hasPrevious:
+          type: boolean
+          description: Whether there is a previous page
+
+    BulkDeleteRequest:
+      type: object
+      required:
+        - bookmarkIds
+      properties:
+        bookmarkIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 100
+          description: Array of bookmark IDs to delete (max 100)
+
+    BulkDeleteResponse:
+      type: object
+      required:
+        - deletedCount
+        - deletedIds
+      properties:
+        deletedCount:
+          type: integer
+          minimum: 0
+          description: Number of bookmarks successfully deleted
+        deletedIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: IDs of deleted bookmarks
+
+    Collection:
+      type: object
+      required:
+        - id
+        - name
+        - ownerId
+        - createdAt
+        - bookmarkCount
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the collection
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Collection name
+        description:
+          type: string
+          maxLength: 5000
+          nullable: true
+          description: Optional collection description
+        ownerId:
+          type: string
+          format: uuid
+          description: ID of the user who owns the collection
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        bookmarkCount:
+          type: integer
+          minimum: 0
+          description: Number of bookmarks in the collection
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - message
+        - error
+      properties:
+        statusCode:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        error:
+          type: string
+          description: Error type
+
