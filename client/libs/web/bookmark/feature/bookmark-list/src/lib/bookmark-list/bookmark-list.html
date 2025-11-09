@@ -1,7 +1,55 @@
 <div class="flex flex-col gap-4">
   <p hlmH2>Bookmarks</p>
   <div class="flex justify-between items-center gap-6">
-    <input hlmInput placeholder="Search bookmarks" type="text" />
+    <!-- US1 T043: Search input with debounce -->
+    <input
+      #searchInput
+      hlmInput
+      placeholder="Search bookmarks"
+      type="text"
+      (input)="onSearch(searchInput.value)"
+    />
+
+    <!-- US2 T055: Display mode switcher -->
+    <div class="flex gap-2">
+      <button
+        hlmBtn
+        size="sm"
+        title="List View"
+        type="button"
+        variant="outline"
+        [class.bg-primary]="facade.$displayMode() === 'list'"
+        [class.text-primary-foreground]="facade.$displayMode() === 'list'"
+        (click)="onDisplayModeChange('list')"
+      >
+        List
+      </button>
+      <button
+        hlmBtn
+        size="sm"
+        title="Card View"
+        type="button"
+        variant="outline"
+        [class.bg-primary]="facade.$displayMode() === 'card'"
+        [class.text-primary-foreground]="facade.$displayMode() === 'card'"
+        (click)="onDisplayModeChange('card')"
+      >
+        Card
+      </button>
+      <button
+        hlmBtn
+        size="sm"
+        title="Moodboard View"
+        type="button"
+        variant="outline"
+        [class.bg-primary]="facade.$displayMode() === 'moodboard'"
+        [class.text-primary-foreground]="facade.$displayMode() === 'moodboard'"
+        (click)="onDisplayModeChange('moodboard')"
+      >
+        Moodboard
+      </button>
+    </div>
+
     <button class="flex-none" hlmBtn type="button" (click)="onCreate()">
       <ng-icon hlm name="lucidePlus" size="16" />
       Add Bookmark
@@ -29,8 +77,10 @@
   </div>
   }
 
-  <!-- Bookmark list -->
-  @if (facade.$isHasBookmarks()) {
+  <!-- US2 T056: Display mode switch -->
+  @if (facade.$isHasBookmarks()) { @switch (facade.$displayMode()) {
+  <!-- List View -->
+  @case ('list') {
   <div class="flex-1 flex flex-col overflow-y-auto gap-4">
     @for (bookmark of facade.$bookmarks(); track bookmark.id) {
     <div
@@ -89,28 +139,127 @@
     </div>
     }
   </div>
-
-  <!-- Pagination -->
-  <!-- <div class="pagination">
-    <button
-      [disabled]="store.page() <= 1"
-      (click)="onPageChange(store.page() - 1)"
-      class="page-button"
-    >
-      Previous
-    </button>
-    <span class="page-info">
-      Page {{ store.page() }} of {{ store.totalPages() }} ({{ store.totalItems() }} total)
-    </span>
-    <button
-      [disabled]="store.page() >= store.totalPages()"
-      (click)="onPageChange(store.page() + 1)"
-      class="page-button"
-    >
-      Next
-    </button>
-  </div> -->
   }
 
-  <hlm-numbered-pagination [currentPage]="1" [itemsPerPage]="10" [totalItems]="100" />
+  <!-- Card View -->
+  @case ('card') {
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto"
+  >
+    @for (bookmark of facade.$bookmarks(); track bookmark.id) {
+    <div
+      class="flex flex-col hover:shadow-lg transition-shadow"
+      hlmCard
+      [class.selected]="facade.$selectedIds().includes(bookmark.id)"
+    >
+      <div class="flex flex-col gap-2 p-4" hlmCardContent>
+        <div class="flex items-start justify-between mb-2">
+          <input
+            class="w-5 h-5"
+            type="checkbox"
+            [checked]="facade.$selectedIds().includes(bookmark.id)"
+            (change)="facade.onToggleSelection(bookmark.id)"
+          />
+          @if (bookmark.isFavorite) {
+          <span class="text-yellow-500 text-xl">★</span>
+          }
+        </div>
+        @if (bookmark.imageUrl) {
+        <img
+          class="w-full h-40 object-cover rounded"
+          fill
+          [alt]="bookmark.title"
+          [ngSrc]="bookmark.imageUrl"
+        />
+        }
+        <div class="flex items-center gap-2">
+          <img
+            alt="favicon"
+            class="w-4 h-4"
+            height="16"
+            width="16"
+            [ngSrc]="bookmark.faviconUrl || '/assets/default-favicon.png'"
+          />
+          <h3 class="text-base font-semibold line-clamp-2">{{ bookmark.title }}</h3>
+        </div>
+        <p class="text-sm text-muted-foreground line-clamp-2">
+          {{ bookmark.description || "No description" }}
+        </p>
+        @if (bookmark.tags && bookmark.tags.length > 0) {
+        <div class="flex flex-wrap gap-1">
+          @for (tag of bookmark.tags.slice(0, 3); track tag) {
+          <span class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
+            >{{ tag }}</span
+          >
+          }
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Moodboard View -->
+  @case ('moodboard') {
+  <div class="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 overflow-y-auto">
+    @for (bookmark of facade.$bookmarks(); track bookmark.id) {
+    <div
+      class="break-inside-avoid mb-4 hover:shadow-lg transition-shadow"
+      hlmCard
+      [class.selected]="facade.$selectedIds().includes(bookmark.id)"
+    >
+      <div class="flex flex-col gap-2 p-2" hlmCardContent>
+        <div class="flex items-start justify-between">
+          <input
+            class="w-4 h-4"
+            type="checkbox"
+            [checked]="facade.$selectedIds().includes(bookmark.id)"
+            (change)="facade.onToggleSelection(bookmark.id)"
+          />
+          @if (bookmark.isFavorite) {
+          <span class="text-yellow-500">★</span>
+          }
+        </div>
+        @if (bookmark.imageUrl) {
+        <img
+          class="w-full rounded"
+          fill
+          [alt]="bookmark.title"
+          [ngSrc]="bookmark.imageUrl"
+        />
+        }
+        <h4 class="text-sm font-semibold line-clamp-2">{{ bookmark.title }}</h4>
+        @if (bookmark.tags && bookmark.tags.length > 0) {
+        <div class="flex flex-wrap gap-1">
+          @for (tag of bookmark.tags.slice(0, 2); track tag) {
+          <span class="px-1 py-0.5 text-xs bg-gray-200 text-gray-700 rounded"
+            >{{ tag }}</span
+          >
+          }
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  } } }
+
+  <!-- US1 T046-T048: Pagination Controls -->
+  @if (facade.$totalPages() > 0) {
+  <div class="flex justify-between items-center gap-4 pt-4 border-t">
+    <div class="text-sm text-muted-foreground">
+      Showing {{ (facade.$page() - 1) * facade.$limit() + 1 }} to {{
+      Math.min(facade.$page() * facade.$limit(), facade.$totalItems()) }} of {{
+      facade.$totalItems() }} bookmarks
+    </div>
+
+    <hlm-numbered-pagination
+      [currentPage]="facade.$page()"
+      [itemsPerPage]="facade.$limit()"
+      [totalItems]="facade.$totalItems()"
+      (currentPageChange)="onPageChange($event)"
+    />
+  </div>
+  }
 </div>

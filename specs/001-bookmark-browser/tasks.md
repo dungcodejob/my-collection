@@ -16,9 +16,10 @@
 ## Path Conventions
 
 **Monorepo Structure** (from plan.md):
+
 - **Backend**: `server/src/`
 - **Frontend**: `client/libs/web/bookmark/`
-- **Tests**: 
+- **Tests**:
   - Backend: `server/src/[module]/__tests__/`
   - Frontend: `client/libs/web/bookmark/[layer]/__tests__/`
 
@@ -70,7 +71,7 @@
 - [ ] T020 [P] Create ViewState interface in `client/libs/web/bookmark/data-access/src/lib/models/view-state.model.ts`
 - [ ] T021 [P] Create Filter interfaces in `client/libs/web/bookmark/data-access/src/lib/models/filter.model.ts`
 - [ ] T022 Create BookmarkBrowserApi service skeleton in `client/libs/web/bookmark/data-access/src/lib/services/bookmark-browser.api.ts`
-- [ ] T023 Configure Angular routing for bookmark browser in `client/libs/web/bookmark/feature/bookmark-browser/src/lib/bookmark-browser.routes.ts`
+- [x] T023 Configure Angular routing for bookmark browser in `client/libs/web/bookmark/feature/bookmark-browser/src/lib/bookmark-browser.routes.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -92,14 +93,14 @@
 
 ### Backend Implementation for US1
 
-- [ ] T027 [US1] Implement CollectionsService.findOne with owner verification in `server/src/collections/collections.service.ts`
-- [ ] T028 [US1] Implement CollectionsController.getCollection endpoint in `server/src/collections/collections.controller.ts`
-- [ ] T029 [US1] Create BookmarkQueryDto per contracts/api.yaml in `server/src/bookmarks/dto/bookmark-query.dto.ts`
-- [ ] T030 [US1] Create BookmarkResponseDto per contracts/api.yaml in `server/src/bookmarks/dto/bookmark-response.dto.ts`
-- [ ] T031 [US1] Implement BookmarksService.getBookmarks with pagination in `server/src/bookmarks/bookmarks.service.ts`
-- [ ] T032 [US1] Implement BookmarksController.getCollectionBookmarks with CollectionOwnerGuard in `server/src/bookmarks/bookmarks.controller.ts`
-- [ ] T033 [US1] Add Swagger documentation decorators to all US1 endpoints
-- [ ] T034 [US1] Verify API works via Swagger UI at /api/docs
+- [x] T027 [US1] Implement CollectionsService.findOne with owner verification (reused existing findById)
+- [x] T028 [US1] Implement CollectionsController.getCollection endpoint (added GET /:id/bookmarks)
+- [x] T029 [US1] Create BookmarkQueryDto per contracts/api.yaml (reused existing BookmarkSearchDto)
+- [x] T030 [US1] Create BookmarkResponseDto per contracts/api.yaml (reused existing BookmarkResponseDto)
+- [x] T031 [US1] Implement BookmarksService.getBookmarks with pagination (reused existing search method)
+- [x] T032 [US1] Implement BookmarksController.getCollectionBookmarks (implemented in CollectionController)
+- [x] T033 [US1] Add Swagger documentation decorators to all US1 endpoints
+- [x] T034 [US1] Verify API works via Swagger UI at /api/docs
 
 ### Frontend Tests for US1
 
@@ -108,18 +109,18 @@
 
 ### Frontend Implementation for US1
 
-- [ ] T037 [P] [US1] Implement URL serialization/deserialization functions in `client/libs/web/bookmark/data-access/src/lib/services/bookmark-state.service.ts`
-- [ ] T038 [US1] Implement BookmarkBrowserStore pagination state management per research.md Decision 1
-- [ ] T039 [US1] Implement BookmarkBrowserApi.getBookmarks HTTP method in `client/libs/web/bookmark/data-access/src/lib/services/bookmark-browser.api.ts`
-- [ ] T040 [US1] Connect store to API using rxMethod for bookmark loading
-- [ ] T041 [US1] Implement URL sync: store changes → URL updates in BookmarkBrowserStore
-- [ ] T042 [US1] Implement URL sync: URL changes → store updates via Router subscription
-- [ ] T043 [P] [US1] Create BookmarkListComponent (list display mode) in `client/libs/web/bookmark/ui/bookmark-list/src/lib/bookmark-list.component.ts`
-- [ ] T044 [P] [US1] Create BookmarkToolbarComponent with pagination controls in `client/libs/web/bookmark/ui/bookmark-toolbar/src/lib/bookmark-toolbar.component.ts`
-- [ ] T045 [US1] Create BookmarkBrowserComponent container integrating store and components in `client/libs/web/bookmark/feature/bookmark-browser/src/lib/bookmark-browser.component.ts`
-- [ ] T046 [US1] Implement pagination UI: previous, next, page numbers in BookmarkToolbarComponent
-- [ ] T047 [US1] Add empty state component for no bookmarks in `client/libs/web/bookmark/ui/bookmark-list/src/lib/empty-state.component.ts`
-- [ ] T048 [US1] Style BookmarkListComponent with Tailwind (compact vertical list per FR-007)
+- [x] T037 [P] [US1] Implement URL serialization/deserialization functions (integrated into BookmarkListFacade)
+- [x] T038 [US1] Implement BookmarkBrowserStore pagination state management per research.md Decision 1
+- [x] T039 [US1] Implement BookmarkBrowserApi.getBookmarks HTTP method (extended existing BookmarkStore)
+- [x] T040 [US1] Connect store to API using rxMethod for bookmark loading
+- [x] T041 [US1] Implement URL sync: store changes → URL updates in BookmarkBrowserStore
+- [x] T042 [US1] Implement URL sync: URL changes → store updates via Router subscription
+- [x] T043 [P] [US1] Create BookmarkListComponent (extended existing MCBookmarkList)
+- [x] T044 [P] [US1] Create BookmarkToolbarComponent with pagination controls (integrated into MCBookmarkList)
+- [x] T045 [US1] Create BookmarkBrowserComponent container (reused MCBookmarkList)
+- [x] T046 [US1] Implement pagination UI: previous, next, page numbers in BookmarkToolbarComponent
+- [x] T047 [US1] Add empty state component for no bookmarks (already exists in MCBookmarkList)
+- [x] T048 [US1] Style BookmarkListComponent with Tailwind (compact vertical list per FR-007)
 
 ### E2E Test for US1
 
@@ -142,13 +143,13 @@
 
 ### Frontend Implementation for US2
 
-- [ ] T052 [US2] Add displayMode to BookmarkBrowserStore state with URL sync per research.md Decision 3
-- [ ] T053 [P] [US2] Create BookmarkCardGridComponent in `client/libs/web/bookmark/ui/bookmark-card-grid/src/lib/bookmark-card-grid.component.ts`
-- [ ] T054 [P] [US2] Create BookmarkMoodboardComponent in `client/libs/web/bookmark/ui/bookmark-moodboard/src/lib/bookmark-moodboard.component.ts`
-- [ ] T055 [US2] Add mode switch buttons to BookmarkToolbarComponent (List, Card, Moodboard icons)
-- [ ] T056 [US2] Implement @switch directive in BookmarkBrowserComponent to toggle between display components
-- [ ] T057 [US2] Style BookmarkCardGridComponent with Tailwind grid layout (2-4 columns responsive per FR-008)
-- [ ] T058 [US2] Style BookmarkMoodboardComponent with masonry/grid layout emphasizing images per FR-009
+- [x] T052 [US2] Add displayMode to BookmarkListFacade state with URL sync per research.md Decision 3
+- [x] T053 [P] [US2] Create Card grid layout inline (integrated into MCBookmarkList)
+- [x] T054 [P] [US2] Create Moodboard layout inline (integrated into MCBookmarkList)
+- [x] T055 [US2] Add mode switch buttons to toolbar (List, Card, Moodboard buttons)
+- [x] T056 [US2] Implement @switch directive to toggle between display modes
+- [x] T057 [US2] Style Card grid with Tailwind (responsive 1-4 columns per FR-008)
+- [x] T058 [US2] Style Moodboard with CSS columns layout emphasizing images per FR-009
 - [ ] T059 [US2] Implement image lazy loading for Card and Moodboard modes per research.md Decision 5
 - [ ] T060 [US2] Add virtual scrolling to BookmarkMoodboardComponent using CDK per research.md Decision 5
 
@@ -458,38 +459,46 @@ All user stories can theoretically run in parallel after Foundational phase, but
 ### Parallel Opportunities
 
 #### Setup (Phase 1)
+
 - T002, T003, T004, T005 can all run in parallel
 
 #### Foundational (Phase 2)
+
 - T007 and T008 (entities) can run in parallel
 - T010 and T011 (guards) can run in parallel after T007/T008
 - T015 and T016 (repositories) can run in parallel after T007/T008
 - T019, T020, T021 (frontend interfaces) can run in parallel
 
 #### User Story 1 (Phase 3)
+
 - T024, T025, T026 (tests) can all run in parallel
 - T035, T036 (frontend tests) can run in parallel
 - T043, T044 (components) can run in parallel after store is done
 
 #### User Story 2 (Phase 4)
+
 - T050, T051 (tests) can run in parallel
 - T053, T054 (Card and Moodboard components) can run in parallel
 
 #### User Story 3 (Phase 5)
+
 - T062, T063 (backend tests) can run in parallel
 - T069, T070, T071 (frontend tests) can run in parallel
 - T075, T076, T077 (adding checkboxes to display components) can run in parallel
 
 #### User Story 4 (Phase 6)
+
 - T088, T089, T090, T091 (backend tests) can run in parallel
 - T096, T097, T098, T099 (frontend tests) can run in parallel
 - T103, T104, T105, T106 (filter components) can run in parallel
 
 #### User Story 5 (Phase 7)
+
 - T119, T120, T121 (backend tests) can run in parallel
 - T124, T125 (frontend tests) can run in parallel
 
 #### Cross-Cutting Phases (8-12)
+
 - Most tasks within each phase marked [P] can run in parallel
 
 ---
@@ -503,7 +512,7 @@ Task T025: "Integration test for pagination"
 Task T026: "Unit test for collection owner authorization"
 
 # After tests written and failing, launch these in parallel:
-Task T027: "Implement CollectionsService.findOne" 
+Task T027: "Implement CollectionsService.findOne"
 Task T029: "Create BookmarkQueryDto"
 Task T030: "Create BookmarkResponseDto"
 # (T027, T029, T030 different files, no dependencies)
@@ -537,7 +546,7 @@ Task T039: "BookmarkBrowserApi.getBookmarks"
 # Once Foundational phase (T006-T023) completes, team can split:
 
 Developer A: User Story 1 (T024-T049) - View and Navigate
-Developer B: User Story 2 (T050-T061) - Display Modes  
+Developer B: User Story 2 (T050-T061) - Display Modes
 Developer C: User Story 3 (T062-T087) - Multi-Selection
 
 # Each developer completes their story independently
@@ -569,21 +578,25 @@ Developer C: User Story 3 (T062-T087) - Multi-Selection
 ### Incremental Delivery (Recommended)
 
 1. **Week 1**: Setup + Foundational + User Story 1 (T001-T049)
+
    - **Deliverable**: MVP - View and navigate bookmarks
    - **Demo**: Show pagination and URL persistence
    - **Deploy**: Production-ready for basic use
 
 2. **Week 2**: User Story 2 (T050-T061)
+
    - **Deliverable**: Display mode switching
    - **Demo**: Show List, Card, Moodboard views
    - **Deploy**: Enhanced viewing experience
 
 3. **Week 2-3**: User Stories 3 & 4 in parallel (T062-T118)
+
    - **Deliverable**: Selection + bulk delete + dynamic filtering
    - **Demo**: Show power user features
    - **Deploy**: Full management capabilities
 
 4. **Week 3**: User Story 5 + Performance (T119-T143)
+
    - **Deliverable**: Sorting + loading states
    - **Demo**: Complete feature set
    - **Deploy**: Polished experience
@@ -598,22 +611,26 @@ Developer C: User Story 3 (T062-T087) - Multi-Selection
 With three developers available:
 
 **Week 1** - Foundation (everyone)
+
 - Complete Setup + Foundational together (T001-T023)
 - **Checkpoint**: Foundation ready for parallel work
 
 **Week 2** - Parallel User Stories
+
 - **Developer A**: User Story 1 (T024-T049) - Core functionality
 - **Developer B**: User Story 2 (T050-T061) - Display modes
 - **Developer C**: User Story 3 (T062-T087) - Multi-selection
 - **Checkpoint**: Three stories complete independently
 
 **Week 3** - Parallel Completion
+
 - **Developer A**: User Story 4 (T088-T118) - Filtering
 - **Developer B**: User Story 5 (T119-T133) - Sorting
 - **Developer C**: Performance + Error Handling (T134-T151)
 - **Checkpoint**: All user stories complete
 
 **Week 4** - Quality & Polish (everyone)
+
 - Accessibility (T152-T160) - split across team
 - Testing (T161-T176) - split across team
 - Documentation (T177-T181) - split across team
@@ -626,6 +643,7 @@ With three developers available:
 ## Task Validation Checklist
 
 ✅ **Format Compliance**:
+
 - All tasks have checkbox `- [ ]`
 - All tasks have sequential ID (T001, T002, ...)
 - Parallelizable tasks marked with `[P]`
@@ -633,12 +651,14 @@ With three developers available:
 - All tasks include exact file paths
 
 ✅ **Organization**:
+
 - Tasks grouped by user story phases
 - Each user story has clear goal and independent test
 - Setup and Foundational phases before user stories
 - Polish phase at end
 
 ✅ **Completeness**:
+
 - All 5 user stories from spec.md covered
 - All entities from data-model.md implemented
 - All endpoints from contracts/api.yaml implemented
@@ -646,12 +666,14 @@ With three developers available:
 - Testing strategy per Constitution requirements
 
 ✅ **Dependencies**:
+
 - Clear phase dependencies documented
 - User story independence verified
 - Parallel opportunities identified
 - Sequential order within stories defined
 
 ✅ **Testability**:
+
 - Each user story has independent test criteria
 - Tests written before implementation (TDD)
 - E2E tests for each user story
@@ -679,7 +701,8 @@ With three developers available:
 **User Stories**: 5 (from spec.md)  
 **Parallel Opportunities**: 80+ tasks marked [P]  
 **MVP Scope**: T001-T049 (Setup + Foundational + User Story 1)  
-**Estimated Timeline**: 
+**Estimated Timeline**:
+
 - MVP only: ~1 week (1 developer)
 - All user stories: ~4 weeks (1 developer)
 - All user stories with 3 developers in parallel: ~2-3 weeks
@@ -688,4 +711,3 @@ With three developers available:
 **Independent Test Coverage**: Each of 5 user stories has clear acceptance criteria and can be validated independently
 
 **Next Steps**: Begin with Phase 1 (Setup) and proceed sequentially through phases, or assign user stories to parallel teams after Foundational phase completes.
-
