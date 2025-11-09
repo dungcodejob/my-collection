@@ -5,7 +5,7 @@ import { BaseRepository, EntityWithCount } from './base.repository';
 
 type FindBookmarkOptions = FindOptions<
   BookmarkEntity,
-  'user' | 'collection',
+  'user' | 'collection' | 'bookmarkTags',
   '*',
   never
 >;
@@ -83,7 +83,7 @@ export class BookmarkRepository extends BaseRepository {
     url: string,
     options?: FindBookmarkOptions,
   ): Promise<BookmarkEntity | null> {
-    return this.findOne({ url }, options);
+    return this.findOne({ url }, { ...options });
   }
 
   async findOneById(

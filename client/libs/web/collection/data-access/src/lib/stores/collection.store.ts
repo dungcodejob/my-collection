@@ -1,12 +1,12 @@
 import { computed, inject } from "@angular/core";
 import { tapHandleApi } from "@client/web-core-http";
-import { COLLECTION_ROOT_ID, COLLECTION_ROOT_PATH } from "@client/web-shared-constants";
 import {
-  injectParams,
-  NamedStatusState,
-  setStatus,
-  withStatus,
-} from "@client/web-shared-utils";
+  COLLECTION_ROOT_ID,
+  COLLECTION_ROOT_PATH,
+  PARAM_KEYS,
+} from "@client/web-shared-constants";
+import { AppStore } from "@client/web-shared-data-access";
+import { NamedStatusState, setStatus, withStatus } from "@client/web-shared-utils";
 import {
   patchState,
   signalStore,
@@ -71,23 +71,27 @@ export const CollectionStore = signalStore(
       collectionStatusNames.update,
     ],
   }),
-  withComputed((store, _collectionAdapter = inject(CollectionAdapter)) => {
-    const $params = injectParams();
-    const $selectedId = computed(() => {
-      const params = $params() as { id: string };
-      return params.id;
-    });
-    const $selectedCollection = computed(() => {
-      console.log(store.collections());
-      const selectedId = $selectedId();
-      const collections = store.collections();
-      return _collectionAdapter.getCollectionById(collections, selectedId);
-    });
-    return {
-      $selectedId,
-      $selectedCollection,
-    };
-  }),
+  withComputed(
+    (
+      store,
+      _collectionAdapter = inject(CollectionAdapter),
+      _appStore = inject(AppStore)
+    ) => {
+      const $selectedId = computed(() => {
+        const params = _appStore.params();
+        return params[PARAM_KEYS.COLLECTION_ID];
+      });
+      const $selectedCollection = computed(() => {
+        const selectedId = $selectedId();
+        const collections = store.collections();
+        return _collectionAdapter.getCollectionById(collections, selectedId);
+      });
+      return {
+        $selectedId,
+        $selectedCollection,
+      };
+    }
+  ),
   withMethods(
     (
       store,

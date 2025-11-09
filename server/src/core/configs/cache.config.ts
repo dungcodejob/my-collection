@@ -16,4 +16,3 @@ export const cacheConfig = registerAs(
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
   }),
 );
-

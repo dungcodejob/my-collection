@@ -2,18 +2,22 @@
  * T053-T070: AddBookmarkDialogComponent
  * Dialog for adding a new bookmark with metadata fetching
  */
-import { CommonModule } from "@angular/common";
-import { Component, OnInit, inject } from "@angular/core";
+import { CommonModule, NgOptimizedImage } from "@angular/common";
+import { Component, DestroyRef, OnInit, inject } from "@angular/core";
 import {
   AbstractControl,
-  FormBuilder,
+  FormControl,
   FormGroup,
+  NonNullableFormBuilder,
   ReactiveFormsModule,
-  ValidationErrors,
   Validators,
 } from "@angular/forms";
+import { BookmarkCreateDto } from "@client/web-bookmark-data-access";
+import { ImageGallery } from "@client/web-bookmark-ui-image-gallery";
+import { Collection } from "@client/web-collection-data-access";
+import { MCConfirmDialogModule } from "@client/web-shared-ui-dialog";
 import { injectAutoEffect, simpleUrlValidator } from "@client/web-shared-utils";
-import { BrnDialogRef } from "@spartan-ng/brain/dialog";
+import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/brain/dialog";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmDialogImports } from "@spartan-ng/helm/dialog";
 import { HlmInputImports } from "@spartan-ng/helm/input";
@@ -21,8 +25,19 @@ import { HlmLabelImports } from "@spartan-ng/helm/label";
 import { HlmSpinnerImports } from "@spartan-ng/helm/spinner";
 import { AddBookmarkDialogFacade } from "./add-bookmark-dialog.facade";
 
+type BookmarkForm = FormGroup<{
+  url: FormControl<string>;
+  title: FormControl<string>;
+  description: FormControl<string | null>;
+  faviconUrl: FormControl<string | null>;
+  imageUrl: FormControl<string | null>;
+  siteName: FormControl<string | null>;
+  notes: FormControl<string | null>;
+  tags: FormControl<string[]>;
+}>;
+
 @Component({
-  selector: "lib-add-bookmark-dialog",
+  selector: "mc-add-bookmark-dialog",
   standalone: true,
   imports: [
     CommonModule,
@@ -32,41 +47,52 @@ import { AddBookmarkDialogFacade } from "./add-bookmark-dialog.facade";
     HlmButtonImports,
     HlmLabelImports,
     HlmSpinnerImports,
+    ImageGallery,
+    NgOptimizedImage,
+    MCConfirmDialogModule,
   ],
   providers: [AddBookmarkDialogFacade],
   templateUrl: "./add-bookmark-dialog.html",
   styleUrl: "./add-bookmark-dialog.css",
 })
 export class AddBookmarkDialog implements OnInit {
+  private readonly _destroyRef = inject(DestroyRef);
   private readonly _dialogRef = inject<BrnDialogRef<boolean>>(BrnDialogRef);
+  private readonly _dialogContext = injectBrnDialogContext<{
+    collection: Collection | null;
+  }>();
+
   private readonly _autoEffect = injectAutoEffect();
-  private readonly _fb = inject(FormBuilder);
+  private readonly _fb = inject(NonNullableFormBuilder);
 
   // T048-T052: Inject the store
   readonly store = inject(AddBookmarkDialogFacade);
 
   // T057-T058: Reactive form
-  bookmarkForm!: FormGroup;
+  bookmarkForm!: BookmarkForm;
 
   // T061: URL validation state
   urlError = "";
 
   ngOnInit(): void {
+    console.log("collection", this._dialogContext.collection);
     // T057-T058: Initialize form with validation
-    this.bookmarkForm = this._fb.group({
-      url: ["", [Validators.required, simpleUrlValidator()]],
-      title: ["", [Validators.required, Validators.maxLength(200)]],
-      description: ["", [Validators.maxLength(1000)]],
-      notes: ["", [Validators.maxLength(2000)]],
-    });
-
+    this._initForm();
+    this._setValueForControls();
     this.closeDialogEffect();
-    this.fetchMetadataEffect();
+    this.setMetadataToFormEffect();
+    this.duplicateCheckEffect();
   }
 
   /**
    * T062: Fetch metadata on button click
+   * T095: Add confirmation prompt if user re-fetches metadata with unsaved edits
    */
+
+  isUnsavedChanges = (): boolean => {
+    return this.bookmarkForm.dirty && !!this.store.metadata();
+  };
+
   onFetchMetadata(): void {
     const url = this.bookmarkForm.get("url")?.value;
 
@@ -80,7 +106,7 @@ export class AddBookmarkDialog implements OnInit {
   }
 
   /**
-   * T064: Save bookmark logic
+   * T064, T141: Save bookmark logic with duplicate check
    */
   onSave(): void {
     if (!this.bookmarkForm.valid) {
@@ -88,25 +114,18 @@ export class AddBookmarkDialog implements OnInit {
       return;
     }
 
-    // Update store with form values
-    const formValue = this.bookmarkForm.value;
-    this.store.updateUrl(formValue.url);
-    this.store.updateTitle(formValue.title);
-    this.store.updateDescription(formValue.description);
-    this.store.updateNotes(formValue.notes);
-
-    // Save bookmark
-    this.store.saveBookmark();
+    if (!this.store.isDuplicate()) {
+      const { url } = this.bookmarkForm.value as Required<BookmarkForm["value"]>;
+      this.store.checkDuplicate(url);
+    } else {
+      this.saveBookmark();
+    }
   }
 
   /**
    * T065: Dialog close logic
    */
   onCancel(): void {
-    if (this.store.hasChanges()) {
-      // TODO: Show confirmation dialog if there are unsaved changes
-      // For now, just close
-    }
     this._dialogRef.close(false);
   }
 
@@ -127,10 +146,21 @@ export class AddBookmarkDialog implements OnInit {
     this.store.selectImage(index);
   }
 
-  onImageError(event: Event): void {
-    const target = event.target as HTMLImageElement;
-    if (target) {
-      target.src = "assets/images/placeholder.png";
+  /**
+   * Handle image loading errors
+   * Supports both Event (from img tag) and ImageGallery error format
+   */
+  onImageError(event: Event | { index: number; url: string }): void {
+    if (event instanceof Event) {
+      // Handle direct img tag error
+      const target = event.target as HTMLImageElement;
+      if (target) {
+        target.src = "assets/images/placeholder.png";
+      }
+    } else {
+      // Handle ImageGallery component error
+      console.error(`Image ${event.index} failed to load:`, event.url);
+      // The ImageGallery component handles the fallback internally
     }
   }
 
@@ -141,6 +171,94 @@ export class AddBookmarkDialog implements OnInit {
     return this.bookmarkForm.get(name);
   }
 
+  /**
+   * T122: Handle file selection from file input
+   */
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (file) {
+      this.store.handleFileSelection(file);
+    }
+
+    // Reset input value to allow selecting the same file again
+    input.value = "";
+  }
+
+  /**
+   * T126: Handle image URL input
+   */
+  onImageUrlInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const url = input.value.trim();
+    this.store.setCustomImageUrl(url);
+  }
+
+  /**
+   * T126: Validate image URL on blur
+   */
+  onImageUrlBlur(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const url = input.value.trim();
+    if (url) {
+      this.store.validateImageUrl(url);
+    }
+  }
+
+  /**
+   * T128: Revert to default fetched image
+   */
+  onRevertToDefault(): void {
+    this.store.revertToDefaultImage();
+  }
+
+  /**
+   * T146: Handle "Save Anyway" action from duplicate confirmation
+   */
+  onSaveAnyway(): void {
+    this.store.saveAnyway();
+    this.saveBookmark();
+  }
+
+  /**
+   * T146: Handle "View Existing" action from duplicate confirmation
+   * T145: Navigate to existing bookmark detail
+   */
+  onViewExisting(): void {
+    const bookmarkId = this.store.duplicateBookmark()?.id;
+    if (bookmarkId) {
+      // TODO: Navigate to bookmark detail page
+      console.log("Navigate to bookmark:", bookmarkId);
+      // For now, just close the dialog
+      this._dialogRef.close(false);
+    }
+  }
+
+  /**
+   * Dismiss duplicate confirmation dialog
+   */
+  onDismissDuplicateConfirmation(): void {
+    this.store.dismissDuplicateConfirmation();
+  }
+
+  private _initForm(): void {
+    this.bookmarkForm = this._fb.group<BookmarkForm["controls"]>({
+      url: this._fb.control("", [Validators.required, simpleUrlValidator()]),
+      title: this._fb.control("", [Validators.required, Validators.maxLength(200)]),
+      description: this._fb.control("", [Validators.maxLength(1000)]),
+      notes: this._fb.control("", [Validators.maxLength(2000)]),
+      imageUrl: this._fb.control("", [Validators.required]),
+      faviconUrl: this._fb.control("", [Validators.required]),
+      siteName: this._fb.control("", [Validators.required]),
+      tags: this._fb.control<string[]>([]),
+    });
+  }
+
+  private _setValueForControls(): void {
+    this.bookmarkForm.patchValue({});
+  }
+
   private closeDialogEffect(): void {
     this._autoEffect(() => {
       if (this.store.$isSaveBookmarkFulfilled()) {
@@ -149,7 +267,7 @@ export class AddBookmarkDialog implements OnInit {
     });
   }
 
-  private fetchMetadataEffect(): void {
+  private setMetadataToFormEffect(): void {
     // T063: Auto-populate form when metadata is fetched
     this._autoEffect(() => {
       const metadata = this.store.metadata();
@@ -161,24 +279,59 @@ export class AddBookmarkDialog implements OnInit {
           imageUrl: metadata.image || "",
           faviconUrl: metadata.favicon || "",
           siteName: metadata.siteName || "",
-          availableImages: metadata.images || [],
-          selectedImageIndex: 0,
         });
       }
     });
   }
 
   /**
-   * T061: URL validation logic
+   * T141: Auto-save when duplicate check completes with no duplicate found
    */
-  private urlValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value) return null;
+  private duplicateCheckEffect(): void {
+    this._autoEffect(() => {
+      const isCheckDuplicateFulfilled = this.store.$isCheckDuplicateFulfilled();
+      const isDuplicate = this.store.isDuplicate();
+      const showConfirmation = this.store.showDuplicateConfirmation();
 
-    try {
-      new URL(control.value);
-      return null;
-    } catch {
-      return { invalidUrl: true };
-    }
+      // If duplicate check completed and no duplicate found, proceed with save
+      if (isCheckDuplicateFulfilled && !isDuplicate && !showConfirmation) {
+        console.log("duplicateCheckEffect Save bookmark");
+
+        const { url, title, description, imageUrl, faviconUrl, siteName, tags } = this
+          .bookmarkForm.value as Required<BookmarkForm["value"]>;
+
+        const request: BookmarkCreateDto = {
+          url: url,
+          title: title,
+          description: description || undefined,
+          imageUrl: imageUrl || undefined,
+          faviconUrl: faviconUrl || undefined,
+          siteName: siteName || undefined,
+          tags: tags.length > 0 ? tags : [],
+        };
+
+        this.store.saveBookmark(request);
+      }
+    });
+  }
+
+  private saveBookmark(): void {
+    const { url, title, description, imageUrl, faviconUrl, siteName, tags, notes } = this
+      .bookmarkForm.value as Required<BookmarkForm["value"]>;
+
+    const { collection } = this._dialogContext;
+
+    const request: BookmarkCreateDto = {
+      url: url,
+      title: title,
+      description: description || undefined,
+      imageUrl: imageUrl || undefined,
+      faviconUrl: faviconUrl || undefined,
+      siteName: siteName || undefined,
+      notes: notes || undefined,
+      tags: tags.length > 0 ? tags : [],
+      collectionId: collection?.id || undefined,
+    };
+    this.store.saveBookmark(request);
   }
 }

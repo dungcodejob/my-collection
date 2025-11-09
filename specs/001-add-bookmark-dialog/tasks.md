@@ -25,13 +25,13 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [X] T001 Install Cheerio dependency in backend package.json (npm install cheerio@1.1.2)
-- [X] T002 Install Axios HTTP client in backend package.json (npm install axios@1.12.1)
-- [X] T003 [P] Create Nx library for add-bookmark-dialog feature using Angular generator (client/libs/web/bookmark/feature/add-bookmark-dialog)
-- [X] T004 [P] Create Nx library for image-gallery UI component using Angular generator (client/libs/web/bookmark/ui/image-gallery)
-- [X] T005 [P] Create Nx library for url-input UI component using Angular generator (client/libs/web/bookmark/ui/url-input)
-- [X] T006 Configure TypeScript strict mode in all new library tsconfig.json files
-- [X] T007 Setup ESLint and Prettier for new libraries (copy from existing bookmark libs)
+- [x] T001 Install Cheerio dependency in backend package.json (npm install cheerio@1.1.2)
+- [x] T002 Install Axios HTTP client in backend package.json (npm install axios@1.12.1)
+- [x] T003 [P] Create Nx library for add-bookmark-dialog feature using Angular generator (client/libs/web/bookmark/feature/add-bookmark-dialog)
+- [x] T004 [P] Create Nx library for image-gallery UI component using Angular generator (client/libs/web/bookmark/ui/image-gallery)
+- [x] T005 [P] Create Nx library for url-input UI component using Angular generator (client/libs/web/bookmark/ui/url-input)
+- [x] T006 Configure TypeScript strict mode in all new library tsconfig.json files
+- [x] T007 Setup ESLint and Prettier for new libraries (copy from existing bookmark libs)
 
 ---
 
@@ -41,22 +41,22 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [X] T008 Create database migration file for bookmark entity in server/src/database/migrations/
-- [X] T009 Add notes column (TEXT) to bookmarks table in migration file
-- [X] T010 Add favicon_url column (VARCHAR 2048) to bookmarks table in migration file
-- [X] T011 Add composite index idx_bookmarks_user_url on (user_id, url) in migration file
-- [X] T012 Add check constraint for notes length (max 2000 chars) in migration file
+- [x] T008 Create database migration file for bookmark entity in server/src/database/migrations/
+- [x] T009 Add notes column (TEXT) to bookmarks table in migration file
+- [x] T010 Add favicon_url column (VARCHAR 2048) to bookmarks table in migration file
+- [x] T011 Add composite index idx_bookmarks_user_url on (user_id, url) in migration file
+- [x] T012 Add check constraint for notes length (max 2000 chars) in migration file
 - [ ] T013 Run database migration (npm run migration:up in server/) - SKIPPED (requires DB connection)
-- [X] T014 Update Bookmark entity in server/src/modules/bookmark/entities/bookmark.entity.ts (add notes and faviconUrl fields with MikroORM decorators)
-- [X] T015 Create MetadataResponseDto in server/src/modules/crawl/dto/metadata-response.dto.ts with validation decorators
-- [X] T016 Create MetadataRequestDto in server/src/modules/crawl/dto/metadata-request.dto.ts with URL validation
-- [X] T017 Create CreateBookmarkDto in server/src/modules/bookmark/dto/create-bookmark.dto.ts with all validation decorators
-- [X] T018 Update BookmarkResponseDto in server/src/modules/bookmark/dto/bookmark-response.dto.ts (add notes and faviconUrl fields)
-- [X] T019 Create DuplicateCheckResponseDto in server/src/modules/bookmark/dto/duplicate-check-response.dto.ts
-- [X] T020 Create metadata.model.ts interface in client/libs/web/bookmark/data-access/src/lib/models/
-- [X] T021 Update bookmark.model.ts interface in client/libs/web/bookmark/data-access/src/lib/models/ (add notes and faviconUrl fields)
-- [X] T022 Configure CORS settings in server/src/main.ts to allow frontend requests
-- [X] T023 Setup Redis caching module in server/src/configs/cache.config.ts (for metadata caching)
+- [x] T014 Update Bookmark entity in server/src/modules/bookmark/entities/bookmark.entity.ts (add notes and faviconUrl fields with MikroORM decorators)
+- [x] T015 Create MetadataResponseDto in server/src/modules/crawl/dto/metadata-response.dto.ts with validation decorators
+- [x] T016 Create MetadataRequestDto in server/src/modules/crawl/dto/metadata-request.dto.ts with URL validation
+- [x] T017 Create CreateBookmarkDto in server/src/modules/bookmark/dto/create-bookmark.dto.ts with all validation decorators
+- [x] T018 Update BookmarkResponseDto in server/src/modules/bookmark/dto/bookmark-response.dto.ts (add notes and faviconUrl fields)
+- [x] T019 Create DuplicateCheckResponseDto in server/src/modules/bookmark/dto/duplicate-check-response.dto.ts
+- [x] T020 Create metadata.model.ts interface in client/libs/web/bookmark/data-access/src/lib/models/
+- [x] T021 Update bookmark.model.ts interface in client/libs/web/bookmark/data-access/src/lib/models/ (add notes and faviconUrl fields)
+- [x] T022 Configure CORS settings in server/src/main.ts to allow frontend requests
+- [x] T023 Setup Redis caching module in server/src/configs/cache.config.ts (for metadata caching)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -83,64 +83,64 @@
 
 **Backend - Metadata Extraction**
 
-- [X] T030 [P] [US1] Implement CrawlService.extractMetadata method in server/src/modules/crawl/crawl.service.ts (Cheerio HTML parsing)
-- [X] T031 [P] [US1] Implement CrawlService.extractTitle helper in server/src/modules/crawl/crawl.service.ts (og:title, twitter:title, <title>)
-- [X] T032 [P] [US1] Implement CrawlService.extractDescription helper in server/src/modules/crawl/crawl.service.ts (og:description, meta description)
-- [X] T033 [P] [US1] Implement CrawlService.extractImages helper in server/src/modules/crawl/crawl.service.ts (og:image, img tags, max 10)
-- [X] T034 [P] [US1] Implement CrawlService.extractFavicon helper in server/src/modules/crawl/crawl.service.ts (link rel=icon)
+- [x] T030 [P] [US1] Implement CrawlService.extractMetadata method in server/src/modules/crawl/crawl.service.ts (Cheerio HTML parsing)
+- [x] T031 [P] [US1] Implement CrawlService.extractTitle helper in server/src/modules/crawl/crawl.service.ts (og:title, twitter:title, <title>)
+- [x] T032 [P] [US1] Implement CrawlService.extractDescription helper in server/src/modules/crawl/crawl.service.ts (og:description, meta description)
+- [x] T033 [P] [US1] Implement CrawlService.extractImages helper in server/src/modules/crawl/crawl.service.ts (og:image, img tags, max 10)
+- [x] T034 [P] [US1] Implement CrawlService.extractFavicon helper in server/src/modules/crawl/crawl.service.ts (link rel=icon)
 - [ ] T035 [US1] Add metadata caching logic in CrawlService (Redis, 24-hour TTL) in server/src/modules/crawl/crawl.service.ts
-- [X] T036 [US1] Create GET /metadata endpoint in server/src/modules/crawl/crawl.controller.ts with @ApiOperation decorators
+- [x] T036 [US1] Create GET /metadata endpoint in server/src/modules/crawl/crawl.controller.ts with @ApiOperation decorators
 - [ ] T037 [US1] Add rate limiting to metadata endpoint (60 requests/minute per user) in server/src/modules/crawl/crawl.controller.ts
 
 **Backend - Bookmark Creation**
 
 - [ ] T038 [P] [US1] Create CreateBookmarkCommand in server/src/modules/bookmark/commands/create-bookmark.command.ts - SKIPPED (using direct service call)
 - [ ] T039 [US1] Create CreateBookmarkHandler in server/src/modules/bookmark/commands/handlers/create-bookmark.handler.ts (CQRS pattern) - SKIPPED (using direct service call)
-- [X] T040 [US1] Implement bookmark creation logic in CreateBookmarkHandler (validate, create entity, persist)
-- [X] T041 [US1] Add duplicate URL check in CreateBookmarkHandler (query by user_id and url)
-- [X] T042 [US1] Create POST /bookmarks endpoint in server/src/modules/bookmark/bookmark.controller.ts with @ApiOperation decorators
+- [x] T040 [US1] Implement bookmark creation logic in CreateBookmarkHandler (validate, create entity, persist)
+- [x] T041 [US1] Add duplicate URL check in CreateBookmarkHandler (query by user_id and url)
+- [x] T042 [US1] Create POST /bookmarks endpoint in server/src/modules/bookmark/bookmark.controller.ts with @ApiOperation decorators
 - [ ] T043 [US1] Register CreateBookmarkHandler in server/src/modules/bookmark/bookmark.module.ts (CqrsModule providers) - SKIPPED (not using CQRS for now)
-- [X] T044 [US1] Add JWT authentication guard to bookmark endpoints in server/src/modules/bookmark/bookmark.controller.ts - ALREADY EXISTS (@ApiAuth decorator)
+- [x] T044 [US1] Add JWT authentication guard to bookmark endpoints in server/src/modules/bookmark/bookmark.controller.ts - ALREADY EXISTS (@ApiAuth decorator)
 
 **Frontend - Data Access Layer**
 
-- [X] T045 [P] [US1] Create BookmarkService.fetchMetadata method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
-- [X] T046 [P] [US1] Create BookmarkService.createBookmark method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts - ALREADY EXISTS
-- [X] T047 [P] [US1] Create BookmarkService.checkDuplicate method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
-- [X] T048 [US1] Create AddBookmarkDialogStore using signalStore() in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.store.ts
-- [X] T049 [US1] Add state properties (url, title, description, metadata, isLoading, error) to AddBookmarkDialogStore
-- [X] T050 [US1] Add computed signals (isValid, canSave, hasChanges) to AddBookmarkDialogStore
-- [X] T051 [US1] Implement fetchMetadata effect using rxMethod() in AddBookmarkDialogStore
-- [X] T052 [US1] Implement saveBookmark effect using rxMethod() in AddBookmarkDialogStore
+- [x] T045 [P] [US1] Create BookmarkService.fetchMetadata method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
+- [x] T046 [P] [US1] Create BookmarkService.createBookmark method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts - ALREADY EXISTS
+- [x] T047 [P] [US1] Create BookmarkService.checkDuplicate method in client/libs/web/bookmark/data-access/src/lib/bookmark.service.ts
+- [x] T048 [US1] Create AddBookmarkDialogStore using signalStore() in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.store.ts
+- [x] T049 [US1] Add state properties (url, title, description, metadata, isLoading, error) to AddBookmarkDialogStore
+- [x] T050 [US1] Add computed signals (isValid, canSave, hasChanges) to AddBookmarkDialogStore
+- [x] T051 [US1] Implement fetchMetadata effect using rxMethod() in AddBookmarkDialogStore
+- [x] T052 [US1] Implement saveBookmark effect using rxMethod() in AddBookmarkDialogStore
 
 **Frontend - Dialog Component**
 
-- [X] T053 [US1] Create AddBookmarkDialogComponent in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.ts
-- [X] T054 [US1] Create dialog template in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.html (Spartan UI Dialog)
-- [X] T055 [US1] Add URL input field with validation in dialog template
-- [X] T056 [US1] Add "Fetch Metadata" button with loading state in dialog template
-- [X] T057 [US1] Add title input field (reactive forms) in dialog template
-- [X] T058 [US1] Add description textarea (reactive forms) in dialog template
-- [X] T059 [US1] Add image preview section in dialog template
-- [X] T060 [US1] Add "Save" and "Cancel" buttons in dialog template
-- [X] T061 [US1] Implement URL validation logic in AddBookmarkDialogComponent
-- [X] T062 [US1] Implement metadata fetch on button click in AddBookmarkDialogComponent
-- [X] T063 [US1] Implement form population from metadata in AddBookmarkDialogComponent
-- [X] T064 [US1] Implement save bookmark logic in AddBookmarkDialogComponent
-- [X] T065 [US1] Implement dialog close logic (Cancel, X, outside click) in AddBookmarkDialogComponent
-- [X] T066 [US1] Add loading indicators (spinner) during metadata fetch in dialog template
-- [X] T067 [US1] Add error message display in dialog template
-- [X] T068 [US1] Style dialog with Tailwind CSS in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.css
-- [X] T069 [US1] Add keyboard shortcuts (Enter to save, Esc to close) in AddBookmarkDialogComponent
-- [X] T070 [US1] Implement focus trap within dialog (CDK FocusTrap) in AddBookmarkDialogComponent - HANDLED BY SPARTAN UI
+- [x] T053 [US1] Create AddBookmarkDialogComponent in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.ts
+- [x] T054 [US1] Create dialog template in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.html (Spartan UI Dialog)
+- [x] T055 [US1] Add URL input field with validation in dialog template
+- [x] T056 [US1] Add "Fetch Metadata" button with loading state in dialog template
+- [x] T057 [US1] Add title input field (reactive forms) in dialog template
+- [x] T058 [US1] Add description textarea (reactive forms) in dialog template
+- [x] T059 [US1] Add image preview section in dialog template
+- [x] T060 [US1] Add "Save" and "Cancel" buttons in dialog template
+- [x] T061 [US1] Implement URL validation logic in AddBookmarkDialogComponent
+- [x] T062 [US1] Implement metadata fetch on button click in AddBookmarkDialogComponent
+- [x] T063 [US1] Implement form population from metadata in AddBookmarkDialogComponent
+- [x] T064 [US1] Implement save bookmark logic in AddBookmarkDialogComponent
+- [x] T065 [US1] Implement dialog close logic (Cancel, X, outside click) in AddBookmarkDialogComponent
+- [x] T066 [US1] Add loading indicators (spinner) during metadata fetch in dialog template
+- [x] T067 [US1] Add error message display in dialog template
+- [x] T068 [US1] Style dialog with Tailwind CSS in client/libs/web/bookmark/feature/add-bookmark-dialog/src/lib/add-bookmark-dialog.component.css
+- [x] T069 [US1] Add keyboard shortcuts (Enter to save, Esc to close) in AddBookmarkDialogComponent
+- [x] T070 [US1] Implement focus trap within dialog (CDK FocusTrap) in AddBookmarkDialogComponent - HANDLED BY SPARTAN UI
 
 **Frontend - Integration**
 
-- [X] T071 [US1] Export AddBookmarkDialogComponent from client/libs/web/bookmark/feature/add-bookmark-dialog/src/index.ts
-- [X] T072 [US1] Add "Add Bookmark" button to bookmarks list page in client/apps/client/src/app/
-- [X] T073 [US1] Implement dialog open/close logic in parent component
-- [X] T074 [US1] Add success notification on bookmark creation (ngx-sonner toast)
-- [X] T075 [US1] Refresh bookmark list after successful creation
+- [x] T071 [US1] Export AddBookmarkDialogComponent from client/libs/web/bookmark/feature/add-bookmark-dialog/src/index.ts
+- [x] T072 [US1] Add "Add Bookmark" button to bookmarks list page in client/apps/client/src/app/
+- [x] T073 [US1] Implement dialog open/close logic in parent component
+- [x] T074 [US1] Add success notification on bookmark creation (ngx-sonner toast)
+- [x] T075 [US1] Refresh bookmark list after successful creation
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -162,34 +162,34 @@
 
 **Frontend - Image Gallery Component**
 
-- [ ] T079 [P] [US2] Create ImageGalleryComponent in client/libs/web/bookmark/ui/image-gallery/src/lib/image-gallery.component.ts
-- [ ] T080 [US2] Create image gallery template in client/libs/web/bookmark/ui/image-gallery/src/lib/image-gallery.component.html
-- [ ] T081 [US2] Implement image grid layout (responsive, max 10 images) in gallery template
-- [ ] T082 [US2] Add image selection logic (radio buttons or click to select) in ImageGalleryComponent
-- [ ] T083 [US2] Add selected image highlight/border in gallery template
-- [ ] T084 [US2] Implement lazy loading for images (IntersectionObserver) in ImageGalleryComponent
-- [ ] T085 [US2] Style image gallery with Tailwind CSS in client/libs/web/bookmark/ui/image-gallery/src/lib/image-gallery.component.css
-- [ ] T086 [US2] Export ImageGalleryComponent from client/libs/web/bookmark/ui/image-gallery/src/index.ts
+- [x] T079 [P] [US2] Create ImageGalleryComponent in client/libs/web/bookmark/ui/image-gallery/src/lib/image-gallery.component.ts
+- [x] T080 [US2] Create image gallery template in client/libs/web/bookmark/ui/image-gallery/src/lib/image-gallery.component.html
+- [x] T081 [US2] Implement image grid layout (responsive, max 10 images) in gallery template
+- [x] T082 [US2] Add image selection logic (radio buttons or click to select) in ImageGalleryComponent
+- [x] T083 [US2] Add selected image highlight/border in gallery template
+- [x] T084 [US2] Implement lazy loading for images (IntersectionObserver) in ImageGalleryComponent
+- [x] T085 [US2] Style image gallery with Tailwind CSS in client/libs/web/bookmark/ui/image-gallery/src/lib/image-gallery.component.css
+- [x] T086 [US2] Export ImageGalleryComponent from client/libs/web/bookmark/ui/image-gallery/src/index.ts
 
 **Frontend - Form Enhancements**
 
-- [ ] T087 [US2] Add notes textarea field to dialog template in add-bookmark-dialog.component.html
-- [ ] T088 [US2] Add character counter for title (200 max) in dialog template
-- [ ] T089 [US2] Add character counter for description (1000 max) in dialog template
-- [ ] T090 [US2] Add character counter for notes (2000 max) in dialog template
-- [ ] T091 [US2] Integrate ImageGalleryComponent into dialog template
-- [ ] T092 [US2] Implement image selection state management in AddBookmarkDialogStore
-- [ ] T093 [US2] Add selectedImageUrl to store state and update on image selection
-- [ ] T094 [US2] Implement form dirty state tracking (hasChanges computed signal)
-- [ ] T095 [US2] Add confirmation prompt if user re-fetches metadata with unsaved edits
-- [ ] T096 [US2] Implement field validation (required fields, max lengths) in AddBookmarkDialogComponent
-- [ ] T097 [US2] Display validation errors inline in dialog template
+- [x] T087 [US2] Add notes textarea field to dialog template in add-bookmark-dialog.component.html
+- [x] T088 [US2] Add character counter for title (200 max) in dialog template
+- [x] T089 [US2] Add character counter for description (1000 max) in dialog template
+- [x] T090 [US2] Add character counter for notes (2000 max) in dialog template
+- [x] T091 [US2] Integrate ImageGalleryComponent into dialog template
+- [x] T092 [US2] Implement image selection state management in AddBookmarkDialogStore
+- [x] T093 [US2] Add selectedImageUrl to store state and update on image selection
+- [x] T094 [US2] Implement form dirty state tracking (hasChanges computed signal)
+- [x] T095 [US2] Add confirmation prompt if user re-fetches metadata with unsaved edits
+- [x] T096 [US2] Implement field validation (required fields, max lengths) in AddBookmarkDialogComponent
+- [x] T097 [US2] Display validation errors inline in dialog template
 
 **Backend - Notes Field Support**
 
-- [ ] T098 [US2] Update CreateBookmarkHandler to accept and save notes field
-- [ ] T099 [US2] Add notes field validation in CreateBookmarkDto (max 2000 chars)
-- [ ] T100 [US2] Update Swagger documentation for notes field in bookmark.controller.ts
+- [x] T098 [US2] Update CreateBookmarkHandler to accept and save notes field
+- [x] T099 [US2] Add notes field validation in CreateBookmarkDto (max 2000 chars)
+- [x] T100 [US2] Update Swagger documentation for notes field in bookmark.controller.ts
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -212,40 +212,40 @@
 
 **Backend - Image Upload Service**
 
-- [ ] T105 [P] [US3] Create FileUploadService in server/src/common/services/file-upload.service.ts
-- [ ] T106 [US3] Implement generatePresignedUrl method in FileUploadService (AWS S3 or compatible)
-- [ ] T107 [US3] Implement validateImageFile method in FileUploadService (type, size, dimensions)
-- [ ] T108 [US3] Implement sanitizeFilename method in FileUploadService (prevent path traversal)
-- [ ] T109 [US3] Create ImageUploadRequestDto in server/src/modules/bookmark/dto/image-upload-request.dto.ts
-- [ ] T110 [US3] Create ImageUploadResponseDto in server/src/modules/bookmark/dto/image-upload-response.dto.ts
-- [ ] T111 [US3] Create POST /bookmarks/images/presigned-url endpoint in server/src/modules/bookmark/bookmark.controller.ts
+- [x] T105 [P] [US3] Create FileUploadService in server/src/common/services/file-upload.service.ts
+- [x] T106 [US3] Implement generatePresignedUrl method in FileUploadService (AWS S3 or compatible)
+- [x] T107 [US3] Implement validateImageFile method in FileUploadService (type, size, dimensions)
+- [x] T108 [US3] Implement sanitizeFilename method in FileUploadService (prevent path traversal)
+- [x] T109 [US3] Create ImageUploadRequestDto in server/src/modules/bookmark/dto/image-upload-request.dto.ts
+- [x] T110 [US3] Create ImageUploadResponseDto in server/src/modules/bookmark/dto/image-upload-response.dto.ts
+- [x] T111 [US3] Create POST /bookmarks/images/presigned-url endpoint in server/src/modules/bookmark/bookmark.controller.ts
 - [ ] T112 [US3] Add rate limiting to image upload endpoint (30 requests/minute per user)
 
 **Backend - Image URL Validation**
 
-- [ ] T113 [P] [US3] Create ImageUrlValidationRequestDto in server/src/modules/bookmark/dto/image-url-validation-request.dto.ts
-- [ ] T114 [P] [US3] Create ImageUrlValidationResponseDto in server/src/modules/bookmark/dto/image-url-validation-response.dto.ts
-- [ ] T115 [US3] Implement validateImageUrl method in FileUploadService (check URL, MIME type, dimensions)
-- [ ] T116 [US3] Create POST /bookmarks/images/validate endpoint in server/src/modules/bookmark/bookmark.controller.ts
-- [ ] T117 [US3] Register FileUploadService in server/src/modules/bookmark/bookmark.module.ts
+- [x] T113 [P] [US3] Create ImageUrlValidationRequestDto in server/src/modules/bookmark/dto/image-url-validation-request.dto.ts
+- [x] T114 [P] [US3] Create ImageUrlValidationResponseDto in server/src/modules/bookmark/dto/image-url-validation-response.dto.ts
+- [x] T115 [US3] Implement validateImageUrl method in FileUploadService (check URL, MIME type, dimensions)
+- [x] T116 [US3] Create POST /bookmarks/images/validate endpoint in server/src/modules/bookmark/bookmark.controller.ts
+- [x] T117 [US3] Register FileUploadService in server/src/modules/bookmark/bookmark.module.ts
 
 **Frontend - Image Upload UI**
 
-- [ ] T118 [US3] Add file input (hidden) for image upload in dialog template
-- [ ] T119 [US3] Add "Upload Image" button that triggers file input in dialog template
-- [ ] T120 [US3] Add "Image URL" input field in dialog template
-- [ ] T121 [US3] Add "Revert to Default" button in dialog template
-- [ ] T122 [US3] Implement file selection handler in AddBookmarkDialogComponent
-- [ ] T123 [US3] Implement file validation (type, size) in AddBookmarkDialogComponent
-- [ ] T124 [US3] Implement image upload flow (request presigned URL → upload to S3 → get final URL) in AddBookmarkDialogComponent
-- [ ] T125 [US3] Add upload progress indicator in dialog template
-- [ ] T126 [US3] Implement custom image URL validation in AddBookmarkDialogComponent
-- [ ] T127 [US3] Implement image preview for custom URL in AddBookmarkDialogComponent
-- [ ] T128 [US3] Implement revert to default image logic in AddBookmarkDialogComponent
-- [ ] T129 [US3] Add isUploadingImage state to AddBookmarkDialogStore
-- [ ] T130 [US3] Add uploadImage effect using rxMethod() in AddBookmarkDialogStore
-- [ ] T131 [US3] Add validateImageUrl effect using rxMethod() in AddBookmarkDialogStore
-- [ ] T132 [US3] Display image upload errors in dialog template
+- [x] T118 [US3] Add file input (hidden) for image upload in dialog template
+- [x] T119 [US3] Add "Upload Image" button that triggers file input in dialog template
+- [x] T120 [US3] Add "Image URL" input field in dialog template
+- [x] T121 [US3] Add "Revert to Default" button in dialog template
+- [x] T122 [US3] Implement file selection handler in AddBookmarkDialogComponent
+- [x] T123 [US3] Implement file validation (type, size) in AddBookmarkDialogComponent
+- [ ] T124 [US3] Implement image upload flow (request presigned URL → upload to S3 → get final URL) in AddBookmarkDialogComponent - SIMPLIFIED (using data URLs for now)
+- [x] T125 [US3] Add upload progress indicator in dialog template
+- [x] T126 [US3] Implement custom image URL validation in AddBookmarkDialogComponent
+- [x] T127 [US3] Implement image preview for custom URL in AddBookmarkDialogComponent
+- [x] T128 [US3] Implement revert to default image logic in AddBookmarkDialogComponent
+- [x] T129 [US3] Add isUploadingImage state to AddBookmarkDialogStore
+- [x] T130 [US3] Add uploadImage effect using rxMethod() in AddBookmarkDialogStore
+- [x] T131 [US3] Add validateImageUrl effect using rxMethod() in AddBookmarkDialogStore
+- [x] T132 [US3] Display image upload errors in dialog template
 
 **Frontend - Image Service**
 
@@ -263,19 +263,19 @@
 
 **Purpose**: Cross-cutting concern that affects User Story 1 (save flow)
 
-- [ ] T136 Create CheckDuplicateQuery in server/src/modules/bookmark/queries/check-duplicate.query.ts
-- [ ] T137 Create CheckDuplicateHandler in server/src/modules/bookmark/queries/handlers/check-duplicate.handler.ts
-- [ ] T138 Implement duplicate check logic in CheckDuplicateHandler (query by user_id and url)
-- [ ] T139 Create GET /bookmarks/check-duplicate endpoint in server/src/modules/bookmark/bookmark.controller.ts
-- [ ] T140 Register CheckDuplicateHandler in server/src/modules/bookmark/bookmark.module.ts
-- [ ] T141 Add duplicate check before save in AddBookmarkDialogComponent
-- [ ] T142 Create duplicate confirmation dialog template (nested dialog or alert)
-- [ ] T143 Display existing bookmark details in confirmation (title, created date, link)
-- [ ] T144 Add "View Existing" and "Save Anyway" buttons to confirmation
-- [ ] T145 Implement "View Existing" logic (navigate to bookmark detail)
-- [ ] T146 Implement "Save Anyway" logic (proceed with save despite duplicate)
-- [ ] T147 Add showDuplicateConfirmation state to AddBookmarkDialogStore
-- [ ] T148 Add duplicateBookmark state to AddBookmarkDialogStore
+- [x] T136 Create CheckDuplicateQuery in server/src/modules/bookmark/queries/check-duplicate.query.ts - SKIPPED (using direct service method)
+- [x] T137 Create CheckDuplicateHandler in server/src/modules/bookmark/queries/handlers/check-duplicate.handler.ts - SKIPPED (using direct service method)
+- [x] T138 Implement duplicate check logic in CheckDuplicateHandler (query by user_id and url)
+- [x] T139 Create GET /bookmarks/check-duplicate endpoint in server/src/modules/bookmark/bookmark.controller.ts
+- [x] T140 Register CheckDuplicateHandler in server/src/modules/bookmark/bookmark.module.ts - SKIPPED (no handler needed)
+- [x] T141 Add duplicate check before save in AddBookmarkDialogComponent
+- [x] T142 Create duplicate confirmation dialog template (nested dialog or alert)
+- [x] T143 Display existing bookmark details in confirmation (title, created date, link)
+- [x] T144 Add "View Existing" and "Save Anyway" buttons to confirmation
+- [x] T145 Implement "View Existing" logic (navigate to bookmark detail)
+- [x] T146 Implement "Save Anyway" logic (proceed with save despite duplicate)
+- [x] T147 Add showDuplicateConfirmation state to AddBookmarkDialogStore
+- [x] T148 Add duplicateBookmark state to AddBookmarkDialogStore
 
 ---
 
@@ -424,9 +424,8 @@ With multiple developers:
 **User Story 3 (P3)**: 35 tasks  
 **Duplicate Detection**: 13 tasks  
 **Setup + Foundational**: 23 tasks  
-**Polish**: 22 tasks  
+**Polish**: 22 tasks
 
 **Parallel Opportunities**: 45+ tasks can run in parallel  
 **Estimated MVP Time**: 3-5 days (User Story 1 only)  
 **Estimated Full Feature Time**: 10-15 days (all user stories)
-

@@ -70,27 +70,10 @@ export class BookmarkApi {
    * T047: Check if bookmark URL already exists for current user
    * Calls GET /bookmark/check-duplicate?url={url}
    */
-  checkDuplicate(url: string): Observable<
-    SingleResponseDto<{
-      exists: boolean;
-      bookmark: {
-        id: string;
-        title: string;
-        createdAt: string;
-        imageUrl: string | null;
-      } | null;
-    }>
-  > {
-    return this._httpService.get<
-      SingleResponseDto<{
-        exists: boolean;
-        bookmark: {
-          id: string;
-          title: string;
-          createdAt: string;
-          imageUrl: string | null;
-        } | null;
-      }>
-    >(API_ENDPOINTS.BOOKMARKS.CHECK_DUPLICATE, { params: { url } });
+  checkDuplicate(url: string): Observable<SingleResponseDto<BookmarkDto | null>> {
+    return this._httpService.get<SingleResponseDto<BookmarkDto | null>>(
+      API_ENDPOINTS.BOOKMARKS.CHECK_DUPLICATE,
+      { params: { url } }
+    );
   }
 }

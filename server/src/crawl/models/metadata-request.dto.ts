@@ -11,4 +11,3 @@ export class MetadataRequestDto {
   @MaxLength(2048, { message: 'URL must not exceed 2048 characters' })
   url: string;
 }
-

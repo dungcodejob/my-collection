@@ -4,10 +4,12 @@ import {
   HostListener,
   inject,
   input,
+  isSignal,
   output,
+  Signal,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Observable, of, switchMap, take, tap } from "rxjs";
+import { isObservable, Observable, of, switchMap, take, tap } from "rxjs";
 import { MCDialogService } from "../dialog.service";
 import { ConfirmDialogData, defaultConfirmDialogData } from "./confirm-dialog-data";
 
@@ -77,73 +79,27 @@ import { ConfirmDialogData, defaultConfirmDialogData } from "./confirm-dialog-da
  *     .pipe(map(result => result.canDelete));
  * }
  */
+
+type ConditionFn = () => Observable<boolean> | boolean | Signal<boolean> | undefined;
+
 @Directive({
-  selector: "[mcConfirmAction]",
+  selector: "[mcConfirm]",
 })
 export class MCConfirmActionDirective {
   private readonly _dialogService = inject(MCDialogService);
   private readonly _destroyRef = inject(DestroyRef);
 
-  /**
-   * Complete configuration object for the confirmation dialog.
-   * Takes precedence over individual input properties.
-   */
   readonly confirmConfig = input<ConfirmDialogData>();
-
-  /**
-   * Title of the confirmation dialog.
-   * Ignored if confirmConfig is provided.
-   */
   readonly confirmTitle = input<string>();
-
-  /**
-   * Description/message of the confirmation dialog.
-   * Ignored if confirmConfig is provided.
-   */
   readonly confirmDescription = input<string>();
-
-  /**
-   * Text for the confirm button.
-   * Ignored if confirmConfig is provided.
-   */
   readonly confirmText = input<string>();
-
-  /**
-   * Text for the cancel button.
-   * Ignored if confirmConfig is provided.
-   */
   readonly cancelText = input<string>();
 
-  /**
-   * Whether to prevent the default click behavior.
-   * Defaults to true to prevent form submission or navigation.
-   */
   readonly isTriggerPreventDefault = input<boolean>(true);
-
-  /**
-   * Whether to stop event propagation.
-   * Defaults to true to prevent parent click handlers.
-   */
   readonly isTriggerStopPropagation = input<boolean>(true);
+  readonly conditionFn = input<ConditionFn>();
 
-  /**
-   * Optional API call to check if confirmation is needed.
-   * If provided, this Observable<boolean> will be called before showing the dialog.
-   * - true: Show confirmation dialog
-   * - false: Execute action directly without confirmation
-   */
-  readonly shouldConfirm = input<Observable<boolean>>();
-
-  /**
-   * Emitted when the user confirms the action.
-   * This is where you should place your action logic.
-   */
   readonly confirmed = output<void>();
-
-  /**
-   * Emitted when the user cancels the action.
-   * Optional - use for cleanup or analytics.
-   */
   readonly cancelled = output<void>();
 
   @HostListener("click", ["$event"])
@@ -160,9 +116,10 @@ export class MCConfirmActionDirective {
   }
 
   private _handleAction(): void {
-    const shouldConfirmObs = this.shouldConfirm();
+    const fn = this.conditionFn();
+    const shouldConfirmObs = fn ? fn() : false;
 
-    if (shouldConfirmObs) {
+    if (isObservable(shouldConfirmObs)) {
       shouldConfirmObs
         .pipe(
           take(1),
@@ -178,8 +135,20 @@ export class MCConfirmActionDirective {
           takeUntilDestroyed(this._destroyRef)
         )
         .subscribe();
-    } else {
+    }
+
+    if (isSignal(shouldConfirmObs)) {
+      if (shouldConfirmObs()) {
+        this.showConfirmDialog().subscribe();
+      } else {
+        this.confirmed.emit();
+      }
+    }
+
+    if (shouldConfirmObs) {
       this.showConfirmDialog().subscribe();
+    } else {
+      this.confirmed.emit();
     }
   }
 

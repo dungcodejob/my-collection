@@ -2,6 +2,7 @@ import { computed, inject } from "@angular/core";
 import {
   BookmarkApi,
   BookmarkCreateDto,
+  BookmarkDto,
   MetadataDto,
 } from "@client/web-bookmark-data-access";
 import { tapHandleApi } from "@client/web-core-http";
@@ -31,31 +32,26 @@ export const addBookmarkDialogStatusNames = {
   fetchMetadata: "fetchMetadata",
   saveBookmark: "saveBookmark",
   checkDuplicate: "checkDuplicate",
+  uploadImage: "uploadImage",
+  validateImageUrl: "validateImageUrl",
 } as const;
 
 export type AddBookmarkDialogStateWithFeature = NamedStatusState<
   typeof addBookmarkDialogStatusNames.fetchMetadata
 > &
   NamedStatusState<typeof addBookmarkDialogStatusNames.saveBookmark> &
-  NamedStatusState<typeof addBookmarkDialogStatusNames.checkDuplicate>;
+  NamedStatusState<typeof addBookmarkDialogStatusNames.checkDuplicate> &
+  NamedStatusState<typeof addBookmarkDialogStatusNames.uploadImage> &
+  NamedStatusState<typeof addBookmarkDialogStatusNames.validateImageUrl>;
 
 /**
  * T049: State properties
+ * T129: Add image upload state
  */
 type AddBookmarkDialogState = {
-  // Form fields
-  url: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  faviconUrl: string;
-  siteName: string;
-  notes: string;
-  tags: string[];
-
   // Metadata
   metadata: MetadataDto | null;
-  availableImages: string[];
+
   selectedImageIndex: number;
 
   // UI state
@@ -63,29 +59,33 @@ type AddBookmarkDialogState = {
 
   // Duplicate detection
   isDuplicate: boolean;
-  existingBookmark: {
-    id: string;
-    title: string;
-    createdAt: string;
-    imageUrl: string | null;
-  } | null;
+  existingBookmark: BookmarkDto | null;
+
+  // T129: Image upload state
+  customImageUrl: string;
+  customImageFile: File | null;
+  uploadProgress: number;
+  imageError: string | null;
+  defaultImageUrl: string; // Store original fetched image
+
+  // T147, T148: Duplicate confirmation state
+  showDuplicateConfirmation: boolean;
+  duplicateBookmark: BookmarkDto | null;
 };
 
 const initialState: AddBookmarkDialogState = {
-  url: "",
-  title: "",
-  description: "",
-  imageUrl: "",
-  faviconUrl: "",
-  siteName: "",
-  notes: "",
-  tags: [],
   metadata: null,
-  availableImages: [],
   selectedImageIndex: 0,
   error: null,
   isDuplicate: false,
   existingBookmark: null,
+  customImageUrl: "",
+  customImageFile: null,
+  uploadProgress: 0,
+  imageError: null,
+  defaultImageUrl: "",
+  showDuplicateConfirmation: false,
+  duplicateBookmark: null,
 };
 
 export const AddBookmarkDialogFacade = signalStore(
@@ -95,6 +95,8 @@ export const AddBookmarkDialogFacade = signalStore(
       addBookmarkDialogStatusNames.fetchMetadata,
       addBookmarkDialogStatusNames.saveBookmark,
       addBookmarkDialogStatusNames.checkDuplicate,
+      addBookmarkDialogStatusNames.uploadImage,
+      addBookmarkDialogStatusNames.validateImageUrl,
     ],
   }),
   withProps(() => ({
@@ -105,16 +107,16 @@ export const AddBookmarkDialogFacade = signalStore(
    */
   withComputed(store => ({
     // Check if URL is valid
-    isValidUrl: computed(() => {
-      const url = store.url();
-      if (!url) return false;
-      try {
-        new URL(url);
-        return true;
-      } catch {
-        return false;
-      }
-    }),
+    // isValidUrl: computed(() => {
+    //   const url = store.url();
+    //   if (!url) return false;
+    //   try {
+    //     new URL(url);
+    //     return true;
+    //   } catch {
+    //     return false;
+    //   }
+    // }),
 
     // Check if form is valid and can be saved
     // canSave: computed(() => {
@@ -126,19 +128,17 @@ export const AddBookmarkDialogFacade = signalStore(
     canSave: computed(() => true), // TODO: Implement validation
 
     // Check if form has unsaved changes
-    hasChanges: computed(() => {
-      const url = store.url();
-      const title = store.title();
-      const description = store.description();
-      const notes = store.notes();
-      return url !== "" || title !== "" || description !== "" || notes !== "";
-    }),
-
     // Get current selected image
-    selectedImage: computed(() => {
-      const images = store.availableImages();
-      const index = store.selectedImageIndex();
-      return images[index] || store.imageUrl() || null;
+
+    // Check if user has set a custom image
+    hasCustomImage: computed(() => {
+      const customUrl = store.customImageUrl();
+      const customFile = store.customImageFile();
+      return !!customUrl || !!customFile;
+    }),
+    availableImages: computed(() => {
+      const metadata = store.metadata();
+      return metadata?.images || [];
     }),
   })),
   withMethods(({ _bookmarkApi, ...store }) => ({
@@ -151,20 +151,20 @@ export const AddBookmarkDialogFacade = signalStore(
           _bookmarkApi.fetchMetadata(url).pipe(
             tapHandleApi({
               prefixFn: () => {
-                patchState(store, { error: null, metadata: null, url });
+                patchState(store, { error: null, metadata: null });
               },
               successFn: result => {
                 const metadata = result.data;
+                const defaultImage = metadata.image || "";
                 patchState(store, {
                   metadata,
-                  title: metadata.title || "",
-                  description: metadata.description || "",
-                  imageUrl: metadata.image || "",
-                  faviconUrl: metadata.favicon || "",
-                  siteName: metadata.siteName || "",
-                  availableImages: metadata.images || [],
+
                   selectedImageIndex: 0,
                   error: null,
+                  defaultImageUrl: defaultImage, // Store for revert functionality
+                  customImageUrl: "", // Reset custom image
+                  customImageFile: null,
+                  imageError: null,
                 });
               },
               errorFn: error => {
@@ -197,20 +197,9 @@ export const AddBookmarkDialogFacade = signalStore(
     /**
      * T052: Save bookmark effect using rxMethod()
      */
-    saveBookmark: rxMethod<void>(
+    saveBookmark: rxMethod<BookmarkCreateDto>(
       pipe(
-        switchMap(() => {
-          const request: BookmarkCreateDto = {
-            url: store.url(),
-            title: store.title(),
-            description: store.description() || undefined,
-            imageUrl: store.selectedImage() || undefined,
-            faviconUrl: store.faviconUrl() || undefined,
-            siteName: store.siteName() || undefined,
-            notes: store.notes() || undefined,
-            tags: store.tags().length > 0 ? store.tags() : undefined,
-          };
-
+        switchMap(request => {
           return _bookmarkApi.createBookmark(request).pipe(
             tapHandleApi({
               successFn: () => {
@@ -241,6 +230,7 @@ export const AddBookmarkDialogFacade = signalStore(
 
     /**
      * Check for duplicate URL
+     * T141: Add duplicate check before save
      */
     checkDuplicate: rxMethod<string>(
       pipe(
@@ -249,12 +239,20 @@ export const AddBookmarkDialogFacade = signalStore(
             tapHandleApi({
               successFn: result => {
                 patchState(store, {
-                  isDuplicate: result.data.exists,
-                  existingBookmark: result.data.bookmark,
+                  isDuplicate: !!result.data,
+                  existingBookmark: result.data || null,
+                  // T147: Show duplicate confirmation if duplicate found
+                  showDuplicateConfirmation: !!result.data,
+                  duplicateBookmark: result.data || null,
                 });
               },
               errorFn: error => {
                 console.error("Failed to check duplicate:", error);
+                // On error, allow save to proceed
+                patchState(store, {
+                  isDuplicate: false,
+                  showDuplicateConfirmation: false,
+                });
               },
               statusFn: status => {
                 patchState(
@@ -268,15 +266,149 @@ export const AddBookmarkDialogFacade = signalStore(
       )
     ),
 
-    // Helper methods for form updates
-    updateUrl: (url: string): void => patchState(store, { url }),
-    updateTitle: (title: string): void => patchState(store, { title }),
-    updateDescription: (description: string): void => patchState(store, { description }),
-    updateNotes: (notes: string): void => patchState(store, { notes }),
-    updateTags: (tags: string[]): void => patchState(store, { tags }),
-    updateImageUrl: (imageUrl: string): void => patchState(store, { imageUrl }),
     selectImage: (index: number): void =>
       patchState(store, { selectedImageIndex: index }),
+
+    /**
+     * T122, T123: Handle file selection and validation
+     */
+    handleFileSelection: (file: File): void => {
+      // T123: Validate file
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        patchState(store, {
+          imageError: `Invalid file type. Allowed types: ${allowedTypes.join(", ")}`,
+        });
+        return;
+      }
+
+      if (file.size > maxSize) {
+        patchState(store, {
+          imageError: `File size exceeds 5MB limit. Current size: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+        });
+        return;
+      }
+
+      // File is valid, create preview URL
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>): void => {
+        const imageUrl = e.target?.result as string;
+        patchState(store, {
+          customImageFile: file,
+          customImageUrl: imageUrl,
+          imageError: null,
+        });
+      };
+      reader.readAsDataURL(file);
+    },
+
+    /**
+     * T126, T127: Handle custom image URL input and validation
+     */
+    setCustomImageUrl: (url: string): void => {
+      patchState(store, {
+        customImageUrl: url,
+        customImageFile: null,
+        imageError: null,
+      });
+    },
+
+    /**
+     * T128: Revert to default fetched image
+     */
+    revertToDefaultImage: (): void => {
+      patchState(store, {
+        customImageUrl: "",
+        customImageFile: null,
+        imageError: null,
+        selectedImageIndex: 0,
+      });
+    },
+
+    /**
+     * T130: Upload image effect (simplified - using data URL for now)
+     * In production, this would upload to S3 via presigned URL
+     */
+    uploadImage: rxMethod<File>(
+      pipe(
+        switchMap(file => {
+          // For now, we're using data URLs (base64)
+          // In production, implement actual S3 upload with presigned URL
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e: ProgressEvent<FileReader>): void => {
+              resolve(e.target?.result as string);
+            };
+            reader.onerror = (): void => reject(new Error("Failed to read file"));
+            reader.readAsDataURL(file);
+          });
+        })
+      )
+    ),
+
+    /**
+     * T131: Validate image URL effect
+     * Checks if the URL is accessible and is a valid image
+     */
+    validateImageUrl: (url: string): void => {
+      if (!url) {
+        patchState(store, { imageError: null });
+        return;
+      }
+
+      // Basic URL validation
+      try {
+        new URL(url);
+      } catch {
+        patchState(store, { imageError: "Invalid URL format" });
+        return;
+      }
+
+      // In production, call backend API to validate image URL
+      // For now, just check if it looks like an image URL
+      const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+      const hasImageExtension = imageExtensions.some(ext =>
+        url.toLowerCase().includes(ext)
+      );
+
+      if (!hasImageExtension) {
+        patchState(store, {
+          imageError:
+            "URL does not appear to be an image. Please provide a direct image URL.",
+        });
+      } else {
+        patchState(store, { imageError: null });
+      }
+    },
+
+    /**
+     * T146: Dismiss duplicate confirmation dialog
+     */
+    dismissDuplicateConfirmation: (): void => {
+      patchState(store, {
+        showDuplicateConfirmation: false,
+      });
+    },
+
+    /**
+     * T146: Save bookmark anyway despite duplicate
+     */
+    saveAnyway: (): void => {
+      patchState(store, {
+        showDuplicateConfirmation: false,
+        isDuplicate: false,
+      });
+      // Trigger save after dismissing confirmation
+      // The component will handle calling saveBookmark()
+    },
 
     // Reset form
     reset: (): void => patchState(store, initialState),

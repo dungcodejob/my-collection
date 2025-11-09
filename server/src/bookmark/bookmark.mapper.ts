@@ -31,8 +31,8 @@ export class BookmarkMapper {
       isActive: bookmark.isActive,
       visitCount: bookmark.visitCount || 0,
       lastVisitedAt: bookmark.lastVisitedAt,
-      createAt: bookmark.createAt!,
-      updateAt: bookmark.updateAt!,
+      createAt: bookmark.createAt || undefined,
+      updateAt: bookmark.updateAt || undefined,
     };
   }
 

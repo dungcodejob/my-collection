@@ -1,83 +1,20 @@
 import { FEATURE_KEY } from '@app/constants';
 import { ApiAuth } from '@app/decorators';
+import { ResponseBuilder, SingleResponseDto } from '@app/models';
+import { FileUploadService } from '@app/services';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
-  PaginationMetaDto,
-  ResponseBuilder,
-  SingleResponseDto,
-} from '@app/models';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import { BookmarkMapper } from './bookmark.mapper';
-import { BookmarkService } from './bookmark.service';
-import {
-  BookmarkCreateDto,
-  BookmarkResponseDto,
-  BookmarkSearchDto,
+  ImageUploadRequestDto,
+  ImageUploadResponseDto,
+  ImageUrlValidationRequestDto,
+  ImageUrlValidationResponseDto,
 } from './models';
 
-@ApiTags(FEATURE_KEY.BOOKMARK)
-@Controller(FEATURE_KEY.BOOKMARK)
-export class BookmarkController {
-  constructor(
-    private readonly _bookmarkService: BookmarkService,
-    private readonly _bookmarkMapper: BookmarkMapper,
-  ) {}
-
-  /**
-   * T042: Create POST /bookmarks endpoint with @ApiOperation decorators
-   */
-  @Post()
-  @ApiAuth({
-    type: BookmarkResponseDto,
-    summary: 'Create a new bookmark',
-  })
-  async createBookmark(
-    @Body() createDto: BookmarkCreateDto,
-  ): Promise<Partial<SingleResponseDto<BookmarkResponseDto>>> {
-    const bookmark = await this._bookmarkService.createBookmark({
-      url: createDto.url,
-      title: createDto.title,
-      description: createDto.description,
-      imageUrl: createDto.imageUrl,
-      faviconUrl: createDto.faviconUrl,
-      siteName: createDto.siteName,
-      tags: createDto.tags,
-      notes: createDto.notes,
-      collectionId: createDto.collectionId,
-    });
-
-    const result = this._bookmarkMapper.toResponseDto(bookmark);
-    return ResponseBuilder.toSingle({ data: result });
-  }
-
-  @Get()
-  @ApiQuery({ name: 'search', required: false, description: 'Search term' })
-  @ApiQuery({
-    name: 'isFavorite',
-    required: false,
-    description: 'Filter by favorite status',
-  })
-  @ApiQuery({
-    name: 'tags',
-    required: false,
-    description: 'Filter by tags (comma-separated)',
-  })
-  @ApiAuth({
-    type: BookmarkResponseDto,
-    responseType: 'pagination',
-    summary: 'Get bookmarks for current user',
-  })
-  async findAll(@Query() query: BookmarkSearchDto) {
-    const { bookmarks, total } = await this._bookmarkService.search(query);
-
-    const items = this._bookmarkMapper.toResponseDtoArray(bookmarks);
-
-    const meta = new PaginationMetaDto({ parameter: query, total });
-    return ResponseBuilder.toPagination({
-      items,
-      meta: { pagination: meta },
-    });
-  }
+@ApiTags(FEATURE_KEY.UPLOAD_FILE)
+@Controller(FEATURE_KEY.UPLOAD_FILE)
+export class UploadFileController {
+  constructor(private readonly _fileUploadService: FileUploadService) {}
 
   // @Get('stats')
   // @ApiAuth({
@@ -327,25 +264,45 @@ export class BookmarkController {
   // }
 
   /**
-   * T139: Create GET /bookmarks/check-duplicate endpoint
-   * Check if a bookmark URL already exists for the current user
+   * T111: Create POST /bookmarks/images/presigned-url endpoint
+   * Generate presigned URL for direct image upload to cloud storage
    */
-  @Get('check-duplicate')
-  @ApiQuery({ name: 'url', required: true, description: 'URL to check' })
+  @Post('images/presigned-url')
   @ApiAuth({
-    type: Object,
-    summary: 'Check if bookmark URL already exists',
+    type: ImageUploadResponseDto,
+    summary: 'Get presigned URL for image upload',
+    description: 'Generates a presigned URL for direct upload to cloud storage',
   })
-  async checkDuplicate(@Query('url') url: string) {
-    const existingBookmark = await this._bookmarkService.checkDuplicate(url);
-    const result = existingBookmark
-      ? this._bookmarkMapper.toResponseDto(existingBookmark)
-      : null;
+  async getPresignedUrl(
+    @Body() requestDto: ImageUploadRequestDto,
+  ): Promise<Partial<SingleResponseDto<ImageUploadResponseDto>>> {
+    const result = await this._fileUploadService.generatePresignedUrl(
+      requestDto.filename,
+      requestDto.mimeType,
+      requestDto.size,
+    );
+
     return ResponseBuilder.toSingle({ data: result });
   }
 
   /**
-   * T111: Create POST /bookmarks/images/presigned-url endpoint
-   * Generate presigned URL for direct image upload to cloud storage
+   * T116: Create POST /bookmarks/images/validate endpoint
+   * Validate custom image URL
    */
+  @Post('images/validate')
+  @ApiAuth({
+    type: ImageUrlValidationResponseDto,
+    summary: 'Validate custom image URL',
+    description:
+      'Validates that a provided image URL is accessible and is a valid image',
+  })
+  async validateImageUrl(
+    @Body() requestDto: ImageUrlValidationRequestDto,
+  ): Promise<Partial<SingleResponseDto<ImageUrlValidationResponseDto>>> {
+    const result = await this._fileUploadService.validateImageUrl(
+      requestDto.imageUrl,
+    );
+
+    return ResponseBuilder.toSingle({ data: result });
+  }
 }

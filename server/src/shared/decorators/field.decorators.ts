@@ -2,6 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, type ApiPropertyOptions } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsDate,
   IsDefined,
@@ -35,6 +36,8 @@ interface IFieldOptions {
   swagger?: boolean;
   nullable?: boolean;
   groups?: string[];
+  message?: string;
+  arrayMessage?: string;
 }
 
 interface INumberFieldOptions extends IFieldOptions {
@@ -50,6 +53,8 @@ interface IStringFieldOptions extends IFieldOptions {
   toLowerCase?: boolean;
   toUpperCase?: boolean;
   isHexColor?: boolean;
+  maxLengthMessage?: string;
+  minLengthMessage?: string;
 }
 
 interface IEnumFieldOptions extends IFieldOptions {
@@ -112,7 +117,10 @@ export function NumberFieldOptional(
 export function StringField(
   options: Omit<ApiPropertyOptions, 'type'> & IStringFieldOptions = {},
 ): PropertyDecorator {
-  const decorators = [Type(() => String), IsString({ each: options.each })];
+  const decorators = [
+    Type(() => String),
+    IsString({ each: options.each, message: options.message }),
+  ];
 
   if (options.nullable) {
     decorators.push(IsNullable({ each: options.each }));
@@ -134,10 +142,26 @@ export function StringField(
 
   const minLength = options.minLength || 1;
 
-  decorators.push(MinLength(minLength, { each: options.each }));
+  decorators.push(
+    MinLength(minLength, {
+      each: options.each,
+      message: options.minLengthMessage,
+    }),
+  );
 
   if (options.maxLength) {
-    decorators.push(MaxLength(options.maxLength, { each: options.each }));
+    decorators.push(
+      MaxLength(options.maxLength, {
+        each: options.each,
+        message: options.maxLengthMessage,
+      }),
+    );
+  }
+
+  if (options.each) {
+    decorators.push(
+      IsArray({ each: options.each, message: options.arrayMessage }),
+    );
   }
 
   if (options.toLowerCase) {
@@ -286,7 +310,7 @@ export function UUIDField(
 ): PropertyDecorator {
   const decorators = [
     Type(() => String),
-    IsUUID(UUID_VERSION, { each: options.each }),
+    IsUUID(UUID_VERSION, { each: options.each, message: options.message }),
   ];
 
   if (options.nullable) {
@@ -324,12 +348,33 @@ export function UUIDFieldOptional(
 export function URLField(
   options: Omit<ApiPropertyOptions, 'type'> & IStringFieldOptions = {},
 ): PropertyDecorator {
-  const decorators = [StringField(options), IsUrl({}, { each: true })];
+  const decorators = [
+    StringField(options),
+    IsUrl({}, { each: true, message: options.message }),
+  ];
 
   if (options.nullable) {
     decorators.push(IsNullable({ each: options.each }));
   } else {
     decorators.push(NotEquals(null, { each: options.each }));
+  }
+
+  if (options.maxLength) {
+    decorators.push(
+      MaxLength(options.maxLength, {
+        each: options.each,
+        message: options.maxLengthMessage,
+      }),
+    );
+  }
+
+  if (options.minLength) {
+    decorators.push(
+      MinLength(options.minLength, {
+        each: options.each,
+        message: options.minLengthMessage,
+      }),
+    );
   }
 
   return applyDecorators(...decorators);

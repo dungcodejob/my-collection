@@ -103,11 +103,11 @@ export class BookmarkResponseDto {
     description: 'Creation timestamp',
     example: '2023-12-01T10:00:00Z',
   })
-  createAt: Date;
+  createAt?: Date;
 
   @ApiProperty({
     description: 'Last update timestamp',
     example: '2023-12-01T10:00:00Z',
   })
-  updateAt: Date;
+  updateAt?: Date;
 }

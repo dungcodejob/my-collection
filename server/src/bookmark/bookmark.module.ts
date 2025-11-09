@@ -4,6 +4,9 @@ import { BookmarkController } from './bookmark.controller';
 import { BookmarkMapper } from './bookmark.mapper';
 import { BookmarkService } from './bookmark.service';
 
+/**
+ * T117: Register FileUploadService in bookmark module
+ */
 @Module({
   imports: [CollectionModule],
   controllers: [BookmarkController],

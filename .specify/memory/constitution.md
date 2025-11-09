@@ -1,10 +1,15 @@
 <!--
 Sync Impact Report:
-- Version change: Template → 1.0.0
-- New constitution created from codebase analysis
-- Principles established: 7 core principles
-- Templates status: ✅ All templates reviewed and aligned
-- Date: 2025-01-06
+- Version change: 1.0.0 → 1.1.0
+- Modified principles: Added new Principle VIII (Styling Best Practices)
+- Added sections: New styling principle for Tailwind CSS usage
+- Removed sections: None
+- Templates requiring updates:
+  - ✅ plan-template.md: Updated to include styling checks
+  - ✅ spec-template.md: Aligned with styling requirements
+  - ✅ tasks-template.md: Added styling validation tasks
+- Follow-up TODOs: None
+- Date: 2025-01-08
 -->
 
 # My Collection Constitution
@@ -135,6 +140,34 @@ Security MUST be implemented at every layer. Authentication and authorization ar
 
 **Rationale:** Security is fundamental to user trust and data protection. Defense in depth prevents vulnerabilities.
 
+### VIII. Styling Best Practices
+Frontend styling MUST follow Tailwind CSS utility-first approach with minimal use of `@apply` directive. Custom CSS should be component-scoped and semantic.
+
+**Rules:**
+- **Tailwind CSS Usage**:
+  - Prefer utility classes directly in templates over `@apply` in CSS files
+  - Use `@apply` ONLY for:
+    - Base styles (typography, resets)
+    - Complex component states that require multiple utilities
+    - Third-party component overrides where inline utilities are not possible
+  - Maximum 3-5 `@apply` directives per CSS class
+  - Document rationale when using `@apply` for complex patterns
+- **Component Styling**:
+  - Use component-scoped CSS files (`.component.css`)
+  - Prefer Tailwind utilities in templates for maintainability
+  - Extract repeated utility patterns to reusable components, not CSS classes
+  - Use CSS custom properties (variables) for theming
+- **Performance**:
+  - Minimize custom CSS to reduce bundle size
+  - Leverage Tailwind's JIT mode for optimal purging
+  - Avoid deep selector nesting (max 3 levels)
+- **Consistency**:
+  - Follow Tailwind's naming conventions
+  - Use design tokens from Tailwind config
+  - Maintain consistent spacing scale (4px base)
+
+**Rationale:** Limiting `@apply` usage keeps styles maintainable, leverages Tailwind's optimization, prevents CSS bloat, and ensures consistency across the codebase. Utility-first approach in templates provides better visibility of applied styles and easier debugging.
+
 ## Development Workflow
 
 ### Branch Strategy
@@ -161,6 +194,7 @@ Security MUST be implemented at every layer. Authentication and authorization ar
 - [ ] No breaking changes (or properly documented)
 - [ ] Performance impact considered
 - [ ] Accessibility requirements met (for UI changes)
+- [ ] Styling follows Tailwind best practices (minimal `@apply` usage)
 
 ## Architecture Constraints
 
@@ -169,7 +203,7 @@ Security MUST be implemented at every layer. Authentication and authorization ar
 - **Build Tool**: Nx for monorepo management
 - **State**: NgRx Signals for reactive state
 - **UI Library**: Spartan UI (Radix primitives)
-- **Styling**: Tailwind CSS utility-first approach
+- **Styling**: Tailwind CSS utility-first approach (limit `@apply` usage)
 - **Testing**: Jest for unit tests, Playwright for E2E
 - **Bundle Size**: Keep main bundle < 500KB gzipped
 - **Performance**: First Contentful Paint < 1.5s, Cumulative Layout Shift < 0.1
@@ -199,6 +233,7 @@ Security MUST be implemented at every layer. Authentication and authorization ar
 - Formatting passes (Prettier)
 - Stylelint passes (for CSS/SCSS)
 - No TypeScript errors
+- Styling follows Tailwind best practices
 
 ### Pre-Push
 - All tests pass
@@ -211,6 +246,7 @@ Security MUST be implemented at every layer. Authentication and authorization ar
 - Test coverage maintained or improved
 - Documentation updated
 - No merge conflicts
+- Styling patterns reviewed
 
 ## Performance Standards
 
@@ -222,6 +258,7 @@ Security MUST be implemented at every layer. Authentication and authorization ar
   - Cumulative Layout Shift (CLS): < 0.1
 - **Bundle Size**: Main bundle < 500KB gzipped
 - **Image Optimization**: WebP format, lazy loading, responsive images
+- **CSS Size**: Minimize custom CSS, leverage Tailwind purging
 
 ### Backend Performance
 - **API Response Time**: < 500ms (p95), < 200ms (p50)
@@ -248,12 +285,14 @@ Security MUST be implemented at every layer. Authentication and authorization ar
 - **README Files**: For each major module explaining purpose and usage
 - **API Documentation**: Swagger/OpenAPI for all endpoints
 - **Architecture Diagrams**: Updated with major architectural changes
+- **Styling Patterns**: Document complex `@apply` usage with rationale
 
 ### User Documentation
 - **Setup Guide**: Clear instructions for local development
 - **Deployment Guide**: Step-by-step deployment instructions
 - **Troubleshooting**: Common issues and solutions
 - **Contributing Guide**: How to contribute to the project
+- **Style Guide**: Tailwind CSS usage patterns and best practices
 
 ## Governance
 
@@ -273,6 +312,7 @@ This constitution supersedes all other development practices and guidelines. All
 - **Monthly Audits**: Review codebase for adherence to principles
 - **Metrics Tracking**: Monitor quality gates and performance standards
 - **Continuous Improvement**: Regular retrospectives to identify improvements
+- **Styling Audits**: Review CSS files for excessive `@apply` usage
 
 ### Versioning Policy
 - **MAJOR**: Backward-incompatible principle changes or removals
@@ -286,4 +326,4 @@ Exceptions to these principles MUST be:
 3. Time-bound with plan to resolve
 4. Tracked in technical debt backlog
 
-**Version**: 1.0.0 | **Ratified**: 2025-01-06 | **Last Amended**: 2025-01-06
+**Version**: 1.1.0 | **Ratified**: 2025-01-06 | **Last Amended**: 2025-01-08

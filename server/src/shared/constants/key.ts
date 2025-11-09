@@ -33,5 +33,6 @@ export const FEATURE_KEY = {
   HEALTH: 'health',
   CRAWL: 'crawl',
   BOOKMARK: 'bookmark',
+  UPLOAD_FILE: 'upload-file',
   TAG: 'tag',
 } as const;

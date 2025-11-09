@@ -1,3 +1,4 @@
+import { ObjectValues } from "@client/web-shared-utils";
 // Storage Keys
 export const STORAGE_KEYS = {
   AUTH: "auth",
@@ -14,3 +15,5 @@ export const STORAGE_KEYS = {
 export const PARAM_KEYS = {
   COLLECTION_ID: "collectionId",
 } as const;
+
+export type ParamKeys = ObjectValues<typeof PARAM_KEYS>;

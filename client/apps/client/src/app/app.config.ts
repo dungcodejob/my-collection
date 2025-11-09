@@ -31,7 +31,10 @@ export const appConfig: ApplicationConfig = {
     }),
     provideRouter(
       webShellRoutes,
-      withRouterConfig({ defaultQueryParamsHandling: "preserve" })
+      withRouterConfig({
+        defaultQueryParamsHandling: "preserve",
+        paramsInheritanceStrategy: "always",
+      })
     ),
     provideAnimationsAsync(),
     providerAppConfig(environment),

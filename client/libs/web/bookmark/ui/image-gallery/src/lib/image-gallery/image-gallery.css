@@ -1,0 +1,37 @@
+/**
+ * T085: Image Gallery Styles with Tailwind CSS
+ * 
+ * Following Constitution Principle VIII: Styling Best Practices
+ * - Minimal @apply usage (only for animations and complex states)
+ * - Most styling moved to HTML template using Tailwind utilities
+ * - Keeps CSS file small and maintainable
+ */
+
+/* Animation for selection - Complex state requiring keyframes */
+@keyframes select-bounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+}
+
+.image-item-selected {
+  animation: select-bounce 0.3s ease-in-out;
+}
+
+/* Hover effects for non-touch devices - Media query override */
+@media (hover: hover) {
+  .image-item-selected {
+    transform: translateY(-0.5px);
+  }
+}
+
+/* Responsive adjustments for mobile - Complex responsive override */
+@media (max-width: 640px) {
+  .image-item-selected {
+    border-width: 2px !important;
+  }
+}

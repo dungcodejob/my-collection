@@ -22,7 +22,7 @@ export const BookmarkListFacade = signalStore(
     _autoEffect: injectAutoEffect(),
   })),
   withParam(),
-  withComputed(({ _bookmarkStore, _collectionStore, _autoEffect, ...store }) => ({
+  withComputed(({ _collectionStore }) => ({
     $selectCollection: computed(() => _collectionStore.$selectedCollection()),
   })),
   withHooks(({ _bookmarkStore, _autoEffect, ...store }) => ({

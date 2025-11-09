@@ -184,8 +184,21 @@ export class BookmarkService {
   ): Promise<{ bookmarks: BookmarkEntity[]; total: number }> {
     const { entities, count } = await this._unitOfWork.bookmark.findAll(query, {
       isHasCount: true,
+      populate: ['collection', 'bookmarkTags'],
     });
     return { bookmarks: entities, total: count };
+  }
+
+  /**
+   * T138: Check if bookmark URL already exists for current user
+   * Returns duplicate status and existing bookmark details if found
+   */
+  async checkDuplicate(url: string): Promise<BookmarkEntity | null> {
+    const existingBookmark = await this._unitOfWork.bookmark.findOneByUrl(url, {
+      populate: ['collection', 'bookmarkTags'],
+    });
+
+    return existingBookmark;
   }
 
   // /**

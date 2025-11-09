@@ -36,8 +36,7 @@ export class MCResponse {
     return (
       !!response &&
       isPlainObject(response as Record<string, unknown>) &&
-      "result" in response &&
-      response.success === true
+      "result" in response
     );
   }
 }

@@ -35,6 +35,9 @@ export class MCBookmarkList {
    */
   onCreate(): void {
     const dialogRef = this._dialogService.open(AddBookmarkDialog, {
+      context: {
+        collection: this._facade.$selectCollection(),
+      },
       closeOnBackdropClick: false,
       closeOnOutsidePointerEvents: false,
     });

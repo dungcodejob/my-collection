@@ -15,9 +15,7 @@ export class Migration20251107215114 extends Migration {
 
   override async down(): Promise<void> {
     // Remove composite index
-    this.addSql(
-      `drop index if exists "bookmark_entity_user_id_url_index";`,
-    );
+    this.addSql(`drop index if exists "bookmark_entity_user_id_url_index";`);
 
     // Remove faviconUrl column
     this.addSql(
@@ -25,4 +23,3 @@ export class Migration20251107215114 extends Migration {
     );
   }
 }
-
