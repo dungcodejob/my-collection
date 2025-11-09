@@ -10,7 +10,9 @@
   [class.grid-cols-5]="columns() === 5"
 >
   @if (images().length === 0) {
-  <div class="col-span-full flex items-center justify-center p-8 border-2 border-dashed border-border rounded-md">
+  <div
+    class="col-span-full flex items-center justify-center p-8 border-2 border-dashed border-border rounded-md"
+  >
     <p class="text-sm text-muted-foreground">No images available</p>
   </div>
   } @else { @for (image of images(); track trackByIndex($index); let i = $index) {
@@ -64,7 +66,9 @@
 
     <!-- T083: Selection indicator -->
     @if (selectedIndex() === i) {
-    <div class="absolute inset-0 bg-primary/20 flex items-center justify-center pointer-events-none">
+    <div
+      class="absolute inset-0 bg-primary/20 flex items-center justify-center pointer-events-none"
+    >
       <svg
         class="w-8 h-8 text-primary drop-shadow-lg sm:w-6 sm:h-6"
         fill="currentColor"
@@ -81,7 +85,9 @@
     }
 
     <!-- Image number badge -->
-    <div class="absolute top-2 left-2 bg-background/80 backdrop-blur-sm text-foreground text-xs font-medium px-2 py-1 rounded-md border border-border sm:text-[10px] sm:px-1.5 sm:py-0.5">
+    <div
+      class="absolute top-2 left-2 bg-background/80 backdrop-blur-sm text-foreground text-xs font-medium px-2 py-1 rounded-md border border-border sm:text-[10px] sm:px-1.5 sm:py-0.5"
+    >
       {{ i + 1 }}
     </div>
   </div>
@@ -92,8 +98,8 @@
 @if (images().length > 0) {
 <div class="mt-2 text-center">
   <p class="text-xs text-muted-foreground">
-    {{ images().length }} {{ images.length === 1 ? "image" : "images" }} available
-    @if (images.length > 10) {
+    {{ images().length }} {{ images.length === 1 ? "image" : "images" }} available @if
+    (images.length > 10) {
     <span class="text-warning">(showing first 10)</span>
     }
   </p>

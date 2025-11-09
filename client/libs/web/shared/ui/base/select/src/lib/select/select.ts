@@ -30,12 +30,12 @@ export type SelectOption = {
   selector: "mc-select",
   imports: [BrnSelectImports, HlmSelectImports],
   providers: [provideIcons({ lucideChevronDown, lucideCheck })],
-  templateUrl: "./web-shared-ui-select.html",
-  styleUrl: "./web-shared-ui-select.css",
+  templateUrl: "./select.html",
+  styleUrl: "./select.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class WebSharedUiSelectComponent {
+export class MCSelectComponent {
   readonly selectApi = inject(MCSelectApiDirective, { optional: true });
 
   // Inputs

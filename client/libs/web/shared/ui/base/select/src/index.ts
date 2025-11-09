@@ -1,2 +1,2 @@
-export * from "./lib/web-shared-ui-select/select-api.directive";
-export * from "./lib/web-shared-ui-select/web-shared-ui-select";
+export * from "./lib/select/select";
+export * from "./lib/select/select-api.directive";

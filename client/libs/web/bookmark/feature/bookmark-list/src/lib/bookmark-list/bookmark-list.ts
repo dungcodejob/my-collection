@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, NgOptimizedImage } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { AddBookmarkDialog } from "@client/web-bookmark-add-dialog";
 import { MCBookmarkDetailDialog } from "@client/web-bookmark-detail-dialog";
@@ -6,8 +6,10 @@ import { MCToastService } from "@client/web-shared-services";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucidePlus } from "@ng-icons/lucide";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
+import { HlmCardImports } from "@spartan-ng/helm/card";
 import { HlmDialogService } from "@spartan-ng/helm/dialog";
 import { HlmInputImports } from "@spartan-ng/helm/input";
+import { HlmPaginationImports } from "@spartan-ng/helm/pagination";
 import { HlmTypographyImports } from "@spartan-ng/helm/typography";
 import { BookmarkListFacade } from "./bookmark-list.facade";
 @Component({
@@ -18,17 +20,27 @@ import { BookmarkListFacade } from "./bookmark-list.facade";
     HlmInputImports,
     NgIconComponent,
     HlmTypographyImports,
-
     MCBookmarkDetailDialog,
+    NgOptimizedImage,
+    HlmCardImports,
+    HlmPaginationImports,
   ],
   providers: [BookmarkListFacade, provideIcons({ lucidePlus })],
   templateUrl: "./bookmark-list.html",
   styleUrl: "./bookmark-list.css",
 })
 export class MCBookmarkList {
-  private readonly _facade = inject(BookmarkListFacade);
+  protected readonly facade = inject(BookmarkListFacade);
   private readonly _dialogService = inject(HlmDialogService);
   private readonly _toastService = inject(MCToastService);
+
+  onSearch(query: string): void {}
+
+  onToggleFavoriteFilter(): void {}
+
+  onClearSelection(): void {}
+
+  onSelectAll(): void {}
 
   /**
    * T072-T073: Open Add Bookmark dialog
@@ -36,7 +48,7 @@ export class MCBookmarkList {
   onCreate(): void {
     const dialogRef = this._dialogService.open(AddBookmarkDialog, {
       context: {
-        collection: this._facade.$selectCollection(),
+        collection: this.facade.$selectCollection(),
       },
       closeOnBackdropClick: false,
       closeOnOutsidePointerEvents: false,
@@ -47,7 +59,7 @@ export class MCBookmarkList {
       if (result === true) {
         // Bookmark was created successfully
         this._toastService.success("Bookmark created successfully");
-        this._facade.refreshBookmarks();
+        this.facade.refreshBookmarks();
       }
     });
   }

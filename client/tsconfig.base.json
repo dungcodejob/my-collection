@@ -19,6 +19,9 @@
       "@client/web-auth-feature-login": ["libs/web/auth/feature/login/src/index.ts"],
       "@client/web-auth-feature-shell": ["libs/web/auth/feature/shell/src/index.ts"],
       "@client/web-auth-utils": ["libs/web/auth/utils/src/index.ts"],
+      "@client/web-bookmark-add-dialog": [
+        "libs/web/bookmark/feature/add-bookmark-dialog/src/index.ts"
+      ],
       "@client/web-bookmark-data-access": ["libs/web/bookmark/data-access/src/index.ts"],
       "@client/web-bookmark-detail-dialog": [
         "libs/web/bookmark/feature/bookmark-detail-dialog/src/index.ts"
@@ -31,6 +34,12 @@
       ],
       "@client/web-bookmark-image-review": [
         "libs/web/bookmark/ui/bookmark-image-review/src/index.ts"
+      ],
+      "@client/web-bookmark-ui-image-gallery": [
+        "libs/web/bookmark/ui/image-gallery/src/index.ts"
+      ],
+      "@client/web-bookmark-ui-url-input": [
+        "libs/web/bookmark/ui/url-input/src/index.ts"
       ],
       "@client/web-collection-data-access": [
         "libs/web/collection/data-access/src/index.ts"
@@ -61,15 +70,6 @@
       "@client/web-shell-ui-layout": ["libs/web/shell/ui/layout/src/index.ts"],
       "@client/web-shell-ui-nav-bar": ["libs/web/shell/ui/nav-bar/src/index.ts"],
       "@client/web-shell-ui-sidebar": ["libs/web/shell/ui/sidebar/src/index.ts"],
-      "@client/web-bookmark-add-dialog": [
-        "libs/web/bookmark/feature/add-bookmark-dialog/src/index.ts"
-      ],
-      "@client/web-bookmark-ui-image-gallery": [
-        "libs/web/bookmark/ui/image-gallery/src/index.ts"
-      ],
-      "@client/web-bookmark-ui-url-input": [
-        "libs/web/bookmark/ui/url-input/src/index.ts"
-      ],
       "@client/web/shared/utils": ["libs/web/shared/utils/src/index.ts"],
       "@spartan-ng/helm/alert": ["libs/web/shared/ui/spartan/alert/src/index.ts"],
       "@spartan-ng/helm/alert-dialog": [
@@ -106,7 +106,7 @@
       "@spartan-ng/helm/label": ["libs/web/shared/ui/spartan/label/src/index.ts"],
       "@spartan-ng/helm/menu": ["libs/web/shared/ui/spartan/menu/src/index.ts"],
       "@spartan-ng/helm/pagination": [
-        "libs/web/shared/ui/spartan/ui-pagination-helm/src/index.ts"
+        "libs/web/shared/ui/spartan/pagination/src/index.ts"
       ],
       "@spartan-ng/helm/popover": [
         "libs/web/shared/ui/spartan/ui-popover-helm/src/index.ts"
@@ -119,6 +119,7 @@
       "@spartan-ng/helm/sonner": [
         "libs/web/shared/ui/spartan/ui-sonner-helm/src/index.ts"
       ],
+      "@spartan-ng/helm/spinner": ["libs/web/shared/ui/spartan/spinner/src/index.ts"],
       "@spartan-ng/helm/table": ["libs/web/shared/ui/spartan/ui-table-helm/src/index.ts"],
       "@spartan-ng/helm/textarea": ["libs/web/shared/ui/spartan/textarea/src/index.ts"],
       "@spartan-ng/helm/toggle": [
@@ -128,8 +129,7 @@
       "@spartan-ng/helm/typography": [
         "libs/web/shared/ui/spartan/typography/src/index.ts"
       ],
-      "@spartan-ng/helm/utils": ["libs/web/shared/ui/spartan/utils/src/index.ts"],
-      "@spartan-ng/helm/spinner": ["libs/web/shared/ui/spartan/spinner/src/index.ts"]
+      "@spartan-ng/helm/utils": ["libs/web/shared/ui/spartan/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

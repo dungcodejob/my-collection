@@ -1,5 +1,7 @@
+import { CollectionService } from '@app/collection';
 import { FEATURE_KEY } from '@app/constants';
 import { ApiAuth } from '@app/decorators';
+import { Errors } from '@app/errors';
 import {
   PaginationMetaDto,
   ResponseBuilder,
@@ -20,6 +22,7 @@ import {
 export class BookmarkController {
   constructor(
     private readonly _bookmarkService: BookmarkService,
+    private readonly _collectionService: CollectionService,
     private readonly _bookmarkMapper: BookmarkMapper,
   ) {}
 
@@ -68,6 +71,15 @@ export class BookmarkController {
     summary: 'Get bookmarks for current user',
   })
   async findAll(@Query() query: BookmarkSearchDto) {
+    if (query.collectionId) {
+      const collection = await this._collectionService.findById(
+        query.collectionId,
+      );
+      if (!collection) {
+        throw Errors.Collection.NotFound;
+      }
+    }
+
     const { bookmarks, total } = await this._bookmarkService.search(query);
 
     const items = this._bookmarkMapper.toResponseDtoArray(bookmarks);

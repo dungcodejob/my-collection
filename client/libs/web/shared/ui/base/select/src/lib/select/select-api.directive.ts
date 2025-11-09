@@ -13,7 +13,7 @@ import {
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { PAGE_SIZE_DEFAULT } from "@client/web-shared-constants";
 import { finalize, Observable, tap } from "rxjs";
-import { SelectOption } from "./web-shared-ui-select";
+import { SelectOption } from "./select";
 
 type SelectApiFilter = {
   searchTerm?: string;

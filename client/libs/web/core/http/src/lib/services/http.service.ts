@@ -11,6 +11,7 @@ type HttpOptions = {
   params?:
     | HttpParams
     | Record<string, string | number | boolean | readonly (string | number | boolean)[]>;
+
   reportProgress?: boolean;
   responseType?: "json";
   withCredentials?: boolean;

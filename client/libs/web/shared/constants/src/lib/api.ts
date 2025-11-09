@@ -31,6 +31,7 @@ export const API_ENDPOINTS = {
   COLLECTIONS: {
     BASE: "/collection",
     BY_ID: (id: string) => `/collection/${id}`,
+    BOOKMARKS: (collectionId: string) => `/collection/${collectionId}/bookmarks`,
     ITEMS: (collectionId: string) => `/collection/${collectionId}/items`,
     ITEM_BY_ID: (collectionId: string, itemId: string) =>
       `/collection/${collectionId}/items/${itemId}`,

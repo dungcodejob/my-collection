@@ -1,12 +1,13 @@
 import { inject } from "@angular/core";
 import { tapHandleApi } from "@client/web-core-http";
+import { injectParams, setStatus, withStatus } from "@client/web-shared-utils";
 import {
-  injectParams,
-  NamedStatusState,
-  setStatus,
-  withStatus,
-} from "@client/web-shared-utils";
-import { patchState, signalStore, withMethods, withProps } from "@ngrx/signals";
+  patchState,
+  signalStore,
+  withMethods,
+  withProps,
+  withState,
+} from "@ngrx/signals";
 import {
   addEntity,
   removeEntity,
@@ -19,7 +20,7 @@ import { pipe, switchMap } from "rxjs";
 import {
   BookmarkCreateDto,
   BookmarkDto,
-  BookmarkFilterDto,
+  BookmarkQueryDto,
   BookmarkUpdateDto,
 } from "../models";
 import { BookmarkApi } from "../services";
@@ -30,12 +31,16 @@ export const bookmarkStatusNames = {
   update: "update",
 } as const;
 
-export type BookmarkStateWithFeature = NamedStatusState<typeof bookmarkStatusNames.list> &
-  NamedStatusState<typeof bookmarkStatusNames.details> &
-  NamedStatusState<typeof bookmarkStatusNames.create> &
-  NamedStatusState<typeof bookmarkStatusNames.update>;
+export type BookmarkState = {
+  query: BookmarkQueryDto;
+};
+
+const initialState: BookmarkState = {
+  query: {},
+};
 
 export const BookmarkStore = signalStore(
+  withState(initialState),
   withEntities<BookmarkDto>(),
   withStatus({
     names: [
@@ -50,7 +55,7 @@ export const BookmarkStore = signalStore(
     _bookmarkApi: inject(BookmarkApi),
   })),
   withMethods(({ _bookmarkApi, ...store }) => ({
-    load: rxMethod<BookmarkFilterDto>(
+    load: rxMethod<BookmarkQueryDto>(
       pipe(
         switchMap(filter =>
           _bookmarkApi.loadBookmarks(filter).pipe(
@@ -149,5 +154,13 @@ export const BookmarkStore = signalStore(
         )
       )
     ),
+
+    addBookmarkToLocal: (bookmark: BookmarkDto): void =>
+      patchState(store, addEntity(bookmark)),
+    removeBookmarkFromLocal: (id: string): void => patchState(store, removeEntity(id)),
+    updateBookmarkInLocal: (id: string, changes: Partial<BookmarkDto>): void =>
+      patchState(store, updateEntity({ id, changes })),
+    clearLocalBookmarks: (): void =>
+      patchState(store, setAllEntities([] as BookmarkDto[])),
   }))
 );

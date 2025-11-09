@@ -58,7 +58,9 @@
       "@app/tenant": ["src/tenant"],
       "@app/tenant/*": ["src/tenant/*"],
       "@app/request": ["src/core/request"],
-      "@app/request/*": ["src/core/request/*"]
+      "@app/request/*": ["src/core/request/*"],
+      "@app/collection": ["src/collection"],
+      "@app/collection/*": ["src/collection/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

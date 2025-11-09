@@ -1,12 +1,18 @@
 import { inject, Injectable } from "@angular/core";
-import { HttpService, ListResponseDto, SingleResponseDto } from "@client/web-core-http";
+import {
+  HttpService,
+  PaginationResponseDto,
+  SingleResponseDto,
+} from "@client/web-core-http";
 import { API_ENDPOINTS } from "@client/web-shared-constants";
 import { Observable } from "rxjs";
 import {
   BookmarkCreateDto,
   BookmarkDto,
+  BookmarkQueryDto,
   BookmarkUpdateDto,
   MetadataDto,
+  queryParamsToHttpParams,
 } from "../models";
 
 @Injectable({
@@ -16,12 +22,33 @@ export class BookmarkApi {
   private readonly _httpService = inject(HttpService);
   // Placeholder methods for future API integration
 
-  loadBookmarks(request: {
-    collectionId: string;
-  }): Observable<ListResponseDto<BookmarkDto>> {
-    return this._httpService.get<ListResponseDto<BookmarkDto>>(
+  loadBookmarks(
+    request: BookmarkQueryDto
+  ): Observable<PaginationResponseDto<BookmarkDto>> {
+    const params = queryParamsToHttpParams(request) as any;
+    return this._httpService.get<PaginationResponseDto<BookmarkDto>>(
       API_ENDPOINTS.BOOKMARKS.BASE,
-      { params: request }
+      { params }
+    );
+  }
+
+  /**
+   * T019: Load bookmarks for a collection with filters, sorts, and pagination
+   * Calls GET /collection/:id/bookmarks
+   */
+  loadCollectionBookmarks(
+    collectionId: string,
+    params?: {
+      filters?: string[];
+      sort?: string[];
+      page?: number;
+      limit?: number;
+      tagFilterMode?: "AND" | "OR";
+    }
+  ): Observable<PaginationResponseDto<BookmarkDto>> {
+    return this._httpService.get<PaginationResponseDto<BookmarkDto>>(
+      API_ENDPOINTS.COLLECTIONS.BOOKMARKS(collectionId),
+      { params }
     );
   }
 

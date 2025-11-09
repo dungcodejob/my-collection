@@ -7,6 +7,110 @@
       Add Bookmark
     </button>
   </div>
+
+  <!-- Loading state -->
+  @if (facade.$isListLoading()) {
+  <div class="flex items-center justify-center h-full text-gray-500">
+    Loading bookmarks...
+  </div>
+  }
+
+  <!-- Error state -->
+  @if (facade.$isListError()) {
+  <div class="flex items-center justify-center h-full text-red-500">
+    Failed to load bookmarks. Please try again.
+  </div>
+  }
+
+  <!-- Empty state -->
+  @if (facade.$isListEmpty()) {
+  <div class="flex items-center justify-center h-full text-gray-500">
+    No bookmarks found. Try adjusting your filters or add some bookmarks!
+  </div>
+  }
+
+  <!-- Bookmark list -->
+  @if (facade.$isHasBookmarks()) {
+  <div class="flex-1 flex flex-col overflow-y-auto gap-4">
+    @for (bookmark of facade.$bookmarks(); track bookmark.id) {
+    <div
+      class="flex py-4 gap-4 hover:shadow-md transition-shadow"
+      hlmCard
+      [class.selected]="facade.$selectedIds().includes(bookmark.id)"
+    >
+      <div class="flex gap-4 px-4" hlmCardContent>
+        <input
+          class="w-5 h-5 mt-1"
+          type="checkbox"
+          [checked]="facade.$selectedIds().includes(bookmark.id)"
+          (change)="facade.onToggleSelection(bookmark.id)"
+        />
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <img
+              alt="favicon"
+              class="w-4 h-4"
+              height="16"
+              width="16"
+              [ngSrc]="bookmark.faviconUrl || '/assets/default-favicon.png'"
+            />
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 flex-1">
+              {{ bookmark.title }}
+            </h3>
+            @if (bookmark.isFavorite) {
+            <span class="text-yellow-500">★</span>
+            }
+          </div>
+          <p class="text-sm text-muted-foreground mb-2">
+            {{ bookmark.description || "No description" }}
+          </p>
+          <a
+            class="text-sm text-blue-500 hover:underline mb-2 block truncate"
+            target="_blank"
+            [href]="bookmark.url"
+          >
+            {{ bookmark.url }}
+          </a>
+          @if (bookmark.tags && bookmark.tags.length > 0) {
+          <div class="flex flex-wrap gap-2 mb-2">
+            @for (tag of bookmark.tags; track tag) {
+            <span class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
+              >{{ tag }}</span
+            >
+            }
+          </div>
+          }
+          <div class="flex gap-4 text-xs text-muted-foreground">
+            <span>Created: {{ bookmark.createAt | date:'short' }}</span>
+            <span>Visits: {{ bookmark.visitCount }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Pagination -->
+  <!-- <div class="pagination">
+    <button
+      [disabled]="store.page() <= 1"
+      (click)="onPageChange(store.page() - 1)"
+      class="page-button"
+    >
+      Previous
+    </button>
+    <span class="page-info">
+      Page {{ store.page() }} of {{ store.totalPages() }} ({{ store.totalItems() }} total)
+    </span>
+    <button
+      [disabled]="store.page() >= store.totalPages()"
+      (click)="onPageChange(store.page() + 1)"
+      class="page-button"
+    >
+      Next
+    </button>
+  </div> -->
+  }
+
+  <hlm-numbered-pagination [currentPage]="1" [itemsPerPage]="10" [totalItems]="100" />
 </div>
-
-
