@@ -33,13 +33,13 @@
   </hlm-tooltip>
 
   @if (showPresetMenu) {
-  <hlm-menu class="absolute top-full right-0 mt-1 z-50">
-    @for (item of themePresetItems; track item.label) {
-    <button hlmMenuItem type="button" (click)="selectPreset(item.preset)">
-      <ng-icon class="mr-2" hlm name="lucideCircle" />
-      {{ item.label }}
-    </button>
-    }
-  </hlm-menu>
+    <hlm-menu class="absolute top-full right-0 mt-1 z-50">
+      @for (item of themePresetItems; track item.label) {
+        <button hlmMenuItem type="button" (click)="selectPreset(item.preset)">
+          <ng-icon class="mr-2" hlm name="lucideCircle" />
+          {{ item.label }}
+        </button>
+      }
+    </hlm-menu>
   }
 </div>

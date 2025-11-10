@@ -12,7 +12,7 @@
       <div class="grid gap-4 py-4">
         <!-- URL Field with Gen Metadata Button -->
         <div class="flex flex-col space-y-1">
-          @let urlControl = form.get('url');
+          @let urlControl = form.get("url");
           <label for="url" hlmLabel>URL *</label>
           <div class="flex gap-2">
             <input
@@ -36,30 +36,35 @@
               (click)="onGenMetadata()"
             >
               @if ($isMetadataLoading()) {
-              <ng-icon
-                class="mr-2 animate-spin"
-                hlm
-                name="lucideLoaderCircle"
-                size="sm"
-              />
+                <ng-icon
+                  class="mr-2 animate-spin"
+                  hlm
+                  name="lucideLoaderCircle"
+                  size="sm"
+                />
               }
               <span>Gen Metadata</span>
             </button>
           </div>
 
-          @if (urlControl && urlControl.invalid && (urlControl.dirty ||
-          urlControl.touched)) { @if (urlControl.errors?.['required']) {
-          <div hlmInputError>URL is required.</div>
-          } @if (urlControl.errors?.['invalidUrl']) {
-          <div hlmInputError>Please enter a valid URL.</div>
-          } } @if ($urlError()) {
-          <div hlmInputError>{{ $urlError() }}</div>
+          @if (
+            urlControl && urlControl.invalid && (urlControl.dirty || urlControl.touched)
+          ) {
+            @if (urlControl.errors?.["required"]) {
+              <div hlmInputError>URL is required.</div>
+            }
+            @if (urlControl.errors?.["invalidUrl"]) {
+              <div hlmInputError>Please enter a valid URL.</div>
+            }
+          }
+          @if ($urlError()) {
+            <div hlmInputError>{{ $urlError() }}</div>
           }
         </div>
 
         <!-- Title Field -->
         <div class="flex flex-col space-y-1">
-          @let titleControl = form.get('title');
+          @let titleControl = form.get("title");
           <label for="title" hlmLabel>Title *</label>
           <input
             autocapitalize="none"
@@ -74,10 +79,15 @@
             type="text"
           />
 
-          @if (titleControl && titleControl.invalid && (titleControl.dirty ||
-          titleControl.touched)) { @if (titleControl.errors?.['required']) {
-          <div hlmInputError>Title is required.</div>
-          } }
+          @if (
+            titleControl &&
+            titleControl.invalid &&
+            (titleControl.dirty || titleControl.touched)
+          ) {
+            @if (titleControl.errors?.["required"]) {
+              <div hlmInputError>Title is required.</div>
+            }
+          }
         </div>
 
         <!-- Image Review -->
@@ -123,25 +133,27 @@
           >
             <option value="">Select a folder (optional)</option>
             @for (collection of $collections(); track collection.id) {
-            <option [value]="collection.id">{{ collection.name }}</option>
+              <option [value]="collection.id">{{ collection.name }}</option>
             }
           </select>
         </div>
 
         <!-- Metadata Preview -->
         @if ($metadata()) {
-        <div class="border rounded-lg p-3 bg-muted/50">
-          <h4 class="text-sm font-medium mb-2">Fetched Metadata:</h4>
-          <div class="space-y-1 text-sm text-muted-foreground">
-            @if ($metadata()?.title) {
-            <div><strong>Title:</strong> {{ $metadata()?.title }}</div>
-            } @if ($metadata()?.description) {
-            <div><strong>Description:</strong> {{ $metadata()?.description }}</div>
-            } @if ($metadata()?.siteName) {
-            <div><strong>Site:</strong> {{ $metadata()?.siteName }}</div>
-            }
+          <div class="border rounded-lg p-3 bg-muted/50">
+            <h4 class="text-sm font-medium mb-2">Fetched Metadata:</h4>
+            <div class="space-y-1 text-sm text-muted-foreground">
+              @if ($metadata()?.title) {
+                <div><strong>Title:</strong> {{ $metadata()?.title }}</div>
+              }
+              @if ($metadata()?.description) {
+                <div><strong>Description:</strong> {{ $metadata()?.description }}</div>
+              }
+              @if ($metadata()?.siteName) {
+                <div><strong>Site:</strong> {{ $metadata()?.siteName }}</div>
+              }
+            </div>
           </div>
-        </div>
         }
       </div>
 
@@ -149,7 +161,7 @@
         <button hlmBtn type="button" variant="outline" (click)="onClose()">Cancel</button>
         <button hlmBtn type="submit" [disabled]="$isSaveButtonDisabled()">
           @if ($isSaving()) {
-          <ng-icon class="mr-2 animate-spin" hlm name="lucideLoaderCircle" size="sm" />
+            <ng-icon class="mr-2 animate-spin" hlm name="lucideLoaderCircle" size="sm" />
           }
           <span>Save Bookmark</span>
         </button>

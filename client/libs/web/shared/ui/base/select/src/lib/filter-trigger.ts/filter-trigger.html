@@ -1,0 +1,25 @@
+<button
+  class="border-dashed flex items-center"
+  hlmBtn
+  size="sm"
+  type="button"
+  variant="outline"
+>
+  <ng-icon class="mr-2" hlm name="lucideCirclePlus" size="16" />
+  {{ title() }}
+  @if (items().length) {
+    <div
+      class="bg-border mx-2 h-4 w-[1px] shrink-0"
+      data-orientation="vertical"
+      role="none"
+    ></div>
+
+    <div class="flex gap-1">
+      @for (item of items(); track item.value) {
+        <span class="bg-secondary text-secondary-foreground rounded px-1 py-0.5 text-xs">
+          {{ item.label }}
+        </span>
+      }
+    </div>
+  }
+</button>

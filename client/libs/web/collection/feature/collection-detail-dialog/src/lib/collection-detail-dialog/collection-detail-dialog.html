@@ -9,7 +9,7 @@
       </hlm-dialog-header>
       <div class="grid gap-4 py-4">
         <div class="flex flex-col space-y-1">
-          @let nameControl = form.get('name');
+          @let nameControl = form.get("name");
           <label for="name" hlmLabel>Name</label>
           <input
             autocapitalize="none"
@@ -24,10 +24,15 @@
             type="text"
           />
 
-          @if (nameControl && nameControl.invalid && (nameControl.dirty ||
-          nameControl.touched)) { @if (nameControl.errors?.['required']) {
-          <div hlmInputError>Name is required.</div>
-          } }
+          @if (
+            nameControl &&
+            nameControl.invalid &&
+            (nameControl.dirty || nameControl.touched)
+          ) {
+            @if (nameControl.errors?.["required"]) {
+              <div hlmInputError>Name is required.</div>
+            }
+          }
         </div>
       </div>
       <hlm-dialog-footer>
@@ -36,8 +41,7 @@
         </button>
         <button hlmBtn type="submit" [disabled]="isSaveButtonDisabled">
           @if ($isPending()) {
-
-          <ng-icon class="mr-2 animate-spin" hlm name="lucideLoaderCircle" size="sm" />
+            <ng-icon class="mr-2 animate-spin" hlm name="lucideLoaderCircle" size="sm" />
           }
           <span>Save changes</span>
         </button>

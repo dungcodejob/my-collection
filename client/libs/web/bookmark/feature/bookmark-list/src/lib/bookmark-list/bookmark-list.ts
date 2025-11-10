@@ -3,8 +3,9 @@ import { Component, inject } from "@angular/core";
 import { AddBookmarkDialog } from "@client/web-bookmark-add-dialog";
 import { FilterType } from "@client/web-bookmark-data-access";
 import { MCToastService } from "@client/web-shared-services";
+import { MCMultiSelectImports, MCSelectImports } from "@client/web-shared-ui-select";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
-import { lucidePlus } from "@ng-icons/lucide";
+import { lucideCirclePlus, lucidePlus } from "@ng-icons/lucide";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmCardImports } from "@spartan-ng/helm/card";
 import { HlmDialogService } from "@spartan-ng/helm/dialog";
@@ -23,8 +24,10 @@ import { BookmarkListFacade } from "./bookmark-list.facade";
     NgOptimizedImage,
     HlmCardImports,
     HlmPaginationImports,
+    MCSelectImports,
+    MCMultiSelectImports,
   ],
-  providers: [BookmarkListFacade, provideIcons({ lucidePlus })],
+  providers: [BookmarkListFacade, provideIcons({ lucidePlus, lucideCirclePlus })],
   templateUrl: "./bookmark-list.html",
   styleUrl: "./bookmark-list.css",
 })

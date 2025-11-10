@@ -25,7 +25,7 @@
         >
           <div class="space-y-4">
             @if ($error()) {
-            <div class="w-full" hlmAlert variant="destructive">{{ $error() }}</div>
+              <div class="w-full" hlmAlert variant="destructive">{{ $error() }}</div>
             }
 
             <div class="space-y-2">
@@ -40,11 +40,16 @@
                 id="username"
                 placeholder="name@example.com"
                 type="text"
-                [class.border-red-500]="username.invalid && (username.dirty || username.touched)"
+                [class.border-red-500]="
+                  username.invalid && (username.dirty || username.touched)
+                "
               />
-              @if (username.invalid && (username.dirty || username.touched) &&
-              username.errors?.['required']) {
-              <small class="p-error block"> Username is required. </small>
+              @if (
+                username.invalid &&
+                (username.dirty || username.touched) &&
+                username.errors?.["required"]
+              ) {
+                <small class="p-error block"> Username is required. </small>
               }
             </div>
 
@@ -58,11 +63,16 @@
                 id="password"
                 placeholder="Enter your password"
                 type="password"
-                [class.border-red-500]="password.invalid && (password.dirty || password.touched)"
+                [class.border-red-500]="
+                  password.invalid && (password.dirty || password.touched)
+                "
               />
-              @if (password.invalid && (password.dirty || password.touched) &&
-              password.errors?.['required']) {
-              <small class="p-error block"> Password is required. </small>
+              @if (
+                password.invalid &&
+                (password.dirty || password.touched) &&
+                password.errors?.["required"]
+              ) {
+                <small class="p-error block"> Password is required. </small>
               }
             </div>
           </div>
@@ -79,8 +89,9 @@
 
           <button class="w-full" hlmBtn type="submit" [disabled]="$isPending()">
             @if ($isPending()) {
-            <span class="mr-2">Loading...</span>
-            } Login with Email
+              <span class="mr-2">Loading...</span>
+            }
+            Login with Email
           </button>
         </form>
       </div>

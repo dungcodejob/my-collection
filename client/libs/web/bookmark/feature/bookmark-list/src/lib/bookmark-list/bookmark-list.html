@@ -58,208 +58,239 @@
 
   <!-- Loading state -->
   @if (facade.$isListLoading()) {
-  <div class="flex items-center justify-center h-full text-gray-500">
-    Loading bookmarks...
-  </div>
+    <div class="flex items-center justify-center h-full text-gray-500">
+      Loading bookmarks...
+    </div>
   }
 
   <!-- Error state -->
   @if (facade.$isListError()) {
-  <div class="flex items-center justify-center h-full text-red-500">
-    Failed to load bookmarks. Please try again.
-  </div>
+    <div class="flex items-center justify-center h-full text-red-500">
+      Failed to load bookmarks. Please try again.
+    </div>
   }
 
   <!-- Empty state -->
   @if (facade.$isListEmpty()) {
-  <div class="flex items-center justify-center h-full text-gray-500">
-    No bookmarks found. Try adjusting your filters or add some bookmarks!
-  </div>
+    <div class="flex items-center justify-center h-full text-gray-500">
+      No bookmarks found. Try adjusting your filters or add some bookmarks!
+    </div>
   }
 
   <!-- US2 T056: Display mode switch -->
-  @if (facade.$isHasBookmarks()) { @switch (facade.$displayMode()) {
-  <!-- List View -->
-  @case ('list') {
-  <div class="flex-1 flex flex-col overflow-y-auto gap-4">
-    @for (bookmark of facade.$bookmarks(); track bookmark.id) {
-    <div
-      class="flex py-4 gap-4 hover:shadow-md transition-shadow"
-      hlmCard
-      [class.selected]="facade.$selectedIds().includes(bookmark.id)"
-    >
-      <div class="flex gap-4 px-4" hlmCardContent>
-        <input
-          class="w-5 h-5 mt-1"
-          type="checkbox"
-          [checked]="facade.$selectedIds().includes(bookmark.id)"
-          (change)="facade.onToggleSelection(bookmark.id)"
-        />
-        <div class="flex-1">
-          <div class="flex items-center gap-2 mb-2">
-            <img
-              alt="favicon"
-              class="w-4 h-4"
-              height="16"
-              width="16"
-              [ngSrc]="bookmark.faviconUrl || '/assets/default-favicon.png'"
-            />
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 flex-1">
-              {{ bookmark.title }}
-            </h3>
-            @if (bookmark.isFavorite) {
-            <span class="text-yellow-500">★</span>
-            }
-          </div>
-          <p class="text-sm text-muted-foreground mb-2">
-            {{ bookmark.description || "No description" }}
-          </p>
-          <a
-            class="text-sm text-blue-500 hover:underline mb-2 block truncate"
-            target="_blank"
-            [href]="bookmark.url"
-          >
-            {{ bookmark.url }}
-          </a>
-          @if (bookmark.tags && bookmark.tags.length > 0) {
-          <div class="flex flex-wrap gap-2 mb-2">
-            @for (tag of bookmark.tags; track tag) {
-            <span class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
-              >{{ tag }}</span
+  @if (facade.$isHasBookmarks()) {
+    @switch (facade.$displayMode()) {
+      <!-- List View -->
+      @case ("list") {
+        <div class="flex-1 flex flex-col overflow-y-auto gap-4">
+          @for (bookmark of facade.$bookmarks(); track bookmark.id) {
+            <div
+              class="flex py-4 gap-4 hover:shadow-md transition-shadow"
+              hlmCard
+              [class.selected]="facade.$selectedIds().includes(bookmark.id)"
             >
-            }
-          </div>
+              <div class="flex gap-4 px-4" hlmCardContent>
+                <input
+                  class="w-5 h-5 mt-1"
+                  type="checkbox"
+                  [checked]="facade.$selectedIds().includes(bookmark.id)"
+                  (change)="facade.onToggleSelection(bookmark.id)"
+                />
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-2">
+                    <img
+                      alt="favicon"
+                      class="w-4 h-4"
+                      height="16"
+                      width="16"
+                      [ngSrc]="bookmark.faviconUrl || '/assets/default-favicon.png'"
+                    />
+                    <h3
+                      class="text-lg font-semibold text-gray-700 dark:text-gray-300 flex-1"
+                    >
+                      {{ bookmark.title }}
+                    </h3>
+                    @if (bookmark.isFavorite) {
+                      <span class="text-yellow-500">★</span>
+                    }
+                  </div>
+                  <p class="text-sm text-muted-foreground mb-2">
+                    {{ bookmark.description || "No description" }}
+                  </p>
+                  <a
+                    class="text-sm text-blue-500 hover:underline mb-2 block truncate"
+                    target="_blank"
+                    [href]="bookmark.url"
+                  >
+                    {{ bookmark.url }}
+                  </a>
+                  @if (bookmark.tags && bookmark.tags.length > 0) {
+                    <div class="flex flex-wrap gap-2 mb-2">
+                      @for (tag of bookmark.tags; track tag) {
+                        <span
+                          class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
+                          >{{ tag }}</span
+                        >
+                      }
+                    </div>
+                  }
+                  <div class="flex gap-4 text-xs text-muted-foreground">
+                    <span>Created: {{ bookmark.createAt | date: "short" }}</span>
+                    <span>Visits: {{ bookmark.visitCount }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           }
-          <div class="flex gap-4 text-xs text-muted-foreground">
-            <span>Created: {{ bookmark.createAt | date:'short' }}</span>
-            <span>Visits: {{ bookmark.visitCount }}</span>
-          </div>
         </div>
-      </div>
-    </div>
-    }
-  </div>
-  }
+      }
 
-  <!-- Card View -->
-  @case ('card') {
-  <div
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto"
-  >
-    @for (bookmark of facade.$bookmarks(); track bookmark.id) {
-    <div
-      class="flex flex-col hover:shadow-lg transition-shadow"
-      hlmCard
-      [class.selected]="facade.$selectedIds().includes(bookmark.id)"
-    >
-      <div class="flex flex-col gap-2 p-4" hlmCardContent>
-        <div class="flex items-start justify-between mb-2">
-          <input
-            class="w-5 h-5"
-            type="checkbox"
-            [checked]="facade.$selectedIds().includes(bookmark.id)"
-            (change)="facade.onToggleSelection(bookmark.id)"
-          />
-          @if (bookmark.isFavorite) {
-          <span class="text-yellow-500 text-xl">★</span>
+      <!-- Card View -->
+      @case ("card") {
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto"
+        >
+          @for (bookmark of facade.$bookmarks(); track bookmark.id) {
+            <div
+              class="flex flex-col hover:shadow-lg transition-shadow"
+              hlmCard
+              [class.selected]="facade.$selectedIds().includes(bookmark.id)"
+            >
+              <div class="flex flex-col gap-2 p-4" hlmCardContent>
+                <div class="flex items-start justify-between mb-2">
+                  <input
+                    class="w-5 h-5"
+                    type="checkbox"
+                    [checked]="facade.$selectedIds().includes(bookmark.id)"
+                    (change)="facade.onToggleSelection(bookmark.id)"
+                  />
+                  @if (bookmark.isFavorite) {
+                    <span class="text-yellow-500 text-xl">★</span>
+                  }
+                </div>
+                @if (bookmark.imageUrl) {
+                  <img
+                    class="w-full h-40 object-cover rounded max-h-40 max-w-40"
+                    fill
+                    [alt]="bookmark.title"
+                    [ngSrc]="bookmark.imageUrl"
+                  />
+                }
+                <div class="flex items-center gap-2">
+                  <img
+                    alt="favicon"
+                    class="w-4 h-4"
+                    height="16"
+                    width="16"
+                    [ngSrc]="bookmark.faviconUrl || '/assets/default-favicon.png'"
+                  />
+                  <h3 class="text-base font-semibold line-clamp-2">
+                    {{ bookmark.title }}
+                  </h3>
+                </div>
+                <p class="text-sm text-muted-foreground line-clamp-2">
+                  {{ bookmark.description || "No description" }}
+                </p>
+                @if (bookmark.tags && bookmark.tags.length > 0) {
+                  <div class="flex flex-wrap gap-1">
+                    @for (tag of bookmark.tags.slice(0, 3); track tag) {
+                      <span class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded">{{
+                        tag
+                      }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
           }
         </div>
-        @if (bookmark.imageUrl) {
-        <img
-          class="w-full h-40 object-cover rounded"
-          fill
-          [alt]="bookmark.title"
-          [ngSrc]="bookmark.imageUrl"
-        />
-        }
-        <div class="flex items-center gap-2">
-          <img
-            alt="favicon"
-            class="w-4 h-4"
-            height="16"
-            width="16"
-            [ngSrc]="bookmark.faviconUrl || '/assets/default-favicon.png'"
-          />
-          <h3 class="text-base font-semibold line-clamp-2">{{ bookmark.title }}</h3>
-        </div>
-        <p class="text-sm text-muted-foreground line-clamp-2">
-          {{ bookmark.description || "No description" }}
-        </p>
-        @if (bookmark.tags && bookmark.tags.length > 0) {
-        <div class="flex flex-wrap gap-1">
-          @for (tag of bookmark.tags.slice(0, 3); track tag) {
-          <span class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
-            >{{ tag }}</span
-          >
-          }
-        </div>
-        }
-      </div>
-    </div>
-    }
-  </div>
-  }
+      }
 
-  <!-- Moodboard View -->
-  @case ('moodboard') {
-  <div class="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 overflow-y-auto">
-    @for (bookmark of facade.$bookmarks(); track bookmark.id) {
-    <div
-      class="break-inside-avoid mb-4 hover:shadow-lg transition-shadow"
-      hlmCard
-      [class.selected]="facade.$selectedIds().includes(bookmark.id)"
-    >
-      <div class="flex flex-col gap-2 p-2" hlmCardContent>
-        <div class="flex items-start justify-between">
-          <input
-            class="w-4 h-4"
-            type="checkbox"
-            [checked]="facade.$selectedIds().includes(bookmark.id)"
-            (change)="facade.onToggleSelection(bookmark.id)"
-          />
-          @if (bookmark.isFavorite) {
-          <span class="text-yellow-500">★</span>
+      <!-- Moodboard View -->
+      @case ("moodboard") {
+        <div
+          class="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 overflow-y-auto"
+        >
+          @for (bookmark of facade.$bookmarks(); track bookmark.id) {
+            <div
+              class="break-inside-avoid mb-4 hover:shadow-lg transition-shadow"
+              hlmCard
+              [class.selected]="facade.$selectedIds().includes(bookmark.id)"
+            >
+              <div class="relative flex flex-col gap-2 p-2" hlmCardContent>
+                <div class="flex items-start justify-between">
+                  <input
+                    class="w-4 h-4"
+                    type="checkbox"
+                    [checked]="facade.$selectedIds().includes(bookmark.id)"
+                    (change)="facade.onToggleSelection(bookmark.id)"
+                  />
+                  @if (bookmark.isFavorite) {
+                    <span class="text-yellow-500">★</span>
+                  }
+                </div>
+                @if (bookmark.imageUrl) {
+                  <img
+                    class="w-full rounded max-h-40"
+                    fill
+                    [alt]="bookmark.title"
+                    [ngSrc]="bookmark.imageUrl"
+                  />
+                }
+                <h4 class="text-sm font-semibold line-clamp-2">{{ bookmark.title }}</h4>
+                @if (bookmark.tags && bookmark.tags.length > 0) {
+                  <div class="flex flex-wrap gap-1">
+                    @for (tag of bookmark.tags.slice(0, 2); track tag) {
+                      <span
+                        class="px-1 py-0.5 text-xs bg-gray-200 text-gray-700 rounded"
+                        >{{ tag }}</span
+                      >
+                    }
+                  </div>
+                }
+              </div>
+            </div>
           }
         </div>
-        @if (bookmark.imageUrl) {
-        <img
-          class="w-full rounded"
-          fill
-          [alt]="bookmark.title"
-          [ngSrc]="bookmark.imageUrl"
-        />
-        }
-        <h4 class="text-sm font-semibold line-clamp-2">{{ bookmark.title }}</h4>
-        @if (bookmark.tags && bookmark.tags.length > 0) {
-        <div class="flex flex-wrap gap-1">
-          @for (tag of bookmark.tags.slice(0, 2); track tag) {
-          <span class="px-1 py-0.5 text-xs bg-gray-200 text-gray-700 rounded"
-            >{{ tag }}</span
-          >
-          }
-        </div>
-        }
-      </div>
-    </div>
+      }
     }
-  </div>
-  } } }
+  }
 
   <!-- US1 T046-T048: Pagination Controls -->
   @if (facade.$totalPages() > 0) {
-  <div class="flex justify-between items-center gap-4 pt-4 border-t">
-    <div class="text-sm text-muted-foreground">
-      Showing {{ (facade.$page() - 1) * facade.$limit() + 1 }} to {{
-      Math.min(facade.$page() * facade.$limit(), facade.$totalItems()) }} of {{
-      facade.$totalItems() }} bookmarks
-    </div>
+    <div class="flex justify-between items-center gap-4 pt-4 border-t">
+      <div class="text-sm text-muted-foreground">
+        Showing {{ (facade.$page() - 1) * facade.$limit() + 1 }} to
+        {{ Math.min(facade.$page() * facade.$limit(), facade.$totalItems()) }} of
+        {{ facade.$totalItems() }} bookmarks
+      </div>
 
-    <hlm-numbered-pagination
-      [currentPage]="facade.$page()"
-      [itemsPerPage]="facade.$limit()"
-      [totalItems]="facade.$totalItems()"
-      (currentPageChange)="onPageChange($event)"
-    />
-  </div>
+      <hlm-numbered-pagination
+        [currentPage]="facade.$page()"
+        [itemsPerPage]="facade.$limit()"
+        [totalItems]="facade.$totalItems()"
+        (currentPageChange)="onPageChange($event)"
+      />
+    </div>
   }
+
+  <mc-multi-select
+    placeholder="Select an option..."
+    [options]="[
+      { value: '1', label: 'Option 1' },
+      { value: '2', label: 'Option 2' },
+      { value: '3', label: 'Option 3' },
+    ]"
+  >
+    <!-- <ng-template
+      let-displayText="displayText"
+      let-options
+      mcMultiSelectTrigger
+    >
+      <mc-filter-trigger
+        title="Status"
+        [items]="options.map(value => ({ value, label: value }))"
+      />
+    </ng-template> -->
+  </mc-multi-select>
 </div>

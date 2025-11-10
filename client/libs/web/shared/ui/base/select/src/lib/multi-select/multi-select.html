@@ -1,0 +1,162 @@
+<brn-select
+  #selectElement
+  role="combobox"
+  [attr.aria-expanded]="$isOpen()"
+  [attr.aria-haspopup]="'listbox'"
+  [attr.aria-label]="placeholder()"
+  [attr.aria-multiselectable]="true"
+  [class]="$selectClasses()"
+  [disabled]="disabled()"
+  [multiple]="true"
+  [placeholder]="placeholder()"
+  [value]="null"
+  (keydown)="onKeyDown($event)"
+  (openChange)="$event ? onSelectOpen() : onSelectClose()"
+>
+  @let mcTrigger = $mcMultiSelectTrigger();
+  @if (mcTrigger) {
+    <div brnSelectTrigger class="w-fit">
+      <ng-container
+        [ngTemplateOutlet]="mcTrigger.templateRef"
+        [ngTemplateOutletContext]="{
+          $implicit: $selectedOptions(),
+          displayText: $displayText(),
+          selectedValues: $selectedValues(),
+        }"
+      />
+    </div>
+  } @else {
+    <hlm-select-trigger #selectTrigger class="w-80">
+      @let hasSelectedItems = $hasSelectedItems();
+      @let displayItems = $displayItems();
+
+      @if ($hasSelectedItems()) {
+        <div class="flex items-center gap-2 flex-wrap min-h-[1.5rem]">
+          @for (item of $displayItems(); track item.value) {
+            <span
+              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-xs"
+            >
+              {{ item.label }}
+              <button
+                class="hover:bg-primary/20 rounded p-0.5 flex items-center justify-center"
+                type="button"
+                (click)="onRemoveItem(item.value, $event)"
+                (mousedown)="$event.preventDefault()"
+              >
+                <ng-icon class="w-3 h-3" hlm name="lucideX" />
+              </button>
+            </span>
+          }
+          @if ($hasMoreItems()) {
+            <span class="text-xs text-muted-foreground">
+              +{{ $selectedValues().length - maxDisplayItems() }} more
+            </span>
+          }
+        </div>
+      } @else {
+        <hlm-select-value />
+      }
+    </hlm-select-trigger>
+  }
+
+  <hlm-select-content
+    #selectContent
+    role="listbox"
+    [attr.aria-label]="'Available options'"
+    [attr.aria-multiselectable]="true"
+  >
+    @if (isSearchable()) {
+      <div class="search-container">
+        <input
+          #searchInput
+          autocomplete="off"
+          class="search-input"
+          placeholder="Search options..."
+          role="searchbox"
+          type="text"
+          [attr.aria-describedby]="'search-help'"
+          [attr.aria-label]="'Search options'"
+          [class.focused]="$isSearchFocused()"
+          [value]="$searchTerm()"
+          (click)="$event.stopPropagation()"
+          (focus)="onSearchFocus()"
+          (input)="onSearchChange($event)"
+          (keydown)="onSearchKeyDown($event)"
+        />
+        <div class="sr-only" id="search-help">
+          Use arrow keys to navigate options, Enter to toggle, Escape to close
+        </div>
+        @if ($searchTerm()) {
+          <button
+            aria-label="Clear search"
+            class="clear-search-btn"
+            tabindex="-1"
+            type="button"
+            (click)="clearSearch(); $event.stopPropagation()"
+          >
+            ×
+          </button>
+        }
+      </div>
+    }
+    @if (showSelectAll() || showClearAll()) {
+      <div class="flex gap-2 p-2 border-b">
+        @if (showSelectAll()) {
+          <button
+            class="text-xs text-primary hover:underline"
+            type="button"
+            [disabled]="$isAllSelected()"
+            (click)="onSelectAll(); $event.stopPropagation()"
+          >
+            Select All
+          </button>
+        }
+        @if (showClearAll() && $hasSelectedItems()) {
+          <button
+            class="text-xs text-destructive hover:underline"
+            type="button"
+            (click)="onClearAll(); $event.stopPropagation()"
+          >
+            Clear All
+          </button>
+        }
+      </div>
+    }
+    @if ($filteredOptions().length === 0) {
+      <div aria-live="polite" class="no-options" role="status">No options found</div>
+      <hlm-option [disabled]="true" />
+    } @else {
+      @for (
+        option of $filteredOptions();
+        track trackByValue($index, option);
+        let i = $index
+      ) {
+        <hlm-option
+          role="option"
+          [attr.aria-disabled]="option.disabled"
+          [attr.aria-selected]="isSelected(option.value)"
+          [attr.id]="'option-' + i"
+          [class.focused]="$focusedIndex() === i"
+          [class.selected]="isSelected(option.value)"
+          [disabled]="option.disabled"
+          [value]="option.value"
+          (click)="onValueToggle(option.value)"
+          (mouseenter)="onOptionHover(i)"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              class="flex items-center justify-center w-4 h-4 border rounded"
+              [class.bg-primary]="isSelected(option.value)"
+              [class.border-primary]="isSelected(option.value)"
+            >
+              @if (isSelected(option.value)) {
+                <ng-icon class="w-3 h-3 text-primary-foreground" hlm name="lucideCheck" />
+              }
+            </span>
+            <span>{{ option.label }}</span>
+          </div>
+        </hlm-option>
+      }
+    }
+  </hlm-select-content>
+</brn-select>

@@ -1,64 +1,68 @@
 <div class="space-y-1">
   @if (!isSidebarCollapsed() && title()) {
-  <h3 class="px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">
-    {{ title() }}
-  </h3>
-  } @for (item of items(); track item.id) {
-  <div class="space-y-1">
-    <!-- Main menu item -->
-    <button
-      class="dark:text-muted-foreground dark:hover:text-white flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors text-sidebar-foreground hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800"
-      type="button"
-      [class.justify-center]="isSidebarCollapsed()"
-      (click)="toggleExpanded(item.id)"
-    >
-      @if (item.icon) {
-      <ng-icon class="shrink-0" size="16" [name]="item.icon" />
-      } @if (!isSidebarCollapsed()) {
-      <span class="flex-1">{{ item.title }}</span>
-
-      @if (item.children && item.children.length > 0) {
-      <ng-icon
-        class="shrink-0 text-gray-400"
-        name="lucideChevronRight"
-        size="16"
-        [@chevronRotate]="getSubmenuState(item.id)"
-      />
-      } @if (item.shortcut) {
-      <kbd
-        class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-100 px-1.5 font-mono text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+    <h3 class="px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">
+      {{ title() }}
+    </h3>
+  }
+  @for (item of items(); track item.id) {
+    <div class="space-y-1">
+      <!-- Main menu item -->
+      <button
+        class="dark:text-muted-foreground dark:hover:text-white flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors text-sidebar-foreground hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800"
+        type="button"
+        [class.justify-center]="isSidebarCollapsed()"
+        (click)="toggleExpanded(item.id)"
       >
-        {{ item.shortcut }}
-      </kbd>
-      } }
-    </button>
-
-    <!-- Submenu items -->
-    @if (item.children && item.children.length > 0 && !isSidebarCollapsed()) {
-    <div
-      class="ml-6 space-y-1 border-l border-gray-200 pl-3 dark:border-gray-700"
-      [@expandCollapse]="getSubmenuState(item.id)"
-    >
-      @for (child of item.children; track child.id) {
-      <a
-        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
-        [href]="child.url || '#'"
-      >
-        @if (child.icon) {
-        <ng-icon class="shrink-0" size="14" [name]="child.icon" />
+        @if (item.icon) {
+          <ng-icon class="shrink-0" size="16" [name]="item.icon" />
         }
-        <span>{{ child.title }}</span>
-        @if (child.shortcut) {
-        <kbd
-          class="pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-100 px-1.5 font-mono text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+        @if (!isSidebarCollapsed()) {
+          <span class="flex-1">{{ item.title }}</span>
+
+          @if (item.children && item.children.length > 0) {
+            <ng-icon
+              class="shrink-0 text-gray-400"
+              name="lucideChevronRight"
+              size="16"
+              [@chevronRotate]="getSubmenuState(item.id)"
+            />
+          }
+          @if (item.shortcut) {
+            <kbd
+              class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-100 px-1.5 font-mono text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+            >
+              {{ item.shortcut }}
+            </kbd>
+          }
+        }
+      </button>
+
+      <!-- Submenu items -->
+      @if (item.children && item.children.length > 0 && !isSidebarCollapsed()) {
+        <div
+          class="ml-6 space-y-1 border-l border-gray-200 pl-3 dark:border-gray-700"
+          [@expandCollapse]="getSubmenuState(item.id)"
         >
-          {{ child.shortcut }}
-        </kbd>
-        }
-      </a>
+          @for (child of item.children; track child.id) {
+            <a
+              class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+              [href]="child.url || '#'"
+            >
+              @if (child.icon) {
+                <ng-icon class="shrink-0" size="14" [name]="child.icon" />
+              }
+              <span>{{ child.title }}</span>
+              @if (child.shortcut) {
+                <kbd
+                  class="pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-100 px-1.5 font-mono text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                >
+                  {{ child.shortcut }}
+                </kbd>
+              }
+            </a>
+          }
+        </div>
       }
     </div>
-    }
-  </div>
   }
 </div>

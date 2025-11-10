@@ -6,60 +6,54 @@ import {
   contentChild,
   effect,
   ElementRef,
-  inject,
   input,
   linkedSignal,
-  model,
   output,
   signal,
   untracked,
   viewChild,
   ViewEncapsulation,
 } from "@angular/core";
-import { provideIcons } from "@ng-icons/core";
-import { lucideCheck, lucideChevronDown } from "@ng-icons/lucide";
+import { NgIconComponent, provideIcons } from "@ng-icons/core";
+import { lucideCheck, lucideChevronDown, lucideX } from "@ng-icons/lucide";
 import { BrnSelectImports } from "@spartan-ng/brain/select";
 import { HlmSelectImports } from "@spartan-ng/helm/select";
-import { MCSelectApi } from "./select-api.directive";
-import { MCSelectTrigger } from "./select-trigger.directive";
-
-export type SelectOption = {
-  value: string;
-  label: string;
-  disabled?: boolean;
-};
+import { SelectOption } from "../select/select";
+import { MCMultiSelectTrigger } from "./multi-select-trigger.directive";
 
 @Component({
-  selector: "mc-select",
-  imports: [BrnSelectImports, HlmSelectImports, NgTemplateOutlet],
-  providers: [provideIcons({ lucideChevronDown, lucideCheck })],
-  templateUrl: "./select.html",
-  styleUrl: "./select.css",
+  selector: "mc-multi-select",
+  imports: [BrnSelectImports, HlmSelectImports, NgTemplateOutlet, NgIconComponent],
+  providers: [provideIcons({ lucideChevronDown, lucideCheck, lucideX })],
+  templateUrl: "./multi-select.html",
+  styleUrl: "./multi-select.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
-    "[class.mc-select]": "true",
+    "[class.mc-multi-select]": "true",
   },
 })
-export class MCSelect {
-  readonly selectApi = inject(MCSelectApi, { optional: true });
-
+export class MCMultiSelect {
   // Inputs
   readonly options = input.required<SelectOption[]>();
-  readonly placeholder = input<string>("Select an option...");
+  readonly placeholder = input<string>("Select options...");
   readonly disabled = input<boolean>(false);
-  readonly value = input<string | null>(null);
+  readonly value = input<string[]>([]);
   readonly size = input<"sm" | "md" | "lg">("md");
   readonly variant = input<"default" | "outline" | "ghost">("default");
   readonly isSearchable = input<boolean>(false);
   readonly isLoading = input<boolean>(false);
+  readonly maxDisplayItems = input<number>(3); // Số items tối đa hiển thị trong trigger
+  readonly showSelectAll = input<boolean>(false);
+  readonly showClearAll = input<boolean>(false);
+
   // Outputs
-  readonly valueChange = output<string>();
-  readonly selectionChange = output<SelectOption>();
+  readonly valueChange = output<string[]>();
+  readonly selectionChange = output<SelectOption[]>();
   readonly scrollEnd = output<void>();
 
   // Internal state
-  readonly $selectedValue = model<string | null>(null);
+  readonly $selectedValues = signal<string[]>([]);
   readonly $searchTerm = signal<string>("");
   readonly $isOpen = signal<boolean>(false);
   readonly $focusedIndex = signal<number>(-1);
@@ -71,25 +65,46 @@ export class MCSelect {
   readonly $selectContent = viewChild<ElementRef<HTMLElement>>("selectContent");
 
   // Content projection
-  readonly $mcSelectTrigger = contentChild(MCSelectTrigger);
+  readonly $mcMultiSelectTrigger = contentChild(MCMultiSelectTrigger);
 
   // Computed properties
   protected readonly $filteredOptions = linkedSignal(() => this.options());
 
   protected readonly $isLoading = linkedSignal(() => this.isLoading());
 
-  readonly $selectedOption = computed(() => {
-    const currentValue = this.$selectedValue() || this.value();
-    return this.options().find(option => option.value === currentValue) || null;
+  readonly $selectedOptions = computed(() => {
+    const selectedValues = this.$selectedValues();
+    return this.options().filter(option => selectedValues.includes(option.value));
+  });
+
+  readonly $selectedValuesSet = computed(() => {
+    return new Set(this.$selectedValues());
   });
 
   readonly $displayText = computed(() => {
-    const selected = this.$selectedOption();
-    return selected ? selected.label : this.placeholder();
+    const selectedCount = this.$selectedValues().length;
+    if (selectedCount === 0) {
+      return this.placeholder();
+    }
+    if (selectedCount === 1) {
+      const option = this.$selectedOptions()[0];
+      return option ? option.label : this.placeholder();
+    }
+    return `${selectedCount} selected`;
+  });
+
+  readonly $displayItems = computed(() => {
+    const selectedOptions = this.$selectedOptions();
+    const maxItems = this.maxDisplayItems();
+    return selectedOptions.slice(0, maxItems);
+  });
+
+  readonly $hasMoreItems = computed(() => {
+    return this.$selectedValues().length > this.maxDisplayItems();
   });
 
   readonly $selectClasses = computed(() => {
-    const baseClasses = "w-full";
+    const baseClasses = "inline-block";
     const sizeClasses = {
       sm: "h-8 text-sm",
       md: "h-10 text-sm",
@@ -98,37 +113,79 @@ export class MCSelect {
     return `${baseClasses} ${sizeClasses[this.size()]}`;
   });
 
+  readonly $isAllSelected = computed(() => {
+    const filteredOptions = this.$filteredOptions();
+    const selectedSet = this.$selectedValuesSet();
+    return (
+      filteredOptions.length > 0 &&
+      filteredOptions.every(option => !option.disabled && selectedSet.has(option.value))
+    );
+  });
+
+  readonly $hasSelectedItems = computed(() => {
+    return this.$selectedValues().length > 0;
+  });
+
   constructor() {
-    // Initialize selected value from input
     effect(() => {
       const inputValue = this.value();
-      if (inputValue !== null && inputValue !== this.$selectedValue()) {
-        this.$selectedValue.set(inputValue);
-      }
+
+      untracked(() => {
+        if (inputValue && inputValue.length !== this.$selectedValues().length) {
+          this.$selectedValues.set([...inputValue]);
+        }
+      });
     });
 
-    if (this.selectApi) {
-      effect(() => {
-        this.selectApi?.setOpen(this.$isOpen());
-        this.selectApi?.setSearchTerm(this.$searchTerm());
-      });
-
-      this.selectApi.connectIsLoading(this.$isLoading);
-      this.selectApi.connectOptions(this.$filteredOptions);
-    } else {
-      this._manualSearch();
-    }
+    this._manualSearch();
   }
 
-  onValueChange(value: string): void {
-    this.$selectedValue.set(value);
-    this.valueChange.emit(value);
-    this.$searchTerm.set(""); // Clear search when option is selected
+  onValueToggle(value: string): void {
+    const currentValues = this.$selectedValues();
+    const selectedSet = new Set(currentValues);
 
-    const selectedOption = this.options().find(option => option.value === value);
-    if (selectedOption) {
-      this.selectionChange.emit(selectedOption);
+    if (selectedSet.has(value)) {
+      selectedSet.delete(value);
+    } else {
+      selectedSet.add(value);
     }
+
+    const newValues = Array.from(selectedSet);
+    this.$selectedValues.set(newValues);
+    this.valueChange.emit(newValues);
+
+    const selectedOptions = this.options().filter(option =>
+      newValues.includes(option.value)
+    );
+    this.selectionChange.emit(selectedOptions);
+  }
+
+  onSelectAll(): void {
+    const filteredOptions = this.$filteredOptions();
+    const enabledOptions = filteredOptions.filter(option => !option.disabled);
+    const newValues = enabledOptions.map(option => option.value);
+    this.$selectedValues.set(newValues);
+    this.valueChange.emit(newValues);
+    this.selectionChange.emit(enabledOptions);
+  }
+
+  onClearAll(): void {
+    this.$selectedValues.set([]);
+    this.valueChange.emit([]);
+    this.selectionChange.emit([]);
+  }
+
+  onRemoveItem(value: string, event: Event): void {
+    event.stopPropagation();
+    const currentValues = this.$selectedValues();
+    const newValues = currentValues.filter(v => v !== value);
+    this.$selectedValues.set(newValues);
+    this.valueChange.emit(newValues);
+
+    const selectedOptions = this.options().filter(option =>
+      newValues.includes(option.value)
+    );
+    this.selectionChange.emit(selectedOptions);
   }
 
   onSearchChange(event: Event): void {
@@ -144,7 +201,6 @@ export class MCSelect {
 
   onScrollEnd(): void {
     this.scrollEnd.emit();
-    this.selectApi?.nextPage();
   }
 
   clearSearch(): void {
@@ -184,7 +240,7 @@ export class MCSelect {
         break;
       case "Enter":
         event.preventDefault();
-        this._selectFocusedOption(filteredOptions);
+        this._toggleFocusedOption(filteredOptions);
         break;
       case "Escape":
         event.preventDefault();
@@ -206,16 +262,6 @@ export class MCSelect {
     const filteredOptions = this.$filteredOptions();
 
     switch (event.key) {
-      // case "ArrowDown":
-      //   event.preventDefault();
-      //   this.$isSearchFocused.set(false);
-      //   this.$focusedIndex.set(0);
-      //   break;
-      // case "ArrowUp":
-      //   event.preventDefault();
-      //   this.$isSearchFocused.set(false);
-      //   this.$focusedIndex.set(filteredOptions.length - 1);
-      //   break;
       case "ArrowDown":
         event.preventDefault();
         this._navigateDown(filteredOptions.length);
@@ -227,7 +273,7 @@ export class MCSelect {
       case "Enter":
         event.preventDefault();
         if (filteredOptions.length > 0) {
-          this.onValueChange(filteredOptions[0].value);
+          this.onValueToggle(filteredOptions[0].value);
         }
         break;
       case "Escape":
@@ -251,6 +297,10 @@ export class MCSelect {
     return option.value;
   }
 
+  isSelected(value: string): boolean {
+    return this.$selectedValuesSet().has(value);
+  }
+
   private _manualSearch(): void {
     effect(() => {
       const searchTerm = this.$searchTerm().toLowerCase().trim();
@@ -264,6 +314,10 @@ export class MCSelect {
         untracked(() => {
           this.$filteredOptions.set(filteredOptions);
         });
+      } else {
+        untracked(() => {
+          this.$filteredOptions.set(this.options());
+        });
       }
     });
   }
@@ -271,7 +325,6 @@ export class MCSelect {
   // Private methods
   private _navigateDown(optionsLength: number): void {
     const currentIndex = this.$focusedIndex();
-
     const nextIndex = currentIndex < optionsLength - 1 ? currentIndex + 1 : 0;
     this.$focusedIndex.set(nextIndex);
   }
@@ -287,12 +340,12 @@ export class MCSelect {
     }
   }
 
-  private _selectFocusedOption(filteredOptions: SelectOption[]): void {
+  private _toggleFocusedOption(filteredOptions: SelectOption[]): void {
     const focusedIndex = this.$focusedIndex();
     if (focusedIndex >= 0 && focusedIndex < filteredOptions.length) {
       const option = filteredOptions[focusedIndex];
       if (!option.disabled) {
-        this.onValueChange(option.value);
+        this.onValueToggle(option.value);
       }
     }
   }

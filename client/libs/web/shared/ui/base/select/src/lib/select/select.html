@@ -11,9 +11,22 @@
   (keydown)="onKeyDown($event)"
   (openChange)="$event ? onSelectOpen() : onSelectClose()"
 >
-  <hlm-select-trigger #selectTrigger>
-    <hlm-select-value> {{ $displayText() }} </hlm-select-value>
-  </hlm-select-trigger>
+  @let mcTrigger = $mcSelectTrigger();
+  @if (mcTrigger) {
+    <div brnSelectTrigger class="w-fit">
+      <ng-container
+        [ngTemplateOutlet]="mcTrigger.templateRef"
+        [ngTemplateOutletContext]="{
+          $implicit: $selectedOption(),
+          displayText: $displayText(),
+        }"
+      />
+    </div>
+  } @else {
+    <hlm-select-trigger #selectTrigger>
+      <hlm-select-value> {{ $displayText() }} </hlm-select-value>
+    </hlm-select-trigger>
+  }
 
   <hlm-select-content
     #selectContent
@@ -21,56 +34,61 @@
     [attr.aria-label]="'Available options'"
   >
     @if (isSearchable()) {
-    <div class="search-container">
-      <input
-        #searchInput
-        autocomplete="off"
-        class="search-input"
-        placeholder="Search options..."
-        role="searchbox"
-        type="text"
-        [attr.aria-describedby]="'search-help'"
-        [attr.aria-label]="'Search options'"
-        [class.focused]="$isSearchFocused()"
-        [value]="$searchTerm()"
-        (click)="$event.stopPropagation()"
-        (focus)="onSearchFocus()"
-        (input)="onSearchChange($event)"
-        (keydown)="onSearchKeyDown($event);"
-      />
-      <div class="sr-only" id="search-help">
-        Use arrow keys to navigate options, Enter to select, Escape to close
+      <div class="search-container">
+        <input
+          #searchInput
+          autocomplete="off"
+          class="search-input"
+          placeholder="Search options..."
+          role="searchbox"
+          type="text"
+          [attr.aria-describedby]="'search-help'"
+          [attr.aria-label]="'Search options'"
+          [class.focused]="$isSearchFocused()"
+          [value]="$searchTerm()"
+          (click)="$event.stopPropagation()"
+          (focus)="onSearchFocus()"
+          (input)="onSearchChange($event)"
+          (keydown)="onSearchKeyDown($event)"
+        />
+        <div class="sr-only" id="search-help">
+          Use arrow keys to navigate options, Enter to select, Escape to close
+        </div>
+        @if ($searchTerm()) {
+          <button
+            aria-label="Clear search"
+            class="clear-search-btn"
+            tabindex="-1"
+            type="button"
+            (click)="clearSearch(); $event.stopPropagation()"
+          >
+            ×
+          </button>
+        }
       </div>
-      @if ($searchTerm()) {
-      <button
-        aria-label="Clear search"
-        class="clear-search-btn"
-        tabindex="-1"
-        type="button"
-        (click)="clearSearch(); $event.stopPropagation()"
-      >
-        ×
-      </button>
+    }
+    @if ($filteredOptions().length === 0) {
+      <div aria-live="polite" class="no-options" role="status">No options found</div>
+      <hlm-option [disabled]="true" />
+    } @else {
+      @for (
+        option of $filteredOptions();
+        track trackByValue($index, option);
+        let i = $index
+      ) {
+        <hlm-option
+          role="option"
+          [attr.aria-disabled]="option.disabled"
+          [attr.aria-selected]="$selectedValue() === option.value"
+          [attr.id]="'option-' + i"
+          [class.focused]="$focusedIndex() === i"
+          [disabled]="option.disabled"
+          [value]="option.value"
+          (mouseenter)="onOptionHover(i)"
+        >
+          {{ option.label }}
+        </hlm-option>
       }
-    </div>
-    } @if ($filteredOptions().length === 0) {
-    <div aria-live="polite" class="no-options" role="status">No options found</div>
-    <hlm-option [disabled]="true"></hlm-option>
-
-    } @else { @for (option of $filteredOptions(); track trackByValue($index, option); let
-    i = $index) {
-    <hlm-option
-      role="option"
-      [attr.aria-disabled]="option.disabled"
-      [attr.aria-selected]="$selectedValue() === option.value"
-      [attr.id]="'option-' + i"
-      [class.focused]="$focusedIndex() === i"
-      [disabled]="option.disabled"
-      [value]="option.value"
-      (mouseenter)="onOptionHover(i)"
-    >
-      {{ option.label }}
-    </hlm-option>
-    } } {{$focusedIndex()}}
+    }
   </hlm-select-content>
 </brn-select>

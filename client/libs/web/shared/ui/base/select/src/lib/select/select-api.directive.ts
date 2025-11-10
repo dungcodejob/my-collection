@@ -25,9 +25,7 @@ type SelectApiFilter = {
   selector: "[mcSelectApi]",
   standalone: true,
 })
-export abstract class MCSelectApiDirective<
-  TFilter extends SelectApiFilter = SelectApiFilter,
-> {
+export abstract class MCSelectApi<TFilter extends SelectApiFilter = SelectApiFilter> {
   protected readonly _destroyRef = inject(DestroyRef);
   protected readonly _injector = inject(Injector);
 

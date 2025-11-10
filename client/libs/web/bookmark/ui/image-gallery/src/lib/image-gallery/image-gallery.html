@@ -10,28 +10,33 @@
   [class.grid-cols-5]="columns() === 5"
 >
   @if (images().length === 0) {
-  <div
-    class="col-span-full flex items-center justify-center p-8 border-2 border-dashed border-border rounded-md"
-  >
-    <p class="text-sm text-muted-foreground">No images available</p>
-  </div>
-  } @else { @for (image of images(); track trackByIndex($index); let i = $index) {
-  <!-- T082: Image selection with click handler -->
-  <!-- T083: Selected image highlight -->
-  <div
-    #imageContainer
-    class="relative aspect-video overflow-hidden rounded-md cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-    role="radio"
-    tabindex="0"
-    [attr.aria-checked]="selectedIndex() === i"
-    [attr.aria-label]="'Image ' + (i + 1)"
-    [class]="selectedIndex() === i ? 'border-4 border-primary shadow-lg image-item-selected' : 'border-2 border-border hover:border-primary hover:shadow-md'"
-    (click)="onImageClick(i)"
-    (keydown.enter)="onImageClick(i)"
-    (keydown.space)="onImageClick(i)"
-  >
-    <!-- T084: Lazy loading placeholder -->
-    <!-- @if (!shouldLoadImage(i)) {
+    <div
+      class="col-span-full flex items-center justify-center p-8 border-2 border-dashed border-border rounded-md"
+    >
+      <p class="text-sm text-muted-foreground">No images available</p>
+    </div>
+  } @else {
+    @for (image of images(); track trackByIndex($index); let i = $index) {
+      <!-- T082: Image selection with click handler -->
+      <!-- T083: Selected image highlight -->
+      <div
+        #imageContainer
+        class="relative aspect-video overflow-hidden rounded-md cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        role="radio"
+        tabindex="0"
+        [attr.aria-checked]="selectedIndex() === i"
+        [attr.aria-label]="'Image ' + (i + 1)"
+        [class]="
+          selectedIndex() === i
+            ? 'border-4 border-primary shadow-lg image-item-selected'
+            : 'border-2 border-border hover:border-primary hover:shadow-md'
+        "
+        (click)="onImageClick(i)"
+        (keydown.enter)="onImageClick(i)"
+        (keydown.space)="onImageClick(i)"
+      >
+        <!-- T084: Lazy loading placeholder -->
+        <!-- @if (!shouldLoadImage(i)) {
     <div
       class="relative w-full bg-muted flex items-center justify-center"
       [style.padding-bottom.%]="75"
@@ -53,55 +58,56 @@
     />
     } -->
 
-    <img
-      class="w-full h-full object-cover transition-transform duration-200"
-      fill
-      loading="lazy"
-      [alt]="'Thumbnail option ' + (i + 1)"
-      [class.scale-100]="selectedIndex() === i"
-      [class.scale-105]="selectedIndex() !== i"
-      [ngSrc]="image"
-      (error)="onImageError(i, image); $any($event.target).src = placeholderImage"
-    />
-
-    <!-- T083: Selection indicator -->
-    @if (selectedIndex() === i) {
-    <div
-      class="absolute inset-0 bg-primary/20 flex items-center justify-center pointer-events-none"
-    >
-      <svg
-        class="w-8 h-8 text-primary drop-shadow-lg sm:w-6 sm:h-6"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          clip-rule="evenodd"
-          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-          fill-rule="evenodd"
+        <img
+          class="w-full h-full object-cover transition-transform duration-200"
+          fill
+          loading="lazy"
+          [alt]="'Thumbnail option ' + (i + 1)"
+          [class.scale-100]="selectedIndex() === i"
+          [class.scale-105]="selectedIndex() !== i"
+          [ngSrc]="image"
+          (error)="onImageError(i, image); $any($event.target).src = placeholderImage"
         />
-      </svg>
-    </div>
-    }
 
-    <!-- Image number badge -->
-    <div
-      class="absolute top-2 left-2 bg-background/80 backdrop-blur-sm text-foreground text-xs font-medium px-2 py-1 rounded-md border border-border sm:text-[10px] sm:px-1.5 sm:py-0.5"
-    >
-      {{ i + 1 }}
-    </div>
-  </div>
-  } }
+        <!-- T083: Selection indicator -->
+        @if (selectedIndex() === i) {
+          <div
+            class="absolute inset-0 bg-primary/20 flex items-center justify-center pointer-events-none"
+          >
+            <svg
+              class="w-8 h-8 text-primary drop-shadow-lg sm:w-6 sm:h-6"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </div>
+        }
+
+        <!-- Image number badge -->
+        <div
+          class="absolute top-2 left-2 bg-background/80 backdrop-blur-sm text-foreground text-xs font-medium px-2 py-1 rounded-md border border-border sm:text-[10px] sm:px-1.5 sm:py-0.5"
+        >
+          {{ i + 1 }}
+        </div>
+      </div>
+    }
+  }
 </div>
 
 <!-- Image count info -->
 @if (images().length > 0) {
-<div class="mt-2 text-center">
-  <p class="text-xs text-muted-foreground">
-    {{ images().length }} {{ images.length === 1 ? "image" : "images" }} available @if
-    (images.length > 10) {
-    <span class="text-warning">(showing first 10)</span>
-    }
-  </p>
-</div>
+  <div class="mt-2 text-center">
+    <p class="text-xs text-muted-foreground">
+      {{ images().length }} {{ images.length === 1 ? "image" : "images" }} available
+      @if (images.length > 10) {
+        <span class="text-warning">(showing first 10)</span>
+      }
+    </p>
+  </div>
 }

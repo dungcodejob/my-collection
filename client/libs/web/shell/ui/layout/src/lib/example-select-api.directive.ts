@@ -1,5 +1,5 @@
 import { computed, Directive, Signal } from "@angular/core";
-import { MCSelectApiDirective, SelectOption } from "@client/web-shared-ui-select";
+import { MCSelectApi, SelectOption } from "@client/web-shared-ui-select";
 import { delay, Observable, of } from "rxjs";
 
 type ExampleFilter = {
@@ -12,12 +12,12 @@ type ExampleFilter = {
   selector: "[mcExampleSelectApi]",
   providers: [
     {
-      provide: MCSelectApiDirective,
+      provide: MCSelectApi,
       useClass: ExampleSelectApiDirective,
     },
   ],
 })
-export class ExampleSelectApiDirective extends MCSelectApiDirective<ExampleFilter> {
+export class ExampleSelectApiDirective extends MCSelectApi<ExampleFilter> {
   // Mock data for testing
   private readonly _mockOptions: SelectOption[] = [
     { value: "user1", label: "John Doe" },
