@@ -17,6 +17,8 @@ import { ImageGallery } from "@client/web-bookmark-ui-image-gallery";
 import { Collection } from "@client/web-collection-data-access";
 import { MCConfirmDialogModule } from "@client/web-shared-ui-dialog";
 import { injectAutoEffect, simpleUrlValidator } from "@client/web-shared-utils";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { lucideAlertCircle } from "@ng-icons/lucide";
 import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/brain/dialog";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmDialogImports } from "@spartan-ng/helm/dialog";
@@ -50,8 +52,9 @@ type BookmarkForm = FormGroup<{
     ImageGallery,
     NgOptimizedImage,
     MCConfirmDialogModule,
+    NgIcon,
   ],
-  providers: [AddBookmarkDialogFacade],
+  providers: [AddBookmarkDialogFacade, provideIcons({ lucideAlertCircle })],
   templateUrl: "./add-bookmark-dialog.html",
   styleUrl: "./add-bookmark-dialog.css",
 })

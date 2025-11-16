@@ -1,15 +1,16 @@
 <brn-select
   #selectElement
   role="combobox"
-  [attr.aria-expanded]="$isOpen()"
+  [attr.aria-expanded]="facade.$isOpen()"
   [attr.aria-haspopup]="'listbox'"
   [attr.aria-label]="placeholder()"
   [class]="$selectClasses()"
   [disabled]="disabled()"
   [placeholder]="placeholder()"
-  [(value)]="$selectedValue"
+  [value]="facade.$selectedValues()"
   (keydown)="onKeyDown($event)"
   (openChange)="$event ? onSelectOpen() : onSelectClose()"
+  (valueChange)="onSelect($event)"
 >
   @let mcTrigger = $mcSelectTrigger();
   @if (mcTrigger) {
@@ -33,6 +34,7 @@
     role="listbox"
     [attr.aria-label]="'Available options'"
   >
+    <hlm-select-scroll-up />
     @if (isSearchable()) {
       <div class="search-container">
         <input
@@ -45,7 +47,7 @@
           [attr.aria-describedby]="'search-help'"
           [attr.aria-label]="'Search options'"
           [class.focused]="$isSearchFocused()"
-          [value]="$searchTerm()"
+          [value]="facade.$searchTerm()"
           (click)="$event.stopPropagation()"
           (focus)="onSearchFocus()"
           (input)="onSearchChange($event)"
@@ -54,7 +56,7 @@
         <div class="sr-only" id="search-help">
           Use arrow keys to navigate options, Enter to select, Escape to close
         </div>
-        @if ($searchTerm()) {
+        @if (facade.$searchTerm()) {
           <button
             aria-label="Clear search"
             class="clear-search-btn"
@@ -67,19 +69,19 @@
         }
       </div>
     }
-    @if ($filteredOptions().length === 0) {
+
+    @let selectedValue = $selectedValue();
+    @let filteredOptions = facade.$filteredOptions();
+    @let isEmpty = filteredOptions.length === 0;
+    @if (isEmpty) {
       <div aria-live="polite" class="no-options" role="status">No options found</div>
       <hlm-option [disabled]="true" />
     } @else {
-      @for (
-        option of $filteredOptions();
-        track trackByValue($index, option);
-        let i = $index
-      ) {
+      @for (option of filteredOptions; track option.value; let i = $index) {
         <hlm-option
           role="option"
           [attr.aria-disabled]="option.disabled"
-          [attr.aria-selected]="$selectedValue() === option.value"
+          [attr.aria-selected]="selectedValue === option.value"
           [attr.id]="'option-' + i"
           [class.focused]="$focusedIndex() === i"
           [disabled]="option.disabled"

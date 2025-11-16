@@ -8,6 +8,7 @@ export type SelectFacade = {
   $isLoading: Signal<boolean>;
   $isOpen: Signal<boolean>;
   $selectedValues: Signal<string[]>;
+  $selectedOptions: Signal<SelectOption[]>;
   $isAllSelected: Signal<boolean>;
 
   search(term: string): void;

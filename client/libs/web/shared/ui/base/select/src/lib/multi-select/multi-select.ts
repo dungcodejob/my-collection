@@ -17,13 +17,21 @@ import {
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
 import { lucideCheck, lucideChevronDown, lucideX } from "@ng-icons/lucide";
 import { BrnSelectImports } from "@spartan-ng/brain/select";
+import { HlmCheckboxImports } from "@spartan-ng/helm/checkbox";
 import { HlmSelectImports } from "@spartan-ng/helm/select";
+import { BaseSelect } from "../base/base.select";
 import { SelectOption } from "../select/select";
 import { MCMultiSelectTrigger } from "./multi-select-trigger.directive";
 
 @Component({
   selector: "mc-multi-select",
-  imports: [BrnSelectImports, HlmSelectImports, NgTemplateOutlet, NgIconComponent],
+  imports: [
+    BrnSelectImports,
+    HlmSelectImports,
+    HlmCheckboxImports,
+    NgTemplateOutlet,
+    NgIconComponent,
+  ],
   providers: [provideIcons({ lucideChevronDown, lucideCheck, lucideX })],
   templateUrl: "./multi-select.html",
   styleUrl: "./multi-select.css",
@@ -33,7 +41,7 @@ import { MCMultiSelectTrigger } from "./multi-select-trigger.directive";
     "[class.mc-multi-select]": "true",
   },
 })
-export class MCMultiSelect {
+export class MCMultiSelect extends BaseSelect {
   // Inputs
   readonly options = input.required<SelectOption[]>();
   readonly placeholder = input<string>("Select options...");
@@ -127,6 +135,7 @@ export class MCMultiSelect {
   });
 
   constructor() {
+    super();
     effect(() => {
       const inputValue = this.value();
 

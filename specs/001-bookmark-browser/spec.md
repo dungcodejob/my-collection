@@ -14,8 +14,13 @@
 - Q: How should tag filtering work? → A: Support both AND/OR modes with UI toggle
 - Q: What should the system do when filter/search operations exceed acceptable performance thresholds? → A: Show loading indicator + allow cancellation after 2 seconds
 - Q: How should the system handle bookmark data updates while a user is viewing a collection? → A: Manual refresh only - users press F5 or reload to see updates
+- Q: What accessibility standards must the bookmark browser feature meet? → A: WCAG 2.1 AA compliance with full keyboard navigation, ARIA labels, and screen reader support
+- Q: How should the system handle and display API errors to users? → A: Show user-friendly messages for common errors (network failures, 404, 403) with retry options; log technical details server-side only
+- Q: What security measures must be implemented for URL parameter handling (filters, pagination, sort)? → A: Sanitize and validate all URL parameters, encode special characters, and prevent XSS injection
+- Q: What observability and monitoring requirements must the bookmark browser feature support? → A: Log errors and key operations (filter, pagination, bulk actions) with basic metrics (request counts, response times)
+- Q: What rate limiting or throttling should be implemented for user interactions (filters, pagination, bulk actions)? → A: Implement client-side request throttling (debounce filters, limit rapid pagination) without explicit rate limiting
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - View and Navigate Bookmarks in a Collection (Priority: P1)
 
@@ -119,15 +124,15 @@ Users want to organize bookmark display by sorting on different criteria (date a
 - **What happens when a user applies filters that result in only 1 page of results but they're currently on page 5?** The system should reset to page 1 and update the URL accordingly.
 - **What happens when multiple users have the same collection open and one user deletes bookmarks being viewed by another?** Since collections are owner-only (not shared), this scenario doesn't apply. A single user may have the same collection open in multiple tabs; in this case, changes made in one tab won't be reflected in other tabs until manual page refresh.
 - **How does the system handle bookmarks without images in Moodboard mode?** Display a placeholder image or default thumbnail to maintain grid layout consistency.
-- **What happens when the URL contains invalid filter parameters?** The system should gracefully ignore invalid parameters, show all bookmarks, and optionally display a warning message.
+- **What happens when the URL contains invalid filter parameters?** The system should sanitize and validate all parameters, reject malformed or potentially malicious parameters, gracefully ignore invalid but safe parameters, show all bookmarks, and optionally display a warning message. Parameters that could indicate XSS attempts should be rejected entirely.
 - **How does the system behave when a user selects bookmarks, applies a filter, then removes the filter?** Previously selected bookmarks that were hidden by the filter should remain selected when the filter is removed.
 - **What happens when URL parameters become extremely long due to many filters?** The system will rely on browser's URL capacity (~2000 characters, supporting roughly 15-20 typical filters). No artificial limits will be imposed on filter count. If URL length approaches browser limits, the system should display a warning but allow operation to continue.
 - **How are bookmarks displayed when switching from a mode with selections to another mode?** Selection state must be preserved with visual indicators appropriate to each display mode.
 - **What happens when a bookmark's data is updated while a user is viewing it?** Changes will not be reflected in real-time; users must manually refresh the page (F5 or browser reload) to see updated bookmark data. This keeps v1 implementation simple and avoids polling/websocket complexity.
-- **What happens when a user attempts to access a collection they don't own?** The system should return an authorization error and redirect to an appropriate error page or the user's collection list.
+- **What happens when a user attempts to access a collection they don't own?** The system should return an authorization error (403) and redirect to an appropriate error page or the user's collection list with a clear message explaining access was denied. Technical error details should be logged server-side only.
 - **What happens when a user cancels a long-running filter operation?** The system should abort the request, remain on the previous view state (showing previously loaded bookmarks), and allow the user to modify their filters or try again.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -142,6 +147,41 @@ Users want to organize bookmark display by sorting on different criteria (date a
 - **FR-007**: System MUST display a loading indicator when filter, sort, or pagination operations take longer than 500ms
 - **FR-008**: System MUST provide a cancellation control for operations that exceed 2 seconds, allowing users to abort the current request
 - **FR-009**: System MUST NOT automatically refresh bookmark data; changes to bookmarks require manual page reload by the user
+
+#### Error Handling
+
+- **FR-057**: System MUST display user-friendly error messages for API failures, avoiding technical jargon or raw error codes
+- **FR-058**: System MUST provide specific error messages for common scenarios: network failures ("Unable to connect. Please check your internet connection."), collection not found (404), unauthorized access (403), and server errors (500)
+- **FR-059**: System MUST provide retry options for transient errors (network failures, timeout errors) allowing users to attempt the operation again
+- **FR-060**: System MUST log technical error details (error codes, stack traces, request/response data) server-side for debugging purposes without exposing them to end users
+- **FR-061**: System MUST handle authorization errors (403) by redirecting users to an appropriate error page or their collection list with a clear message explaining access was denied
+- **FR-062**: System MUST gracefully handle partial failures (e.g., if bulk delete fails for some bookmarks, show which succeeded and which failed)
+- **FR-063**: System MUST maintain view state (filters, pagination, selections) when non-fatal errors occur, allowing users to retry without losing their context
+
+#### Security
+
+- **FR-064**: System MUST sanitize and validate all URL parameters (filters, pagination, sort, display mode) before parsing and applying them
+- **FR-065**: System MUST encode special characters in URL parameters to prevent XSS injection attacks
+- **FR-066**: System MUST validate filter parameter formats match expected patterns (e.g., `field:type:value`) and reject malformed parameters
+- **FR-067**: System MUST prevent injection of executable code or script tags through filter values or URL parameters
+- **FR-068**: System MUST verify collection ownership on every request, not rely solely on URL parameters for authorization
+- **FR-069**: System MUST use parameterized queries or safe encoding when constructing API requests from URL parameters to prevent injection attacks
+
+#### Observability
+
+- **FR-070**: System MUST log all errors (API failures, validation errors, authorization failures) with sufficient context (user ID, collection ID, error type, timestamp) for debugging
+- **FR-071**: System MUST log key user operations: filter applications, pagination changes, display mode switches, bulk delete actions with operation metadata (filter types, page numbers, selection counts)
+- **FR-072**: System MUST track basic performance metrics: API request counts, response times (p50, p95, p99), and operation success/failure rates for filter, pagination, and bulk operations
+- **FR-073**: System MUST log security-related events: invalid URL parameter attempts, authorization failures, and potential XSS injection attempts
+- **FR-074**: System MUST structure logs in a format suitable for aggregation and analysis (JSON format recommended)
+
+#### Performance & Throttling
+
+- **FR-075**: System MUST debounce filter input (keyword search) to prevent excessive API calls during typing (recommended: 300ms delay)
+- **FR-076**: System MUST throttle rapid pagination changes to prevent request spam (allow at most one pagination request per 200ms)
+- **FR-077**: System MUST queue or cancel pending requests when new filter/pagination requests are initiated, ensuring only the latest request is processed
+- **FR-078**: System MUST NOT implement explicit rate limiting with user-facing error messages; backend API should handle rate limiting if needed
+- **FR-079**: System MUST prevent duplicate simultaneous requests for the same operation (e.g., clicking filter button multiple times rapidly should only trigger one request)
 
 #### Display Modes
 
@@ -200,6 +240,17 @@ Users want to organize bookmark display by sorting on different criteria (date a
 - **FR-047**: Filter UI components MUST be dynamically configurable based on available filter types for the bookmark entity
 - **FR-048**: System MUST support adding new filter types by registering filter definitions with field name, type, and UI component
 
+#### Accessibility
+
+- **FR-049**: System MUST comply with WCAG 2.1 Level AA accessibility standards
+- **FR-050**: System MUST provide full keyboard navigation for all interactive elements (filters, display mode buttons, pagination, selection checkboxes, bulk actions)
+- **FR-051**: System MUST include appropriate ARIA labels, roles, and properties for all interactive elements to support screen readers
+- **FR-052**: System MUST provide clear focus indicators for all focusable elements
+- **FR-053**: System MUST ensure color contrast ratios meet WCAG 2.1 AA standards (4.5:1 for normal text, 3:1 for large text)
+- **FR-054**: System MUST include descriptive alt text for all bookmark thumbnails and images
+- **FR-055**: System MUST announce filter changes, selection count updates, and pagination changes to screen readers via live regions or ARIA announcements
+- **FR-056**: System MUST respect user's reduced motion preferences when animating transitions between display modes or filter updates
+
 ### Key Entities
 
 - **Bookmark**: Represents a saved web resource with properties including title, URL, description, tags (array), creation date, last modified date, thumbnail URL, collection ID, and boolean flags (is_favorite, has_image). Each bookmark belongs to one collection.
@@ -210,7 +261,7 @@ Users want to organize bookmark display by sorting on different criteria (date a
 
 - **View State**: Represents the current user view configuration including active filters (array), sort criteria (field and direction), current page number, display mode (list/card/moodboard), tag filter mode (AND/OR), and selected bookmark IDs (array). This state is serialized to/from URL parameters.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
@@ -224,6 +275,8 @@ Users want to organize bookmark display by sorting on different criteria (date a
 - **SC-008**: System supports at least 5 simultaneous active filters without degrading performance or URL readability
 - **SC-009**: 90% of users successfully find specific bookmarks using filters within 3 interactions (filter applications)
 - **SC-010**: Zero data loss when using browser back/forward navigation with complex filter and sort combinations
+- **SC-011**: All interactive elements are fully navigable using keyboard only (Tab, Enter, Space, Arrow keys) without requiring mouse interaction
+- **SC-012**: Screen reader users can successfully navigate, filter, and select bookmarks with equivalent functionality to mouse users
 
 ## Assumptions
 
@@ -248,7 +301,9 @@ Users want to organize bookmark display by sorting on different criteria (date a
 ## Scope Decisions
 
 ### URL Length and Filter Limits
+
 The system will not impose artificial limits on the number of simultaneous filters. Implementation will rely on browser URL capacity (~2000 characters, approximately 15-20 typical filters). If URL length approaches browser limits during filter addition, the system should display a warning message but allow the operation to proceed. This provides maximum flexibility while alerting users to potential issues.
 
 ### Saved Search Feature - Phase 2
+
 Saved filter combinations (named presets) are deferred to Phase 2. The initial version will focus on URL-based filter sharing, which allows users to bookmark filtered views using native browser bookmarks. This approach validates user needs before investing in preset storage and management UI. Based on user feedback and usage patterns, saved search functionality will be prioritized for future iterations.

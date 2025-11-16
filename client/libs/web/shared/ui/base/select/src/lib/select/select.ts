@@ -4,27 +4,31 @@ import {
   Component,
   computed,
   contentChild,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
   input,
   linkedSignal,
-  model,
+  OnInit,
   output,
   signal,
   untracked,
   viewChild,
   ViewEncapsulation,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { injectAutoEffect } from "@client/web-shared-utils";
 import { provideIcons } from "@ng-icons/core";
 import { lucideCheck, lucideChevronDown } from "@ng-icons/lucide";
 import { BrnSelectImports } from "@spartan-ng/brain/select";
 import { HlmSelectImports } from "@spartan-ng/helm/select";
-import { MCSelectApi } from "./select-api.directive";
+import { debounceTime, distinctUntilChanged, fromEvent, map, tap } from "rxjs";
+import { MCLocalSelectFacade } from "../local-select.facade";
+import { injectSelectFacade, provideSelectFacade } from "../select.facade";
 import { MCSelectTrigger } from "./select-trigger.directive";
-
-export type SelectOption = {
-  value: string;
+export type SelectOption<T = string> = {
+  value: T;
   label: string;
   disabled?: boolean;
 };
@@ -32,7 +36,10 @@ export type SelectOption = {
 @Component({
   selector: "mc-select",
   imports: [BrnSelectImports, HlmSelectImports, NgTemplateOutlet],
-  providers: [provideIcons({ lucideChevronDown, lucideCheck })],
+  providers: [
+    provideIcons({ lucideChevronDown, lucideCheck }),
+    provideSelectFacade(MCLocalSelectFacade),
+  ],
   templateUrl: "./select.html",
   styleUrl: "./select.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,8 +48,11 @@ export type SelectOption = {
     "[class.mc-select]": "true",
   },
 })
-export class MCSelect {
-  readonly selectApi = inject(MCSelectApi, { optional: true });
+export class MCSelect implements OnInit {
+  // readonly selectApi = inject(MCApiSelectFacade, { optional: true });
+  protected readonly facade = injectSelectFacade();
+  private readonly _autoEffect = injectAutoEffect();
+  private readonly _destroyRef = inject(DestroyRef);
 
   // Inputs
   readonly options = input.required<SelectOption[]>();
@@ -54,14 +64,22 @@ export class MCSelect {
   readonly isSearchable = input<boolean>(false);
   readonly isLoading = input<boolean>(false);
   // Outputs
-  readonly valueChange = output<string>();
-  readonly selectionChange = output<SelectOption>();
+  readonly valueChange = output<string | undefined>();
+  readonly valueOptionChange = output<SelectOption | undefined>();
   readonly scrollEnd = output<void>();
 
   // Internal state
-  readonly $selectedValue = model<string | null>(null);
-  readonly $searchTerm = signal<string>("");
-  readonly $isOpen = signal<boolean>(false);
+
+  readonly $selectedValue = computed(() => {
+    const value = this.facade.$selectedValues();
+    return value.length > 0 ? value[0] : null;
+  });
+
+  readonly $selectedOption = computed(() => {
+    const options = this.facade.$selectedOptions();
+    return options.length > 0 ? options[0] : null;
+  });
+
   readonly $focusedIndex = signal<number>(-1);
   readonly $isSearchFocused = signal<boolean>(false);
 
@@ -74,14 +92,8 @@ export class MCSelect {
   readonly $mcSelectTrigger = contentChild(MCSelectTrigger);
 
   // Computed properties
-  protected readonly $filteredOptions = linkedSignal(() => this.options());
 
   protected readonly $isLoading = linkedSignal(() => this.isLoading());
-
-  readonly $selectedOption = computed(() => {
-    const currentValue = this.$selectedValue() || this.value();
-    return this.options().find(option => option.value === currentValue) || null;
-  });
 
   readonly $displayText = computed(() => {
     const selected = this.$selectedOption();
@@ -100,61 +112,52 @@ export class MCSelect {
 
   constructor() {
     // Initialize selected value from input
-    effect(() => {
-      const inputValue = this.value();
-      if (inputValue !== null && inputValue !== this.$selectedValue()) {
-        this.$selectedValue.set(inputValue);
-      }
-    });
-
-    if (this.selectApi) {
-      effect(() => {
-        this.selectApi?.setOpen(this.$isOpen());
-        this.selectApi?.setSearchTerm(this.$searchTerm());
-      });
-
-      this.selectApi.connectIsLoading(this.$isLoading);
-      this.selectApi.connectOptions(this.$filteredOptions);
-    } else {
-      this._manualSearch();
-    }
+    // effect(() => {
+    //   const inputValue = this.value();
+    //   if (inputValue !== null && inputValue !== this.$selectedValue()) {
+    //     this.$selectedValue.set(inputValue);
+    //   }
+    // });
+    // if (this.selectApi) {
+    //   effect(() => {
+    //     this.selectApi?.setOpen(this.$isOpen());
+    //     this.selectApi?.setSearchTerm(this.$searchTerm());
+    //   });
+    //   this.selectApi.connectIsLoading(this.$isLoading);
+    // } else {
+    //   this.facade.search(this.$searchTerm());
+    // }
   }
 
-  onValueChange(value: string): void {
-    this.$selectedValue.set(value);
+  ngOnInit(): void {
+    this.searchChangeEffect();
+    this.valueChangeEffect();
+  }
+
+  onSelect(value?: any): void {
+    if (value) {
+      this.facade.select(value);
+    }
+
     this.valueChange.emit(value);
-    this.$searchTerm.set(""); // Clear search when option is selected
-
-    const selectedOption = this.options().find(option => option.value === value);
-    if (selectedOption) {
-      this.selectionChange.emit(selectedOption);
-    }
+    this.facade.search(""); // Clear search when option is selected
   }
 
-  onSearchChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const searchTerm = target.value;
-    const previousSearchTerm = this.$searchTerm();
-    this.$searchTerm.set(searchTerm);
-    // Only reset focused index if search term actually changed
-    if (searchTerm !== previousSearchTerm) {
-      this.$focusedIndex.set(-1);
-    }
-  }
+  onSearchChange(event: Event): void {}
 
   onScrollEnd(): void {
     this.scrollEnd.emit();
-    this.selectApi?.nextPage();
+    // this.facade.nextPage();
   }
 
   clearSearch(): void {
-    this.$searchTerm.set("");
+    this.facade.search("");
     this.$focusedIndex.set(-1);
     this._focusSearchInput();
   }
 
   onSelectOpen(): void {
-    this.$isOpen.set(true);
+    this.facade.setOpen(true);
     this.$focusedIndex.set(-1);
     if (this.isSearchable()) {
       setTimeout(() => this._focusSearchInput(), 0);
@@ -162,16 +165,16 @@ export class MCSelect {
   }
 
   onSelectClose(): void {
-    this.$isOpen.set(false);
+    this.facade.setOpen(false);
     this.$focusedIndex.set(-1);
     this.$isSearchFocused.set(false);
     this.clearSearch();
   }
 
   onKeyDown(event: KeyboardEvent): void {
-    if (!this.$isOpen()) return;
+    if (!this.facade.$isOpen()) return;
 
-    const filteredOptions = this.$filteredOptions();
+    const filteredOptions = this.facade.$filteredOptions();
 
     switch (event.key) {
       case "ArrowDown":
@@ -203,7 +206,7 @@ export class MCSelect {
 
   onSearchKeyDown(event: KeyboardEvent): void {
     event.stopPropagation();
-    const filteredOptions = this.$filteredOptions();
+    const filteredOptions = this.facade.$filteredOptions();
 
     switch (event.key) {
       // case "ArrowDown":
@@ -227,7 +230,7 @@ export class MCSelect {
       case "Enter":
         event.preventDefault();
         if (filteredOptions.length > 0) {
-          this.onValueChange(filteredOptions[0].value);
+          this.onSelect(filteredOptions[0].value);
         }
         break;
       case "Escape":
@@ -247,24 +250,40 @@ export class MCSelect {
     this.$isSearchFocused.set(false);
   }
 
-  trackByValue(index: number, option: SelectOption): string {
-    return option.value;
+  searchChangeEffect(): void {
+    const searchInput = this.$searchInput();
+
+    if (searchInput) {
+      fromEvent(searchInput.nativeElement, "input")
+        .pipe(
+          map(event => (event.target as HTMLInputElement).value),
+          distinctUntilChanged(),
+          debounceTime(100),
+          tap(searchTerm => {
+            this.facade.search(searchTerm);
+            this.$focusedIndex.set(-1);
+          }),
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe();
+    }
   }
 
-  private _manualSearch(): void {
-    effect(() => {
-      const searchTerm = this.$searchTerm().toLowerCase().trim();
-      if (searchTerm && this.isSearchable()) {
-        const filteredOptions = this.options().filter(
-          option =>
-            option.label.toLowerCase().includes(searchTerm) ||
-            option.value.toLowerCase().includes(searchTerm)
-        );
+  valueChangeEffect(): void {
+    this._autoEffect(() => {
+      const selectedValue = this.$selectedValue();
 
-        untracked(() => {
-          this.$filteredOptions.set(filteredOptions);
-        });
-      }
+      untracked(() => {
+        this.facade.search("");
+        this.valueChange.emit(selectedValue ?? undefined);
+      });
+    });
+
+    effect(() => {
+      const selectedOption = this.$selectedOption();
+      untracked(() => {
+        this.valueOptionChange.emit(selectedOption ?? undefined);
+      });
     });
   }
 
@@ -292,7 +311,7 @@ export class MCSelect {
     if (focusedIndex >= 0 && focusedIndex < filteredOptions.length) {
       const option = filteredOptions[focusedIndex];
       if (!option.disabled) {
-        this.onValueChange(option.value);
+        this.onSelect(option.value);
       }
     }
   }

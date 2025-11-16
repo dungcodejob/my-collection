@@ -11,7 +11,8 @@ import {
 } from "@client/web-bookmark-data-access";
 import { CollectionStore } from "@client/web-collection-data-access";
 import { PARAM_KEYS } from "@client/web-shared-constants";
-import { injectAutoEffect, withParam } from "@client/web-shared-utils";
+import { SelectOption } from "@client/web-shared-ui-select";
+import { injectAutoEffect, ObjectValues, withParam } from "@client/web-shared-utils";
 import {
   patchState,
   signalStore,
@@ -38,12 +39,49 @@ type BookmarkField =
 /**
  * US2 T052: Display mode types
  */
-type DisplayMode = "list" | "card" | "moodboard";
+// type DisplayMode = "list" | "card" | "moodboard";
+
+export const displayModes = {
+  list: "List",
+  card: "Card",
+  grid: "Grid",
+} as const;
+
+export type DisplayMode = ObjectValues<typeof displayModes>;
+
+export const displayModeLabels: Record<DisplayMode, string> = {
+  [displayModes.list]: "List",
+  [displayModes.card]: "Card",
+  [displayModes.grid]: "Grid",
+};
 
 type BookmarkListParams = {
   [PARAM_KEYS.COLLECTION_ID]: string;
 };
 
+export const hidableColumns = {
+  title: "title",
+  description: "description",
+  url: "url",
+  isFavorite: "isFavorite",
+  tags: "tags",
+  createAt: "createAt",
+  updateAt: "updateAt",
+  visitCount: "visitCount",
+} as const;
+
+export type HidableColumn = ObjectValues<typeof hidableColumns>;
+
+export const hidableColumnLabels: Record<HidableColumn, string> = {
+  [hidableColumns.title]: "Title",
+  [hidableColumns.description]: "Description",
+  [hidableColumns.url]: "URL",
+  [hidableColumns.isFavorite]: "Favorite",
+  [hidableColumns.tags]: "Tags",
+  [hidableColumns.createAt]: "Created At",
+  [hidableColumns.updateAt]: "Updated At",
+  [hidableColumns.visitCount]: "Visit Count",
+};
 /**
  * US1 T037-T042: Extended state with URL-synchronized filters, sorts, pagination
  * US2 T052: Added displayMode for view switching
@@ -57,6 +95,9 @@ type BookmarkListState = {
   totalPages: number;
   totalItems: number;
   displayMode: DisplayMode;
+  displayModeOptions: SelectOption<DisplayMode>[];
+  hidableColumnOptions: SelectOption<HidableColumn>[];
+  displayedColumns: HidableColumn[];
 };
 
 const initialState: BookmarkListState = {
@@ -67,7 +108,16 @@ const initialState: BookmarkListState = {
   limit: 20,
   totalPages: 0,
   totalItems: 0,
-  displayMode: "list", // US2 T052: Default display mode
+  displayMode: displayModes.list,
+  displayModeOptions: Object.values(displayModes).map((mode: DisplayMode) => ({
+    value: mode,
+    label: displayModeLabels[mode],
+  })),
+  hidableColumnOptions: Object.values(hidableColumns).map((column: HidableColumn) => ({
+    value: column,
+    label: hidableColumnLabels[column],
+  })),
+  displayedColumns: Object.values(hidableColumns),
 };
 
 export const BookmarkListFacade = signalStore(
@@ -102,6 +152,8 @@ export const BookmarkListFacade = signalStore(
 
     $bookmarks: computed(() => _bookmarkStore.entities()),
 
+    $displayModeOptions: computed(() => store.displayModeOptions()),
+
     // US1 T037: Computed signals for pagination
     $page: computed(() => store.page()),
     $limit: computed(() => store.limit()),
@@ -112,6 +164,8 @@ export const BookmarkListFacade = signalStore(
 
     // US2 T052: Computed signal for display mode
     $displayMode: computed(() => store.displayMode()),
+    $hidableColumnOptions: computed(() => store.hidableColumnOptions()),
+    $displayedColumns: computed(() => store.displayedColumns()),
   })),
   withMethods(({ _router, _route, ...store }) => ({
     /**
@@ -149,10 +203,14 @@ export const BookmarkListFacade = signalStore(
 
       // US2 T052: Parse display mode from URL
       const displayMode = queryParams["mode"];
-      const validModes: DisplayMode[] = ["list", "card", "moodboard"];
+      const validModes: DisplayMode[] = [
+        displayModes.list,
+        displayModes.card,
+        displayModes.grid,
+      ];
       const parsedDisplayMode: DisplayMode = validModes.includes(displayMode)
         ? displayMode
-        : "list";
+        : displayModes.list;
 
       patchState(store, {
         filters,
@@ -201,7 +259,7 @@ export const BookmarkListFacade = signalStore(
       if (store.limit() !== 20) queryParams["limit"] = store.limit();
 
       // US2 T052: Display mode (only if not default 'list')
-      if (store.displayMode() !== "list") {
+      if (store.displayMode() !== displayModes.list) {
         queryParams["mode"] = store.displayMode();
       }
 
@@ -263,6 +321,14 @@ export const BookmarkListFacade = signalStore(
      */
     setDisplayMode(mode: DisplayMode): void {
       patchState(store, { displayMode: mode });
+    },
+
+    onToggleColumnVisibility(column: HidableColumn): void {
+      patchState(store, state => ({
+        displayedColumns: state.displayedColumns.includes(column)
+          ? state.displayedColumns.filter(c => c !== column)
+          : [...state.displayedColumns, column],
+      }));
     },
 
     onToggleSelection: (bookmarkId: string): void => {

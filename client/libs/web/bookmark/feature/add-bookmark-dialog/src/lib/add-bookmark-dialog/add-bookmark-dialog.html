@@ -270,10 +270,14 @@
 @if (store.showDuplicateConfirmation() && store.duplicateBookmark()) {
   <div
     class="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+    role="button"
+    tabindex="0"
     (click)="onDismissDuplicateConfirmation()"
   >
     <div
       class="relative w-full max-w-lg mx-4 bg-card border border-border rounded-lg shadow-lg p-6 space-y-4"
+      role="button"
+      tabindex="0"
       (click)="$event.stopPropagation()"
     >
       <!-- Header -->
@@ -282,19 +286,7 @@
           <div
             class="flex-shrink-0 w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center"
           >
-            <svg
-              class="w-6 h-6 text-warning"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
+            <ng-icon hlm name="lucideAlertCircle" size="16" />
           </div>
           <div class="flex-1">
             <h3 class="text-lg font-semibold">Duplicate Bookmark Found</h3>
@@ -309,12 +301,14 @@
       <div class="border border-border rounded-lg p-4 space-y-3 bg-muted/30">
         <div class="flex items-start gap-3">
           @if (store.duplicateBookmark()?.imageUrl) {
-            <img
-              class="w-16 h-16 object-cover rounded border border-border flex-shrink-0"
-              [alt]="store.duplicateBookmark()?.title || 'Bookmark thumbnail'"
-              [ngSrc]="store.duplicateBookmark()?.imageUrl || ''"
-              fill
-            />
+            <div class="relative w-16 h-16">
+              <img
+                class="object-cover rounded border border-border flex-shrink-0"
+                fill
+                [alt]="store.duplicateBookmark()?.title || 'Bookmark thumbnail'"
+                [ngSrc]="store.duplicateBookmark()?.imageUrl || ''"
+              />
+            </div>
           } @else {
             <div
               class="w-16 h-16 bg-muted rounded border border-border flex items-center justify-center flex-shrink-0"

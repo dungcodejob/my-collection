@@ -34,7 +34,7 @@
     "@ng-icons/lucide": "^32.4.0",
     "@ngrx/signals": "^20.0.0",
     "@sentry/angular": "^9.38.0",
-    "@spartan-ng/brain": "^0.0.1-alpha.543",
+    "@spartan-ng/brain": "^0.0.1-alpha.559",
     "@tailwindcss/postcss": "^4.1.10",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

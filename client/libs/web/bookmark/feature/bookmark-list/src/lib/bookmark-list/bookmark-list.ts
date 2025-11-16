@@ -5,14 +5,29 @@ import { FilterType } from "@client/web-bookmark-data-access";
 import { MCToastService } from "@client/web-shared-services";
 import { MCMultiSelectImports, MCSelectImports } from "@client/web-shared-ui-select";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
-import { lucideCirclePlus, lucidePlus } from "@ng-icons/lucide";
+import {
+  lucideChevronDown,
+  lucideCirclePlus,
+  lucideEllipsis,
+  lucidePlus,
+} from "@ng-icons/lucide";
+import { BrnMenuImports } from "@spartan-ng/brain/menu";
+import { ToggleValue } from "@spartan-ng/brain/toggle-group";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmCardImports } from "@spartan-ng/helm/card";
+import { HlmCheckboxImports } from "@spartan-ng/helm/checkbox";
 import { HlmDialogService } from "@spartan-ng/helm/dialog";
 import { HlmInputImports } from "@spartan-ng/helm/input";
+import { HlmMenuImports } from "@spartan-ng/helm/menu";
 import { HlmPaginationImports } from "@spartan-ng/helm/pagination";
+import { HlmToggleGroupImports } from "@spartan-ng/helm/toggle-group";
 import { HlmTypographyImports } from "@spartan-ng/helm/typography";
-import { BookmarkListFacade } from "./bookmark-list.facade";
+import {
+  BookmarkListFacade,
+  DisplayMode,
+  displayModes,
+  HidableColumn,
+} from "./bookmark-list.facade";
 @Component({
   selector: "mc-bookmark-list",
   imports: [
@@ -22,12 +37,19 @@ import { BookmarkListFacade } from "./bookmark-list.facade";
     NgIconComponent,
     HlmTypographyImports,
     NgOptimizedImage,
+    HlmToggleGroupImports,
     HlmCardImports,
+    HlmCheckboxImports,
+    HlmMenuImports,
+    BrnMenuImports,
     HlmPaginationImports,
     MCSelectImports,
     MCMultiSelectImports,
   ],
-  providers: [BookmarkListFacade, provideIcons({ lucidePlus, lucideCirclePlus })],
+  providers: [
+    BookmarkListFacade,
+    provideIcons({ lucidePlus, lucideCirclePlus, lucideChevronDown, lucideEllipsis }),
+  ],
   templateUrl: "./bookmark-list.html",
   styleUrl: "./bookmark-list.css",
 })
@@ -36,6 +58,7 @@ export class MCBookmarkList {
   private readonly _dialogService = inject(HlmDialogService);
   private readonly _toastService = inject(MCToastService);
 
+  protected readonly displayModes = displayModes;
   // US1 T048: Expose Math for template
   protected readonly Math = Math;
 
@@ -91,11 +114,17 @@ export class MCBookmarkList {
     this.facade.onSelectAll();
   }
 
+  onToggleColumnVisibility(column: string): void {
+    this.facade.onToggleColumnVisibility(column as HidableColumn);
+  }
   /**
    * US2 T055: Handle display mode change
    */
-  onDisplayModeChange(mode: "list" | "card" | "moodboard"): void {
-    this.facade.setDisplayMode(mode);
+  onDisplayModeChange(mode: ToggleValue<DisplayMode>): void {
+    const value = Array.isArray(mode) ? mode[0] : mode;
+    if (value) {
+      this.facade.setDisplayMode(value);
+    }
   }
 
   /**

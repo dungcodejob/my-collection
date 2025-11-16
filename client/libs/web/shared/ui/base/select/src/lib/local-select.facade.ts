@@ -1,8 +1,9 @@
-import { computed, signal } from "@angular/core";
+import { computed, Injectable, signal } from "@angular/core";
 import { SelectFacade } from "./select.facade";
 import { SelectOption } from "./select/select";
 
-export class LocalSelectFacade implements SelectFacade {
+@Injectable()
+export class MCLocalSelectFacade implements SelectFacade {
   private readonly _$searchTerm = signal<string>("");
   private readonly _$options = signal<SelectOption[]>([]);
   private readonly _$isLoading = signal<boolean>(false);
@@ -43,20 +44,21 @@ export class LocalSelectFacade implements SelectFacade {
   setOpen(isOpen: boolean): void {
     this._$isOpen.set(isOpen);
   }
-  toggle(value: string): void {
-    const currentValues = this._$selectedValues();
-    if (currentValues.includes(value)) {
-      this._$selectedValues.update(values => values.filter(v => v !== value));
-    } else {
-      this._$selectedValues.update(values => [...values, value]);
-    }
-  }
   select(value: string): void {
     this._$selectedValues.update(values => [...values, value]);
   }
   unselect(value: string): void {
     this._$selectedValues.update(values => values.filter(v => v !== value));
   }
+  toggle(value: string): void {
+    const currentValues = this._$selectedValues();
+    if (currentValues.includes(value)) {
+      this.unselect(value);
+    } else {
+      this.select(value);
+    }
+  }
+
   clear(): void {
     this._$selectedValues.set([]);
   }

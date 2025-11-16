@@ -2,58 +2,86 @@
   <p hlmH2>Bookmarks</p>
   <div class="flex justify-between items-center gap-6">
     <!-- US1 T043: Search input with debounce -->
-    <input
-      #searchInput
-      hlmInput
-      placeholder="Search bookmarks"
-      type="text"
-      (input)="onSearch(searchInput.value)"
-    />
+    <div class="flex gap-4">
+      <input
+        #searchInput
+        hlmInput
+        placeholder="Search bookmarks"
+        type="text"
+        (input)="onSearch(searchInput.value)"
+      />
 
-    <!-- US2 T055: Display mode switcher -->
-    <div class="flex gap-2">
-      <button
-        hlmBtn
-        size="sm"
-        title="List View"
-        type="button"
-        variant="outline"
-        [class.bg-primary]="facade.$displayMode() === 'list'"
-        [class.text-primary-foreground]="facade.$displayMode() === 'list'"
-        (click)="onDisplayModeChange('list')"
+      <mc-multi-select
+        placeholder="Select an option..."
+        selectContentClass="w-40 min-w-40"
+        [options]="[
+          { value: 'tag1', label: 'Tag 1' },
+          { value: 'tag2', label: 'Tag 2' },
+          { value: 'tag3', label: 'Tag 3' },
+        ]"
       >
-        List
-      </button>
-      <button
-        hlmBtn
-        size="sm"
-        title="Card View"
-        type="button"
-        variant="outline"
-        [class.bg-primary]="facade.$displayMode() === 'card'"
-        [class.text-primary-foreground]="facade.$displayMode() === 'card'"
-        (click)="onDisplayModeChange('card')"
-      >
-        Card
-      </button>
-      <button
-        hlmBtn
-        size="sm"
-        title="Moodboard View"
-        type="button"
-        variant="outline"
-        [class.bg-primary]="facade.$displayMode() === 'moodboard'"
-        [class.text-primary-foreground]="facade.$displayMode() === 'moodboard'"
-        (click)="onDisplayModeChange('moodboard')"
-      >
-        Moodboard
-      </button>
+        <ng-template let-displayText="displayText" let-options mcMultiSelectTrigger>
+          <mc-filter-trigger title="Tags" [items]="options" />
+        </ng-template>
+      </mc-multi-select>
     </div>
 
-    <button class="flex-none" hlmBtn type="button" (click)="onCreate()">
-      <ng-icon hlm name="lucidePlus" size="16" />
-      Add Bookmark
-    </button>
+    <!-- US2 T055: Display mode switcher -->
+
+    <div class="flex gap-2">
+      <div class="flex gap-2">
+        <hlm-toggle-group
+          size="sm"
+          type="single"
+          variant="outline"
+          [value]="facade.$displayMode()"
+          (valueChange)="onDisplayModeChange($event)"
+        >
+          @for (option of facade.$displayModeOptions(); track option.value) {
+            <button
+              aria-label="Toggle {{ option.label }}"
+              hlmToggleGroupItem
+              type="button"
+              [value]="option.value"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </hlm-toggle-group>
+      </div>
+
+      <button
+        align="end"
+        hlmBtn
+        type="button"
+        variant="outline"
+        [brnMenuTriggerFor]="menu"
+      >
+        Columns
+        <ng-icon class="ml-2" hlm name="lucideChevronDown" size="16" />
+      </button>
+      <ng-template #menu>
+        <hlm-menu class="w-32">
+          @for (column of facade.$hidableColumnOptions(); track column.value) {
+            <button
+              class="capitalize"
+              hlmMenuItemCheckbox
+              type="button"
+              [checked]="facade.$displayedColumns().includes(column.value)"
+              (triggered)="onToggleColumnVisibility(column.value)"
+            >
+              <hlm-menu-item-check />
+              {{ column.label }}
+            </button>
+          }
+        </hlm-menu>
+      </ng-template>
+
+      <button class="flex-none" hlmBtn size="sm" type="button" (click)="onCreate()">
+        <ng-icon hlm name="lucidePlus" size="16" />
+        Add Bookmark
+      </button>
+    </div>
   </div>
 
   <!-- Loading state -->
@@ -81,21 +109,20 @@
   @if (facade.$isHasBookmarks()) {
     @switch (facade.$displayMode()) {
       <!-- List View -->
-      @case ("list") {
-        <div class="flex-1 flex flex-col overflow-y-auto gap-4">
+      @case (displayModes.list) {
+        <div class="flex flex-col overflow-y-auto gap-4">
           @for (bookmark of facade.$bookmarks(); track bookmark.id) {
             <div
-              class="flex py-4 gap-4 hover:shadow-md transition-shadow"
+              class="flex py-4 gap-4 hover:shadow-md transition-shadow relative"
               hlmCard
               [class.selected]="facade.$selectedIds().includes(bookmark.id)"
             >
               <div class="flex gap-4 px-4" hlmCardContent>
-                <input
-                  class="w-5 h-5 mt-1"
-                  type="checkbox"
+                <hlm-checkbox
                   [checked]="facade.$selectedIds().includes(bookmark.id)"
                   (change)="facade.onToggleSelection(bookmark.id)"
                 />
+
                 <div class="flex-1">
                   <div class="flex items-center gap-2 mb-2">
                     <img
@@ -140,66 +167,98 @@
                   </div>
                 </div>
               </div>
+
+              <button
+                class="h-6 w-6 p-0.5 absolute top-4 right-4"
+                hlmBtn
+                type="button"
+                variant="ghost"
+                [brnMenuTriggerFor]="menu"
+              >
+                <ng-icon hlm name="lucideEllipsis" size="16" />
+              </button>
+              <ng-template #menu>
+                <hlm-menu>
+                  <hlm-menu-label>Actions</hlm-menu-label>
+                  <hlm-menu-separator />
+                  <hlm-menu-group>
+                    <button hlmMenuItem type="button">Edit</button>
+                    <button hlmMenuItem type="button">View</button>
+                    <button hlmMenuItem type="button">Favorite</button>
+                  </hlm-menu-group>
+                  <hlm-menu-separator />
+                  <hlm-menu-group>
+                    <button hlmMenuItem type="button">
+                      Delete
+                      <span class="ml-auto text-xs tracking-widest opacity-60">⌘⌫</span>
+                    </button>
+                  </hlm-menu-group>
+                </hlm-menu>
+              </ng-template>
             </div>
           }
         </div>
       }
 
       <!-- Card View -->
-      @case ("card") {
+      @case (displayModes.card) {
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 overflow-y-auto"
         >
           @for (bookmark of facade.$bookmarks(); track bookmark.id) {
             <div
-              class="flex flex-col hover:shadow-lg transition-shadow"
+              class="flex hover:shadow-lg transition-shadow py-4"
               hlmCard
               [class.selected]="facade.$selectedIds().includes(bookmark.id)"
             >
-              <div class="flex flex-col gap-2 p-4" hlmCardContent>
-                <div class="flex items-start justify-between mb-2">
-                  <input
-                    class="w-5 h-5"
-                    type="checkbox"
+              <div class="flex flex-col gap-2 px-4" hlmCardContent>
+                <!-- <div class="flex items-start justify-between mb-2">
+                  <hlm-checkbox
                     [checked]="facade.$selectedIds().includes(bookmark.id)"
                     (change)="facade.onToggleSelection(bookmark.id)"
                   />
                   @if (bookmark.isFavorite) {
                     <span class="text-yellow-500 text-xl">★</span>
                   }
-                </div>
+                </div> -->
                 @if (bookmark.imageUrl) {
-                  <img
-                    class="w-full h-40 object-cover rounded max-h-40 max-w-40"
-                    fill
-                    [alt]="bookmark.title"
-                    [ngSrc]="bookmark.imageUrl"
-                  />
-                }
-                <div class="flex items-center gap-2">
-                  <img
-                    alt="favicon"
-                    class="w-4 h-4"
-                    height="16"
-                    width="16"
-                    [ngSrc]="bookmark.faviconUrl || '/assets/default-favicon.png'"
-                  />
-                  <h3 class="text-base font-semibold line-clamp-2">
-                    {{ bookmark.title }}
-                  </h3>
-                </div>
-                <p class="text-sm text-muted-foreground line-clamp-2">
-                  {{ bookmark.description || "No description" }}
-                </p>
-                @if (bookmark.tags && bookmark.tags.length > 0) {
-                  <div class="flex flex-wrap gap-1">
-                    @for (tag of bookmark.tags.slice(0, 3); track tag) {
-                      <span class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded">{{
-                        tag
-                      }}</span>
-                    }
+                  <div class="relative w-full h-48">
+                    <img
+                      class="w-full h-48 object-cover rounded"
+                      fill
+                      [alt]="bookmark.title"
+                      [ngSrc]="bookmark.imageUrl"
+                    />
                   </div>
                 }
+
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-2">
+                    <img
+                      alt="favicon"
+                      class="w-4 h-4"
+                      height="16"
+                      width="16"
+                      [ngSrc]="bookmark.faviconUrl || '/assets/default-favicon.png'"
+                    />
+                    <h3 class="text-base font-semibold line-clamp-2">
+                      {{ bookmark.title }}
+                    </h3>
+                  </div>
+                  <p class="text-sm text-muted-foreground line-clamp-2">
+                    {{ bookmark.description || "No description" }}
+                  </p>
+                  @if (bookmark.tags && bookmark.tags.length > 0) {
+                    <div class="flex flex-wrap gap-1">
+                      @for (tag of bookmark.tags.slice(0, 3); track tag) {
+                        <span
+                          class="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded"
+                          >{{ tag }}</span
+                        >
+                      }
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           }
@@ -207,7 +266,7 @@
       }
 
       <!-- Moodboard View -->
-      @case ("moodboard") {
+      @case (displayModes.grid) {
         <div
           class="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 overflow-y-auto"
         >
@@ -273,24 +332,4 @@
       />
     </div>
   }
-
-  <mc-multi-select
-    placeholder="Select an option..."
-    [options]="[
-      { value: '1', label: 'Option 1' },
-      { value: '2', label: 'Option 2' },
-      { value: '3', label: 'Option 3' },
-    ]"
-  >
-    <!-- <ng-template
-      let-displayText="displayText"
-      let-options
-      mcMultiSelectTrigger
-    >
-      <mc-filter-trigger
-        title="Status"
-        [items]="options.map(value => ({ value, label: value }))"
-      />
-    </ng-template> -->
-  </mc-multi-select>
 </div>
