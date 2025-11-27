@@ -1,3 +1,7 @@
+export type ImageGalleryError = {
+  index: number;
+  url: string;
+};
 /**
  * T079-T086: Image Gallery Component
  * Displays a grid of images with selection capability
@@ -23,7 +27,7 @@ export class ImageGallery implements OnInit, OnDestroy {
   readonly placeholderImage = input<string>("assets/images/placeholder.png");
   readonly columns = input<number>(4);
   readonly imageSelected = output<number>();
-  readonly imageError = output<{ index: number; url: string }>();
+  readonly imageError = output<ImageGalleryError>();
   readonly loadedImages = signal<Set<number>>(new Set());
 
   /**

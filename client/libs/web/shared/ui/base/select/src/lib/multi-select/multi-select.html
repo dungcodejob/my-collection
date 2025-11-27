@@ -27,9 +27,6 @@
     </div>
   } @else {
     <hlm-select-trigger #selectTrigger class="w-80">
-      @let hasSelectedItems = $hasSelectedItems();
-      @let displayItems = $displayItems();
-
       @if ($hasSelectedItems()) {
         <div class="flex items-center gap-2 flex-wrap min-h-[1.5rem]">
           @for (item of $displayItems(); track item.value) {

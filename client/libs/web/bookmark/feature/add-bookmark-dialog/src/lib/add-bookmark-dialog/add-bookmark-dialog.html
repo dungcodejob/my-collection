@@ -1,12 +1,16 @@
 <!-- T054-T067: Dialog template with Spartan UI -->
 <hlm-dialog-header>
-  <h3 hlmDialogTitle>Add Bookmark</h3>
+  <h4 hlmDialogTitle>Add Bookmark</h4>
   <p hlmDialogDescription>
     Enter a URL to fetch metadata, then customize and save your bookmark.
   </p>
 </hlm-dialog-header>
 
-<form class="space-y-4" [formGroup]="bookmarkForm" (keydown)="onKeyDown($event)">
+<form
+  class="space-y-7 mt-6 mb-6"
+  [formGroup]="bookmarkForm"
+  (keydown)="onKeyDown($event)"
+>
   <!-- T055-T056: URL input with fetch button -->
   <div class="space-y-2">
     <label for="url" hlmLabel>URL *</label>
@@ -58,7 +62,7 @@
   }
 
   <!-- T057: Title input -->
-  <div class="space-y-2">
+  <hlm-form-field>
     <label for="title" hlmLabel>Title *</label>
     <input
       formControlName="title"
@@ -71,13 +75,11 @@
       "
     />
     @if (getControl("title")?.invalid && getControl("title")?.touched) {
-      <p class="text-sm text-destructive">Title is required</p>
+      <hlm-error>Title is required</hlm-error>
     }
     <!-- T088: Character counter for title (200 max) -->
-    <p class="text-xs text-muted-foreground">
-      {{ getControl("title")?.value?.length || 0 }} / 200 characters
-    </p>
-  </div>
+    <hlm-hint> {{ getControl("title")?.value?.length || 0 }} / 200 characters </hlm-hint>
+  </hlm-form-field>
 
   <!-- T058: Description textarea -->
   <div class="space-y-2">
@@ -98,123 +100,24 @@
   <!-- T059: Image preview section -->
   <!-- T091: Integrate ImageGalleryComponent -->
   @if (store.metadata() && store.availableImages().length > 0) {
-    <div class="space-y-2">
-      <label for="thumbnail" hlmLabel>Thumbnail</label>
-
-      <!-- Selected image preview -->
-      @if (bookmarkForm.controls.imageUrl.value) {
-        <div class="relative aspect-video w-full overflow-hidden rounded-md border">
-          <img
-            class="h-full w-full object-cover"
-            fill
-            [alt]="getControl('title')?.value || 'Bookmark thumbnail'"
-            [ngSrc]="bookmarkForm.controls.imageUrl.value"
-            (error)="onImageError($event)"
-          />
-        </div>
-      }
-
-      <!-- T091: Use ImageGallery component for image selection -->
-      @if (store.availableImages().length > 1) {
-        <div class="space-y-2">
-          <p class="text-sm text-muted-foreground">
-            Choose from {{ store.availableImages().length }} available images:
-          </p>
-          <mc-image-gallery
-            [columns]="4"
-            [images]="store.availableImages()"
-            [selectedIndex]="store.selectedImageIndex()"
-            (imageError)="onImageError($event)"
-            (imageSelected)="onSelectImage($event)"
-          />
-        </div>
-      }
-
-      <!-- T118-T121, T125, T132: Custom Image Upload UI -->
-      <div class="space-y-3 mt-4 pt-4 border-t border-border">
-        <p class="text-sm font-medium">Or use a custom image:</p>
-
-        <!-- T118, T119: File upload -->
-        <div class="flex gap-2">
-          <input
-            #fileInput
-            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-            class="hidden"
-            type="file"
-            (change)="onFileSelected($event)"
-          />
-          <button
-            hlmBtn
-            size="sm"
-            type="button"
-            variant="outline"
-            [disabled]="store.$isUploadImagePending()"
-            (click)="fileInput.click()"
-          >
-            @if (store.$isUploadImagePending()) {
-              <hlm-spinner class="mr-2" size="sm" />
-            }
-            Upload Image
-          </button>
-
-          <!-- T121: Revert to default button -->
-          @if (store.hasCustomImage()) {
-            <button
-              hlmBtn
-              size="sm"
-              type="button"
-              variant="ghost"
-              (click)="onRevertToDefault()"
-            >
-              Revert to Default
-            </button>
-          }
-        </div>
-
-        <!-- T125: Upload progress indicator -->
-        @if (store.$isUploadImagePending()) {
-          <div class="space-y-1">
-            <div class="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Uploading...</span>
-              <span>{{ store.uploadProgress() }}%</span>
-            </div>
-            <div class="h-1 w-full bg-muted rounded-full overflow-hidden">
-              <div
-                class="h-full bg-primary transition-all duration-300"
-                [style.width.%]="store.uploadProgress()"
-              ></div>
-            </div>
-          </div>
-        }
-
-        <!-- T120: Image URL input -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium" for="imageUrl">Or enter image URL:</label>
-          <input
-            hlmInput
-            id="imageUrl"
-            placeholder="https://example.com/image.jpg"
-            type="url"
-            [value]="store.customImageUrl()"
-            (blur)="onImageUrlBlur($event)"
-            (input)="onImageUrlInput($event)"
-          />
-          @if (store.$isValidateImageUrlPending()) {
-            <p class="text-xs text-muted-foreground flex items-center gap-1">
-              <hlm-spinner size="sm" />
-              Validating image URL...
-            </p>
-          }
-        </div>
-
-        <!-- T132: Display upload/validation errors -->
-        @if (store.imageError()) {
-          <div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            {{ store.imageError() }}
-          </div>
-        }
-      </div>
-    </div>
+    <mc-bookmark-image-selector
+      [availableImages]="store.availableImages()"
+      [customImageUrl]="store.customImageUrl()"
+      [hasCustomImage]="store.hasCustomImage()"
+      [imageError]="store.imageError()"
+      [isUploadPending]="store.$isUploadImagePending()"
+      [isValidateUrlPending]="store.$isValidateImageUrlPending()"
+      [selectedImage]="bookmarkForm.controls.imageUrl.value"
+      [selectedImageIndex]="store.selectedImageIndex()"
+      [selectedTitle]="getControl('title')?.value || 'Bookmark thumbnail'"
+      [uploadProgress]="store.uploadProgress()"
+      (fileSelected)="onFileSelected($event)"
+      (imageLoadError)="onImageError($event)"
+      (imageSelected)="onSelectImage($event)"
+      (imageUrlBlurred)="onImageUrlBlur($event)"
+      (imageUrlChanged)="onImageUrlInput($event)"
+      (revertToDefault)="onRevertToDefault()"
+    />
   }
 
   <!-- Notes textarea -->
@@ -235,7 +138,7 @@
 </form>
 
 <!-- T060: Save and Cancel buttons -->
-<hlm-dialog-footer>
+<hlm-dialog-footer class="gap-4">
   <button
     hlmBtn
     mcConfirm
@@ -267,102 +170,11 @@
 </div>
 
 <!-- T142-T144: Duplicate Confirmation Dialog -->
-@if (store.showDuplicateConfirmation() && store.duplicateBookmark()) {
-  <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-    role="button"
-    tabindex="0"
-    (click)="onDismissDuplicateConfirmation()"
-  >
-    <div
-      class="relative w-full max-w-lg mx-4 bg-card border border-border rounded-lg shadow-lg p-6 space-y-4"
-      role="button"
-      tabindex="0"
-      (click)="$event.stopPropagation()"
-    >
-      <!-- Header -->
-      <div class="space-y-2">
-        <div class="flex items-start gap-3">
-          <div
-            class="flex-shrink-0 w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center"
-          >
-            <ng-icon hlm name="lucideAlertCircle" size="16" />
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold">Duplicate Bookmark Found</h3>
-            <p class="text-sm text-muted-foreground mt-1">
-              You already have a bookmark with this URL.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- T143: Existing bookmark details -->
-      <div class="border border-border rounded-lg p-4 space-y-3 bg-muted/30">
-        <div class="flex items-start gap-3">
-          @if (store.duplicateBookmark()?.imageUrl) {
-            <div class="relative w-16 h-16">
-              <img
-                class="object-cover rounded border border-border flex-shrink-0"
-                fill
-                [alt]="store.duplicateBookmark()?.title || 'Bookmark thumbnail'"
-                [ngSrc]="store.duplicateBookmark()?.imageUrl || ''"
-              />
-            </div>
-          } @else {
-            <div
-              class="w-16 h-16 bg-muted rounded border border-border flex items-center justify-center flex-shrink-0"
-            >
-              <svg
-                class="w-8 h-8 text-muted-foreground"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </div>
-          }
-          <div class="flex-1 min-w-0">
-            <h4 class="font-medium text-sm truncate">
-              {{ store.duplicateBookmark()?.title }}
-            </h4>
-            <p class="text-xs text-muted-foreground mt-1">
-              Created {{ store.duplicateBookmark()?.createAt | date: "medium" }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- T144: Action buttons -->
-      <div class="flex gap-2 justify-end pt-2">
-        <button
-          hlmBtn
-          size="sm"
-          type="button"
-          variant="outline"
-          (click)="onDismissDuplicateConfirmation()"
-        >
-          Cancel
-        </button>
-        <button
-          hlmBtn
-          size="sm"
-          type="button"
-          variant="outline"
-          (click)="onViewExisting()"
-        >
-          View Existing
-        </button>
-        <button hlmBtn size="sm" type="button" variant="default" (click)="onSaveAnyway()">
-          Save Anyway
-        </button>
-      </div>
-    </div>
-  </div>
-}
+<!-- T142-T144: Duplicate Confirmation Dialog -->
+<mc-duplicate-bookmark-confirmation
+  [duplicateBookmark]="store.duplicateBookmark()"
+  [showConfirmation]="store.showDuplicateConfirmation()"
+  (dismiss)="onDismissDuplicateConfirmation()"
+  (saveAnyway)="onSaveAnyway()"
+  (viewExisting)="onViewExisting()"
+/>

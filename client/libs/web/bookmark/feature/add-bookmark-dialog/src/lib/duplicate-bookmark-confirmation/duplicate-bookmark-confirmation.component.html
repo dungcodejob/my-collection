@@ -1,0 +1,94 @@
+<!-- Duplicate Bookmark Confirmation Dialog -->
+@if (showConfirmation() && duplicateBookmark()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+    role="button"
+    tabindex="0"
+    (click)="onDismiss()"
+  >
+    <div
+      class="relative w-full max-w-lg mx-4 bg-card border border-border rounded-lg shadow-lg p-6 space-y-4"
+      role="button"
+      tabindex="0"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Header -->
+      <div class="space-y-2">
+        <div class="flex items-start gap-3">
+          <div
+            class="flex-shrink-0 w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center"
+          >
+            <ng-icon hlm name="lucideAlertCircle" size="16" />
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">Duplicate Bookmark Found</h3>
+            <p class="text-sm text-muted-foreground mt-1">
+              You already have a bookmark with this URL.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Existing bookmark details -->
+      <div class="border border-border rounded-lg p-4 space-y-3 bg-muted/30">
+        <div class="flex items-start gap-3">
+          @if (duplicateBookmark()?.imageUrl) {
+            <div class="relative w-16 h-16">
+              <img
+                class="object-cover rounded border border-border flex-shrink-0"
+                fill
+                [alt]="duplicateBookmark()?.title || 'Bookmark thumbnail'"
+                [ngSrc]="duplicateBookmark()?.imageUrl || ''"
+              />
+            </div>
+          } @else {
+            <div
+              class="w-16 h-16 bg-muted rounded border border-border flex items-center justify-center flex-shrink-0"
+            >
+              <svg
+                class="w-8 h-8 text-muted-foreground"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+          }
+          <div class="flex-1 min-w-0">
+            <h4 class="font-medium text-sm truncate">
+              {{ duplicateBookmark()?.title }}
+            </h4>
+            <p class="text-xs text-muted-foreground mt-1">
+              Created {{ duplicateBookmark()?.createAt | date: "medium" }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex gap-2 justify-end pt-2">
+        <button hlmBtn size="sm" type="button" variant="outline" (click)="onDismiss()">
+          Cancel
+        </button>
+        <button
+          hlmBtn
+          size="sm"
+          type="button"
+          variant="outline"
+          (click)="onViewExisting()"
+        >
+          View Existing
+        </button>
+        <button hlmBtn size="sm" type="button" variant="default" (click)="onSaveAnyway()">
+          Save Anyway
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,163 @@
+<!-- Image preview and selection component with tabs -->
+<div class="space-y-4">
+  <!-- Selected Image Preview (always visible) -->
+  @if (selectedImage()) {
+    <div>
+      <label for="selectedImage" hlmLabel>Selected Image</label>
+      <div class="relative aspect-video w-full overflow-hidden rounded-md border mt-2">
+        <img
+          class="h-full w-full object-cover"
+          fill
+          [alt]="selectedTitle()"
+          [ngSrc]="selectedImage()!"
+          (error)="onImageError($event)"
+        />
+      </div>
+    </div>
+  }
+
+  <!-- Tabs for selection methods -->
+  <hlm-tabs [tab]="activeTab()">
+    <!-- Tab List -->
+    <hlm-tabs-list aria-label="Image selection options">
+      @for (tab of tabOptions; track tab.value) {
+        <button type="button" [hlmTabsTrigger]="tab.value">
+          <ng-icon class="mr-2" hlm size="sm" [name]="tab.icon" />
+          {{ tab.label }}
+        </button>
+      }
+    </hlm-tabs-list>
+
+    <!-- Tab: Gallery -->
+    <div class="space-y-4" [hlmTabsContent]="imageSelectorTab.GALLERY">
+      @if (availableImages().length > 0) {
+        <div class="space-y-3">
+          <p class="text-sm text-muted-foreground">
+            {{ availableImages().length }} image{{
+              availableImages().length > 1 ? "s" : ""
+            }}
+            available from the website
+          </p>
+
+          <button
+            class="w-full"
+            hlmBtn
+            id="selectedImage"
+            type="button"
+            variant="outline"
+            (click)="openGalleryDialog()"
+          >
+            <ng-icon class="mr-2" hlm name="lucideImage" size="sm" />
+            Choose from Gallery
+          </button>
+
+          @if (hasCustomImage()) {
+            <button
+              class="w-full"
+              hlmBtn
+              size="sm"
+              type="button"
+              variant="ghost"
+              (click)="onRevertToDefault()"
+            >
+              Revert to Website Image
+            </button>
+          }
+        </div>
+      } @else {
+        <p class="text-sm text-muted-foreground text-center py-8">
+          No images available from the website. Try uploading or using a URL.
+        </p>
+      }
+    </div>
+
+    <!-- Tab: Upload -->
+    <div class="space-y-4" [hlmTabsContent]="imageSelectorTab.UPLOAD">
+      <div class="space-y-3">
+        <p class="text-sm text-muted-foreground">
+          Upload an image from your device (max {{ config.MAX_FILE_SIZE_MB }}MB)
+        </p>
+
+        <!-- File upload button -->
+        <div class="space-y-2">
+          <input
+            #fileInput
+            class="hidden"
+            type="file"
+            [accept]="config.SUPPORTED_FORMATS.join(',')"
+            (change)="onFileSelected($event)"
+          />
+          <button
+            class="w-full"
+            hlmBtn
+            id="selectedImage"
+            type="button"
+            variant="outline"
+            [disabled]="isUploadPending()"
+            (click)="fileInput.click()"
+          >
+            @if (isUploadPending()) {
+              <hlm-spinner class="mr-2" size="sm" />
+            } @else {
+              <ng-icon class="mr-2" hlm name="lucideUpload" size="sm" />
+            }
+            {{ isUploadPending() ? "Uploading..." : "Choose File" }}
+          </button>
+
+          <p class="text-xs text-muted-foreground">
+            Supported formats: JPEG, PNG, GIF, WebP
+          </p>
+        </div>
+
+        <!-- Upload progress -->
+        @if (isUploadPending()) {
+          <div class="space-y-1">
+            <div class="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Uploading...</span>
+              <span>{{ uploadProgress() }}%</span>
+            </div>
+            <div class="h-1 w-full bg-muted rounded-full overflow-hidden">
+              <div
+                class="h-full bg-primary transition-all duration-300"
+                [style.width.%]="uploadProgress()"
+              ></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Tab: URL -->
+    <div class="space-y-4" [hlmTabsContent]="imageSelectorTab.URL">
+      <div class="space-y-3">
+        <p class="text-sm text-muted-foreground">Enter a direct URL to an image</p>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium" for="imageUrl">Image URL</label>
+          <input
+            hlmInput
+            id="imageUrl"
+            placeholder="https://example.com/image.jpg"
+            type="url"
+            [value]="customImageUrl()"
+            (blur)="onImageUrlBlur($event)"
+            (input)="onImageUrlInput($event)"
+          />
+          @if (isValidateUrlPending()) {
+            <p class="text-xs text-muted-foreground flex items-center gap-1">
+              <hlm-spinner size="sm" />
+              Validating image URL...
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+  </hlm-tabs>
+
+  <!-- Error display (shown for all tabs) -->
+  @if (imageError()) {
+    <div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+      {{ imageError() }}
+    </div>
+  }
+</div>

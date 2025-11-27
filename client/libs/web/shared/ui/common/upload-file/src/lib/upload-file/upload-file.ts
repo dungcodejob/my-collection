@@ -67,7 +67,9 @@ type UploadApiResponse = {
 })
 export class MCUploadFile implements ControlValueAccessor {
   // Inputs
-  readonly $endpoint = input.required<string>();
+  readonly $endpoint = input.required<string>({
+    alias: "endpoint",
+  });
 
   // State signals
   readonly $isDragging = signal(false);

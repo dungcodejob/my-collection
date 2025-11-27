@@ -209,6 +209,9 @@
       ],
       "@spartan-ng/helm/toggle": [
         "libs/web/shared/ui/spartan/toggle/src/index.ts"
+      ],
+      "@spartan-ng/helm/tabs": [
+        "libs/web/shared/ui/spartan/tabs/src/index.ts"
       ]
     }
   },

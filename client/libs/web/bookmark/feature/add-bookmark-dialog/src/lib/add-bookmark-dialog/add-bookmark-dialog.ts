@@ -2,7 +2,7 @@
  * T053-T070: AddBookmarkDialogComponent
  * Dialog for adding a new bookmark with metadata fetching
  */
-import { CommonModule, NgOptimizedImage } from "@angular/common";
+import { CommonModule } from "@angular/common";
 import { Component, DestroyRef, OnInit, inject } from "@angular/core";
 import {
   AbstractControl,
@@ -13,20 +13,21 @@ import {
   Validators,
 } from "@angular/forms";
 import { BookmarkCreateDto } from "@client/web-bookmark-data-access";
-import { ImageGallery } from "@client/web-bookmark-ui-image-gallery";
 import { Collection } from "@client/web-collection-data-access";
 import { MCConfirmDialogModule } from "@client/web-shared-ui-dialog";
 import { injectAutoEffect, simpleUrlValidator } from "@client/web-shared-utils";
-import { NgIcon, provideIcons } from "@ng-icons/core";
+import { provideIcons } from "@ng-icons/core";
 import { lucideAlertCircle } from "@ng-icons/lucide";
 import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/brain/dialog";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmDialogImports } from "@spartan-ng/helm/dialog";
+import { HlmFormFieldImports } from "@spartan-ng/helm/form-field";
 import { HlmInputImports } from "@spartan-ng/helm/input";
 import { HlmLabelImports } from "@spartan-ng/helm/label";
 import { HlmSpinnerImports } from "@spartan-ng/helm/spinner";
+import { BookmarkImageSelector } from "../bookmark-image-selector/bookmark-image-selector.component";
+import { DuplicateBookmarkConfirmation } from "../duplicate-bookmark-confirmation/duplicate-bookmark-confirmation.component";
 import { AddBookmarkDialogFacade } from "./add-bookmark-dialog.facade";
-
 type BookmarkForm = FormGroup<{
   url: FormControl<string>;
   title: FormControl<string>;
@@ -49,10 +50,10 @@ type BookmarkForm = FormGroup<{
     HlmButtonImports,
     HlmLabelImports,
     HlmSpinnerImports,
-    ImageGallery,
-    NgOptimizedImage,
+    HlmFormFieldImports,
     MCConfirmDialogModule,
-    NgIcon,
+    BookmarkImageSelector,
+    DuplicateBookmarkConfirmation,
   ],
   providers: [AddBookmarkDialogFacade, provideIcons({ lucideAlertCircle })],
   templateUrl: "./add-bookmark-dialog.html",
@@ -151,19 +152,16 @@ export class AddBookmarkDialog implements OnInit {
 
   /**
    * Handle image loading errors
-   * Supports both Event (from img tag) and ImageGallery error format
    */
   onImageError(event: Event | { index: number; url: string }): void {
     if (event instanceof Event) {
-      // Handle direct img tag error
       const target = event.target as HTMLImageElement;
       if (target) {
         target.src = "assets/images/placeholder.png";
       }
     } else {
-      // Handle ImageGallery component error
+      // ImageGallery error - just log it
       console.error(`Image ${event.index} failed to load:`, event.url);
-      // The ImageGallery component handles the fallback internally
     }
   }
 
@@ -192,18 +190,14 @@ export class AddBookmarkDialog implements OnInit {
   /**
    * T126: Handle image URL input
    */
-  onImageUrlInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const url = input.value.trim();
+  onImageUrlInput(url: string): void {
     this.store.setCustomImageUrl(url);
   }
 
   /**
    * T126: Validate image URL on blur
    */
-  onImageUrlBlur(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const url = input.value.trim();
+  onImageUrlBlur(url: string): void {
     if (url) {
       this.store.validateImageUrl(url);
     }
@@ -247,7 +241,11 @@ export class AddBookmarkDialog implements OnInit {
 
   private _initForm(): void {
     this.bookmarkForm = this._fb.group<BookmarkForm["controls"]>({
-      url: this._fb.control("", [Validators.required, simpleUrlValidator()]),
+      url: this._fb.control("", [
+        Validators.required,
+        simpleUrlValidator(),
+        Validators.maxLength(200),
+      ]),
       title: this._fb.control("", [Validators.required, Validators.maxLength(200)]),
       description: this._fb.control("", [Validators.maxLength(1000)]),
       notes: this._fb.control("", [Validators.maxLength(2000)]),
