@@ -1,5 +1,13 @@
 ---
 description: Create or update the feature specification from a natural language feature description.
+handoffs: 
+  - label: Build Technical Plan
+    agent: speckit.plan
+    prompt: Create a plan for the spec. I am building with...
+  - label: Clarify Spec Requirements
+    agent: speckit.clarify
+    prompt: Clarify specification requirements
+    send: true
 ---
 
 ## User Input
@@ -30,10 +38,8 @@ Given that feature description, do this:
 
 2. **Check for existing branches before creating new one**:
    
-   a. First, ensure we're on the development branch and fetch all remote branches:
+   a. First, fetch all remote branches to ensure we have the latest information:
       ```bash
-      git checkout development
-      git pull origin development
       git fetch --all --prune
       ```
    
