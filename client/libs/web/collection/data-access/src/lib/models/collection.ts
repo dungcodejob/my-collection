@@ -1,3 +1,5 @@
+import { TagSummary } from '@client/tag-data-access';
+
 export type Collection = {
   readonly id: string;
   name: string;
@@ -7,6 +9,7 @@ export type Collection = {
   isHasChild?: boolean;
   parentPath?: string;
   path: string;
+  tags?: TagSummary[];
   createdAt: Date;
   updatedAt: Date;
 };

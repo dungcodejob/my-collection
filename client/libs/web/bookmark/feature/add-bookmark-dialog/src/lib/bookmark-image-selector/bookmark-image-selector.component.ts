@@ -11,7 +11,11 @@ import { HlmLabelImports } from "@spartan-ng/helm/label";
 import { HlmSpinnerImports } from "@spartan-ng/helm/spinner";
 import { HlmTabsImports } from "@spartan-ng/helm/tabs";
 import { ImageGalleryDialog } from "../image-gallery-dialog/image-gallery-dialog.component";
-import { IMAGE_SELECTOR_CONFIG } from "./bookmark-image-selector.config";
+
+const IMAGE_SELECTOR_CONFIG = {
+  MAX_FILE_SIZE_MB: 5,
+  SUPPORTED_FORMATS: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+};
 
 type ImageGalleryError = { index: number; url: string };
 

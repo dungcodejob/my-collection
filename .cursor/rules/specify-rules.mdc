@@ -6,6 +6,8 @@ Auto-generated from all feature plans. Last updated: 2025-11-06
 - PostgreSQL 15+ with MikroORM (bookmark data, user associations) (001-add-bookmark-dialog)
 - TypeScript with Angular 20+ (frontend) and NestJS (backend) (001-bookmark-browser)
 - PostgreSQL 15+ (bookmark and collection entities with owner relationships) (001-bookmark-browser)
+- TypeScript 5.x (Angular 20+, NestJS) + Angular Signals, NgRx SignalStore, Spartan UI, MikroORM, class-validator (001-collection-tags)
+- PostgreSQL with MikroORM (extends existing TagEntity, CollectionEntity) (001-collection-tags)
 
 - TypeScript 5.8.2 (Frontend & Backend) (001-add-bookmark-dialog)
 
@@ -26,10 +28,10 @@ npm test; npm run lint
 TypeScript 5.8.2 (Frontend & Backend): Follow standard conventions
 
 ## Recent Changes
+- 001-collection-tags: Added TypeScript 5.x (Angular 20+, NestJS) + Angular Signals, NgRx SignalStore, Spartan UI, MikroORM, class-validator
 - 001-bookmark-browser: Added TypeScript with Angular 20+ (frontend) and NestJS (backend)
 - 001-add-bookmark-dialog: Added TypeScript 5.8.2 (Frontend & Backend)
 
-- 001-add-bookmark-dialog: Added TypeScript 5.8.2 (Frontend & Backend)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

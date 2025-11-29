@@ -9,4 +9,5 @@ export * from './collection-tree-response.dto';
 export * from './collection-update.dto';
 export * from './collection-with-pagination-response.dto';
 export * from './collection.dto';
+export * from './tag-summary.dto';
 export * from './update-sort-order.dto';

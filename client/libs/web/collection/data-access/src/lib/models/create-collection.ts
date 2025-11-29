@@ -4,4 +4,5 @@ export type CreateCollectionRequest = {
   readonly name: string;
   readonly icon?: string;
   readonly parentId?: string;
+  readonly tagIds?: string[];
 };

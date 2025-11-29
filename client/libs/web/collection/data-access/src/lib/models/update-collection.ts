@@ -6,4 +6,5 @@ export type UpdateCollectionRequest = {
   readonly icon?: string;
   readonly parentPath?: string;
   readonly parentId?: string;
+  readonly tagIds?: string[];
 };

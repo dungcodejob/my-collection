@@ -3,6 +3,7 @@ export * from './base-extend.entity';
 export * from './base.entity';
 export * from './bookmark-tag.entity';
 export * from './bookmark.entity';
+export * from './collection-tag.entity';
 export * from './collection.entity';
 export * from './crawl.entity';
 export * from './identifiable.entity';

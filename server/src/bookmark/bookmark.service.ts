@@ -83,6 +83,35 @@ export class BookmarkService {
     });
 
     const createdBookmark = this._unitOfWork.bookmark.create(bookmark);
+
+    // Handle tags if present
+    if (data.tags && data.tags.length > 0) {
+      const user = this._requestContextService.user;
+      const tenant = this._requestContextService.tenant;
+
+      for (const tagName of data.tags) {
+        // Find or create tag
+        let tag = await this._unitOfWork.tag.findByName(tagName);
+
+        if (!tag) {
+          tag = new TagEntity({
+            name: tagName,
+            isSystem: false,
+          });
+          this._unitOfWork.tag.create(tag);
+        }
+
+        // Create bookmark tag relation
+        const bookmarkTag = new BookmarkTagEntity({
+          bookmark: createdBookmark,
+          tag,
+          addedBy: user,
+        });
+
+        this._unitOfWork.bookmarkTag.create(bookmarkTag);
+      }
+    }
+
     await this._unitOfWork.save();
 
     this.logger.log(`Created bookmark ${createdBookmark.id}`);

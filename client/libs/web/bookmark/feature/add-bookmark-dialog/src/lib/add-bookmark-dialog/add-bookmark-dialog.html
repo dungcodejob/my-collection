@@ -7,7 +7,7 @@
 </hlm-dialog-header>
 
 <form
-  class="space-y-7 mt-6 mb-6"
+  class="mt-6 mb-6 flex flex-col gap-6"
   [formGroup]="bookmarkForm"
   (keydown)="onKeyDown($event)"
 >
@@ -15,36 +15,52 @@
   <div class="space-y-2">
     <label for="url" hlmLabel>URL *</label>
     <div class="flex gap-2">
-      <input
-        class="flex-1"
-        formControlName="url"
-        hlmInput
-        id="url"
-        placeholder="https://example.com"
-        type="url"
-        [class.border-destructive]="
-          getControl('url')?.invalid && getControl('url')?.touched
-        "
-      />
-      <button
-        hlmBtn
-        mcConfirm
-        type="button"
-        variant="secondary"
-        [conditionFn]="isUnsavedChanges"
-        [confirmDescription]="
-          'You have unsaved changes. Fetching new metadata will overwrite your current edits. Do you want to continue?'
-        "
-        [confirmTitle]="'Unsaved Changes'"
-        [disabled]="store.$isFetchMetadataPending() || !getControl('url')?.value"
-        (confirmed)="onFetchMetadata()"
-      >
-        <!-- T066: Loading spinner -->
-        @if (store.$isFetchMetadataPending()) {
-          <hlm-spinner class="mr-2" size="sm" />
-        }
-        Fetch Metadata
-      </button>
+      <div hlmInputGroup>
+        <input
+          class="!pl-1"
+          formControlName="url"
+          hlmInputGroupInput
+          id="url"
+          placeholder="https://"
+          type="url"
+          [class.border-destructive]="
+            getControl('url')?.invalid && getControl('url')?.touched
+          "
+        />
+
+        <div class="pr-1" hlmInputGroupAddon>
+          <button
+            class="rounded-full"
+            hlmInputGroupButton
+            size="icon-xs"
+            type="button"
+            [hlmTooltipTrigger]="'Input URL to fetch metadata'"
+          >
+            <ng-icon name="lucideInfo" />
+          </button>
+        </div>
+
+        <div class="pl-1" hlmInputGroupAddon [align]="'inline-end'">
+          <button
+            class="rounded-full cursor-pointer"
+            hlmInputGroupButton
+            mcConfirm
+            size="icon-xs"
+            type="button"
+            [class.animate-spin]="store.$isFetchMetadataPending()"
+            [conditionFn]="isUnsavedChanges"
+            [confirmDescription]="
+              'You have unsaved changes. Fetching new metadata will overwrite your current edits. Do you want to continue?'
+            "
+            [confirmTitle]="'Unsaved Changes'"
+            [disabled]="store.$isFetchMetadataPending() || !getControl('url')?.value"
+            [hlmTooltipTrigger]="'Refresh metadata'"
+            (confirmed)="onFetchMetadata()"
+          >
+            <ng-icon name="lucideRefreshCcw" />
+          </button>
+        </div>
+      </div>
     </div>
     @if (getControl("url")?.invalid && getControl("url")?.touched) {
       <p class="text-sm text-destructive">Please enter a valid URL</p>
@@ -54,86 +70,96 @@
     }
   </div>
 
+  <hlm-separator />
+
   <!-- T067: Error message display -->
   @if (store.error()) {
-    <div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+    <div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive mb-4">
       {{ store.error() }}
     </div>
   }
 
-  <!-- T057: Title input -->
-  <hlm-form-field>
-    <label for="title" hlmLabel>Title *</label>
-    <input
-      formControlName="title"
-      hlmInput
-      id="title"
-      placeholder="Bookmark title"
-      type="text"
-      [class.border-destructive]="
-        getControl('title')?.invalid && getControl('title')?.touched
-      "
-    />
-    @if (getControl("title")?.invalid && getControl("title")?.touched) {
-      <hlm-error>Title is required</hlm-error>
-    }
-    <!-- T088: Character counter for title (200 max) -->
-    <hlm-hint> {{ getControl("title")?.value?.length || 0 }} / 200 characters </hlm-hint>
-  </hlm-form-field>
+  <div class="grid grid-cols-1 md:grid-cols-7 gap-6">
+    <!-- T059: Image preview section -->
+    <div class="space-y-7 col-span-3">
+      <!-- T091: Integrate ImageGalleryComponent -->
+      <mc-bookmark-image-selector
+        [availableImages]="store.availableImages()"
+        [customImageUrl]="store.customImageUrl()"
+        [hasCustomImage]="store.hasCustomImage()"
+        [imageError]="store.imageError()"
+        [isUploadPending]="store.$isUploadImagePending()"
+        [isValidateUrlPending]="store.$isValidateImageUrlPending()"
+        [selectedImage]="bookmarkForm.controls.imageUrl.value"
+        [selectedImageIndex]="store.selectedImageIndex()"
+        [selectedTitle]="getControl('title')?.value || 'Bookmark thumbnail'"
+        [uploadProgress]="store.uploadProgress()"
+        (fileSelected)="onFileSelected($event)"
+        (imageLoadError)="onImageError($event)"
+        (imageSelected)="onSelectImage($event)"
+        (imageUrlBlurred)="onImageUrlBlur($event)"
+        (imageUrlChanged)="onImageUrlInput($event)"
+        (revertToDefault)="onRevertToDefault()"
+      />
+    </div>
 
-  <!-- T058: Description textarea -->
-  <div class="space-y-2">
-    <label for="description" hlmLabel>Description</label>
-    <textarea
-      class="resize-none"
-      formControlName="description"
-      hlmInput
-      id="description"
-      placeholder="Brief description of the bookmark"
-      rows="3"
-    ></textarea>
-    <p class="text-xs text-muted-foreground">
-      {{ getControl("description")?.value?.length || 0 }} / 1000 characters
-    </p>
-  </div>
+    <div class="space-y-7 col-span-4">
+      <!-- T057: Title input -->
+      <hlm-form-field>
+        <label for="title" hlmLabel>Title *</label>
+        <input
+          formControlName="title"
+          hlmInput
+          id="title"
+          placeholder="Bookmark title"
+          type="text"
+          [class.border-destructive]="
+            getControl('title')?.invalid && getControl('title')?.touched
+          "
+        />
+        @if (getControl("title")?.invalid && getControl("title")?.touched) {
+          <hlm-error>Title is required</hlm-error>
+        }
+        <!-- T088: Character counter for title (200 max) -->
+        <hlm-hint>
+          {{ getControl("title")?.value?.length || 0 }} / 200 characters
+        </hlm-hint>
+      </hlm-form-field>
 
-  <!-- T059: Image preview section -->
-  <!-- T091: Integrate ImageGalleryComponent -->
-  @if (store.metadata() && store.availableImages().length > 0) {
-    <mc-bookmark-image-selector
-      [availableImages]="store.availableImages()"
-      [customImageUrl]="store.customImageUrl()"
-      [hasCustomImage]="store.hasCustomImage()"
-      [imageError]="store.imageError()"
-      [isUploadPending]="store.$isUploadImagePending()"
-      [isValidateUrlPending]="store.$isValidateImageUrlPending()"
-      [selectedImage]="bookmarkForm.controls.imageUrl.value"
-      [selectedImageIndex]="store.selectedImageIndex()"
-      [selectedTitle]="getControl('title')?.value || 'Bookmark thumbnail'"
-      [uploadProgress]="store.uploadProgress()"
-      (fileSelected)="onFileSelected($event)"
-      (imageLoadError)="onImageError($event)"
-      (imageSelected)="onSelectImage($event)"
-      (imageUrlBlurred)="onImageUrlBlur($event)"
-      (imageUrlChanged)="onImageUrlInput($event)"
-      (revertToDefault)="onRevertToDefault()"
-    />
-  }
+      <!-- T058: Description textarea -->
+      <div class="space-y-2">
+        <label for="description" hlmLabel>Description</label>
+        <textarea
+          class="resize-none"
+          formControlName="description"
+          hlmTextarea
+          id="description"
+          placeholder="Brief description of the bookmark"
+        ></textarea>
+        <p class="text-xs text-muted-foreground">
+          {{ getControl("description")?.value?.length || 0 }} / 1000 characters
+        </p>
+      </div>
 
-  <!-- Notes textarea -->
-  <div class="space-y-2">
-    <label for="notes" hlmLabel>Notes</label>
-    <textarea
-      class="resize-none"
-      formControlName="notes"
-      hlmInput
-      id="notes"
-      placeholder="Add personal notes about this bookmark"
-      rows="3"
-    ></textarea>
-    <p class="text-xs text-muted-foreground">
-      {{ getControl("notes")?.value?.length || 0 }} / 2000 characters
-    </p>
+      <!-- Tags input -->
+      <div class="space-y-2"></div>
+
+      <!-- Notes textarea -->
+      <div class="space-y-2">
+        <label for="notes" hlmLabel>Notes</label>
+        <textarea
+          class="resize-none"
+          formControlName="notes"
+          hlmTextarea
+          id="notes"
+          placeholder="Add personal notes about this bookmark"
+          rows="3"
+        ></textarea>
+        <p class="text-xs text-muted-foreground">
+          {{ getControl("notes")?.value?.length || 0 }} / 2000 characters
+        </p>
+      </div>
+    </div>
   </div>
 </form>
 

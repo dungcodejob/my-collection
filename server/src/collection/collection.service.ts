@@ -1,4 +1,8 @@
-import { CollectionEntity } from '@app/entities';
+import {
+  CollectionEntity,
+  CollectionTagEntity,
+  TagEntity,
+} from '@app/entities';
 import { Errors } from '@app/errors';
 import {
   FindCollectionOptions,
@@ -7,7 +11,7 @@ import {
   type UnitOfWork,
 } from '@app/repositories';
 import { generateBaseSlug, isNil } from '@app/utils';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CollectionQueryDto } from './models';
 
 export type CollectionCreateInput = {
@@ -16,6 +20,7 @@ export type CollectionCreateInput = {
   parentId?: string;
   description?: string;
   sortOrder?: number;
+  tagIds?: string[];
 };
 
 export type CollectionUpdateInput = {
@@ -23,6 +28,7 @@ export type CollectionUpdateInput = {
   icon?: string;
   description?: string;
   sortOrder?: number;
+  tagIds?: string[];
 };
 
 export type CollectionMoveInput = {
@@ -42,6 +48,8 @@ export type CollectionChildrenFilter = {
 // TODO Collection: using user from context
 @Injectable()
 export class CollectionService {
+  private readonly logger = new Logger(CollectionService.name);
+
   constructor(@Inject(UNIT_OF_WORK) private readonly _unitOfWork: UnitOfWork) {}
 
   /**
@@ -164,16 +172,24 @@ export class CollectionService {
         slug: await this.generatePathSlug(data.name),
       });
 
-      const createdCollection = this._unitOfWork.collection.create(collection);
+      const createdCollection =
+        await this._unitOfWork.collection.create(collection);
 
       if (parent) {
         parent.updateHasChildFlag();
       }
 
+      // Handle tag assignment if tagIds provided
+      if (data.tagIds && data.tagIds.length > 0) {
+        // Need to save first to get the collection ID
+        await this._unitOfWork.save();
+        await this.assignTagsToCollection(createdCollection.id, data.tagIds);
+      }
+
       return createdCollection;
     } catch (error) {
       // Rollback transaction on error
-      console.error('Error creating collection:', error);
+      this.logger.error('Error creating collection:', error);
       throw error;
     }
   }
@@ -192,10 +208,15 @@ export class CollectionService {
       collection.icon = data.icon;
       collection.description = data.description;
 
+      // Handle tag sync if tagIds provided
+      if (data.tagIds !== undefined) {
+        await this.syncCollectionTags(id, data.tagIds);
+      }
+
       return collection;
     } catch (error) {
       // Rollback transaction on error
-      console.error('Error updating collection:', error);
+      this.logger.error('Error updating collection:', error);
       throw error;
     }
   }
@@ -205,6 +226,115 @@ export class CollectionService {
    */
   async save(): Promise<void> {
     await this._unitOfWork.save();
+  }
+
+  /**
+   * Assign tags to a collection
+   */
+  async assignTagsToCollection(
+    collectionId: string,
+    tagIds: string[],
+  ): Promise<void> {
+    if (!tagIds || tagIds.length === 0) return;
+
+    const collection = await this.findByIdOrFail(collectionId);
+
+    for (const tagId of tagIds) {
+      // Check if tag exists
+      const tag = await this._unitOfWork.tag.findById(tagId);
+      if (!tag) {
+        this.logger.warn(`Tag ${tagId} not found, skipping`);
+        continue;
+      }
+
+      // Check if assignment already exists
+      const existing =
+        await this._unitOfWork.collectionTag.findByCollectionAndTag(
+          collectionId,
+          tagId,
+        );
+      if (existing) {
+        this.logger.debug(
+          `Tag ${tagId} already assigned to collection ${collectionId}`,
+        );
+        continue;
+      }
+
+      // Create new assignment
+      const collectionTag = new CollectionTagEntity({
+        collection,
+        tag,
+      });
+      this._unitOfWork.collectionTag.create(collectionTag);
+
+      // Increment tag usage count
+      tag.incrementUsage();
+    }
+
+    this.logger.log(
+      `Assigned ${tagIds.length} tags to collection ${collectionId}`,
+    );
+  }
+
+  /**
+   * Remove tags from a collection
+   */
+  async removeTagsFromCollection(
+    collectionId: string,
+    tagIds: string[],
+  ): Promise<void> {
+    if (!tagIds || tagIds.length === 0) return;
+
+    for (const tagId of tagIds) {
+      const assignment =
+        await this._unitOfWork.collectionTag.findByCollectionAndTag(
+          collectionId,
+          tagId,
+        );
+
+      if (assignment) {
+        this._unitOfWork.collectionTag.delete(assignment);
+
+        // Decrement tag usage count
+        const tag = await this._unitOfWork.tag.findById(tagId);
+        if (tag) {
+          tag.decrementUsage();
+        }
+      }
+    }
+
+    this.logger.log(
+      `Removed ${tagIds.length} tags from collection ${collectionId}`,
+    );
+  }
+
+  /**
+   * Get tags for a collection
+   */
+  async getTagsForCollection(collectionId: string): Promise<TagEntity[]> {
+    const collectionTags =
+      await this._unitOfWork.collectionTag.findByCollectionId(collectionId);
+    return collectionTags.map((ct) => ct.tag);
+  }
+
+  /**
+   * Sync tags for a collection (add new ones, remove old ones)
+   */
+  async syncCollectionTags(
+    collectionId: string,
+    newTagIds: string[],
+  ): Promise<void> {
+    const currentTags = await this.getTagsForCollection(collectionId);
+    const currentTagIds = currentTags.map((t) => t.id);
+
+    // Tags to add: in newTagIds but not in currentTagIds
+    const tagsToAdd = newTagIds.filter((id) => !currentTagIds.includes(id));
+
+    // Tags to remove: in currentTagIds but not in newTagIds
+    const tagsToRemove = currentTagIds.filter((id) => !newTagIds.includes(id));
+
+    await this.assignTagsToCollection(collectionId, tagsToAdd);
+    await this.removeTagsFromCollection(collectionId, tagsToRemove);
   }
 
   /**

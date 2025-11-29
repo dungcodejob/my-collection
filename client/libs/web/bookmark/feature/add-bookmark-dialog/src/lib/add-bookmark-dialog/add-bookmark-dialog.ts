@@ -3,7 +3,7 @@
  * Dialog for adding a new bookmark with metadata fetching
  */
 import { CommonModule } from "@angular/common";
-import { Component, DestroyRef, OnInit, inject } from "@angular/core";
+import { Component, DestroyRef, OnInit, inject, signal } from "@angular/core";
 import {
   AbstractControl,
   FormControl,
@@ -12,19 +12,24 @@ import {
   ReactiveFormsModule,
   Validators,
 } from "@angular/forms";
+import { TagSummary } from "@client/tag-data-access";
 import { BookmarkCreateDto } from "@client/web-bookmark-data-access";
 import { Collection } from "@client/web-collection-data-access";
 import { MCConfirmDialogModule } from "@client/web-shared-ui-dialog";
 import { injectAutoEffect, simpleUrlValidator } from "@client/web-shared-utils";
-import { provideIcons } from "@ng-icons/core";
-import { lucideAlertCircle } from "@ng-icons/lucide";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { lucideAlertCircle, lucideInfo, lucideRefreshCcw } from "@ng-icons/lucide";
 import { BrnDialogRef, injectBrnDialogContext } from "@spartan-ng/brain/dialog";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmDialogImports } from "@spartan-ng/helm/dialog";
 import { HlmFormFieldImports } from "@spartan-ng/helm/form-field";
 import { HlmInputImports } from "@spartan-ng/helm/input";
+import { HlmInputGroupImports } from "@spartan-ng/helm/input-group";
 import { HlmLabelImports } from "@spartan-ng/helm/label";
+import { HlmSeparatorImports } from "@spartan-ng/helm/separator";
 import { HlmSpinnerImports } from "@spartan-ng/helm/spinner";
+import { HlmTextareaImports } from "@spartan-ng/helm/textarea";
+import { HlmTooltipImports } from "@spartan-ng/helm/tooltip";
 import { BookmarkImageSelector } from "../bookmark-image-selector/bookmark-image-selector.component";
 import { DuplicateBookmarkConfirmation } from "../duplicate-bookmark-confirmation/duplicate-bookmark-confirmation.component";
 import { AddBookmarkDialogFacade } from "./add-bookmark-dialog.facade";
@@ -47,15 +52,23 @@ type BookmarkForm = FormGroup<{
     ReactiveFormsModule,
     HlmDialogImports,
     HlmInputImports,
+    HlmInputGroupImports,
     HlmButtonImports,
     HlmLabelImports,
     HlmSpinnerImports,
     HlmFormFieldImports,
+    HlmTooltipImports,
+    HlmTextareaImports,
+    HlmSeparatorImports,
     MCConfirmDialogModule,
     BookmarkImageSelector,
     DuplicateBookmarkConfirmation,
+    NgIcon,
   ],
-  providers: [AddBookmarkDialogFacade, provideIcons({ lucideAlertCircle })],
+  providers: [
+    AddBookmarkDialogFacade,
+    provideIcons({ lucideAlertCircle, lucideInfo, lucideRefreshCcw }),
+  ],
   templateUrl: "./add-bookmark-dialog.html",
   styleUrl: "./add-bookmark-dialog.css",
 })
@@ -76,7 +89,11 @@ export class AddBookmarkDialog implements OnInit {
   bookmarkForm!: BookmarkForm;
 
   // T061: URL validation state
+  // T061: URL validation state
   urlError = "";
+
+  // Tags state
+  readonly selectedTags = signal<TagSummary[]>([]);
 
   ngOnInit(): void {
     console.log("collection", this._dialogContext.collection);
@@ -235,8 +252,19 @@ export class AddBookmarkDialog implements OnInit {
   /**
    * Dismiss duplicate confirmation dialog
    */
+  /**
+   * Dismiss duplicate confirmation dialog
+   */
   onDismissDuplicateConfirmation(): void {
     this.store.dismissDuplicateConfirmation();
+  }
+
+  /**
+   * Handle tags change
+   */
+  onTagsChange(tags: TagSummary[]): void {
+    this.selectedTags.set(tags);
+    this.bookmarkForm.controls.tags.setValue(tags.map(t => t.name));
   }
 
   private _initForm(): void {

@@ -135,6 +135,7 @@ export class MCBookmarkList {
       context: {
         collection: this.facade.$selectCollection(),
       },
+      contentClass: "!max-w-4xl ",
       closeOnBackdropClick: false,
       closeOnOutsidePointerEvents: false,
     });

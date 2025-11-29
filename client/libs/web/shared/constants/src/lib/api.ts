@@ -47,6 +47,12 @@ export const API_ENDPOINTS = {
   METADATA: {
     BASE: "/metadata",
   },
+  TAGS: {
+    BASE: "/tag",
+    BY_ID: (id: string) => `/tag/${id}`,
+    SEARCH: "/tag/search",
+    POPULAR: "/tag/popular",
+  },
 } as const;
 
 // HTTP Configuration

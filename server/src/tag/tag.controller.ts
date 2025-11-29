@@ -1,6 +1,8 @@
 import { FEATURE_KEY } from '@app/constants';
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiAuth } from '@app/decorators';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { TagCreateDto, TagResponseDto } from './models';
 import { TagMapper } from './tag.mapper';
 import { TagService } from './tag.service';
 
@@ -12,22 +14,22 @@ export class TagController {
     private readonly _tagMapper: TagMapper,
   ) {}
 
-  // @Post()
-  // @ApiAuth({
-  //   type: TagResponseDto,
-  //   summary: 'Create a new tag',
-  // })
-  // async createTag(@Body() createDto: TagCreateDto): Promise<TagResponseDto> {
-  //   const tag = await this._tagService.createTag({
-  //     name: createDto.name,
-  //     description: createDto.description,
-  //     color: createDto.color,
-  //     category: createDto.category,
-  //     isSystem: createDto.isSystem,
-  //   });
+  @Post()
+  @ApiAuth({
+    type: TagResponseDto,
+    summary: 'Create a new tag',
+  })
+  async createTag(@Body() createDto: TagCreateDto): Promise<TagResponseDto> {
+    const tag = await this._tagService.create({
+      name: createDto.name,
+      description: createDto.description,
+      color: createDto.color,
+      category: createDto.category,
+      isSystem: createDto.isSystem,
+    });
 
-  //   return this._tagMapper.toResponseDto(tag);
-  // }
+    return this._tagMapper.toResponseDto(tag);
+  }
 
   // @Get()
   // @ApiQuery({ name: 'search', required: false, description: 'Search term' })
@@ -100,22 +102,23 @@ export class TagController {
   //   return this._tagMapper.toUsageStatsDto(stats);
   // }
 
-  // @Get('popular')
-  // @ApiOperation({ summary: 'Get popular tags for current user' })
-  // @ApiQuery({
-  //   name: 'limit',
-  //   required: false,
-  //   description: 'Number of popular tags',
-  // })
-  // @ApiResponse({ type: [TagResponseDto] })
-  // async getPopularTags(
-  //   @CurrentUser() user: UserEntity,
-  //   @Query('limit') limit?: number,
-  // ): Promise<TagResponseDto[]> {
-  //   const tags = await this._tagService.getPopularTags(user.id, limit || 20);
-
-  //   return this._tagMapper.toResponseDtoArray(tags);
-  // }
+  @Get('popular')
+  @ApiAuth({
+    type: TagResponseDto,
+    summary: 'Get popular tags for current user',
+    responseType: 'list',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of popular tags (default: 20)',
+  })
+  async getPopularTags(
+    @Query('limit') limit?: number,
+  ): Promise<TagResponseDto[]> {
+    const tags = await this._tagService.getPopularTags(limit || 20);
+    return this._tagMapper.toResponseDtoArray(tags);
+  }
 
   // @Get('unused')
   // @ApiOperation({ summary: 'Get unused tags for current user' })
@@ -147,28 +150,25 @@ export class TagController {
   //   return { categories };
   // }
 
-  // @Get('search')
-  // @ApiOperation({ summary: 'Search tags by name' })
-  // @ApiQuery({ name: 'q', required: true, description: 'Search term' })
-  // @ApiQuery({
-  //   name: 'limit',
-  //   required: false,
-  //   description: 'Number of results',
-  // })
-  // @ApiResponse({ type: [TagResponseDto] })
-  // async searchTags(
-  //   @CurrentUser() user: UserEntity,
-  //   @Query('q') searchTerm: string,
-  //   @Query('limit') limit?: number,
-  // ): Promise<TagResponseDto[]> {
-  //   const tags = await this._tagService.searchTags(
-  //     user.id,
-  //     searchTerm,
-  //     limit || 20,
-  //   );
-
-  //   return this._tagMapper.toResponseDtoArray(tags);
-  // }
+  @Get('search')
+  @ApiAuth({
+    type: TagResponseDto,
+    summary: 'Search tags by name prefix',
+    responseType: 'list',
+  })
+  @ApiQuery({ name: 'q', required: true, description: 'Search term (prefix)' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of results (default: 20)',
+  })
+  async searchTags(
+    @Query('q') searchTerm: string,
+    @Query('limit') limit?: number,
+  ): Promise<TagResponseDto[]> {
+    const tags = await this._tagService.searchTags(searchTerm, limit || 20);
+    return this._tagMapper.toResponseDtoArray(tags);
+  }
 
   // @Get('autocomplete')
   // @ApiOperation({ summary: 'Get tag autocomplete suggestions' })

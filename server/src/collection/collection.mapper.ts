@@ -1,17 +1,44 @@
-import { CollectionEntity } from '@app/entities';
+import { CollectionEntity, TagEntity } from '@app/entities';
 import { Injectable } from '@nestjs/common';
-import { CollectionDto, CollectionTreeResponseDto } from './models';
 import { plainToInstance } from 'class-transformer';
+import {
+  CollectionDto,
+  CollectionTreeResponseDto,
+  TagSummaryDto,
+} from './models';
 
 @Injectable()
 export class CollectionMapper {
   /**
    * Convert CollectionEntity to CollectionResponseDto
    */
-  toResponseDto(entity: CollectionEntity): CollectionDto {
-    return plainToInstance(CollectionDto, entity, {
+  toResponseDto(entity: CollectionEntity, tags?: TagEntity[]): CollectionDto {
+    const dto = plainToInstance(CollectionDto, entity, {
       excludeExtraneousValues: true,
     });
+
+    // Add tags if provided
+    if (tags && tags.length > 0) {
+      dto.tags = tags.map((tag) => this.toTagSummary(tag));
+    } else if (entity.collectionTags?.isInitialized()) {
+      dto.tags = entity.collectionTags
+        .getItems()
+        .map((ct) => this.toTagSummary(ct.tag));
+    }
+
+    return dto;
+  }
+
+  /**
+   * Convert TagEntity to TagSummaryDto
+   */
+  toTagSummary(tag: TagEntity): TagSummaryDto {
+    return {
+      id: tag.id,
+      name: tag.name,
+      displayName: tag.getDisplayName(),
+      color: tag.color,
+    };
   }
 
   /**

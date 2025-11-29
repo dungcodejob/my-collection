@@ -12,6 +12,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { AccountRepository } from './account.repository';
 import { BookmarkTagRepository } from './bookmark-tag.repository';
 import { BookmarkRepository } from './bookmark.repository';
+import { CollectionTagRepository } from './collection-tag.repository';
 import { CollectionRepository } from './collection.repository';
 import { CrawlRepository } from './crawl.repository';
 import { SessionRepository } from './session.repository';
@@ -26,6 +27,7 @@ export interface UnitOfWork {
   account: AccountRepository;
   session: SessionRepository;
   collection: CollectionRepository;
+  collectionTag: CollectionTagRepository;
   crawl: CrawlRepository;
   bookmark: BookmarkRepository;
   tag: TagRepository;
@@ -45,6 +47,7 @@ export class UnitOfWorkImpl implements UnitOfWork {
   private _account?: AccountRepository;
   private _session?: SessionRepository;
   private _collection?: CollectionRepository;
+  private _collectionTag?: CollectionTagRepository;
   private _crawl?: CrawlRepository;
   private _bookmark?: BookmarkRepository;
   private _tag?: TagRepository;
@@ -91,6 +94,13 @@ export class UnitOfWorkImpl implements UnitOfWork {
       this._collection = new CollectionRepository(this._em, this._ctx);
     }
     return this._collection;
+  }
+
+  get collectionTag(): CollectionTagRepository {
+    if (!this._collectionTag) {
+      this._collectionTag = new CollectionTagRepository(this._em, this._ctx);
+    }
+    return this._collectionTag;
   }
 
   get crawl(): CrawlRepository {

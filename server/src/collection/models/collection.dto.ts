@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
+import { TagSummaryDto } from './tag-summary.dto';
 
 /**
  * DTO for collection response
@@ -62,4 +63,12 @@ export class CollectionDto {
   @Expose()
   @Transform(({ obj }) => obj.updateAt || new Date(), { toClassOnly: true })
   updatedAt: Date;
+
+  @ApiPropertyOptional({
+    description: 'Tags associated with this collection',
+    type: [TagSummaryDto],
+  })
+  @Expose()
+  @Type(() => TagSummaryDto)
+  tags?: TagSummaryDto[];
 }

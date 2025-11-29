@@ -3,6 +3,10 @@
  * Most styling is handled by Spartan UI and Tailwind utility classes
  */
 
+:host {
+  width: 100%;
+}
+
 /* Focus trap styling */
 :host {
   @apply block;

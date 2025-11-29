@@ -112,30 +112,32 @@ export class TagRepository extends BaseRepository {
   }
 
   /**
-   * Search tags by name pattern
+   * Search tags by name pattern (prefix matching)
    */
-  // async searchByName(
-  //   searchTerm: string,
-  //   userId: string,
-  //   limit: number = 20,
-  //   options?: FindTagOptions,
-  // ): Promise<TagEntity[]> {
-  //   const searchPattern = `%${searchTerm.toLowerCase()}%`;
+  async searchByName(
+    searchTerm: string,
+    limit: number = 20,
+  ): Promise<TagEntity[]> {
+    const searchPattern = `${searchTerm.toLowerCase()}%`;
 
-  //   return this.find(
-  //     {
-  //       name: { $ilike: searchPattern },
-  //       author: { id: userId },
-  //       deleteFlag: false,
-  //       isActive: true,
-  //       ...options,
-  //     },
-  //     {
-  //       orderBy: { usageCount: 'DESC', name: 'ASC' },
-  //       limit,
-  //     },
-  //   );
-  // }
+    let where = this.addTenantIdToQuery<TagEntity>({
+      name: { $like: searchPattern },
+      deleteFlag: false,
+      isActive: true,
+    });
+
+    const user = this.ctx.user;
+    if (user) {
+      where = this.setConditionFilter<TagEntity>(where, {
+        author: { id: user.id },
+      });
+    }
+
+    return this.em.find(TagEntity, where, {
+      orderBy: { usageCount: 'DESC', name: 'ASC' },
+      limit,
+    });
+  }
 
   /**
    * Search tags by name pattern with tenant context
@@ -166,27 +168,27 @@ export class TagRepository extends BaseRepository {
   // }
 
   /**
-   * Find popular tags
+   * Find popular tags (sorted by usage count)
    */
-  // async findPopular(
-  //   userId: string,
-  //   limit: number = 20,
-  //   options?: FindTagOptions,
-  // ): Promise<TagEntity[]> {
-  //   return this.find(
-  //     {
-  //       author: { id: userId },
-  //       deleteFlag: false,
-  //       isActive: true,
-  //       usageCount: { $gt: 0 },
-  //       ...options,
-  //     },
-  //     {
-  //       orderBy: { usageCount: 'DESC', name: 'ASC' },
-  //       limit,
-  //     },
-  //   );
-  // }
+  async findPopular(limit: number = 20): Promise<TagEntity[]> {
+    let where = this.addTenantIdToQuery<TagEntity>({
+      deleteFlag: false,
+      isActive: true,
+      usageCount: { $gt: 0 },
+    });
+
+    const user = this.ctx.user;
+    if (user) {
+      where = this.setConditionFilter<TagEntity>(where, {
+        author: { id: user.id },
+      });
+    }
+
+    return this.em.find(TagEntity, where, {
+      orderBy: { usageCount: 'DESC', name: 'ASC' },
+      limit,
+    });
+  }
 
   /**
    * Find tags by category

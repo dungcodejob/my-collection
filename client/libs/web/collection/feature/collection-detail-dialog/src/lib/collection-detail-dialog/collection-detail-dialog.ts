@@ -12,6 +12,7 @@ import {
   UpdateCollectionRequest,
 } from "@client/web-collection-data-access";
 import { COLLECTION_ROOT_ID } from "@client/web-shared-constants";
+import { MCMultiSelect } from "@client/web-shared-ui-select";
 import { injectAutoEffect } from "@client/web-shared-utils";
 import { NgIconComponent } from "@ng-icons/core";
 import { BrnDialogImports } from "@spartan-ng/brain/dialog";
@@ -33,6 +34,7 @@ type CollectionDetailForm = FormGroup<{
     BrnDialogImports,
     HlmDialogImports,
     NgIconComponent,
+    MCMultiSelect,
   ],
 
   templateUrl: "./collection-detail-dialog.html",
@@ -76,6 +78,7 @@ export class MCCollectionDetailDialog implements OnInit {
     const data = this.$data();
     const parent = this.$parent();
     const parentId = parent.id !== COLLECTION_ROOT_ID ? parent.id : undefined;
+
     if (data) {
       const request: UpdateCollectionRequest = {
         ...data,
@@ -121,6 +124,8 @@ export class MCCollectionDetailDialog implements OnInit {
         this.form.patchValue({
           name: data.name,
         });
+        // Set existing tags when editing
+        const tagIds = data.tags?.map(t => t.id) || [];
       } else {
         this.form.reset();
       }

@@ -155,25 +155,21 @@ export class TagService {
   // }
 
   /**
-   * Search tags by name
+   * Search tags by name (prefix matching)
    */
-  // async searchTags(
-  //   searchTerm: string,
-  //   userId: string,
-  //   limit: number = 20,
-  // ): Promise<TagEntity[]> {
-  //   return this._unitOfWork.tag.searchByName(searchTerm, userId, limit);
-  // }
+  async searchTags(
+    searchTerm: string,
+    limit: number = 20,
+  ): Promise<TagEntity[]> {
+    return this._unitOfWork.tag.searchByName(searchTerm, limit);
+  }
 
   /**
    * Get popular tags
    */
-  // async getPopularTags(
-  //   userId: string,
-  //   limit: number = 20,
-  // ): Promise<TagEntity[]> {
-  //   return this._unitOfWork.tag.findPopular(userId, limit);
-  // }
+  async getPopularTags(limit: number = 20): Promise<TagEntity[]> {
+    return this._unitOfWork.tag.findPopular(limit);
+  }
 
   /**
    * Get tags by category

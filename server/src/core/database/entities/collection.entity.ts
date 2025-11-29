@@ -1,5 +1,6 @@
 import { CollectionRepository } from '@app/repositories';
 import {
+  Cascade,
   Collection,
   Entity,
   EntityRepositoryType,
@@ -10,6 +11,8 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { BaseEntityWithTenant } from './base-extend.entity';
+import { CollectionTagEntity } from './collection-tag.entity';
+import { TagEntity } from './tag.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => CollectionRepository })
@@ -54,6 +57,11 @@ export class CollectionEntity extends BaseEntityWithTenant {
 
   @OneToMany(() => CollectionEntity, (collection) => collection.parent)
   children = new Collection<CollectionEntity>(this);
+
+  @OneToMany(() => CollectionTagEntity, (ct) => ct.collection, {
+    cascade: [Cascade.REMOVE],
+  })
+  collectionTags = new Collection<CollectionTagEntity>(this);
 
   [EntityRepositoryType]?: CollectionRepository;
 
@@ -104,5 +112,12 @@ export class CollectionEntity extends BaseEntityWithTenant {
   getDepthLevel(): number {
     if (!this.parent) return 0;
     return this.parent.getDepthLevel() + 1;
+  }
+
+  /**
+   * Get tags associated with this collection
+   */
+  getTags(): TagEntity[] {
+    return this.collectionTags.getItems().map((ct) => ct.tag);
   }
 }

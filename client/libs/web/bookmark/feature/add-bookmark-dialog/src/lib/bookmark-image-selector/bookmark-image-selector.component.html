@@ -1,10 +1,12 @@
 <!-- Image preview and selection component with tabs -->
 <div class="space-y-4">
   <!-- Selected Image Preview (always visible) -->
-  @if (selectedImage()) {
-    <div>
-      <label for="selectedImage" hlmLabel>Selected Image</label>
-      <div class="relative aspect-video w-full overflow-hidden rounded-md border mt-2">
+  <div class="space-y-2">
+    <label for="selectedImage" hlmLabel>Image</label>
+    @if (selectedImage()) {
+      <div
+        class="relative aspect-video w-full overflow-hidden rounded-md border mt-2 h-44"
+      >
         <img
           class="h-full w-full object-cover"
           fill
@@ -13,13 +15,19 @@
           (error)="onImageError($event)"
         />
       </div>
-    </div>
-  }
+    } @else {
+      <p
+        class="text-sm text-muted-foreground text-center py-8 h-44 flex items-center justify-center border rounded-md"
+      >
+        No image selected
+      </p>
+    }
+  </div>
 
   <!-- Tabs for selection methods -->
   <hlm-tabs [tab]="activeTab()">
     <!-- Tab List -->
-    <hlm-tabs-list aria-label="Image selection options">
+    <hlm-tabs-list aria-label="Image selection options" class="w-full">
       @for (tab of tabOptions; track tab.value) {
         <button type="button" [hlmTabsTrigger]="tab.value">
           <ng-icon class="mr-2" hlm size="sm" [name]="tab.icon" />

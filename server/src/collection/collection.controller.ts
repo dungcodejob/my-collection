@@ -208,11 +208,16 @@ export class CollectionController {
       parentId: createDto.parentId,
       description: createDto.description,
       sortOrder: createDto.sortOrder,
+      tagIds: createDto.tagIds,
     });
 
     await this._collectionService.save();
 
-    const result = this._collectionMapper.toResponseDto(collection);
+    // Fetch tags for response
+    const tags = await this._collectionService.getTagsForCollection(
+      collection.id,
+    );
+    const result = this._collectionMapper.toResponseDto(collection, tags);
 
     return ResponseBuilder.toSingle({
       data: result,
@@ -233,11 +238,16 @@ export class CollectionController {
       icon: updateDto.icon,
       description: updateDto.description,
       sortOrder: updateDto.sortOrder,
+      tagIds: updateDto.tagIds,
     });
 
     await this._collectionService.save();
 
-    const result = this._collectionMapper.toResponseDto(collection);
+    // Fetch tags for response
+    const tags = await this._collectionService.getTagsForCollection(
+      collection.id,
+    );
+    const result = this._collectionMapper.toResponseDto(collection, tags);
 
     return ResponseBuilder.toSingle({
       data: result,

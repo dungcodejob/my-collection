@@ -1,6 +1,7 @@
 export * from './account.repository';
 export * from './bookmark-tag.repository';
 export * from './bookmark.repository';
+export * from './collection-tag.repository';
 export * from './collection.repository';
 export * from './crawl.repository';
 export * from './session.repository';
