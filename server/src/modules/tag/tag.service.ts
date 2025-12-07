@@ -1,9 +1,12 @@
 import { TagEntity } from '@app/entities';
 import { Errors } from '@app/errors';
-import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
+import {
+  FindTagOptions,
+  UNIT_OF_WORK,
+  type UnitOfWork,
+} from '@app/repositories';
 import { isNil } from '@app/utils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-
 export type TagCreateInput = {
   name: string;
   description?: string;
@@ -29,6 +32,16 @@ export class TagService {
     private readonly _unitOfWork: UnitOfWork,
   ) {}
 
+  async findByName(filter: { ids?: string[] }, options?: FindTagOptions) {
+    return this._unitOfWork.tag.findAll(
+      {
+        id: { $in: filter.ids },
+      },
+
+      options,
+    );
+  }
+
   async create(data: TagCreateInput): Promise<TagEntity> {
     const existingTag = await this._unitOfWork.tag.findByName(data.name);
 
@@ -47,9 +60,7 @@ export class TagService {
 
     const createdTag = this._unitOfWork.tag.create(tag);
 
-    this.logger.log(
-      `Created tag ${createdTag.id} for user ${createdTag.author?.id}`,
-    );
+    this.logger.log(`Created tag ${createdTag.id}`);
     return createdTag;
   }
 
@@ -76,7 +87,7 @@ export class TagService {
       }
     }
 
-    this.logger.log(`Updated tag ${tagId} for user ${tag.author?.id}`);
+    this.logger.log(`Updated tag ${tagId}`);
     return tag;
   }
 
@@ -93,7 +104,7 @@ export class TagService {
 
     this._unitOfWork.tag.delete(tag);
 
-    this.logger.log(`Deleted tag ${tagId} for user ${tag.author?.id}`);
+    this.logger.log(`Deleted tag ${tagId}`);
   }
 
   /**

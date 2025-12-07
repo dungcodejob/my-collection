@@ -10,13 +10,12 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntityWithTenant } from './base-extend.entity';
 import { BookmarkTagEntity } from './bookmark-tag.entity';
-import { TenantEntity } from './tenant.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ repository: () => TagRepository })
 @Index({ properties: ['id'] })
 @Index({ properties: ['name'] })
-@Index({ properties: ['author', 'deleteFlag'] })
+@Index({ properties: ['user', 'deleteFlag'] })
 @Index({ properties: ['tenant', 'deleteFlag'] })
 @Index({ properties: ['usageCount'] })
 export class TagEntity extends BaseEntityWithTenant {
@@ -41,8 +40,8 @@ export class TagEntity extends BaseEntityWithTenant {
   @Property({ default: false })
   isSystem: boolean = false; // System-generated tags
 
-  @ManyToOne(() => UserEntity, { nullable: true })
-  author?: UserEntity;
+  @ManyToOne(() => UserEntity)
+  user: UserEntity;
 
   @OneToMany(() => BookmarkTagEntity, (bt) => bt.tag, {
     cascade: [Cascade.REMOVE],
@@ -53,32 +52,23 @@ export class TagEntity extends BaseEntityWithTenant {
 
   constructor({
     name,
-    author,
     description,
     color,
     category,
     isSystem = false,
-    tenant,
   }: {
     name: string;
-    author?: UserEntity;
     description?: string;
     color?: string;
     category?: string;
     isSystem?: boolean;
-    tenant?: TenantEntity;
   }) {
     super();
     this.name = name.toLowerCase().trim(); // Normalize tag names
-    this.author = author;
     this.description = description;
     this.color = color;
     this.category = category;
     this.isSystem = isSystem;
-
-    if (tenant) {
-      this.tenant = tenant;
-    }
   }
 
   /**

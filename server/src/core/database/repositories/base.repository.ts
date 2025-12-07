@@ -303,10 +303,7 @@ export class BaseRepository {
     return data;
   }
 
-  protected setConditionFilter<T>(
-    query: FilterQuery<T>,
-    filter?: FilterQuery<T>,
-  ) {
+  setConditionFilter<T>(query: FilterQuery<T>, filter?: FilterQuery<T>) {
     if (filter) {
       query = {
         ...query,
@@ -317,7 +314,7 @@ export class BaseRepository {
     return query;
   }
 
-  protected setConditionPagination<T>(
+  setConditionPagination<T>(
     options: FindOptions<T>,
     pagination?: PaginationOptions,
   ) {

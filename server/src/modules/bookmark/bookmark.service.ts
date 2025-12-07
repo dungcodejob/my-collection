@@ -1,6 +1,14 @@
 import { BookmarkEntity } from '@app/entities';
-import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
+import { Errors } from '@app/errors';
+import { QueryDto } from '@app/models';
+import {
+  FindBookmarkOptions,
+  FindOneBookmarkOptions,
+  UNIT_OF_WORK,
+  type UnitOfWork,
+} from '@app/repositories';
 import { TagService } from '@app/tag';
+import { isNil } from '@app/utils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { BookmarkSearchDto } from './models';
 
@@ -40,9 +48,50 @@ export class BookmarkService {
   ) {}
 
   /**
-   * Create a new bookmark for a specific tenant
-   * T040: Implement bookmark creation logic
+   * Find bookmarks with search and pagination
    */
+  async search(
+    query: BookmarkSearchDto,
+  ): Promise<{ bookmarks: BookmarkEntity[]; total: number }> {
+    const newOptions = QueryDto.setConditionSort<BookmarkEntity>(
+      {},
+      query.sorts,
+    ) as FindBookmarkOptions;
+    const newFilters = QueryDto.setConditionFilter<BookmarkEntity>(
+      {},
+      query.filters,
+    );
+
+    const { entities, count } = await this._unitOfWork.bookmark.findAll(
+      newFilters,
+      {
+        ...newOptions,
+        isHasCount: true,
+        populate: ['collection', 'bookmarkTags'],
+      },
+    );
+    return { bookmarks: entities, total: count };
+  }
+
+  async findById(id: string, options?: FindOneBookmarkOptions) {
+    const bookmark = await this._unitOfWork.bookmark.findOneById(id, options);
+
+    return bookmark;
+  }
+
+  async findByIdOrFail(
+    id: string,
+    options?: FindOneBookmarkOptions,
+  ): Promise<BookmarkEntity> {
+    const bookmark = await this.findById(id, options);
+
+    if (isNil(bookmark)) {
+      throw Errors.Bookmark.NotFound;
+    }
+
+    return bookmark;
+  }
+
   async createBookmark(data: BookmarkCreateInput): Promise<BookmarkEntity> {
     // Get user and tenant entities
 
@@ -85,6 +134,13 @@ export class BookmarkService {
     });
 
     const createdBookmark = this._unitOfWork.bookmark.create(bookmark);
+
+    // if (data.tags && data.tags.length > 0) {
+    //   const tags = await this._tagService.findOrCreateTags(data.tags);
+
+    //   for (const tagName of data.tags) {
+    //   }
+    // }
 
     // Handle tags if present
     // if (data.tags && data.tags.length > 0) {
@@ -203,19 +259,6 @@ export class BookmarkService {
 
   //   return bookmark;
   // }
-
-  /**
-   * Find bookmarks with search and pagination
-   */
-  async search(
-    query: BookmarkSearchDto,
-  ): Promise<{ bookmarks: BookmarkEntity[]; total: number }> {
-    const { entities, count } = await this._unitOfWork.bookmark.findAll(query, {
-      isHasCount: true,
-      populate: ['collection', 'bookmarkTags'],
-    });
-    return { bookmarks: entities, total: count };
-  }
 
   /**
    * T138: Check if bookmark URL already exists for current user

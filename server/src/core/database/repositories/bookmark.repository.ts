@@ -1,9 +1,24 @@
-import { PaginationQueryDto, QueryDto } from '@app/models';
-import { FindOptions, RequiredEntityData } from '@mikro-orm/core';
+import { PaginationQueryDto } from '@app/models';
+import {
+  FilterQuery,
+  FindOptions,
+  RequiredEntityData,
+} from '@mikro-orm/postgresql';
 import { BookmarkEntity } from '../entities/bookmark.entity';
 import { BaseRepository, EntityWithCount } from './base.repository';
 
-type FindBookmarkOptions = FindOptions<
+export type FindBookmarkOptions = Partial<
+  FindOptions<
+    BookmarkEntity,
+    'user' | 'collection' | 'bookmarkTags',
+    '*',
+    never
+  >
+> & {
+  populate?: Array<'user' | 'collection' | 'bookmarkTags'>;
+};
+
+export type FindOneBookmarkOptions = FindOptions<
   BookmarkEntity,
   'user' | 'collection' | 'bookmarkTags',
   '*',
@@ -19,43 +34,38 @@ export class BookmarkRepository extends BaseRepository {
   //  * Find bookmarks by user ID
   //  */
   async findAll(
-    query: BookmarkQuery,
+    query: FilterQuery<BookmarkEntity>,
     options?: FindBookmarkOptions,
   ): Promise<BookmarkEntity[]>;
   async findAll(
-    query: BookmarkQuery,
+    query: FilterQuery<BookmarkEntity>,
     options?: FindBookmarkOptions & { isHasCount: true },
   ): Promise<EntityWithCount<BookmarkEntity>>;
   async findAll(
-    query: BookmarkQuery,
+    query: FilterQuery<BookmarkEntity>,
     options?: FindBookmarkOptions & { isHasCount?: true },
   ): Promise<BookmarkEntity[] | EntityWithCount<BookmarkEntity>> {
-    const { collectionId } = query;
-    let where = this.addUserIdAndTenantIdToQuery<BookmarkEntity>({
+    let where = this.addUserIdAndTenantIdToQuery<BookmarkEntity>(query);
+
+    where = this.setConditionFilter(where, {
       deleteFlag: false,
     });
 
-    if (collectionId) {
-      where = this.setConditionFilter(where, {
-        collection: { id: collectionId },
-      });
-    }
-
-    where = QueryDto.setConditionFilter(where, query?.filters);
-    const newOptions = QueryDto.setConditionSort(options || {}, query?.sorts);
+    // where = QueryDto.setConditionFilter(where, query?.filters);
+    // const newOptions = QueryDto.setConditionSort(options || {}, query?.sorts);
 
     if (options?.isHasCount) {
       const [entities, count] = await this.em.findAndCount(
         BookmarkEntity,
         where,
-        newOptions,
+        options,
       );
       return {
         entities,
         count,
       };
     }
-    return this.em.find(BookmarkEntity, where, newOptions);
+    return this.em.find(BookmarkEntity, where, options);
   }
 
   async findOne(
@@ -63,7 +73,7 @@ export class BookmarkRepository extends BaseRepository {
       id?: string;
       url?: string;
     },
-    options?: FindBookmarkOptions,
+    options?: FindOneBookmarkOptions,
   ): Promise<BookmarkEntity | null> {
     let where = this.addUserIdAndTenantIdToQuery<BookmarkEntity>({
       deleteFlag: false,
@@ -81,14 +91,14 @@ export class BookmarkRepository extends BaseRepository {
 
   async findOneByUrl(
     url: string,
-    options?: FindBookmarkOptions,
+    options?: FindOneBookmarkOptions,
   ): Promise<BookmarkEntity | null> {
     return this.findOne({ url }, { ...options });
   }
 
   async findOneById(
     id: string,
-    options?: FindBookmarkOptions,
+    options?: FindOneBookmarkOptions,
   ): Promise<BookmarkEntity | null> {
     return this.findOne({ id }, options);
   }

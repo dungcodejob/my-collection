@@ -1,13 +1,48 @@
 import { TagEntity, UserEntity } from '@app/entities';
-import { FindOptions, RequiredEntityData } from '@mikro-orm/core';
-import { BaseRepository } from './base.repository';
+import {
+  FilterQuery,
+  FindOneOptions,
+  FindOptions,
+  RequiredEntityData,
+} from '@mikro-orm/core';
+import { BaseRepository, EntityWithCount } from './base.repository';
 
-type FindTagOptions = FindOptions<TagEntity, 'author', '*', never>;
-type CreateTagInput = Omit<TagEntity, 'id' | 'author'> & {
-  author?: UserEntity;
+export type FindOneTagOptions = FindOneOptions<TagEntity, 'user', '*', never>;
+export type FindTagOptions = FindOptions<TagEntity, 'user', '*', never>;
+type CreateTagInput = Omit<TagEntity, 'id' | 'user'> & {
+  user: UserEntity;
 };
 
 export class TagRepository extends BaseRepository {
+  async findAll(
+    query: FilterQuery<TagEntity>,
+    options?: FindTagOptions,
+  ): Promise<TagEntity[]>;
+  async findAll(
+    query: FilterQuery<TagEntity>,
+    options?: FindTagOptions & { isHasCount: true },
+  ): Promise<EntityWithCount<TagEntity>>;
+  async findAll(
+    query: FilterQuery<TagEntity>,
+    options?: FindTagOptions & { isHasCount?: true },
+  ): Promise<TagEntity[] | EntityWithCount<TagEntity>> {
+    let where = this.addUserIdAndTenantIdToQuery<TagEntity>(query);
+    where = this.setConditionFilter(where, { deleteFlag: false });
+
+    if (options?.isHasCount) {
+      const [entities, count] = await this.em.findAndCount(
+        TagEntity,
+        where,
+        options,
+      );
+      return {
+        entities,
+        count,
+      };
+    }
+    return this.em.find(TagEntity, where, options);
+  }
+
   findById(id: string, options?: FindTagOptions): Promise<TagEntity | null> {
     const where = this.addTenantIdToQuery<TagEntity>({
       id,
@@ -17,9 +52,6 @@ export class TagRepository extends BaseRepository {
     return this.em.findOne(TagEntity, where, options);
   }
 
-  /**
-   * Find tags by user ID
-   */
   async findByUserId(options?: FindTagOptions): Promise<TagEntity[]> {
     let where = this.addTenantIdToQuery<TagEntity>({
       deleteFlag: false,
@@ -28,7 +60,7 @@ export class TagRepository extends BaseRepository {
     const user = this.ctx.user;
     if (user) {
       where = this.setConditionFilter<TagEntity>(where, {
-        author: { id: user.id },
+        user: { id: user.id },
       });
     }
 
@@ -53,7 +85,7 @@ export class TagRepository extends BaseRepository {
     const user = this.ctx.user;
     if (user) {
       where = this.setConditionFilter<TagEntity>(where, {
-        author: { id: user.id },
+        user: { id: user.id },
       });
     }
 
@@ -94,12 +126,7 @@ export class TagRepository extends BaseRepository {
   // }
 
   create(data: RequiredEntityData<TagEntity>): TagEntity {
-    const tagToCreate = this.addTenantToEntity<TagEntity>(data);
-
-    const user = this.ctx.user;
-    if (user && !tagToCreate.author) {
-      tagToCreate.author = user;
-    }
+    const tagToCreate = this.addUserAndTenantToEntity<TagEntity>(data);
 
     const tag = this.em.create(TagEntity, tagToCreate);
 
@@ -129,7 +156,7 @@ export class TagRepository extends BaseRepository {
     const user = this.ctx.user;
     if (user) {
       where = this.setConditionFilter<TagEntity>(where, {
-        author: { id: user.id },
+        user: { id: user.id },
       });
     }
 
@@ -180,7 +207,7 @@ export class TagRepository extends BaseRepository {
     const user = this.ctx.user;
     if (user) {
       where = this.setConditionFilter<TagEntity>(where, {
-        author: { id: user.id },
+        user: { id: user.id },
       });
     }
 

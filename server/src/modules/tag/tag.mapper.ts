@@ -23,7 +23,7 @@ export class TagMapper {
       usageCount: tag.usageCount,
       isActive: tag.isActive,
       isSystem: tag.isSystem,
-      authorId: tag.author?.id,
+      authorId: tag.user?.id,
       createdAt: tag.createAt!,
       updatedAt: tag.updateAt!,
     };

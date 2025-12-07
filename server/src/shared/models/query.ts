@@ -7,7 +7,11 @@ import {
   ParseSort,
   Sort,
 } from '@app/decorators';
-import { FilterQuery, FindOneOptions, FindOptions } from '@mikro-orm/core';
+import {
+  FilterQuery,
+  FindOneOptions,
+  FindOptions,
+} from '@mikro-orm/postgresql';
 import { applyDecorators } from '@nestjs/common';
 import { ApiQuery, ApiQueryOptions } from '@nestjs/swagger';
 
@@ -33,22 +37,22 @@ export class QueryDto<
 
   static setConditionSort<
     T extends object,
-    P extends string = never,
+    P extends string = any,
     F extends string = '*',
   >(options: FindOneOptions<T, P, F>, sorts?: Sort[]): FindOneOptions<T>;
   static setConditionSort<
     T extends object,
-    P extends string = never,
+    P extends string = any,
     F extends string = '*',
   >(options: FindOptions<T, P, F>, sorts?: Sort[]): FindOptions<T, P, F>;
   static setConditionSort<
     T extends object,
-    P extends string = never,
+    P extends string = any,
     F extends string = '*',
   >(
     options: FindOptions<T, P, F> | FindOneOptions<T, P, F>,
     sorts?: Sort[],
-  ): FindOptions<T, P, F> | FindOneOptions<T, P, F> {
+  ): any {
     if (!sorts || sorts.length === 0) {
       return options;
     }
