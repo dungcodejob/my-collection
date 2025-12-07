@@ -1,5 +1,6 @@
 import { BookmarkEntity } from '@app/entities';
 import { UNIT_OF_WORK, type UnitOfWork } from '@app/repositories';
+import { TagService } from '@app/tag';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { BookmarkSearchDto } from './models';
 
@@ -35,6 +36,7 @@ export class BookmarkService {
   constructor(
     @Inject(UNIT_OF_WORK)
     private readonly _unitOfWork: UnitOfWork,
+    private readonly _tagService: TagService,
   ) {}
 
   /**
@@ -85,32 +87,29 @@ export class BookmarkService {
     const createdBookmark = this._unitOfWork.bookmark.create(bookmark);
 
     // Handle tags if present
-    if (data.tags && data.tags.length > 0) {
-      const user = this._requestContextService.user;
-      const tenant = this._requestContextService.tenant;
+    // if (data.tags && data.tags.length > 0) {
+    //   for (const tagName of data.tags) {
+    //     // Find or create tag
+    //     let tag = await this._unitOfWork.tag.findByName(tagName);
 
-      for (const tagName of data.tags) {
-        // Find or create tag
-        let tag = await this._unitOfWork.tag.findByName(tagName);
+    //     if (!tag) {
+    //       tag = new TagEntity({
+    //         name: tagName,
+    //         isSystem: false,
+    //       });
+    //       this._unitOfWork.tag.create(tag);
+    //     }
 
-        if (!tag) {
-          tag = new TagEntity({
-            name: tagName,
-            isSystem: false,
-          });
-          this._unitOfWork.tag.create(tag);
-        }
+    //     // Create bookmark tag relation
+    //     const bookmarkTag = new BookmarkTagEntity({
+    //       bookmark: createdBookmark,
+    //       tag,
+    //       addedBy: user,
+    //     });
 
-        // Create bookmark tag relation
-        const bookmarkTag = new BookmarkTagEntity({
-          bookmark: createdBookmark,
-          tag,
-          addedBy: user,
-        });
-
-        this._unitOfWork.bookmarkTag.create(bookmarkTag);
-      }
-    }
+    //     this._unitOfWork.bookmarkTag.create(bookmarkTag);
+    //   }
+    // }
 
     await this._unitOfWork.save();
 

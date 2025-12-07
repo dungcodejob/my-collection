@@ -1,4 +1,3 @@
-import { AccountService } from '@app/account';
 import { SLUG_REGEX } from '@app/constants';
 import {
   AccountEntity,
@@ -8,7 +7,6 @@ import {
 } from '@app/entities';
 import { Errors } from '@app/errors';
 import { BcryptService } from '@app/services';
-import { SessionService } from '@app/session';
 import { TenantService } from '@app/tenant';
 import { UserMapper, UserService } from '@app/user';
 import { formatName, generatePointSlug } from '@app/utils';
@@ -16,6 +14,8 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { isEmail } from 'class-validator';
 import slugify from 'slugify';
+import { AccountService } from 'src/modules/account';
+import { SessionService } from 'src/modules/session';
 import {
   AuthResultDto,
   LoginDto,

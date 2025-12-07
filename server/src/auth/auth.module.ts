@@ -1,7 +1,5 @@
-import { AccountSharedModule } from '@app/account';
 import { jwtConfig } from '@app/configs';
 import { BcryptService } from '@app/services';
-import { SessionModule } from '@app/session';
 import { TenantSharedModule } from '@app/tenant';
 import { UserModule } from '@app/user';
 import { Module } from '@nestjs/common';
@@ -9,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { AccountSharedModule } from 'src/modules/account';
+import { SessionModule } from 'src/modules/session';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';

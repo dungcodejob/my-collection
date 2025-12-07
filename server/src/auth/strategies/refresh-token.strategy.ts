@@ -3,12 +3,12 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+import { InjectJwtConfig, type JwtConfig } from '@app/configs';
 import { COOKIE_KEY } from '@app/constants';
 import { Errors } from '@app/errors';
 import { BcryptService } from '@app/services';
-import { SessionService } from '@app/session';
 import { isNil } from '@app/utils';
-import { InjectJwtConfig, type JwtConfig } from '@app/configs';
+import { SessionService } from 'src/modules/session';
 import { RefreshAccessDto, RefreshPayload } from '../models';
 
 @Injectable()

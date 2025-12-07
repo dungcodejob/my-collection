@@ -1,6 +1,6 @@
 import { AccountEntity, SessionEntity, UserEntity } from '@app/entities';
-import { SessionCreateInput } from '@app/session';
 import { faker } from '@faker-js/faker';
+import { SessionCreateInput } from 'src/modules/session';
 import { createMockAccount } from './account.factory';
 import { createMockTenant } from './tenant.factory';
 import { createMockUser } from './user.factory';
